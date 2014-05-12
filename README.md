@@ -1,24 +1,8 @@
 # WPEditorController
 
-[![Version](http://cocoapod-badges.herokuapp.com/v/WPEditorController/badge.png)](http://cocoadocs.org/docsets/WPEditorController)
-[![Platform](http://cocoapod-badges.herokuapp.com/p/WPEditorController/badge.png)](http://cocoadocs.org/docsets/WPEditorController)
+## Introduction
 
-## Usage
-
-To run the example project; clone the repo, and run `pod install` from the Example directory first.
-
-## Requirements
-
-## Installation
-
-WPEditorController is available through [CocoaPods](http://cocoapods.org), to install
-it simply add the following line to your Podfile:
-
-    pod "WPEditorController"
-
-## Author
-
-Matt Bumgardner, matt@bumgardner.org
+WPEditorController is an iOS controller that presents a visual editor. It uses **ARC** and requires no other frameworks.
 
 ## License
 
