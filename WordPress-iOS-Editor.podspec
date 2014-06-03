@@ -13,8 +13,8 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/wordpress-mobile/WordPress-iOS-Editor.git", :tag => "0.1.0" }
   s.social_media_url = 'http://twitter.com/WordPressiOS'
   s.platform     = :ios, '7.0'
-  s.source_files = 'Classes'
-  s.resources    = 'Assets'
+  s.source_files = 'Classes'  
+  s.resources = ["Assets/*.png"]
   s.prefix_header_file = "Classes/WordPress-iOS-Editor-Prefix.pch"
   s.exclude_files = 'Classes/exclude'
   s.requires_arc = true

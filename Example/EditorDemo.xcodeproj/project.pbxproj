@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		74587C59193E652B0001052D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74587C58193E652B0001052D /* QuartzCore.framework */; };
 		74664183193E591B008BD8B9 /* WordPressEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 74664182193E591B008BD8B9 /* WordPressEditor.m */; };
 		748D2A89193E516000D5ACC8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748D2A88193E516000D5ACC8 /* Foundation.framework */; };
 		748D2A8B193E516000D5ACC8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748D2A8A193E516000D5ACC8 /* CoreGraphics.framework */; };
@@ -38,6 +39,7 @@
 
 /* Begin PBXFileReference section */
 		672065BC6FBB4FA6881F92AE /* Pods-EditorDemo.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EditorDemo.xcconfig"; path = "Pods/Pods-EditorDemo.xcconfig"; sourceTree = "<group>"; };
+		74587C58193E652B0001052D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		74664181193E591B008BD8B9 /* WordPressEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WordPressEditor.h; path = ../../Classes/exclude/WordPressEditor.h; sourceTree = "<group>"; };
 		74664182193E591B008BD8B9 /* WordPressEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WordPressEditor.m; path = ../../Classes/exclude/WordPressEditor.m; sourceTree = "<group>"; };
 		748D2A85193E516000D5ACC8 /* EditorDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EditorDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -68,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				74587C59193E652B0001052D /* QuartzCore.framework in Frameworks */,
 				748D2A8B193E516000D5ACC8 /* CoreGraphics.framework in Frameworks */,
 				748D2A8D193E516000D5ACC8 /* UIKit.framework in Frameworks */,
 				748D2A89193E516000D5ACC8 /* Foundation.framework in Frameworks */,
@@ -111,6 +114,7 @@
 		748D2A87193E516000D5ACC8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				74587C58193E652B0001052D /* QuartzCore.framework */,
 				748D2A88193E516000D5ACC8 /* Foundation.framework */,
 				748D2A8A193E516000D5ACC8 /* CoreGraphics.framework */,
 				748D2A8C193E516000D5ACC8 /* UIKit.framework */,

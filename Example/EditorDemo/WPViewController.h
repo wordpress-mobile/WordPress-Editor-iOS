@@ -1,13 +1,6 @@
-//
-//  WPViewController.h
-//  EditorDemo
-//
-//  Created by Matt Bumgardner on 6/3/14.
-//  Copyright (c) 2014 Automattic, Inc. All rights reserved.
-//
-
 #import <UIKit/UIKit.h>
+#import <WordPress-iOS-Editor/WPEditorViewController.h>
 
-@interface WPViewController : UIViewController
+@interface WPViewController : WPEditorViewController
 
 @end
