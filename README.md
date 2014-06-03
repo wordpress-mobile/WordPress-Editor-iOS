@@ -1,10 +1,9 @@
-# WPEditorController
+# WordPress-iOS-Editor
 
 ## Introduction
 
-WPEditorController is an iOS controller that presents a visual editor. It uses **ARC** and requires no other frameworks.
+WordPress-iOS-Editor is a resuable iOS rich text editor component.
 
 ## License
 
-WPEditorController is available under the MIT license. See the LICENSE file for more info.
-
+WordPress-iOS-Editor is available under the GPLv2 license. See the LICENSE file for more info.
