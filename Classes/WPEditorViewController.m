@@ -15,9 +15,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 @interface WPEditorViewController ()<UIPopoverControllerDelegate>
 
-
 @property (nonatomic) CGPoint scrollOffsetRestorePoint;
-
 @property (nonatomic, strong) UITextField *titleTextField;
 @property (nonatomic, strong) UIView *separatorView;
 @property (nonatomic, strong) UIView *optionsSeparatorView;
@@ -32,18 +30,16 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 @implementation WPEditorViewController
 
-
-- (id)initWithHTMLBody:(NSString *)html titleString:(NSString *)title {
+- (id)initWithTitle:(NSString *)title text:(NSString *)text {
     self = [super init];
     if (self) {
-        _htmlBody = html;
-        _titleString = title;
+        _bodyText = text;
+        _titleText = title;
     }
     return self;
 }
 
 - (void)viewDidLoad {
-    DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
     [super viewDidLoad];
     
     // For the iPhone, let's let the overscroll background color be white to
@@ -51,15 +47,35 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     if (IS_IPAD) {
         self.view.backgroundColor = [WPStyleGuide itsEverywhereGrey];
     }
-    
+    self.navigationController.navigationBar.translucent = NO;
     [self setupToolbar];
     [self setupTextView];
     [self setupOptionsView];
-
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    // When restoring state, the navigationController is nil when the view loads,
+    // so configure its appearance here instead.
+    self.navigationController.navigationBar.translucent = NO;
+    self.navigationController.toolbarHidden = NO;
+    UIToolbar *toolbar = self.navigationController.toolbar;
+    toolbar.barTintColor = [WPStyleGuide littleEddieGrey];
+    toolbar.translucent = NO;
+    toolbar.barStyle = UIBarStyleDefault;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    
+    if(self.navigationController.navigationBarHidden) {
+        [self.navigationController setNavigationBarHidden:NO animated:animated];
+    }
+    
+    if (self.navigationController.toolbarHidden) {
+        [self.navigationController setToolbarHidden:NO animated:animated];
+    }
     
     for (UIView *view in self.navigationController.toolbar.subviews) {
         [view setExclusiveTouch:YES];
@@ -70,15 +86,29 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    // Refresh the UI when the view appears or the options button won't be
+    // visible when restoring state.
+    [self refreshUIForCurrentPost];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
     [super viewWillDisappear:animated];
     
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    
+    [self.navigationController setToolbarHidden:YES animated:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    
 	[_titleTextField resignFirstResponder];
 	[_textView resignFirstResponder];
 }
+
 
 - (void)didReceiveMemoryWarning {
     DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
@@ -130,7 +160,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
         self.textView = [[UITextView alloc] initWithFrame:frame];
         self.textView.autoresizingMask = mask;
         self.textView.delegate = self;
-//        self.textView.typingAttributes = [WPStyleGuide regularTextAttributes];
+        self.textView.typingAttributes = [WPStyleGuide regularTextAttributes];
         self.textView.font = [WPStyleGuide regularTextFont];
         self.textView.textColor = [WPStyleGuide darkAsNightGrey];
         self.textView.accessibilityLabel = NSLocalizedString(@"Content", @"Post content");
@@ -275,85 +305,22 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 #pragma mark - Actions
 
-- (Class)classForSettingsViewController {
-    //return [PostSettingsViewController class];
-    return nil;
-}
-
 - (void)showSettings {
-//    Post *post = (Post *)self.post;
-//    PostSettingsViewController *vc = [[[self classForSettingsViewController] alloc] initWithPost:post];
-//    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", nil) style:UIBarButtonItemStyleBordered target:nil action:nil];
-//    self.navigationItem.backBarButtonItem = backButton;
-//    [self.navigationController pushViewController:vc animated:YES];
+    if ([_delegate respondsToSelector: @selector(editorDidPressSettings:)]) {
+        [_delegate editorDidPressSettings:self];
+    }
 }
 
 - (void)showPreview {
-//    PostPreviewViewController *vc = [[PostPreviewViewController alloc] initWithPost:self.post];
-//    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Back", nil) style:UIBarButtonItemStyleBordered target:nil action:nil];
-//    self.navigationItem.backBarButtonItem = backButton;
-//    [self.navigationController pushViewController:vc animated:YES];
+    if ([_delegate respondsToSelector: @selector(editorDidPressPreview:)]) {
+        [_delegate editorDidPressPreview:self];
+    }
 }
 
 - (void)showMediaOptions {
-//    CTAssetsPickerController *picker = [[CTAssetsPickerController alloc] init];
-//	picker.delegate = self;
-//    
-//    // Only show photos for now (not videos)
-//    picker.assetsFilter = [ALAssetsFilter allPhotos];
-//    
-//    [self presentViewController:picker animated:YES completion:nil];
-//    picker.navigationBar.translucent = NO;
-}
-
-- (void)cancelEditing {
-//    if(_currentActionSheet) return;
-//    
-//    [_textView resignFirstResponder];
-//    [_titleTextField resignFirstResponder];
-//	[self.postSettingsViewController endEditingAction:nil];
-//    
-//	if ([self isMediaInUploading]) {
-//		[self showMediaInUploadingAlert];
-//		return;
-//	}
-//    
-//    if (![self hasChanges]) {
-//        [self discardChangesAndDismiss];
-//        return;
-//    }
-//    
-//	UIActionSheet *actionSheet;
-//	if (![self.post.original.status isEqualToString:@"draft"] && self.editMode != EditPostViewControllerModeNewPost) {
-//        // The post is already published in the server or it was intended to be and failed: Discard changes or keep editing
-//		actionSheet = [[UIActionSheet alloc] initWithTitle:NSLocalizedString(@"You have unsaved changes.", @"Title of message with options that shown when there are unsaved changes and the author is trying to move away from the post.")
-//												  delegate:self
-//                                         cancelButtonTitle:NSLocalizedString(@"Keep Editing", @"Button shown if there are unsaved changes and the author is trying to move away from the post.")
-//                                    destructiveButtonTitle:NSLocalizedString(@"Discard", @"Button shown if there are unsaved changes and the author is trying to move away from the post.")
-//										 otherButtonTitles:nil];
-//    } else if (self.editMode == EditPostViewControllerModeNewPost) {
-//        // The post is a local draft or an autosaved draft: Discard or Save
-//        actionSheet = [[UIActionSheet alloc] initWithTitle:NSLocalizedString(@"You have unsaved changes.", @"Title of message with options that shown when there are unsaved changes and the author is trying to move away from the post.")
-//                                                  delegate:self
-//                                         cancelButtonTitle:NSLocalizedString(@"Keep Editing", @"Button shown if there are unsaved changes and the author is trying to move away from the post.")
-//                                    destructiveButtonTitle:NSLocalizedString(@"Discard", @"Button shown if there are unsaved changes and the author is trying to move away from the post.")
-//                                         otherButtonTitles:NSLocalizedString(@"Save Draft", @"Button shown if there are unsaved changes and the author is trying to move away from the post."), nil];
-//    } else {
-//        // The post was already a draft
-//        actionSheet = [[UIActionSheet alloc] initWithTitle:NSLocalizedString(@"You have unsaved changes.", @"Title of message with options that shown when there are unsaved changes and the author is trying to move away from the post.")
-//                                                  delegate:self
-//                                         cancelButtonTitle:NSLocalizedString(@"Keep Editing", @"Button shown if there are unsaved changes and the author is trying to move away from the post.")
-//                                    destructiveButtonTitle:NSLocalizedString(@"Discard", @"Button shown if there are unsaved changes and the author is trying to move away from the post.")
-//                                         otherButtonTitles:NSLocalizedString(@"Update Draft", @"Button shown if there are unsaved changes and the author is trying to move away from an already published/saved post."), nil];
-//    }
-//    
-//    actionSheet.tag = 201;
-//    actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-//    if (IS_IPAD) {
-//        [actionSheet showFromBarButtonItem:self.navigationItem.leftBarButtonItem animated:YES];
-//    } else {
-//        [actionSheet showFromToolbar:self.navigationController.toolbar];
-//    }
+    if ([_delegate respondsToSelector: @selector(editorDidPressMedia:)]) {
+        [_delegate editorDidPressMedia:self];
+    }
 }
 
 #pragma mark - UI Manipulation
@@ -361,14 +328,14 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 - (void)refreshUIForCurrentPost {
     
-    _titleTextField.text = self.titleString;
+    _titleTextField.text = _titleText;
     
-    if(self.htmlBody == nil || self.htmlBody.length == 0) {
+    if(_bodyText == nil || _bodyText.length == 0) {
         _tapToStartWritingLabel.hidden = NO;
         _textView.text = @"";
     } else {
         _tapToStartWritingLabel.hidden = YES;
-        _textView.text = self.htmlBody;
+        _textView.text = _bodyText;
     }
 }
 
@@ -388,109 +355,6 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     } else {
         return [NSString stringWithFormat:@"http://%@", urlText];
     }
-}
-
-- (void)showLinkView {
-//    if (_linkHelperAlertView) {
-//        [_linkHelperAlertView dismiss];
-//        _linkHelperAlertView = nil;
-//    }
-//    
-//    NSRange range = _textView.selectedRange;
-//    NSString *infoText = nil;
-//    
-//    if (range.length > 0)
-//        infoText = [_textView.text substringWithRange:range];
-//    
-//    CGRect frame = CGRectMake(0.0f, 0.0f, self.view.bounds.size.width, self.view.bounds.size.height);
-//    if (IS_IPAD) {
-//        frame.origin.y = 22.0f; // Make sure the title of the alert view is visible on the iPad.
-//    }
-//    _linkHelperAlertView = [[WPAlertView alloc] initWithFrame:frame andOverlayMode:WPAlertViewOverlayModeTwoTextFieldsTwoButtonMode];
-//    
-//    NSString *title = NSLocalizedString(@"Make a Link\n\n\n\n", @"Title of the Link Helper popup to aid in creating a Link in the Post Editor.\n\n\n\n");
-//    NSCharacterSet *charSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
-//    title = [title stringByTrimmingCharactersInSet:charSet];
-//    
-//    _linkHelperAlertView.overlayTitle = title;
-//    _linkHelperAlertView.overlayDescription = @"";
-//    _linkHelperAlertView.footerDescription = [NSLocalizedString(@"tap to dismiss", nil) uppercaseString];
-//    _linkHelperAlertView.firstTextFieldPlaceholder = NSLocalizedString(@"Text to be linked", @"Popup to aid in creating a Link in the Post Editor.");
-//    _linkHelperAlertView.firstTextFieldValue = infoText;
-//    _linkHelperAlertView.secondTextFieldPlaceholder = NSLocalizedString(@"Link URL", @"Popup to aid in creating a Link in the Post Editor, URL field (where you can type or paste a URL that the text should link.");
-//    _linkHelperAlertView.leftButtonText = NSLocalizedString(@"Cancel", @"Cancel button");
-//    _linkHelperAlertView.rightButtonText = NSLocalizedString(@"Insert", @"Insert content (link, media) button");
-//    
-//    _linkHelperAlertView.firstTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-//    _linkHelperAlertView.secondTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-//    _linkHelperAlertView.firstTextField.keyboardAppearance = UIKeyboardAppearanceAlert;
-//    _linkHelperAlertView.secondTextField.keyboardAppearance = UIKeyboardAppearanceAlert;
-//    _linkHelperAlertView.firstTextField.keyboardType = UIKeyboardTypeDefault;
-//    _linkHelperAlertView.secondTextField.keyboardType = UIKeyboardTypeURL;
-//    _linkHelperAlertView.secondTextField.autocorrectionType = UITextAutocorrectionTypeNo;
-//    
-//    if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation) && IS_IPHONE && !_isExternalKeyboard) {
-//        [_linkHelperAlertView hideTitleAndDescription:YES];
-//    }
-//
-//    self.scrollOffsetRestorePoint = self.textView.contentOffset;
-//    
-//    __block UITextView *editorTextView = _textView;
-//    __block id fles = self;
-//    _linkHelperAlertView.button1CompletionBlock = ^(WPAlertView *overlayView){
-//        // Cancel
-//        [overlayView dismiss];
-//        [editorTextView becomeFirstResponder];
-//        [fles setLinkHelperAlertView:nil];
-//    };
-//    _linkHelperAlertView.button2CompletionBlock = ^(WPAlertView *overlayView){
-//        // Insert
-//        
-//        UITextField *infoText = overlayView.firstTextField;
-//        UITextField *urlField = overlayView.secondTextField;
-//        
-//        if ((urlField.text == nil) || ([urlField.text isEqualToString:@""])) {
-//            return;
-//        }
-//        
-//        if ((infoText.text == nil) || ([infoText.text isEqualToString:@""])) {
-//            infoText.text = urlField.text;
-//        }
-//        
-//        NSString *urlString = [fles validateNewLinkInfo:[urlField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
-//        NSString *aTagText = [NSString stringWithFormat:@"<a href=\"%@\">%@</a>", urlString, infoText.text];
-//        
-//        NSRange range = editorTextView.selectedRange;
-//        
-//        NSString *oldText = editorTextView.text;
-//        NSRange oldRange = editorTextView.selectedRange;
-//        editorTextView.scrollEnabled = NO;
-//        editorTextView.text = [editorTextView.text stringByReplacingCharactersInRange:range withString:aTagText];
-//        editorTextView.scrollEnabled = YES;
-//        
-//        //reset selection back to nothing
-//        range.length = 0;
-//        range.location += [aTagText length]; // Place selection after the tag
-//        editorTextView.selectedRange = range;
-//
-//        [[editorTextView.undoManager prepareWithInvocationTarget:fles] restoreText:oldText withRange:oldRange];
-//        [editorTextView.undoManager setActionName:@"link"];
-//
-//        [overlayView dismiss];
-//        [editorTextView becomeFirstResponder];
-//        [fles setLinkHelperAlertView:nil];
-//
-//        [fles refreshTextView];
-//    };
-//    
-//    _linkHelperAlertView.alpha = 0.0;
-//    [self.view.superview addSubview:_linkHelperAlertView];
-//    if ([infoText length] > 0) {
-//        [_linkHelperAlertView.secondTextField becomeFirstResponder];
-//    }
-//    [UIView animateWithDuration:0.2 animations:^{
-//        _linkHelperAlertView.alpha = 1.0;
-//    }];
 }
 
 #pragma mark Instance Methods
@@ -578,7 +442,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 - (void)keyboardToolbarButtonItemPressed:(WPKeyboardToolbarButtonItem *)buttonItem {
     DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
     if ([buttonItem.actionTag isEqualToString:@"link"]) {
-        [self showLinkView];
+        // TODO: show the link dialog
     } else if ([buttonItem.actionTag isEqualToString:@"done"]) {
         // With the titleTextField as a subview of textField, we need to resign and
         // end editing to prevent the textField from becomeing first responder.
@@ -594,13 +458,6 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
         [_textView.undoManager setActionName:buttonItem.actionName];
     }
 }
-
-#pragma mark - UIPopoverControllerDelegate methods
-
-- (void)popoverController:(UIPopoverController *)popoverController willRepositionPopoverToRect:(inout CGRect *)rect inView:(inout UIView **)view {
-
-}
-
 
 #pragma mark - TextView delegate
 
@@ -627,7 +484,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     if (textField == _titleTextField) {
-        _titleString = [textField.text stringByReplacingCharactersInRange:range withString:string];
+        [self setTitle:[textField.text stringByReplacingCharactersInRange:range withString:string]];
     }
     
     return YES;
