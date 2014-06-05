@@ -188,8 +188,6 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     }
     CGRect frame = CGRectMake(x, 0.0f, width, CGRectGetHeight(self.view.frame) - EPVCOptionsHeight);
 
-    // Content text field.
-    // Shows the post body.
     // Height should never be smaller than what is required to display its text.
     if (!self.textView) {
         self.textView = [[UITextView alloc] initWithFrame:frame];
@@ -378,7 +376,8 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     }
 }
 
-- (void)showLinkView {
+- (void)showLinkView
+{
     NSRange range = _textView.selectedRange;
     NSString *infoText = nil;
     if (range.length > 0) {
@@ -415,10 +414,6 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     linkURL.autocorrectionType = UITextAutocorrectionTypeNo;
 
     [_alertView show];
-}
-
-- (void)dismissAlertView {
-    [self.alertView dismissWithClickedButtonIndex:self.alertView.cancelButtonIndex animated:YES];
 }
 
 // Appends http:// if protocol part is not there as part of urlText.
@@ -472,6 +467,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     _textView.scrollEnabled = YES;
     _textView.selectedRange = range;
     [[_textView.undoManager prepareWithInvocationTarget:self] restoreText:oldText withRange:oldRange];
+    [self textViewDidChange:_textView];
 }
 
 - (void)wrapSelectionWithTag:(NSString *)tag
@@ -493,6 +489,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     NSString *replacement = [NSString stringWithFormat:@"%@%@%@",prefix,selection,suffix];
     _textView.text = [_textView.text stringByReplacingCharactersInRange:range
                                                              withString:replacement];
+    [self textViewDidChange:_textView];
     _textView.scrollEnabled = YES;
     if (range.length == 0) {                // If nothing was selected
         range.location += [prefix length]; // Place selection between tags
@@ -540,7 +537,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     }
 }
 
-#pragma mark - AlertView delegate
+#pragma mark - AlertView Delegate
 
 - (BOOL)alertViewShouldEnableFirstOtherButton:(UIAlertView *)alertView
 {
@@ -594,7 +591,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     }
 }
 
-#pragma mark - TextView delegate
+#pragma mark - TextView Delegate
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
@@ -654,7 +651,8 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 #pragma mark - Positioning & Rotation
 
-- (BOOL)shouldHideToolbarsWhileTyping {
+- (BOOL)shouldHideToolbarsWhileTyping
+{
     /*
      Never hide for the iPad.
      Always hide on the iPhone except for portrait + external keyboard
@@ -671,7 +669,8 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     return YES;
 }
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration {
+- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration
+{
     CGRect frame = _editorToolbar.frame;
     if (UIDeviceOrientationIsLandscape(interfaceOrientation)) {
         if (IS_IPAD) {
@@ -693,7 +692,8 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 #pragma mark - Keyboard management
 
-- (void)keyboardWillShow:(NSNotification *)notification {
+- (void)keyboardWillShow:(NSNotification *)notification
+{
 	_isShowingKeyboard = YES;
     
     if ([self shouldHideToolbarsWhileTyping]) {
@@ -703,7 +703,8 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     }
 }
 
-- (void)keyboardDidShow:(NSNotification *)notification {
+- (void)keyboardDidShow:(NSNotification *)notification
+{
     if ([self.textView isFirstResponder]) {
         if (!CGPointEqualToPoint(CGPointZero, self.scrollOffsetRestorePoint)) {
             self.textView.contentOffset = self.scrollOffsetRestorePoint;
@@ -713,7 +714,8 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     [self positionTextView:notification];
 }
 
-- (void)keyboardWillHide:(NSNotification *)notification {
+- (void)keyboardWillHide:(NSNotification *)notification
+{
 	_isShowingKeyboard = NO;
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
