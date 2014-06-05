@@ -13,6 +13,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 @interface WPEditorViewController ()<UITextFieldDelegate, UITextViewDelegate, WPKeyboardToolbarDelegate>
 @property (nonatomic) CGPoint scrollOffsetRestorePoint;
+@property (nonatomic, strong) UIAlertView *alertView;
 @property (nonatomic, strong) UIButton *optionsButton;
 @property (nonatomic, strong) UILabel *tapToStartWritingLabel;
 @property (nonatomic, strong) UITextField *titleTextField;
@@ -111,7 +112,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     [super didReceiveMemoryWarning];
 }
 
-#pragma mark - Getters and setters
+#pragma mark - Getters and Setters
 
 - (NSString*)titleText
 {
@@ -377,6 +378,49 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     }
 }
 
+- (void)showLinkView {
+    NSRange range = _textView.selectedRange;
+    NSString *infoText = nil;
+    if (range.length > 0) {
+        infoText = [_textView.text substringWithRange:range];
+    }
+    self.scrollOffsetRestorePoint = self.textView.contentOffset;
+    
+    NSString *alertViewTitle = NSLocalizedString(@"Make a Link", @"Title of the Link Helper popup to aid in creating a Link in the Post Editor.");
+    NSCharacterSet *charSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+    alertViewTitle = [alertViewTitle stringByTrimmingCharactersInSet:charSet];
+    
+    NSString *insertButtonTitle = NSLocalizedString(@"Insert", @"Insert content (link, media) button");
+    NSString *cancelButtonTitle = NSLocalizedString(@"Cancel", @"Cancel button");
+    
+    _alertView = [[UIAlertView alloc] initWithTitle:alertViewTitle message:nil delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:insertButtonTitle, nil];
+    _alertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
+    _alertView.tag = 1;
+    
+    UITextField *alt = [self.alertView textFieldAtIndex:1];
+    alt.secureTextEntry = NO;
+    alt.placeholder = NSLocalizedString(@"Text to be linked", @"Popup to aid in creating a Link in the Post Editor.");
+    alt.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    alt.keyboardAppearance = UIKeyboardAppearanceAlert;
+    alt.keyboardType = UIKeyboardTypeDefault;
+    if (infoText) {
+        alt.text = infoText;
+    }
+    
+    UITextField *linkURL = [self.alertView textFieldAtIndex:0];
+    linkURL.placeholder = NSLocalizedString(@"Link URL", @"Popup to aid in creating a Link in the Post Editor, URL field (where you can type or paste a URL that the text should link.");
+    linkURL.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    linkURL.keyboardAppearance = UIKeyboardAppearanceAlert;
+    linkURL.keyboardType = UIKeyboardTypeURL;
+    linkURL.autocorrectionType = UITextAutocorrectionTypeNo;
+
+    [_alertView show];
+}
+
+- (void)dismissAlertView {
+    [self.alertView dismissWithClickedButtonIndex:self.alertView.cancelButtonIndex animated:YES];
+}
+
 // Appends http:// if protocol part is not there as part of urlText.
 - (NSString *)validateNewLinkInfo:(NSString *)urlText
 {
@@ -479,7 +523,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 - (void)keyboardToolbarButtonItemPressed:(WPKeyboardToolbarButtonItem *)buttonItem
 {
     if ([buttonItem.actionTag isEqualToString:@"link"]) {
-        // TODO: show the link dialog
+        [self showLinkView];
     } else if ([buttonItem.actionTag isEqualToString:@"done"]) {
         // With the titleTextField as a subview of textField, we need to resign and
         // end editing to prevent the textField from becomeing first responder.
@@ -493,6 +537,60 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
         [self wrapSelectionWithTag:buttonItem.actionTag];
         [[_textView.undoManager prepareWithInvocationTarget:self] restoreText:oldText withRange:oldRange];
         [_textView.undoManager setActionName:buttonItem.actionName];
+    }
+}
+
+#pragma mark - AlertView delegate
+
+- (BOOL)alertViewShouldEnableFirstOtherButton:(UIAlertView *)alertView
+{
+    if (alertView.tag == 1) {
+        UITextField *textField = [alertView textFieldAtIndex:0];
+        if ([textField.text length] == 0) {
+            return NO;
+        }
+    }
+    
+    return YES;
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (alertView.tag == 1) {
+        if (buttonIndex == 1) {
+            // Insert link
+            UITextField *urlField = [alertView textFieldAtIndex:0];
+            UITextField *infoText = [alertView textFieldAtIndex:1];
+            
+            if ((urlField.text == nil) || ([urlField.text isEqualToString:@""])) {
+                return;
+            }
+            
+            if ((infoText.text == nil) || ([infoText.text isEqualToString:@""])) {
+                infoText.text = urlField.text;
+            }
+            
+            NSString *urlString = [self validateNewLinkInfo:[urlField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
+            NSString *aTagText = [NSString stringWithFormat:@"<a href=\"%@\">%@</a>", urlString, infoText.text];
+            NSRange range = _textView.selectedRange;
+            NSString *oldText = _textView.text;
+            NSRange oldRange = _textView.selectedRange;
+            _textView.scrollEnabled = NO;
+            _textView.text = [_textView.text stringByReplacingCharactersInRange:range withString:aTagText];
+            _textView.scrollEnabled = YES;
+            
+            //reset selection back to nothing
+            range.length = 0;
+            range.location += [aTagText length]; // Place selection after the tag
+            _textView.selectedRange = range;
+            
+            [[_textView.undoManager prepareWithInvocationTarget:self] restoreText:oldText withRange:oldRange];
+            [_textView.undoManager setActionName:@"link"];
+            [_textView becomeFirstResponder];
+            [self textViewDidChange:_textView];
+            [self refreshTextView];
+
+        }
     }
 }
 
