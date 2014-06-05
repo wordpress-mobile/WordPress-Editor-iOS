@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		74291D0A1940C859004230D4 /* content.html in Resources */ = {isa = PBXBuildFile; fileRef = 74291D091940C859004230D4 /* content.html */; };
 		74587C59193E652B0001052D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74587C58193E652B0001052D /* QuartzCore.framework */; };
 		74664183193E591B008BD8B9 /* WordPressEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 74664182193E591B008BD8B9 /* WordPressEditor.m */; };
 		748D2A89193E516000D5ACC8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748D2A88193E516000D5ACC8 /* Foundation.framework */; };
@@ -46,6 +47,7 @@
 
 /* Begin PBXFileReference section */
 		672065BC6FBB4FA6881F92AE /* Pods-EditorDemo.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EditorDemo.xcconfig"; path = "Pods/Pods-EditorDemo.xcconfig"; sourceTree = "<group>"; };
+		74291D091940C859004230D4 /* content.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = content.html; sourceTree = "<group>"; };
 		74587C58193E652B0001052D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		74664181193E591B008BD8B9 /* WordPressEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WordPressEditor.h; path = ../../Classes/exclude/WordPressEditor.h; sourceTree = "<group>"; };
 		74664182193E591B008BD8B9 /* WordPressEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WordPressEditor.m; path = ../../Classes/exclude/WordPressEditor.m; sourceTree = "<group>"; };
@@ -147,6 +149,7 @@
 				748D2A9D193E516000D5ACC8 /* Main_iPad.storyboard */,
 				748D2AA0193E516000D5ACC8 /* WPViewController.h */,
 				748D2AA1193E516000D5ACC8 /* WPViewController.m */,
+				74291D091940C859004230D4 /* content.html */,
 				748D2AA3193E516000D5ACC8 /* Images.xcassets */,
 				748D2A8F193E516000D5ACC8 /* Supporting Files */,
 			);
@@ -280,6 +283,7 @@
 			files = (
 				748D2A9F193E516000D5ACC8 /* Main_iPad.storyboard in Resources */,
 				74CC7104193FB36D007EF4D6 /* OpenSans-Regular.ttf in Resources */,
+				74291D0A1940C859004230D4 /* content.html in Resources */,
 				74CC7101193FB36D007EF4D6 /* OpenSans-Italic.ttf in Resources */,
 				748D2AA4193E516000D5ACC8 /* Images.xcassets in Resources */,
 				74CC70FF193FB36D007EF4D6 /* OpenSans-Bold.ttf in Resources */,

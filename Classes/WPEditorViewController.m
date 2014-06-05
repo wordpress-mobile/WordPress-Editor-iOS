@@ -6,44 +6,31 @@
 
 CGFloat const EPVCTextfieldHeight = 44.0f;
 CGFloat const EPVCOptionsHeight = 44.0f;
-CGFloat const EPVCToolbarHeight = 44.0f;
-CGFloat const EPVCNavbarHeight = 44.0f;
 CGFloat const EPVCStandardOffset = 15.0;
 CGFloat const EPVCTextViewOffset = 10.0;
 CGFloat const EPVCTextViewBottomPadding = 50.0f;
 CGFloat const EPVCTextViewTopPadding = 7.0f;
 
-@interface WPEditorViewController ()<UIPopoverControllerDelegate>
-
+@interface WPEditorViewController ()<UITextFieldDelegate, UITextViewDelegate, WPKeyboardToolbarDelegate>
 @property (nonatomic) CGPoint scrollOffsetRestorePoint;
+@property (nonatomic, strong) UIButton *optionsButton;
+@property (nonatomic, strong) UILabel *tapToStartWritingLabel;
 @property (nonatomic, strong) UITextField *titleTextField;
-@property (nonatomic, strong) UIView *separatorView;
+@property (nonatomic, strong) UITextView *textView;
 @property (nonatomic, strong) UIView *optionsSeparatorView;
 @property (nonatomic, strong) UIView *optionsView;
-@property (nonatomic, strong) UIButton *optionsButton;
-@property (nonatomic, strong) UITextView *textView;
+@property (nonatomic, strong) UIView *separatorView;
 @property (nonatomic, strong) WPKeyboardToolbarBase *editorToolbar;
 @property (nonatomic, strong) WPKeyboardToolbarDone *titleToolbar;
-@property (nonatomic, strong) UILabel *tapToStartWritingLabel;
-
 @end
 
 @implementation WPEditorViewController
 
-- (id)initWithTitle:(NSString *)title text:(NSString *)text {
-    self = [super init];
-    if (self) {
-        _bodyText = text;
-        _titleText = title;
-    }
-    return self;
-}
-
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
-    // For the iPhone, let's let the overscroll background color be white to
-    // match the editor.
+    // For the iPhone, let's let the overscroll background color be white to match the editor.
     if (IS_IPAD) {
         self.view.backgroundColor = [WPStyleGuide itsEverywhereGrey];
     }
@@ -53,7 +40,8 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     [self setupOptionsView];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
     
     // When restoring state, the navigationController is nil when the view loads,
@@ -65,9 +53,18 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     toolbar.translucent = NO;
     toolbar.barStyle = UIBarStyleDefault;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidShow:)
+                                                 name:UIKeyboardDidShowNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillHide:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
     
     if(self.navigationController.navigationBarHidden) {
         [self.navigationController setNavigationBarHidden:NO animated:animated];
@@ -84,15 +81,16 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     [_textView setContentOffset:CGPointMake(0, 0)];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
-    // Refresh the UI when the view appears or the options button won't be
-    // visible when restoring state.
-    [self refreshUIForCurrentPost];
+    // Refresh the UI when the view appears or the options
+    // button won't be visible when restoring state.
+    [self refreshUI];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
+- (void)viewWillDisappear:(BOOL)animated
+{
     [super viewWillDisappear:animated];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
@@ -109,21 +107,50 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 	[_textView resignFirstResponder];
 }
 
-
 - (void)didReceiveMemoryWarning {
-    DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
     [super didReceiveMemoryWarning];
+}
+
+#pragma mark - Getters and setters
+
+- (NSString*)titleText
+{
+    return _titleTextField.text;
+}
+
+- (void) setTitleText:(NSString*)titleText
+{
+    [_titleTextField setText:titleText];
+    [self refreshUI];
+}
+
+- (NSString*)bodyText
+{
+    return _textView.text;
+}
+
+- (void) setBodyText:(NSString*)bodyText
+{
+    [_textView setText:bodyText];
+    [self refreshUI];
 }
 
 #pragma mark - View Setup
 
-- (void)setupToolbar {
+- (void)setupToolbar
+{
     if ([self.toolbarItems count] > 0) {
         return;
     }
     
-    UIBarButtonItem *previewButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon-posts-editor-preview"] style:UIBarButtonItemStylePlain target:self action:@selector(showPreview)];
-    UIBarButtonItem *photoButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon-posts-editor-media"] style:UIBarButtonItemStylePlain target:self action:@selector(showMediaOptions)];
+    UIBarButtonItem *previewButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon-posts-editor-preview"]
+                                                                      style:UIBarButtonItemStylePlain
+                                                                     target:self
+                                                                     action:@selector(showPreview)];
+    UIBarButtonItem *photoButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon-posts-editor-media"]
+                                                                    style:UIBarButtonItemStylePlain
+                                                                   target:self
+                                                                   action:@selector(showMediaOptions)];
     
     previewButton.tintColor = [WPStyleGuide readGrey];
     photoButton.tintColor = [WPStyleGuide readGrey];
@@ -131,9 +158,15 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     previewButton.accessibilityLabel = NSLocalizedString(@"Preview post", nil);
     photoButton.accessibilityLabel = NSLocalizedString(@"Add media", nil);
     
-    UIBarButtonItem *leftFixedSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    UIBarButtonItem *rightFixedSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    UIBarButtonItem *centerFlexSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    UIBarButtonItem *leftFixedSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                                                                     target:nil
+                                                                                     action:nil];
+    UIBarButtonItem *rightFixedSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                                                                      target:nil
+                                                                                      action:nil];
+    UIBarButtonItem *centerFlexSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                                                      target:nil
+                                                                                      action:nil];
     
     leftFixedSpacer.width = -2.0f;
     rightFixedSpacer.width = -5.0f;
@@ -141,7 +174,8 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     self.toolbarItems = @[leftFixedSpacer, previewButton, centerFlexSpacer, photoButton, rightFixedSpacer];
 }
 
-- (void)setupTextView {
+- (void)setupTextView
+{
     CGFloat x = 0.0f;
     CGFloat viewWidth = CGRectGetWidth(self.view.frame);
     CGFloat width = viewWidth;
@@ -234,7 +268,8 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     [self.textView addSubview:self.tapToStartWritingLabel];
 }
 
-- (void)setupOptionsView {
+- (void)setupOptionsView
+{
     CGFloat width = CGRectGetWidth(self.textView.frame);
     CGFloat x = CGRectGetMinX(self.textView.frame);
     CGFloat y = CGRectGetMaxY(self.textView.frame);
@@ -267,8 +302,10 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
         self.optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
         self.optionsButton.frame = frame;
         self.optionsButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [self.optionsButton addTarget:self action:@selector(showSettings) forControlEvents:UIControlEventTouchUpInside];
-        [self.optionsButton setBackgroundImage:[self imageWithColor:[WPStyleGuide readGrey]] forState:UIControlStateHighlighted];
+        [self.optionsButton addTarget:self action:@selector(showSettings)
+                     forControlEvents:UIControlEventTouchUpInside];
+        [self.optionsButton setBackgroundImage:[self imageWithColor:[WPStyleGuide readGrey]]
+                                      forState:UIControlStateHighlighted];
 
         // Rather than using a UIImageView to fake a disclosure icon, just use a cell and future proof the UI.
         WPTableViewCell *cell = [[WPTableViewCell alloc] initWithFrame:self.optionsButton.bounds];
@@ -286,12 +323,12 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     [self.optionsView addSubview:self.optionsButton];
 }
 
-- (void)positionTextView:(NSNotification *)notification {
-    
+- (void)positionTextView:(NSNotification *)notification
+{
     NSDictionary *keyboardInfo = [notification userInfo];
     CGRect originalKeyboardFrame = [[keyboardInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGRect keyboardFrame = [self.view convertRect:[self.view.window convertRect:originalKeyboardFrame fromWindow:nil] fromView:nil];
-    
+    CGRect keyboardFrame = [self.view convertRect:[self.view.window convertRect:originalKeyboardFrame fromWindow:nil]
+                                         fromView:nil];
     CGRect frame = self.textView.frame;
     
     if (self.isShowingKeyboard) {
@@ -299,51 +336,50 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     } else {
         frame.size.height = CGRectGetHeight(self.view.frame) - EPVCOptionsHeight;
     }
-
     self.textView.frame = frame;
 }
 
 #pragma mark - Actions
 
-- (void)showSettings {
+- (void)showSettings
+{
     if ([_delegate respondsToSelector: @selector(editorDidPressSettings:)]) {
         [_delegate editorDidPressSettings:self];
     }
 }
 
-- (void)showPreview {
+- (void)showPreview
+{
     if ([_delegate respondsToSelector: @selector(editorDidPressPreview:)]) {
         [_delegate editorDidPressPreview:self];
     }
 }
 
-- (void)showMediaOptions {
+- (void)showMediaOptions
+{
     if ([_delegate respondsToSelector: @selector(editorDidPressMedia:)]) {
         [_delegate editorDidPressMedia:self];
     }
 }
 
-#pragma mark - UI Manipulation
+#pragma mark - Editor and Misc Methods
 
-
-- (void)refreshUIForCurrentPost {
-    
-    _titleTextField.text = _titleText;
-    
-    if(_bodyText == nil || _bodyText.length == 0) {
+- (void)refreshUI
+{
+    if(self.titleText != nil || self.titleText != 0) {
+        self.title = self.titleText;
+    }
+    if(self.bodyText == nil || self.bodyText == 0) {
         _tapToStartWritingLabel.hidden = NO;
         _textView.text = @"";
     } else {
         _tapToStartWritingLabel.hidden = YES;
-        _textView.text = _bodyText;
     }
 }
 
-#pragma mark - Editor and Formatting Methods
-#pragma mark Link Methods
-
-//code to append http:// if protocol part is not there as part of urlText.
-- (NSString *)validateNewLinkInfo:(NSString *)urlText {
+// Appends http:// if protocol part is not there as part of urlText.
+- (NSString *)validateNewLinkInfo:(NSString *)urlText
+{
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^[\\w]+:" options:0 error:&error];
     
@@ -357,13 +393,13 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     }
 }
 
-#pragma mark Instance Methods
-
-- (UIImage *)imageWithColor:(UIColor *)color {
+- (UIImage *)imageWithColor:(UIColor *)color
+{
     return [self imageWithColor:color havingSize:CGSizeMake(1.0f, 1.0f)];
 }
 
-- (UIImage *)imageWithColor:(UIColor *)color havingSize:(CGSize)size {
+- (UIImage *)imageWithColor:(UIColor *)color havingSize:(CGSize)size
+{
     CGRect rect = CGRectMake(0.0f, 0.0f, size.width, size.height);
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -377,11 +413,10 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     return image;
 }
 
-
 #pragma mark - Formatting
 
-- (void)restoreText:(NSString *)text withRange:(NSRange)range {
-    DDLogVerbose(@"restoreText:%@",text);
+- (void)restoreText:(NSString *)text withRange:(NSRange)range
+{
     NSString *oldText = _textView.text;
     NSRange oldRange = _textView.selectedRange;
     _textView.scrollEnabled = NO;
@@ -395,7 +430,8 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     [[_textView.undoManager prepareWithInvocationTarget:self] restoreText:oldText withRange:oldRange];
 }
 
-- (void)wrapSelectionWithTag:(NSString *)tag {
+- (void)wrapSelectionWithTag:(NSString *)tag
+{
     NSRange range = _textView.selectedRange;
     NSString *selection = [_textView.text substringWithRange:range];
     NSString *prefix, *suffix;
@@ -429,7 +465,8 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 // the last line(s) of text on the text view not appearing. This is a workaround
 // to get the UITextView to redraw after inserting text but without affecting the
 // scrollOffset.
-- (void)refreshTextView {
+- (void)refreshTextView
+{
     dispatch_async(dispatch_get_main_queue(), ^{
         _textView.scrollEnabled = NO;
         [_textView setNeedsDisplay];
@@ -437,10 +474,10 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     });
 }
 
-#pragma mark - WPKeyboardToolbar Delegate Methods
+#pragma mark - WPKeyboardToolbar Delegate
 
-- (void)keyboardToolbarButtonItemPressed:(WPKeyboardToolbarButtonItem *)buttonItem {
-    DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
+- (void)keyboardToolbarButtonItemPressed:(WPKeyboardToolbarButtonItem *)buttonItem
+{
     if ([buttonItem.actionTag isEqualToString:@"link"]) {
         // TODO: show the link dialog
     } else if ([buttonItem.actionTag isEqualToString:@"done"]) {
@@ -461,16 +498,28 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 #pragma mark - TextView delegate
 
-- (void)textViewDidBeginEditing:(UITextView *)textView {
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView
+{
+    if ([_delegate respondsToSelector: @selector(editorShouldBeginEditing:)]) {
+        return [_delegate editorShouldBeginEditing:self];
+    }
+    return YES;
+}
+
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
     _tapToStartWritingLabel.hidden = YES;
 }
 
-- (void)textViewDidChange:(UITextView *)aTextView {
-
+- (void)textViewDidChange:(UITextView *)aTextView
+{
+    if ([_delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [_delegate editorTextDidChange:self];
+    }
 }
 
-- (void)textViewDidEndEditing:(UITextView *)aTextView {
-
+- (void)textViewDidEndEditing:(UITextView *)aTextView
+{
     if ([_textView.text isEqualToString:@""]) {
         _tapToStartWritingLabel.hidden = NO;
     }
@@ -478,19 +527,28 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 #pragma mark - TextField delegate
 
-- (void)textFieldDidEndEditing:(UITextField *)textField {
-
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+{
+    if ([_delegate respondsToSelector: @selector(editorShouldBeginEditing:)]) {
+        return [_delegate editorShouldBeginEditing:self];
+    }
+    return YES;
 }
 
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
     if (textField == _titleTextField) {
         [self setTitle:[textField.text stringByReplacingCharactersInRange:range withString:string]];
+        if ([_delegate respondsToSelector: @selector(editorTitleDidChange:)]) {
+            [_delegate editorTitleDidChange:self];
+        }
     }
     
     return YES;
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
     [_textView becomeFirstResponder];
     return NO;
 }
@@ -516,7 +574,6 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration {
-    DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
     CGRect frame = _editorToolbar.frame;
     if (UIDeviceOrientationIsLandscape(interfaceOrientation)) {
         if (IS_IPAD) {
@@ -536,12 +593,9 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     _titleToolbar.frame = frame; // Frames match, no need to re-calc.
 }
 
-
-#pragma mark -
-#pragma mark Keyboard management
+#pragma mark - Keyboard management
 
 - (void)keyboardWillShow:(NSNotification *)notification {
-    DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
 	_isShowingKeyboard = YES;
     
     if ([self shouldHideToolbarsWhileTyping]) {
@@ -562,7 +616,6 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
-    DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
 	_isShowingKeyboard = NO;
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
