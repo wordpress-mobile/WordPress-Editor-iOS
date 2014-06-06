@@ -147,11 +147,11 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     UIBarButtonItem *previewButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon-posts-editor-preview"]
                                                                       style:UIBarButtonItemStylePlain
                                                                      target:self
-                                                                     action:@selector(showPreview)];
+                                                                     action:@selector(didTouchPreview)];
     UIBarButtonItem *photoButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon-posts-editor-media"]
                                                                     style:UIBarButtonItemStylePlain
                                                                    target:self
-                                                                   action:@selector(showMediaOptions)];
+                                                                   action:@selector(didTouchMediaOptions)];
     
     previewButton.tintColor = [WPStyleGuide readGrey];
     photoButton.tintColor = [WPStyleGuide readGrey];
@@ -301,7 +301,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
         self.optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
         self.optionsButton.frame = frame;
         self.optionsButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [self.optionsButton addTarget:self action:@selector(showSettings)
+        [self.optionsButton addTarget:self action:@selector(didTouchSettings)
                      forControlEvents:UIControlEventTouchUpInside];
         [self.optionsButton setBackgroundImage:[self imageWithColor:[WPStyleGuide readGrey]]
                                       forState:UIControlStateHighlighted];
@@ -340,21 +340,21 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 #pragma mark - Actions
 
-- (void)showSettings
+- (void)didTouchSettings
 {
     if ([_delegate respondsToSelector: @selector(editorDidPressSettings:)]) {
         [_delegate editorDidPressSettings:self];
     }
 }
 
-- (void)showPreview
+- (void)didTouchPreview
 {
     if ([_delegate respondsToSelector: @selector(editorDidPressPreview:)]) {
         [_delegate editorDidPressPreview:self];
     }
 }
 
-- (void)showMediaOptions
+- (void)didTouchMediaOptions
 {
     if ([_delegate respondsToSelector: @selector(editorDidPressMedia:)]) {
         [_delegate editorDidPressMedia:self];
