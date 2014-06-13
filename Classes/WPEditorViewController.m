@@ -80,7 +80,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
         [view setExclusiveTouch:YES];
     }
     
-    [_textView setContentOffset:CGPointMake(0, 0)];
+    [self.textView setContentOffset:CGPointMake(0, 0)];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -109,23 +109,23 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 - (NSString*)titleText
 {
-    return _titleTextField.text;
+    return self.titleTextField.text;
 }
 
 - (void) setTitleText:(NSString*)titleText
 {
-    [_titleTextField setText:titleText];
+    [self.titleTextField setText:titleText];
     [self refreshUI];
 }
 
 - (NSString*)bodyText
 {
-    return _textView.text;
+    return self.textView.text;
 }
 
 - (void) setBodyText:(NSString*)bodyText
 {
-    [_textView setText:bodyText];
+    [self.textView setText:bodyText];
     [self refreshUI];
 }
 
@@ -335,22 +335,22 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 - (void)didTouchSettings
 {
-    if ([_delegate respondsToSelector: @selector(editorDidPressSettings:)]) {
-        [_delegate editorDidPressSettings:self];
+    if ([self.delegate respondsToSelector: @selector(editorDidPressSettings:)]) {
+        [self.delegate editorDidPressSettings:self];
     }
 }
 
 - (void)didTouchPreview
 {
-    if ([_delegate respondsToSelector: @selector(editorDidPressPreview:)]) {
-        [_delegate editorDidPressPreview:self];
+    if ([self.delegate respondsToSelector: @selector(editorDidPressPreview:)]) {
+        [self.delegate editorDidPressPreview:self];
     }
 }
 
 - (void)didTouchMediaOptions
 {
-    if ([_delegate respondsToSelector: @selector(editorDidPressMedia:)]) {
-        [_delegate editorDidPressMedia:self];
+    if ([self.delegate respondsToSelector: @selector(editorDidPressMedia:)]) {
+        [self.delegate editorDidPressMedia:self];
     }
 }
 
@@ -372,19 +372,19 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
         self.title = self.titleText;
     }
     if(self.bodyText == nil || self.bodyText == 0) {
-        _tapToStartWritingLabel.hidden = NO;
-        _textView.text = @"";
+        self.tapToStartWritingLabel.hidden = NO;
+        self.textView.text = @"";
     } else {
-        _tapToStartWritingLabel.hidden = YES;
+        self.tapToStartWritingLabel.hidden = YES;
     }
 }
 
 - (void)showLinkView
 {
-    NSRange range = _textView.selectedRange;
+    NSRange range = self.textView.selectedRange;
     NSString *infoText = nil;
     if (range.length > 0) {
-        infoText = [_textView.text substringWithRange:range];
+        infoText = [self.textView.text substringWithRange:range];
     }
     self.scrollOffsetRestorePoint = self.textView.contentOffset;
     
@@ -395,13 +395,13 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     NSString *insertButtonTitle = NSLocalizedString(@"Insert", @"Insert content (link, media) button");
     NSString *cancelButtonTitle = NSLocalizedString(@"Cancel", @"Cancel button");
     
-    _alertView = [[UIAlertView alloc] initWithTitle:alertViewTitle
+    self.alertView = [[UIAlertView alloc] initWithTitle:alertViewTitle
                                             message:nil
                                            delegate:nil
                                   cancelButtonTitle:cancelButtonTitle
                                   otherButtonTitles:insertButtonTitle, nil];
-    _alertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
-    _alertView.tag = 99;
+    self.alertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
+    self.alertView.tag = 99;
     
     UITextField *alt = [self.alertView textFieldAtIndex:1];
     alt.secureTextEntry = NO;
@@ -420,7 +420,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     linkURL.keyboardType = UIKeyboardTypeURL;
     linkURL.autocorrectionType = UITextAutocorrectionTypeNo;
     
-    _alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
+    self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
         if (alertView.tag == 99) {
             if (buttonIndex == 1) {
                 // Insert link
@@ -437,33 +437,33 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
                 
                 NSString *urlString = [self validateNewLinkInfo:[urlField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
                 NSString *aTagText = [NSString stringWithFormat:@"<a href=\"%@\">%@</a>", urlString, infoText.text];
-                NSRange range = _textView.selectedRange;
-                NSString *oldText = _textView.text;
-                NSRange oldRange = _textView.selectedRange;
-                _textView.scrollEnabled = NO;
-                _textView.text = [_textView.text stringByReplacingCharactersInRange:range withString:aTagText];
-                _textView.scrollEnabled = YES;
+                NSRange range = self.textView.selectedRange;
+                NSString *oldText = self.textView.text;
+                NSRange oldRange = self.textView.selectedRange;
+                self.textView.scrollEnabled = NO;
+                self.textView.text = [self.textView.text stringByReplacingCharactersInRange:range withString:aTagText];
+                self.textView.scrollEnabled = YES;
                 
                 //reset selection back to nothing
                 range.length = 0;
                 range.location += [aTagText length]; // Place selection after the tag
-                _textView.selectedRange = range;
+                self.textView.selectedRange = range;
                 
-                [[_textView.undoManager prepareWithInvocationTarget:self] restoreText:oldText withRange:oldRange];
-                [_textView.undoManager setActionName:@"link"];
-                [self textViewDidChange:_textView];
+                [[self.textView.undoManager prepareWithInvocationTarget:self] restoreText:oldText withRange:oldRange];
+                [self.textView.undoManager setActionName:@"link"];
+                [self textViewDidChange:self.textView];
                 [self refreshTextView];
                 
             }
             
             // Don't dismiss the keyboard
-            if([_textView resignFirstResponder]){
-                [_textView becomeFirstResponder];
+            if([self.textView resignFirstResponder]){
+                [self.textView becomeFirstResponder];
             }
         }
     };
     
-    _alertView.shouldEnableFirstOtherButtonBlock = ^BOOL(UIAlertView *alertView) {
+    self.alertView.shouldEnableFirstOtherButtonBlock = ^BOOL(UIAlertView *alertView) {
         if (alertView.tag == 99) {
             UITextField *textField = [alertView textFieldAtIndex:0];
             if ([textField.text length] == 0) {
@@ -473,7 +473,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
         return YES;
     };
 
-    [_alertView show];
+    [self.alertView show];
 }
 
 // Appends http:// if protocol part is not there as part of urlText.
@@ -516,24 +516,24 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 - (void)restoreText:(NSString *)text withRange:(NSRange)range
 {
-    NSString *oldText = _textView.text;
-    NSRange oldRange = _textView.selectedRange;
-    _textView.scrollEnabled = NO;
+    NSString *oldText = self.textView.text;
+    NSRange oldRange = self.textView.selectedRange;
+    self.textView.scrollEnabled = NO;
     // iOS6 seems to have a bug where setting the text like so : textView.text = text;
     // will cause an infinate loop of undos.  A work around is to perform the selector
     // on the main thread.
     // textView.text = text;
-    [_textView performSelectorOnMainThread:@selector(setText:) withObject:text waitUntilDone:NO];
-    _textView.scrollEnabled = YES;
-    _textView.selectedRange = range;
-    [[_textView.undoManager prepareWithInvocationTarget:self] restoreText:oldText withRange:oldRange];
-    [self textViewDidChange:_textView];
+    [self.textView performSelectorOnMainThread:@selector(setText:) withObject:text waitUntilDone:NO];
+    self.textView.scrollEnabled = YES;
+    self.textView.selectedRange = range;
+    [[self.textView.undoManager prepareWithInvocationTarget:self] restoreText:oldText withRange:oldRange];
+    [self textViewDidChange:self.textView];
 }
 
 - (void)wrapSelectionWithTag:(NSString *)tag
 {
-    NSRange range = _textView.selectedRange;
-    NSString *selection = [_textView.text substringWithRange:range];
+    NSRange range = self.textView.selectedRange;
+    NSString *selection = [self.textView.text substringWithRange:range];
     NSString *prefix, *suffix;
     if ([tag isEqualToString:@"more"]) {
         prefix = @"<!--more-->";
@@ -545,19 +545,19 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
         prefix = [NSString stringWithFormat:@"<%@>", tag];
         suffix = [NSString stringWithFormat:@"</%@>", tag];
     }
-    _textView.scrollEnabled = NO;
+    self.textView.scrollEnabled = NO;
     NSString *replacement = [NSString stringWithFormat:@"%@%@%@",prefix,selection,suffix];
-    _textView.text = [_textView.text stringByReplacingCharactersInRange:range
+    self.textView.text = [self.textView.text stringByReplacingCharactersInRange:range
                                                              withString:replacement];
-    [self textViewDidChange:_textView];
-    _textView.scrollEnabled = YES;
+    [self textViewDidChange:self.textView];
+    self.textView.scrollEnabled = YES;
     if (range.length == 0) {                // If nothing was selected
         range.location += [prefix length]; // Place selection between tags
     } else {
         range.location += range.length + [prefix length] + [suffix length]; // Place selection after tag
         range.length = 0;
     }
-    _textView.selectedRange = range;
+    self.textView.selectedRange = range;
     
     [self refreshTextView];
 }
@@ -569,9 +569,9 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 - (void)refreshTextView
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        _textView.scrollEnabled = NO;
-        [_textView setNeedsDisplay];
-        _textView.scrollEnabled = YES;
+        self.textView.scrollEnabled = NO;
+        [self.textView setNeedsDisplay];
+        self.textView.scrollEnabled = YES;
     });
 }
 
@@ -584,11 +584,11 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     } else if ([buttonItem.actionTag isEqualToString:@"done"]) {
         [self stopEditing];
     } else {
-        NSString *oldText = _textView.text;
-        NSRange oldRange = _textView.selectedRange;
+        NSString *oldText = self.textView.text;
+        NSRange oldRange = self.textView.selectedRange;
         [self wrapSelectionWithTag:buttonItem.actionTag];
-        [[_textView.undoManager prepareWithInvocationTarget:self] restoreText:oldText withRange:oldRange];
-        [_textView.undoManager setActionName:buttonItem.actionName];
+        [[self.textView.undoManager prepareWithInvocationTarget:self] restoreText:oldText withRange:oldRange];
+        [self.textView.undoManager setActionName:buttonItem.actionName];
     }
 }
 
@@ -596,28 +596,28 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
-    if ([_delegate respondsToSelector: @selector(editorShouldBeginEditing:)]) {
-        return [_delegate editorShouldBeginEditing:self];
+    if ([self.delegate respondsToSelector: @selector(editorShouldBeginEditing:)]) {
+        return [self.delegate editorShouldBeginEditing:self];
     }
     return YES;
 }
 
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
-    _tapToStartWritingLabel.hidden = YES;
+    self.tapToStartWritingLabel.hidden = YES;
 }
 
 - (void)textViewDidChange:(UITextView *)aTextView
 {
-    if ([_delegate respondsToSelector: @selector(editorTextDidChange:)]) {
-        [_delegate editorTextDidChange:self];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
     }
 }
 
 - (void)textViewDidEndEditing:(UITextView *)aTextView
 {
-    if ([_textView.text isEqualToString:@""]) {
-        _tapToStartWritingLabel.hidden = NO;
+    if ([self.textView.text isEqualToString:@""]) {
+        self.tapToStartWritingLabel.hidden = NO;
     }
 }
 
@@ -625,27 +625,26 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
-    if ([_delegate respondsToSelector: @selector(editorShouldBeginEditing:)]) {
-        return [_delegate editorShouldBeginEditing:self];
+    if ([self.delegate respondsToSelector: @selector(editorShouldBeginEditing:)]) {
+        return [self.delegate editorShouldBeginEditing:self];
     }
     return YES;
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-    if (textField == _titleTextField) {
+    if (textField == self.titleTextField) {
         [self setTitle:[textField.text stringByReplacingCharactersInRange:range withString:string]];
-        if ([_delegate respondsToSelector: @selector(editorTitleDidChange:)]) {
-            [_delegate editorTitleDidChange:self];
+        if ([self.delegate respondsToSelector: @selector(editorTitleDidChange:)]) {
+            [self.delegate editorTitleDidChange:self];
         }
     }
-    
     return YES;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    [_textView becomeFirstResponder];
+    [self.textView becomeFirstResponder];
     return NO;
 }
 
@@ -662,7 +661,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     }
     
     BOOL isLandscape = UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
-    if (!isLandscape && _isExternalKeyboard) {
+    if (!isLandscape && self.isExternalKeyboard) {
         return NO;
     }
     
@@ -671,7 +670,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration
 {
-    CGRect frame = _editorToolbar.frame;
+    CGRect frame = self.editorToolbar.frame;
     if (UIDeviceOrientationIsLandscape(interfaceOrientation)) {
         if (IS_IPAD) {
             frame.size.height = WPKT_HEIGHT_IPAD_LANDSCAPE;
@@ -686,15 +685,15 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
             frame.size.height = WPKT_HEIGHT_IPHONE_PORTRAIT;
         }
     }
-    _editorToolbar.frame = frame;
-    _titleToolbar.frame = frame; // Frames match, no need to re-calc.
+    self.editorToolbar.frame = frame;
+    self.titleToolbar.frame = frame; // Frames match, no need to re-calc.
 }
 
 #pragma mark - Keyboard management
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
-	_isShowingKeyboard = YES;
+	self.isShowingKeyboard = YES;
     
     if ([self shouldHideToolbarsWhileTyping]) {
         [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
@@ -716,11 +715,10 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
-	_isShowingKeyboard = NO;
+	self.isShowingKeyboard = NO;
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     [self.navigationController setToolbarHidden:NO animated:NO];
-    
     [self positionTextView:notification];
 }
 
