@@ -253,7 +253,7 @@
 				ORGANIZATIONNAME = "Automattic, Inc.";
 				TargetAttributes = {
 					748D2A84193E516000D5ACC8 = {
-						DevelopmentTeam = 99KV9Z6BKV;
+						DevelopmentTeam = PZYM8XX95Q;
 					};
 					748D2AA8193E516000D5ACC8 = {
 						TestTargetID = 748D2A84193E516000D5ACC8;

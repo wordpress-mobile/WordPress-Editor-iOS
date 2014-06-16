@@ -457,9 +457,12 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
             }
             
             // Don't dismiss the keyboard
-            if([self.textView resignFirstResponder]){
-                [self.textView becomeFirstResponder];
-            }
+            // Hack from http://stackoverflow.com/a/7601631
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if([self.textView resignFirstResponder] || [self.titleTextField resignFirstResponder]){
+                    [self.textView becomeFirstResponder];
+                }
+            });
         }
     };
     
