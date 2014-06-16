@@ -3,6 +3,7 @@
 #import "WPKeyboardToolbarDone.h"
 #import <WordPress-iOS-Shared/WPStyleGuide.h>
 #import <WordPress-iOS-Shared/WPTableViewCell.h>
+#import <WordPress-iOS-Shared/UIImage+Util.h>
 #import <UIAlertView+Blocks/UIAlertView+Blocks.h>
 
 CGFloat const EPVCTextfieldHeight = 44.0f;
@@ -296,7 +297,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
         self.optionsButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         [self.optionsButton addTarget:self action:@selector(didTouchSettings)
                      forControlEvents:UIControlEventTouchUpInside];
-        [self.optionsButton setBackgroundImage:[self imageWithColor:[WPStyleGuide readGrey]]
+        [self.optionsButton setBackgroundImage:[UIImage imageWithColor:[WPStyleGuide readGrey]]
                                       forState:UIControlStateHighlighted];
 
         // Rather than using a UIImageView to fake a disclosure icon, just use a cell and future proof the UI.
@@ -493,26 +494,6 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     } else {
         return [NSString stringWithFormat:@"http://%@", urlText];
     }
-}
-
-- (UIImage *)imageWithColor:(UIColor *)color
-{
-    return [self imageWithColor:color havingSize:CGSizeMake(1.0f, 1.0f)];
-}
-
-- (UIImage *)imageWithColor:(UIColor *)color havingSize:(CGSize)size
-{
-    CGRect rect = CGRectMake(0.0f, 0.0f, size.width, size.height);
-    UIGraphicsBeginImageContext(rect.size);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    
-    CGContextSetFillColorWithColor(context, [color CGColor]);
-    CGContextFillRect(context, rect);
-    
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    return image;
 }
 
 #pragma mark - Formatting
