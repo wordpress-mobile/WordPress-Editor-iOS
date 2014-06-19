@@ -22,6 +22,22 @@ Or, you can just try out the demo by using the Cocoapods try command:
 pod try WordPress-iOS-Editor
 ```
 
+## Requirements
+
+WordPress-iOS-Editor requires iOS 7.0 or higher and ARC. It depends on the following Apple frameworks:
+
+* Foundation.framework
+* UIKit.framework
+* CoreGraphics.framework
+
+and the following Cocoapods:
+
+* [CocoaLumberjack](https://github.com/CocoaLumberjack/CocoaLumberjack)
+* [UIAlertView+Blocks](https://github.com/jivadevoe/UIAlertView-Blocks)
+* [WordPress-iOS-Shared](https://github.com/wordpress-mobile/WordPress-iOS-Shared)
+
+See the [podspec](https://github.com/wordpress-mobile/WordPress-iOS-Editor/blob/develop/WordPress-iOS-Editor.podspec) for more details.
+
 ## Usage
 
 There are three things that you need to do in order to use the WordPress-iOS-Editor in your app.
@@ -43,27 +59,31 @@ For more details, you can review the [EditorDemo](https://github.com/wordpress-m
 
 ## Other Resources
 
-### Developer blog & Handbook
+#### Developer blog & Handbook
 
 Blog: http://make.wordpress.org/mobile
 
 Handbook: http://make.wordpress.org/mobile/handbook/
 
-### Style guide
+#### Style guide
 
 https://github.com/wordpress-mobile/WordPress-iOS/wiki/WordPress-for-iOS-Style-Guide
 
-### To report an issue (for the editor only)
+#### To report an issue (for the editor only)
 
 https://github.com/wordpress-mobile/WordPress-iOS-Editor/issues
 
-### Source Code
+#### Source Code
 
 GitHub: https://github.com/wordpress-mobile/WordPress-iOS-Editor
 
-### How to Contribute
+#### How to Contribute
 
 http://make.wordpress.org/mobile/handbook/pathways/ios/how-to-contribute/
+
+##Future Enhancements
+
+* Replace raw HTML editor with 100% visual editor.
 
 ## License
 
