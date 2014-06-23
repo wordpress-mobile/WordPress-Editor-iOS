@@ -90,17 +90,11 @@
 #define COCOAPODS_VERSION_MINOR_DTFoundation_UIKit 6
 #define COCOAPODS_VERSION_PATCH_DTFoundation_UIKit 3
 
-// UIAlertView+Blocks
-#define COCOAPODS_POD_AVAILABLE_UIAlertView_Blocks
-#define COCOAPODS_VERSION_MAJOR_UIAlertView_Blocks 0
-#define COCOAPODS_VERSION_MINOR_UIAlertView_Blocks 8
-#define COCOAPODS_VERSION_PATCH_UIAlertView_Blocks 1
-
 // WordPress-iOS-Editor
 #define COCOAPODS_POD_AVAILABLE_WordPress_iOS_Editor
 #define COCOAPODS_VERSION_MAJOR_WordPress_iOS_Editor 0
 #define COCOAPODS_VERSION_MINOR_WordPress_iOS_Editor 1
-#define COCOAPODS_VERSION_PATCH_WordPress_iOS_Editor 3
+#define COCOAPODS_VERSION_PATCH_WordPress_iOS_Editor 5
 
 // WordPress-iOS-Shared
 #define COCOAPODS_POD_AVAILABLE_WordPress_iOS_Shared

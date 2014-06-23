@@ -1,138 +1,421 @@
 #import "WPEditorViewController.h"
-#import "WPKeyboardToolbarBase.h"
-#import "WPKeyboardToolbarDone.h"
+#import "WPEditorViewController_Internal.h"
+#import <UIKit/UIKit.h>
 #import <WordPress-iOS-Shared/WPStyleGuide.h>
 #import <WordPress-iOS-Shared/WPTableViewCell.h>
 #import <WordPress-iOS-Shared/UIImage+Util.h>
-#import <UIAlertView+Blocks/UIAlertView+Blocks.h>
+#import "ZSSBarButtonItem.h"
+#import "HRColorUtil.h"
+#import "ZSSTextView.h"
+#import "UIWebView+AccessoryHiding.h"
 
-CGFloat const EPVCTextfieldHeight = 44.0f;
 CGFloat const EPVCOptionsHeight = 44.0f;
 CGFloat const EPVCStandardOffset = 15.0;
-CGFloat const EPVCTextViewOffset = 10.0;
-CGFloat const EPVCTextViewBottomPadding = 50.0f;
-CGFloat const EPVCTextViewTopPadding = 7.0f;
 
-@interface WPEditorViewController ()<UITextFieldDelegate, UITextViewDelegate, WPKeyboardToolbarDelegate>
-@property (nonatomic) CGPoint scrollOffsetRestorePoint;
+@interface WPEditorViewController ()
+@property (nonatomic, strong) UIScrollView *toolBarScroll;
+@property (nonatomic, strong) UIToolbar *toolbar;
+@property (nonatomic, strong) UIView *toolbarHolder;
+@property (nonatomic, strong) NSString *htmlString;
+@property (nonatomic, strong) UIWebView *editorView;
+@property (nonatomic, strong) ZSSTextView *sourceView;
+@property (nonatomic) CGRect editorViewFrame;
+@property (nonatomic) BOOL resourcesLoaded;
+@property (nonatomic, strong) NSArray *editorItemsEnabled;
 @property (nonatomic, strong) UIAlertView *alertView;
+@property (nonatomic, strong) NSString *selectedLinkURL;
+@property (nonatomic, strong) NSString *selectedLinkTitle;
+@property (nonatomic, strong) NSString *selectedImageURL;
+@property (nonatomic, strong) NSString *selectedImageAlt;
+@property (nonatomic, strong) UIBarButtonItem *keyboardItem;
+@property (nonatomic, strong) NSMutableArray *customBarButtonItems;
 @property (nonatomic, strong) UIButton *optionsButton;
-@property (nonatomic, strong) UILabel *tapToStartWritingLabel;
-@property (nonatomic, strong) UITextField *titleTextField;
-@property (nonatomic, strong) UITextView *textView;
 @property (nonatomic, strong) UIView *optionsSeparatorView;
 @property (nonatomic, strong) UIView *optionsView;
-@property (nonatomic, strong) UIView *separatorView;
-@property (nonatomic, strong) WPKeyboardToolbarBase *editorToolbar;
-@property (nonatomic, strong) WPKeyboardToolbarDone *titleToolbar;
+
+- (NSString *)removeQuotesFromHTML:(NSString *)html;
+- (NSString *)tidyHTML:(NSString *)html;
+- (void)enableToolbarItems:(BOOL)enable;
 @end
 
 @implementation WPEditorViewController
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     
-    // For the iPhone, let's let the overscroll background color be white to match the editor.
-    if (IS_IPAD) {
-        self.view.backgroundColor = [WPStyleGuide itsEverywhereGrey];
+    // Source View
+    CGRect frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+    self.sourceView = [[ZSSTextView alloc] initWithFrame:frame];
+    self.sourceView.hidden = YES;
+    self.sourceView.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    self.sourceView.autocorrectionType = UITextAutocorrectionTypeNo;
+    self.sourceView.font = [UIFont fontWithName:@"Courier" size:13.0];
+    self.sourceView.autoresizingMask =  UIViewAutoresizingFlexibleHeight;
+    self.sourceView.autoresizesSubviews = YES;
+    self.sourceView.delegate = self;
+    [self.view addSubview:self.sourceView];
+    
+    // Editor View
+    self.editorView = [[UIWebView alloc] initWithFrame:frame];
+    self.editorView.delegate = self;
+    self.editorView.hidesInputAccessoryView = YES;
+    self.editorView.scalesPageToFit = YES;
+    self.editorView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+    self.editorView.dataDetectorTypes = UIDataDetectorTypeNone;
+    self.editorView.scrollView.bounces = NO;
+    self.editorView.backgroundColor = [WPStyleGuide itsEverywhereGrey];
+    [self.view addSubview:self.editorView];
+    
+    // Scrolling View
+    self.toolBarScroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, IS_IPAD ? self.view.frame.size.width : self.view.frame.size.width - 44, 44)];
+    self.toolBarScroll.backgroundColor = [UIColor clearColor];
+    self.toolBarScroll.showsHorizontalScrollIndicator = NO;
+    
+    // Toolbar with icons
+    self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectZero];
+    self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    self.toolbar.backgroundColor = [UIColor clearColor];
+    [self.toolBarScroll addSubview:self.toolbar];
+    self.toolBarScroll.autoresizingMask = self.toolbar.autoresizingMask;
+    
+    // Background Toolbar
+    UIToolbar *backgroundToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
+    backgroundToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    
+    //Lower toolbar
+    [self setupBottomToolbar];
+    
+    // Parent holding view
+    self.toolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, 44)];
+    self.toolbarHolder.autoresizingMask = self.toolbar.autoresizingMask;
+    [self.toolbarHolder addSubview:self.toolBarScroll];
+    [self.toolbarHolder insertSubview:backgroundToolbar atIndex:0];
+    
+    // Hide Keyboard
+    if (!IS_IPAD) {
+        
+        // Toolbar holder used to crop and position toolbar
+        UIView *toolbarCropper = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width-44, 0, 44, 44)];
+        toolbarCropper.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+        toolbarCropper.clipsToBounds = YES;
+        
+        // Use a toolbar so that we can tint
+        UIToolbar *keyboardToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(-7, -1, 44, 44)];
+        [toolbarCropper addSubview:keyboardToolbar];
+        
+        self.keyboardItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSkeyboard.png"] style:UIBarButtonItemStylePlain target:self action:@selector(dismissKeyboard)];
+        keyboardToolbar.items = @[self.keyboardItem];
+        [self.toolbarHolder addSubview:toolbarCropper];
+        
+        UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0.6f, 44)];
+        line.backgroundColor = [UIColor lightGrayColor];
+        line.alpha = 0.7f;
+        [toolbarCropper addSubview:line];
     }
-    self.navigationController.navigationBar.translucent = NO;
-    [self setupToolbar];
-    [self setupTextView];
-    [self setupOptionsView];
+    [self.view addSubview:self.toolbarHolder];
+    
+    // Build the toolbar
+    [self buildToolbar];
+
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)didMoveToParentViewController:(UIViewController *)parent
 {
-    [super viewWillAppear:animated];
+    [super didMoveToParentViewController:parent];
+}
+
+- (void)setEnabledToolbarItems:(ZSSRichTextEditorToolbar)enabledToolbarItems {
     
-    // When restoring state, the navigationController is nil when the view loads,
-    // so configure its appearance here instead.
-    self.navigationController.navigationBar.translucent = NO;
-    self.navigationController.toolbarHidden = NO;
-    UIToolbar *toolbar = self.navigationController.toolbar;
-    toolbar.barTintColor = [WPStyleGuide littleEddieGrey];
-    toolbar.translucent = NO;
-    toolbar.barStyle = UIBarStyleDefault;
+    _enabledToolbarItems = enabledToolbarItems;
+    [self buildToolbar];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillShow:)
-                                                 name:UIKeyboardWillShowNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardDidShow:)
-                                                 name:UIKeyboardDidShowNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillHide:)
-                                                 name:UIKeyboardWillHideNotification
-                                               object:nil];
+}
+
+
+- (void)setToolbarItemTintColor:(UIColor *)toolbarItemTintColor {
     
-    if(self.navigationController.navigationBarHidden) {
-        [self.navigationController setNavigationBarHidden:NO animated:animated];
+    _toolbarItemTintColor = toolbarItemTintColor;
+    
+    // Update the color
+    for (ZSSBarButtonItem *item in self.toolbar.items) {
+        item.tintColor = [self barButtonItemDefaultColor];
+    }
+    self.keyboardItem.tintColor = toolbarItemTintColor;
+    
+}
+
+
+- (void)setToolbarItemSelectedTintColor:(UIColor *)toolbarItemSelectedTintColor {
+    
+    _toolbarItemSelectedTintColor = toolbarItemSelectedTintColor;
+    
+}
+
+
+- (NSArray *)itemsForToolbar {
+    
+    NSMutableArray *items = [[NSMutableArray alloc] init];
+    
+    // None
+    if(_enabledToolbarItems & ZSSRichTextEditorToolbarNone)
+    {
+        return items;
     }
     
-    if (self.navigationController.toolbarHidden) {
-        [self.navigationController setToolbarHidden:NO animated:animated];
+    // Bold
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarBold || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *bold = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSbold.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setBold)];
+        bold.label = @"bold";
+        [items addObject:bold];
+        
     }
     
-    for (UIView *view in self.navigationController.toolbar.subviews) {
-        [view setExclusiveTouch:YES];
+    // Italic
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarItalic || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *italic = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSitalic.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setItalic)];
+        italic.label = @"italic";
+        [items addObject:italic];
     }
     
-    [self.textView setContentOffset:CGPointMake(0, 0)];
+    // Subscript
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarSubscript || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *subscript = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSsubscript.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setSubscript)];
+        subscript.label = @"subscript";
+        [items addObject:subscript];
+    }
+    
+    // Superscript
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarSuperscript || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *superscript = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSsuperscript.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setSuperscript)];
+        superscript.label = @"superscript";
+        [items addObject:superscript];
+    }
+    
+    // Strike Through
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarStrikeThrough || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *strikeThrough = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSstrikethrough.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setStrikethrough)];
+        strikeThrough.label = @"strikeThrough";
+        [items addObject:strikeThrough];
+    }
+    
+    // Underline
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarUnderline || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *underline = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSunderline.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setUnderline)];
+        underline.label = @"underline";
+        [items addObject:underline];
+    }
+    
+    // Remove Format
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarRemoveFormat || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *removeFormat = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSclearstyle.png"] style:UIBarButtonItemStylePlain target:self action:@selector(removeFormat)];
+        removeFormat.label = @"removeFormat";
+        [items addObject:removeFormat];
+    }
+    
+    // Undo
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarUndo || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *undoButton = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSundo.png"] style:UIBarButtonItemStylePlain target:self action:@selector(undo:)];
+        undoButton.label = @"undo";
+        [items addObject:undoButton];
+    }
+    
+    // Redo
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarRedo || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *redoButton = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSredo.png"] style:UIBarButtonItemStylePlain target:self action:@selector(redo:)];
+        redoButton.label = @"redo";
+        [items addObject:redoButton];
+    }
+    
+    // Align Left
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarJustifyLeft || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *alignLeft = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSleftjustify.png"] style:UIBarButtonItemStylePlain target:self action:@selector(alignLeft)];
+        alignLeft.label = @"justifyLeft";
+        [items addObject:alignLeft];
+    }
+    
+    // Align Center
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarJustifyCenter || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *alignCenter = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSScenterjustify.png"] style:UIBarButtonItemStylePlain target:self action:@selector(alignCenter)];
+        alignCenter.label = @"justifyCenter";
+        [items addObject:alignCenter];
+    }
+    
+    // Align Right
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarJustifyRight || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *alignRight = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSrightjustify.png"] style:UIBarButtonItemStylePlain target:self action:@selector(alignRight)];
+        alignRight.label = @"justifyRight";
+        [items addObject:alignRight];
+    }
+    
+    // Align Justify
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarJustifyFull || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *alignFull = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSforcejustify.png"] style:UIBarButtonItemStylePlain target:self action:@selector(alignFull)];
+        alignFull.label = @"justifyFull";
+        [items addObject:alignFull];
+    }
+    
+    // Header 1
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarH1 || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *h1 = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSh1.png"] style:UIBarButtonItemStylePlain target:self action:@selector(heading1)];
+        h1.label = @"h1";
+        [items addObject:h1];
+    }
+    
+    // Header 2
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarH2 || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *h2 = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSh2.png"] style:UIBarButtonItemStylePlain target:self action:@selector(heading2)];
+        h2.label = @"h2";
+        [items addObject:h2];
+    }
+    
+    // Header 3
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarH3 || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *h3 = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSh3.png"] style:UIBarButtonItemStylePlain target:self action:@selector(heading3)];
+        h3.label = @"h3";
+        [items addObject:h3];
+    }
+    
+    // Heading 4
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarH4 || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *h4 = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSh4.png"] style:UIBarButtonItemStylePlain target:self action:@selector(heading4)];
+        h4.label = @"h4";
+        [items addObject:h4];
+    }
+    
+    // Header 5
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarH5 || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *h5 = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSh5.png"] style:UIBarButtonItemStylePlain target:self action:@selector(heading5)];
+        h5.label = @"h5";
+        [items addObject:h5];
+    }
+    
+    // Heading 6
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarH6 || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *h6 = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSh6.png"] style:UIBarButtonItemStylePlain target:self action:@selector(heading6)];
+        h6.label = @"h6";
+        [items addObject:h6];
+    }
+    
+    // Text Color
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarTextColor || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *textColor = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSStextcolor.png"] style:UIBarButtonItemStylePlain target:self action:@selector(textColor)];
+        textColor.label = @"textColor";
+        [items addObject:textColor];
+    }
+    
+    // Background Color
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarBackgroundColor || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *bgColor = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSbgcolor.png"] style:UIBarButtonItemStylePlain target:self action:@selector(bgColor)];
+        bgColor.label = @"backgroundColor";
+        [items addObject:bgColor];
+    }
+    
+    // Unordered List
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarUnorderedList || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *ul = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSunorderedlist.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setUnorderedList)];
+        ul.label = @"unorderedList";
+        [items addObject:ul];
+    }
+    
+    // Ordered List
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarOrderedList || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *ol = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSorderedlist.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setOrderedList)];
+        ol.label = @"orderedList";
+        [items addObject:ol];
+    }
+    
+    // Horizontal Rule
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarHorizontalRule || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *hr = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSShorizontalrule.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setHR)];
+        hr.label = @"horizontalRule";
+        [items addObject:hr];
+    }
+    
+    // Indent
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarIndent || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *indent = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSindent.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setIndent)];
+        indent.label = @"indent";
+        [items addObject:indent];
+    }
+    
+    // Outdent
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarOutdent || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *outdent = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSoutdent.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setOutdent)];
+        outdent.label = @"outdent";
+        [items addObject:outdent];
+    }
+    
+    // Image
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarInsertImage || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *insertImage = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSimage.png"] style:UIBarButtonItemStylePlain target:self action:@selector(insertImage)];
+        insertImage.label = @"image";
+        [items addObject:insertImage];
+    }
+    
+    // Insert Link
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarInsertLink || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *insertLink = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSlink.png"] style:UIBarButtonItemStylePlain target:self action:@selector(insertLink)];
+        insertLink.label = @"link";
+        [items addObject:insertLink];
+    }
+    
+    // Remove Link
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarRemoveLink || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *removeLink = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSunlink.png"] style:UIBarButtonItemStylePlain target:self action:@selector(removeLink)];
+        removeLink.label = @"removeLink";
+        [items addObject:removeLink];
+    }
+    
+    // Quick Link
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarQuickLink || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *quickLink = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSquicklink.png"] style:UIBarButtonItemStylePlain target:self action:@selector(quickLink)];
+        quickLink.label = @"quickLink";
+        [items addObject:quickLink];
+    }
+    
+    // Show Source
+    if (_enabledToolbarItems & ZSSRichTextEditorToolbarViewSource || _enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *showSource = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSviewsource.png"] style:UIBarButtonItemStylePlain target:self action:@selector(showHTMLSource:)];
+        showSource.label = @"source";
+        [items addObject:showSource];
+    }
+     
+    return [NSArray arrayWithArray:items];
+    
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    // Refresh the UI when the view appears or the options
-    // button won't be visible when restoring state.
-    [self refreshUI];
+
+- (void)buildToolbar {
+    
+    // Check to see if we have any toolbar items, if not, add them all
+    NSArray *items = [self itemsForToolbar];
+    if (items.count == 0 && !(_enabledToolbarItems & ZSSRichTextEditorToolbarNone)) {
+        _enabledToolbarItems = ZSSRichTextEditorToolbarAll;
+        items = [self itemsForToolbar];
+    }
+    
+    // get the width before we add custom buttons
+    CGFloat toolbarWidth = items.count == 0 ? 0.0f : (CGFloat)(items.count * 39) - 10;
+    
+    if(self.customBarButtonItems != nil)
+    {
+        items = [items arrayByAddingObjectsFromArray:self.customBarButtonItems];
+        for(ZSSBarButtonItem *buttonItem in self.customBarButtonItems)
+        {
+            toolbarWidth += buttonItem.customView.frame.size.width + 11.0f;
+        }
+    }
+    
+    self.toolbar.items = items;
+    for (ZSSBarButtonItem *item in items) {
+        item.tintColor = [self barButtonItemDefaultColor];
+    }
+    
+    self.toolbar.frame = CGRectMake(0, 0, toolbarWidth, 44);
+    self.toolBarScroll.contentSize = CGSizeMake(self.toolbar.frame.size.width, 44);
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-    [self.navigationController setToolbarHidden:YES animated:animated];
-	[self stopEditing];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-#pragma mark - Getters and Setters
-
-- (NSString*)titleText
-{
-    return self.titleTextField.text;
-}
-
-- (void) setTitleText:(NSString*)titleText
-{
-    [self.titleTextField setText:titleText];
-    [self refreshUI];
-}
-
-- (NSString*)bodyText
-{
-    return self.textView.text;
-}
-
-- (void) setBodyText:(NSString*)bodyText
-{
-    [self.textView setText:bodyText];
-    [self refreshUI];
-}
-
-#pragma mark - View Setup
-
-- (void)setupToolbar
+- (void)setupBottomToolbar
 {
     if ([self.toolbarItems count] > 0) {
         return;
@@ -146,12 +429,18 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
                                                                     style:UIBarButtonItemStylePlain
                                                                    target:self
                                                                    action:@selector(didTouchMediaOptions)];
+    UIBarButtonItem *optionsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon-menu-settings"]
+                                                                    style:UIBarButtonItemStylePlain
+                                                                   target:self
+                                                                   action:@selector(didTouchSettings)];
     
     previewButton.tintColor = [WPStyleGuide readGrey];
     photoButton.tintColor = [WPStyleGuide readGrey];
-
+    optionsButton.tintColor = [WPStyleGuide readGrey];
+    
     previewButton.accessibilityLabel = NSLocalizedString(@"Preview post", nil);
     photoButton.accessibilityLabel = NSLocalizedString(@"Add media", nil);
+    optionsButton.accessibilityLabel = NSLocalizedString(@"Options", @"Title of the Post Settings tableview cell in the Post Editor. Tapping shows settings and options related to the post being edited.");
     
     UIBarButtonItem *leftFixedSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                                                                                      target:nil
@@ -166,170 +455,87 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     leftFixedSpacer.width = -2.0f;
     rightFixedSpacer.width = -5.0f;
     
-    self.toolbarItems = @[leftFixedSpacer, previewButton, centerFlexSpacer, photoButton, rightFixedSpacer];
+    self.toolbarItems = @[leftFixedSpacer, previewButton, centerFlexSpacer, optionsButton, centerFlexSpacer, photoButton, rightFixedSpacer];
 }
 
-- (void)setupTextView
-{
-    CGFloat x = 0.0f;
-    CGFloat viewWidth = CGRectGetWidth(self.view.frame);
-    CGFloat width = viewWidth;
-    UIViewAutoresizing mask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    if (IS_IPAD) {
-        width = WPTableViewFixedWidth;
-        x = ceilf((viewWidth - width) / 2.0f);
-        mask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleHeight;
-    }
-    CGRect frame = CGRectMake(x, 0.0f, width, CGRectGetHeight(self.view.frame) - EPVCOptionsHeight);
-
-    // Height should never be smaller than what is required to display its text.
-    if (!self.textView) {
-        self.textView = [[UITextView alloc] initWithFrame:frame];
-        self.textView.autoresizingMask = mask;
-        self.textView.delegate = self;
-        self.textView.typingAttributes = [WPStyleGuide regularTextAttributes];
-        self.textView.font = [WPStyleGuide regularTextFont];
-        self.textView.textColor = [WPStyleGuide darkAsNightGrey];
-        self.textView.accessibilityLabel = NSLocalizedString(@"Content", @"Post content");
-    }
-    [self.view addSubview:self.textView];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     
-    // Formatting bar for the textView's inputAccessoryView.
-    if (self.editorToolbar == nil) {
-        frame = CGRectMake(0.0f, 0.0f, viewWidth, WPKT_HEIGHT_PORTRAIT);
-        self.editorToolbar = [[WPKeyboardToolbarBase alloc] initWithFrame:frame];
-        self.editorToolbar.backgroundColor = [WPStyleGuide keyboardColor];
-        self.editorToolbar.delegate = self;
-        self.textView.inputAccessoryView = self.editorToolbar;
+    // When restoring state, the navigationController is nil when the view loads,
+    // so configure its appearance here instead.
+    self.navigationController.navigationBar.translucent = NO;
+    self.navigationController.toolbarHidden = NO;
+    UIToolbar *toolbar = self.navigationController.toolbar;
+    toolbar.barTintColor = [WPStyleGuide littleEddieGrey];
+    toolbar.translucent = NO;
+    toolbar.barStyle = UIBarStyleDefault;
+    
+    if(self.navigationController.navigationBarHidden) {
+        [self.navigationController setNavigationBarHidden:NO animated:animated];
     }
     
-    // Title TextField.
-    if (!self.titleTextField) {
-        CGFloat textWidth = CGRectGetWidth(self.textView.frame) - (2 * EPVCStandardOffset);
-        frame = CGRectMake(EPVCStandardOffset, 0.0, textWidth, EPVCTextfieldHeight);
-        self.titleTextField = [[UITextField alloc] initWithFrame:frame];
-        self.titleTextField.delegate = self;
-        self.titleTextField.font = [WPStyleGuide postTitleFont];
-        self.titleTextField.textColor = [WPStyleGuide darkAsNightGrey];
-        self.titleTextField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        self.titleTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:(NSLocalizedString(@"Enter title here", @"Label for the title of the post field. Should be the same as WP core.")) attributes:(@{NSForegroundColorAttributeName: [WPStyleGuide textFieldPlaceholderGrey]})];
-        self.titleTextField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
-        self.titleTextField.returnKeyType = UIReturnKeyNext;
-    }
-    [self.textView addSubview:self.titleTextField];
-    
-    // InputAccessoryView for title textField.
-    if (!self.titleToolbar) {
-        frame = CGRectMake(0.0f, 0.0f, viewWidth, WPKT_HEIGHT_PORTRAIT);
-        self.titleToolbar = [[WPKeyboardToolbarDone alloc] initWithFrame:frame];
-        self.titleToolbar.backgroundColor = [WPStyleGuide keyboardColor];
-        self.titleToolbar.delegate = self;
-        self.titleTextField.inputAccessoryView = self.titleToolbar;
+    if (self.navigationController.toolbarHidden) {
+        [self.navigationController setToolbarHidden:NO animated:animated];
     }
     
-    // One pixel separator bewteen title and content text fields.
-    if (!self.separatorView) {
-        CGFloat y = CGRectGetMaxY(self.titleTextField.frame);
-        CGFloat separatorWidth = width - EPVCStandardOffset;
-        frame = CGRectMake(EPVCStandardOffset, y, separatorWidth, 1.0);
-        self.separatorView = [[UIView alloc] initWithFrame:frame];
-        self.separatorView.backgroundColor = [WPStyleGuide readGrey];
-        self.separatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    for (UIView *view in self.navigationController.toolbar.subviews) {
+        [view setExclusiveTouch:YES];
     }
-    [self.textView addSubview:self.separatorView];
     
-    // Update the textView's textContainerInsets so text does not overlap content.
-    CGFloat left = EPVCTextViewOffset;
-    CGFloat right = EPVCTextViewOffset;
-    CGFloat top = CGRectGetMaxY(self.separatorView.frame) + EPVCTextViewTopPadding;
-    CGFloat bottom = EPVCTextViewBottomPadding;
-    self.textView.textContainerInset = UIEdgeInsetsMake(top, left, bottom, right);
-
-    if (!self.tapToStartWritingLabel) {
-        frame = CGRectZero;
-        frame.origin.x = EPVCStandardOffset;
-        frame.origin.y = self.textView.textContainerInset.top;
-        frame.size.width = width - (EPVCStandardOffset * 2);
-        frame.size.height = 26.0f;
-        self.tapToStartWritingLabel = [[UILabel alloc] initWithFrame:frame];
-        self.tapToStartWritingLabel.text = NSLocalizedString(@"Tap here to begin writing", @"Placeholder for the main body text. Should hint at tapping to enter text (not specifying body text).");
-        self.tapToStartWritingLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        self.tapToStartWritingLabel.font = [WPStyleGuide regularTextFont];
-        self.tapToStartWritingLabel.textColor = [WPStyleGuide textFieldPlaceholderGrey];
-        self.tapToStartWritingLabel.isAccessibilityElement = NO;
-    }
-    [self.textView addSubview:self.tapToStartWritingLabel];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
-- (void)setupOptionsView
-{
-    CGFloat width = CGRectGetWidth(self.textView.frame);
-    CGFloat x = CGRectGetMinX(self.textView.frame);
-    CGFloat y = CGRectGetMaxY(self.textView.frame);
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
     
-    CGRect frame;
-    if (!self.optionsView) {
-        frame = CGRectMake(x, y, width, EPVCOptionsHeight);
-        self.optionsView = [[UIView alloc] initWithFrame:frame];
-        self.optionsView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-        if (IS_IPAD) {
-            self.optionsView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
-        }
-        self.optionsView.backgroundColor = [UIColor whiteColor];
-    }
-    [self.view addSubview:self.optionsView];
+    [self.navigationController setToolbarHidden:YES animated:animated];
+	[self stopEditing];
     
-    // One pixel separator bewteen content and table view cells.
-    if (!self.optionsSeparatorView) {
-        CGFloat separatorWidth = width - EPVCStandardOffset;
-        frame = CGRectMake(EPVCStandardOffset, 0.0f, separatorWidth, 1.0f);
-        self.optionsSeparatorView = [[UIView alloc] initWithFrame:frame];
-        self.optionsSeparatorView.backgroundColor = [WPStyleGuide readGrey];
-        self.optionsSeparatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    }
-    [self.optionsView addSubview:self.optionsSeparatorView];
-    
-    if (!self.optionsButton) {
-        NSString *optionsTitle = NSLocalizedString(@"Options", @"Title of the Post Settings tableview cell in the Post Editor. Tapping shows settings and options related to the post being edited.");
-        frame = CGRectMake(0.0f, 1.0f, width, EPVCOptionsHeight - 1.0f);
-        self.optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.optionsButton.frame = frame;
-        self.optionsButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [self.optionsButton addTarget:self action:@selector(didTouchSettings)
-                     forControlEvents:UIControlEventTouchUpInside];
-        [self.optionsButton setBackgroundImage:[UIImage imageWithColor:[WPStyleGuide readGrey]]
-                                      forState:UIControlStateHighlighted];
-
-        // Rather than using a UIImageView to fake a disclosure icon, just use a cell and future proof the UI.
-        WPTableViewCell *cell = [[WPTableViewCell alloc] initWithFrame:self.optionsButton.bounds];
-        // The cell uses its default frame and ignores what was passed during init, so set it again.
-        cell.frame = self.optionsButton.bounds;
-        cell.backgroundColor = [UIColor clearColor];
-        cell.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-        cell.textLabel.text = optionsTitle;
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        cell.userInteractionEnabled = NO;
-        [WPStyleGuide configureTableViewCell:cell];
-        
-        [self.optionsButton addSubview:cell];
-    }
-    [self.optionsView addSubview:self.optionsButton];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
-- (void)positionTextView:(NSNotification *)notification
+
+- (void)didReceiveMemoryWarning
 {
-    NSDictionary *keyboardInfo = [notification userInfo];
-    CGRect originalKeyboardFrame = [[keyboardInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGRect keyboardFrame = [self.view convertRect:[self.view.window convertRect:originalKeyboardFrame fromWindow:nil]
-                                         fromView:nil];
-    CGRect frame = self.textView.frame;
-    
-    if (self.isShowingKeyboard) {
-        frame.size.height = CGRectGetMinY(keyboardFrame) - CGRectGetMinY(frame);
-    } else {
-        frame.size.height = CGRectGetHeight(self.view.frame) - EPVCOptionsHeight;
-    }
-    self.textView.frame = frame;
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (void)focusTextEditor
+{
+    self.editorView.keyboardDisplayRequiresUserAction = NO;
+    NSString *js = [NSString stringWithFormat:@"zss_editor.focusEditor();"];
+    [self.editorView stringByEvaluatingJavaScriptFromString:js];
+}
+
+- (void)blurTextEditor
+{
+    NSString *js = [NSString stringWithFormat:@"zss_editor.blurEditor();"];
+    [self.editorView stringByEvaluatingJavaScriptFromString:js];
+}
+
+#pragma mark - Getters and Setters
+
+- (NSString*)titleText
+{
+    //return self.titleTextField.text;
+}
+
+- (void) setTitleText:(NSString*)titleText
+{
+    //[self.titleTextField setText:titleText];
+}
+
+- (NSString*)bodyText
+{
+    return [self getHTML];
+}
+
+- (void) setBodyText:(NSString*)bodyText
+{
+    [self setHtml:bodyText];
 }
 
 #pragma mark - Actions
@@ -361,349 +567,642 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 {
     // With the titleTextField as a subview of textField, we need to resign and
     // end editing to prevent the textField from becomeing first responder.
-    if ([self.titleTextField isFirstResponder]) {
-        [self.titleTextField resignFirstResponder];
-    }
+    [self dismissKeyboard];
     [self.view endEditing:YES];
 }
 
-- (void)refreshUI
-{
-    if(self.titleText != nil || self.titleText != 0) {
-        self.title = self.titleText;
+#pragma mark - Editor Interaction
+
+- (void)setHtml:(NSString *)html {
+    
+    if (!self.resourcesLoaded) {
+        NSString *filePath = [[NSBundle mainBundle] pathForResource:@"editor" ofType:@"html"];
+        NSData *htmlData = [NSData dataWithContentsOfFile:filePath];
+        NSString *htmlString = [[NSString alloc] initWithData:htmlData encoding:NSUTF8StringEncoding];
+        NSString *source = [[NSBundle mainBundle] pathForResource:@"ZSSRichTextEditor" ofType:@"js"];
+        NSString *jsString = [[NSString alloc] initWithData:[NSData dataWithContentsOfFile:source] encoding:NSUTF8StringEncoding];
+        htmlString = [htmlString stringByReplacingOccurrencesOfString:@"<!--editor-->" withString:jsString];
+        htmlString = [htmlString stringByReplacingOccurrencesOfString:@"<!--content-->" withString:html];
+        
+        [self.editorView loadHTMLString:htmlString baseURL:self.baseURL];
+        self.resourcesLoaded = YES;
     }
-    if(self.bodyText == nil || self.bodyText == 0) {
-        self.tapToStartWritingLabel.hidden = NO;
-        self.textView.text = @"";
+    
+    self.sourceView.text = html;
+    NSString *cleanedHTML = [self removeQuotesFromHTML:self.sourceView.text];
+	NSString *trigger = [NSString stringWithFormat:@"zss_editor.setHTML(\"%@\");", cleanedHTML];
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    
+}
+
+- (NSString *)getHTML {
+    
+    NSString *html = [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.getHTML();"];
+    html = [self removeQuotesFromHTML:html];
+    html = [self tidyHTML:html];
+	return html;
+}
+
+- (void)dismissKeyboard {
+    [self.editorView stringByEvaluatingJavaScriptFromString:@"document.activeElement.blur()"];
+    [self.sourceView resignFirstResponder];
+    [self.view endEditing:YES];
+}
+
+
+- (void)focus {
+    [self.editorView stringByEvaluatingJavaScriptFromString:@"document.activeElement.focus()"];
+}
+
+
+- (void)showHTMLSource:(ZSSBarButtonItem *)barButtonItem {
+    if (self.sourceView.hidden) {
+        self.sourceView.text = [self getHTML];
+        self.sourceView.hidden = NO;
+        barButtonItem.tintColor = [UIColor blackColor];
+        self.editorView.hidden = YES;
+        [self enableToolbarItems:NO];
     } else {
-        self.tapToStartWritingLabel.hidden = YES;
+        [self setHtml:self.sourceView.text];
+        barButtonItem.tintColor = [self barButtonItemDefaultColor];
+        self.sourceView.hidden = YES;
+        self.editorView.hidden = NO;
+        [self enableToolbarItems:YES];
     }
 }
 
-- (void)showLinkView
-{
-    NSRange range = self.textView.selectedRange;
-    NSString *infoText = nil;
-    if (range.length > 0) {
-        infoText = [self.textView.text substringWithRange:range];
+- (void)removeFormat {
+    NSString *trigger = @"zss_editor.removeFormating();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)alignLeft {
+    NSString *trigger = @"zss_editor.setJustifyLeft();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)alignCenter {
+    NSString *trigger = @"zss_editor.setJustifyCenter();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)alignRight {
+    NSString *trigger = @"zss_editor.setJustifyRight();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)alignFull {
+    NSString *trigger = @"zss_editor.setJustifyFull();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setBold {
+    NSString *trigger = @"zss_editor.setBold();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setItalic {
+    NSString *trigger = @"zss_editor.setItalic();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setSubscript {
+    NSString *trigger = @"zss_editor.setSubscript();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setUnderline {
+    NSString *trigger = @"zss_editor.setUnderline();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setSuperscript {
+    NSString *trigger = @"zss_editor.setSuperscript();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setStrikethrough {
+    NSString *trigger = @"zss_editor.setStrikeThrough();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setUnorderedList {
+    NSString *trigger = @"zss_editor.setUnorderedList();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setOrderedList {
+    NSString *trigger = @"zss_editor.setOrderedList();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setHR {
+    NSString *trigger = @"zss_editor.setHorizontalRule();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setIndent {
+    NSString *trigger = @"zss_editor.setIndent();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setOutdent {
+    NSString *trigger = @"zss_editor.setOutdent();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)heading1 {
+    NSString *trigger = @"zss_editor.setHeading('h1');";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)heading2 {
+    NSString *trigger = @"zss_editor.setHeading('h2');";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)heading3 {
+    NSString *trigger = @"zss_editor.setHeading('h3');";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)heading4 {
+    NSString *trigger = @"zss_editor.setHeading('h4');";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)heading5 {
+    NSString *trigger = @"zss_editor.setHeading('h5');";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)heading6 {
+    NSString *trigger = @"zss_editor.setHeading('h6');";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)textColor {
+    
+    // Save the selection location
+    [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.prepareInsert();"];
+    
+    // Call the picker
+    HRColorPickerViewController *colorPicker = [HRColorPickerViewController cancelableFullColorPickerViewControllerWithColor:[UIColor whiteColor]];
+    colorPicker.delegate = self;
+    colorPicker.tag = 1;
+    colorPicker.title = NSLocalizedString(@"Text Color", nil);
+    [self.navigationController pushViewController:colorPicker animated:YES];
+    
+}
+
+- (void)bgColor {
+    
+    // Save the selection location
+    [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.prepareInsert();"];
+    
+    // Call the picker
+    HRColorPickerViewController *colorPicker = [HRColorPickerViewController cancelableFullColorPickerViewControllerWithColor:[UIColor whiteColor]];
+    colorPicker.delegate = self;
+    colorPicker.tag = 2;
+    colorPicker.title = NSLocalizedString(@"BG Color", nil);
+    [self.navigationController pushViewController:colorPicker animated:YES];
+    
+}
+
+- (void)setSelectedColor:(UIColor*)color tag:(int)tag {
+   
+    NSString *hex = [NSString stringWithFormat:@"#%06x",HexColorFromUIColor(color)];
+    NSString *trigger;
+    if (tag == 1) {
+        trigger = [NSString stringWithFormat:@"zss_editor.setTextColor(\"%@\");", hex];
+    } else if (tag == 2) {
+        trigger = [NSString stringWithFormat:@"zss_editor.setBackgroundColor(\"%@\");", hex];
     }
-    self.scrollOffsetRestorePoint = self.textView.contentOffset;
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
     
-    NSString *alertViewTitle = NSLocalizedString(@"Make a Link", @"Title of the Link Helper popup to aid in creating a Link in the Post Editor.");
-    NSCharacterSet *charSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
-    alertViewTitle = [alertViewTitle stringByTrimmingCharactersInSet:charSet];
+}
+
+- (void)undo:(ZSSBarButtonItem *)barButtonItem {
+    [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.undo();"];
+}
+
+- (void)redo:(ZSSBarButtonItem *)barButtonItem {
+    [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.redo();"];
+}
+
+- (void)insertLink {
     
-    NSString *insertButtonTitle = NSLocalizedString(@"Insert", @"Insert content (link, media) button");
-    NSString *cancelButtonTitle = NSLocalizedString(@"Cancel", @"Cancel button");
+    // Save the selection location
+    [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.prepareInsert();"];
     
-    self.alertView = [[UIAlertView alloc] initWithTitle:alertViewTitle
-                                            message:nil
-                                           delegate:nil
-                                  cancelButtonTitle:cancelButtonTitle
-                                  otherButtonTitles:insertButtonTitle, nil];
+    // Show the dialog for inserting or editing a link
+    [self showInsertLinkDialogWithLink:self.selectedLinkURL title:self.selectedLinkTitle];
+    
+}
+
+
+- (void)showInsertLinkDialogWithLink:(NSString *)url title:(NSString *)title {
+    
+    // Insert Button Title
+    NSString *insertButtonTitle = !self.selectedLinkURL ? NSLocalizedString(@"Insert", nil) : NSLocalizedString(@"Update", nil);
+    
+    self.alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Insert Link", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:insertButtonTitle, nil];
     self.alertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
-    self.alertView.tag = 99;
+    self.alertView.tag = 2;
+    UITextField *linkURL = [self.alertView textFieldAtIndex:0];
+    linkURL.placeholder = NSLocalizedString(@"URL (required)", nil);
+    if (url) {
+        linkURL.text = url;
+    }
+    
+    // Picker Button
+    UIButton *am = [UIButton buttonWithType:UIButtonTypeCustom];
+    am.frame = CGRectMake(0, 0, 25, 25);
+    [am setImage:[UIImage imageNamed:@"ZSSpicker.png"] forState:UIControlStateNormal];
+    [am addTarget:self action:@selector(showInsertURLAlternatePicker) forControlEvents:UIControlEventTouchUpInside];
+    linkURL.rightView = am;
+    linkURL.rightViewMode = UITextFieldViewModeAlways;
     
     UITextField *alt = [self.alertView textFieldAtIndex:1];
     alt.secureTextEntry = NO;
-    alt.placeholder = NSLocalizedString(@"Text to be linked", @"Popup to aid in creating a Link in the Post Editor.");
-    alt.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    alt.keyboardAppearance = UIKeyboardAppearanceAlert;
-    alt.keyboardType = UIKeyboardTypeDefault;
-    if (infoText) {
-        alt.text = infoText;
+    alt.placeholder = NSLocalizedString(@"Title", nil);
+    if (title) {
+        alt.text = title;
     }
     
-    UITextField *linkURL = [self.alertView textFieldAtIndex:0];
-    linkURL.placeholder = NSLocalizedString(@"Link URL", @"Popup to aid in creating a Link in the Post Editor, URL field (where you can type or paste a URL that the text should link.");
-    linkURL.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    linkURL.keyboardAppearance = UIKeyboardAppearanceAlert;
-    linkURL.keyboardType = UIKeyboardTypeURL;
-    linkURL.autocorrectionType = UITextAutocorrectionTypeNo;
-    __weak __typeof(self)weakSelf = self;
-    self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
-        if (alertView.tag == 99) {
-            if (buttonIndex == 1) {
-                // Insert link
-                UITextField *urlField = [alertView textFieldAtIndex:0];
-                UITextField *infoText = [alertView textFieldAtIndex:1];
-                
-                if ((urlField.text == nil) || ([urlField.text isEqualToString:@""])) {
-                    return;
-                }
-                
-                if ((infoText.text == nil) || ([infoText.text isEqualToString:@""])) {
-                    infoText.text = urlField.text;
-                }
-                
-                NSString *urlString = [weakSelf validateNewLinkInfo:[urlField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
-                NSString *aTagText = [NSString stringWithFormat:@"<a href=\"%@\">%@</a>", urlString, infoText.text];
-                NSRange range = weakSelf.textView.selectedRange;
-                NSString *oldText = weakSelf.textView.text;
-                NSRange oldRange = weakSelf.textView.selectedRange;
-                weakSelf.textView.scrollEnabled = NO;
-                weakSelf.textView.text = [weakSelf.textView.text stringByReplacingCharactersInRange:range withString:aTagText];
-                weakSelf.textView.scrollEnabled = YES;
-                
-                //reset selection back to nothing
-                range.length = 0;
-                range.location += [aTagText length]; // Place selection after the tag
-                weakSelf.textView.selectedRange = range;
-                
-                [[weakSelf.textView.undoManager prepareWithInvocationTarget:weakSelf] restoreText:oldText withRange:oldRange];
-                [weakSelf.textView.undoManager setActionName:@"link"];
-                [weakSelf textViewDidChange:self.textView];
-                [weakSelf refreshTextView];
-                
-            }
-            
-            // Don't dismiss the keyboard
-            // Hack from http://stackoverflow.com/a/7601631
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if([weakSelf.textView resignFirstResponder] || [weakSelf.titleTextField resignFirstResponder]){
-                    [weakSelf.textView becomeFirstResponder];
-                }
-            });
-        }
-    };
-    
-    self.alertView.shouldEnableFirstOtherButtonBlock = ^BOOL(UIAlertView *alertView) {
-        if (alertView.tag == 99) {
-            UITextField *textField = [alertView textFieldAtIndex:0];
-            if ([textField.text length] == 0) {
-                return NO;
-            }
-        }
-        return YES;
-    };
-
     [self.alertView show];
-}
-
-// Appends http:// if protocol part is not there as part of urlText.
-- (NSString *)validateNewLinkInfo:(NSString *)urlText
-{
-    NSError *error = nil;
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^[\\w]+:" options:0 error:&error];
     
-    if ([regex numberOfMatchesInString:urlText options:0 range:NSMakeRange(0, [urlText length])] > 0) {
-        return urlText;
-    } else if([urlText hasPrefix:@"#"]) {
-        // link to named anchor
-        return urlText;
-    } else {
-        return [NSString stringWithFormat:@"http://%@", urlText];
-    }
 }
 
-#pragma mark - Formatting
 
-- (void)restoreText:(NSString *)text withRange:(NSRange)range
-{
-    NSString *oldText = self.textView.text;
-    NSRange oldRange = self.textView.selectedRange;
-    self.textView.scrollEnabled = NO;
-    // iOS6 seems to have a bug where setting the text like so : textView.text = text;
-    // will cause an infinate loop of undos.  A work around is to perform the selector
-    // on the main thread.
-    // textView.text = text;
-    [self.textView performSelectorOnMainThread:@selector(setText:) withObject:text waitUntilDone:NO];
-    self.textView.scrollEnabled = YES;
-    self.textView.selectedRange = range;
-    [[self.textView.undoManager prepareWithInvocationTarget:self] restoreText:oldText withRange:oldRange];
-    [self textViewDidChange:self.textView];
-}
-
-- (void)wrapSelectionWithTag:(NSString *)tag
-{
-    NSRange range = self.textView.selectedRange;
-    NSString *selection = [self.textView.text substringWithRange:range];
-    NSString *prefix, *suffix;
-    if ([tag isEqualToString:@"more"]) {
-        prefix = @"<!--more-->";
-        suffix = @"\n";
-    } else if ([tag isEqualToString:@"blockquote"]) {
-        prefix = [NSString stringWithFormat:@"\n<%@>", tag];
-        suffix = [NSString stringWithFormat:@"</%@>\n", tag];
-    } else {
-        prefix = [NSString stringWithFormat:@"<%@>", tag];
-        suffix = [NSString stringWithFormat:@"</%@>", tag];
-    }
-    self.textView.scrollEnabled = NO;
-    NSString *replacement = [NSString stringWithFormat:@"%@%@%@",prefix,selection,suffix];
-    self.textView.text = [self.textView.text stringByReplacingCharactersInRange:range
-                                                             withString:replacement];
-    [self textViewDidChange:self.textView];
-    self.textView.scrollEnabled = YES;
-    if (range.length == 0) {                // If nothing was selected
-        range.location += [prefix length]; // Place selection between tags
-    } else {
-        range.location += range.length + [prefix length] + [suffix length]; // Place selection after tag
-        range.length = 0;
-    }
-    self.textView.selectedRange = range;
+- (void)insertLink:(NSString *)url title:(NSString *)title {
     
-    [self refreshTextView];
+    NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertLink(\"%@\", \"%@\");", url, title];
+    [self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    
 }
 
-// In some situations on iOS7, inserting text while `scrollEnabled = NO` results in
-// the last line(s) of text on the text view not appearing. This is a workaround
-// to get the UITextView to redraw after inserting text but without affecting the
-// scrollOffset.
-- (void)refreshTextView
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.textView.scrollEnabled = NO;
-        [self.textView setNeedsDisplay];
-        self.textView.scrollEnabled = YES;
-    });
+
+- (void)updateLink:(NSString *)url title:(NSString *)title {
+    NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateLink(\"%@\", \"%@\");", url, title];
+    [self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-#pragma mark - WPKeyboardToolbar Delegate
 
-- (void)keyboardToolbarButtonItemPressed:(WPKeyboardToolbarButtonItem *)buttonItem
-{
-    if ([buttonItem.actionTag isEqualToString:@"link"]) {
-        [self showLinkView];
-    } else if ([buttonItem.actionTag isEqualToString:@"done"]) {
-        [self stopEditing];
-    } else {
-        NSString *oldText = self.textView.text;
-        NSRange oldRange = self.textView.selectedRange;
-        [self wrapSelectionWithTag:buttonItem.actionTag];
-        [[self.textView.undoManager prepareWithInvocationTarget:self] restoreText:oldText withRange:oldRange];
-        [self.textView.undoManager setActionName:buttonItem.actionName];
-    }
+- (void)dismissAlertView {
+    [self.alertView dismissWithClickedButtonIndex:self.alertView.cancelButtonIndex animated:YES];
 }
 
-#pragma mark - TextView Delegate
-
-- (BOOL)textViewShouldBeginEditing:(UITextView *)textView
+- (void)addCustomToolbarItemWithButton:(UIButton *)button
 {
-    if ([self.delegate respondsToSelector: @selector(editorShouldBeginEditing:)]) {
-        return [self.delegate editorShouldBeginEditing:self];
-    }
-    return YES;
-}
-
-- (void)textViewDidBeginEditing:(UITextView *)textView
-{
-    self.tapToStartWritingLabel.hidden = YES;
-}
-
-- (void)textViewDidChange:(UITextView *)aTextView
-{
-    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
-        [self.delegate editorTextDidChange:self];
-    }
-}
-
-- (void)textViewDidEndEditing:(UITextView *)aTextView
-{
-    if ([self.textView.text isEqualToString:@""]) {
-        self.tapToStartWritingLabel.hidden = NO;
-    }
-}
-
-#pragma mark - TextField delegate
-
-- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
-{
-    if ([self.delegate respondsToSelector: @selector(editorShouldBeginEditing:)]) {
-        return [self.delegate editorShouldBeginEditing:self];
-    }
-    return YES;
-}
-
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{
-    if (textField == self.titleTextField) {
-        [self setTitle:[textField.text stringByReplacingCharactersInRange:range withString:string]];
-        if ([self.delegate respondsToSelector: @selector(editorTitleDidChange:)]) {
-            [self.delegate editorTitleDidChange:self];
-        }
-    }
-    return YES;
-}
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
-{
-    [self.textView becomeFirstResponder];
-    return NO;
-}
-
-#pragma mark - Positioning & Rotation
-
-- (BOOL)shouldHideToolbarsWhileTyping
-{
-    /*
-     Never hide for the iPad.
-     Always hide on the iPhone except for portrait + external keyboard
-     */
-    if (IS_IPAD) {
-        return NO;
+    if(self.customBarButtonItems == nil)
+    {
+        self.customBarButtonItems = [NSMutableArray array];
     }
     
-    BOOL isLandscape = UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
-    if (!isLandscape && self.isExternalKeyboard) {
-        return NO;
-    }
+    button.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:28.5f];
+    [button setTitleColor:[self barButtonItemDefaultColor] forState:UIControlStateNormal];
+    [button setTitleColor:[self barButtonItemSelectedDefaultColor] forState:UIControlStateHighlighted];
     
-    return YES;
+    ZSSBarButtonItem *barButtonItem = [[ZSSBarButtonItem alloc] initWithCustomView:button];
+    [self.customBarButtonItems addObject:barButtonItem];
+    
+    [self buildToolbar];
 }
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration
+- (void)removeLink {
+    [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.unlink();"];
+}//end
+
+- (void)quickLink {
+    [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.quickLink();"];
+}
+
+- (void)insertImage {
+    
+    // Save the selection location
+    [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.prepareInsert();"];
+    
+    [self showInsertImageDialogWithLink:self.selectedImageURL alt:self.selectedImageAlt];
+    
+}
+
+- (void)showInsertImageDialogWithLink:(NSString *)url alt:(NSString *)alt
+{    
+    // Insert Button Title
+    NSString *insertButtonTitle = !self.selectedImageURL ? NSLocalizedString(@"Insert", nil) : NSLocalizedString(@"Update", nil);
+    
+    self.alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Insert Image", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:insertButtonTitle, nil];
+    self.alertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
+    self.alertView.tag = 1;
+    UITextField *imageURL = [self.alertView textFieldAtIndex:0];
+    imageURL.placeholder = NSLocalizedString(@"URL (required)", nil);
+    if (url) {
+        imageURL.text = url;
+    }
+    
+    // Picker Button
+    UIButton *am = [UIButton buttonWithType:UIButtonTypeCustom];
+    am.frame = CGRectMake(0, 0, 25, 25);
+    [am setImage:[UIImage imageNamed:@"ZSSpicker.png"] forState:UIControlStateNormal];
+    [am addTarget:self action:@selector(showInsertImageAlternatePicker) forControlEvents:UIControlEventTouchUpInside];
+    imageURL.rightView = am;
+    imageURL.rightViewMode = UITextFieldViewModeAlways;
+    imageURL.clearButtonMode = UITextFieldViewModeAlways;
+    
+    UITextField *alt1 = [self.alertView textFieldAtIndex:1];
+    alt1.secureTextEntry = NO;
+    UIView *test = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+    test.backgroundColor = [UIColor redColor];
+    alt1.rightView = test;
+    alt1.placeholder = NSLocalizedString(@"Alt", nil);
+    alt1.clearButtonMode = UITextFieldViewModeAlways;
+    if (alt) {
+        alt1.text = alt;
+    }
+    
+    [self.alertView show];
+    
+}
+
+- (void)insertImage:(NSString *)url alt:(NSString *)alt
 {
-    CGRect frame = self.editorToolbar.frame;
-    if (UIDeviceOrientationIsLandscape(interfaceOrientation)) {
-        if (IS_IPAD) {
-            frame.size.height = WPKT_HEIGHT_IPAD_LANDSCAPE;
+    NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertImage(\"%@\", \"%@\");", url, alt];
+    [self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)updateImage:(NSString *)url alt:(NSString *)alt
+{
+    NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateImage(\"%@\", \"%@\");", url, alt];
+    [self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)updateToolBarWithButtonName:(NSString *)name
+{
+    // Items that are enabled
+    NSArray *itemNames = [name componentsSeparatedByString:@","];
+    
+    // Special case for link
+    NSMutableArray *itemsModified = [[NSMutableArray alloc] init];
+    for (NSString *linkItem in itemNames) {
+        NSString *updatedItem = linkItem;
+        if ([linkItem hasPrefix:@"link:"]) {
+            updatedItem = @"link";
+            self.selectedLinkURL = [linkItem stringByReplacingOccurrencesOfString:@"link:" withString:@""];
+        } else if ([linkItem hasPrefix:@"link-title:"]) {
+            self.selectedLinkTitle = [self stringByDecodingURLFormat:[linkItem stringByReplacingOccurrencesOfString:@"link-title:" withString:@""]];
+        } else if ([linkItem hasPrefix:@"image:"]) {
+            updatedItem = @"image";
+            self.selectedImageURL = [linkItem stringByReplacingOccurrencesOfString:@"image:" withString:@""];
+        } else if ([linkItem hasPrefix:@"image-alt:"]) {
+            self.selectedImageAlt = [self stringByDecodingURLFormat:[linkItem stringByReplacingOccurrencesOfString:@"image-alt:" withString:@""]];
         } else {
-            frame.size.height = WPKT_HEIGHT_IPHONE_LANDSCAPE;
+            self.selectedImageURL = nil;
+            self.selectedImageAlt = nil;
+            self.selectedLinkURL = nil;
+            self.selectedLinkTitle = nil;
         }
+        [itemsModified addObject:updatedItem];
+    }
+    itemNames = [NSArray arrayWithArray:itemsModified];
+    NSLog(@"%@", itemNames);
+    self.editorItemsEnabled = itemNames;
+    
+    // Highlight items
+    NSArray *items = self.toolbar.items;
+    for (ZSSBarButtonItem *item in items) {
+        if ([itemNames containsObject:item.label]) {
+            item.tintColor = [self barButtonItemSelectedDefaultColor];
+        } else {
+            item.tintColor = [self barButtonItemDefaultColor];
+        }
+    }//end
+    
+}
+
+#pragma mark - UITextView Delegate
+    
+- (void)textViewDidChange:(UITextView *)textView
+{
+    CGRect line = [textView caretRectForPosition:textView.selectedTextRange.start];
+    CGFloat overflow = line.origin.y + line.size.height - ( textView.contentOffset.y + textView.bounds.size.height - textView.contentInset.bottom - textView.contentInset.top );
+    if ( overflow > 0 ) {
+        // We are at the bottom of the visible text and introduced a line feed, scroll down (iOS 7 does not do it)
+        // Scroll caret to visible area
+        CGPoint offset = textView.contentOffset;
+        offset.y += overflow + 7; // leave 7 pixels margin
+        // Cannot animate with setContentOffset:animated: or caret will not appear
+        [UIView animateWithDuration:.2 animations:^{
+            [textView setContentOffset:offset];
+        }];
+    }
+}
+
+#pragma mark - UIWebView Delegate
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+{
+    
+    NSString *urlString = [[request URL] absoluteString];
+    if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+		return NO;
+	} else if ([urlString rangeOfString:@"callback://"].location != NSNotFound) {
         
-    } else {
-        if (IS_IPAD) {
-            frame.size.height = WPKT_HEIGHT_IPAD_PORTRAIT;
-        } else {
-            frame.size.height = WPKT_HEIGHT_IPHONE_PORTRAIT;
-        }
+        // We recieved the callback
+        NSString *className = [urlString stringByReplacingOccurrencesOfString:@"callback://" withString:@""];
+        [self updateToolBarWithButtonName:className];
+        
     }
-    self.editorToolbar.frame = frame;
-    self.titleToolbar.frame = frame; // Frames match, no need to re-calc.
-}
-
-#pragma mark - Keyboard management
-
-- (void)keyboardWillShow:(NSNotification *)notification
-{
-	self.isShowingKeyboard = YES;
     
-    if ([self shouldHideToolbarsWhileTyping]) {
-        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-        [self.navigationController setNavigationBarHidden:YES animated:YES];
-        [self.navigationController setToolbarHidden:YES animated:NO];
-    }
+    return YES;
+    
 }
 
-- (void)keyboardDidShow:(NSNotification *)notification
+#pragma mark - AlertView
+
+- (BOOL)alertViewShouldEnableFirstOtherButton:(UIAlertView *)alertView
 {
-    if ([self.textView isFirstResponder]) {
-        if (!CGPointEqualToPoint(CGPointZero, self.scrollOffsetRestorePoint)) {
-            self.textView.contentOffset = self.scrollOffsetRestorePoint;
-            self.scrollOffsetRestorePoint = CGPointZero;
+    if (alertView.tag == 1) {
+        UITextField *textField = [alertView textFieldAtIndex:0];
+        UITextField *textField2 = [alertView textFieldAtIndex:1];
+        if ([textField.text length] == 0 || [textField2.text length] == 0) {
+            return NO;
+        }
+    } else if (alertView.tag == 2) {
+        UITextField *textField = [alertView textFieldAtIndex:0];
+        if ([textField.text length] == 0) {
+            return NO;
         }
     }
-    [self positionTextView:notification];
+    
+    return YES;
 }
 
-- (void)keyboardWillHide:(NSNotification *)notification
-{
-	self.isShowingKeyboard = NO;
-    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
-    [self.navigationController setToolbarHidden:NO animated:NO];
-    [self positionTextView:notification];
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    
+    if (alertView.tag == 1) {
+        if (buttonIndex == 1) {
+            UITextField *imageURL = [alertView textFieldAtIndex:0];
+            UITextField *alt = [alertView textFieldAtIndex:1];
+            if (!self.selectedImageURL) {
+                [self insertImage:imageURL.text alt:alt.text];
+            } else {
+                [self updateImage:imageURL.text alt:alt.text];
+            }
+        }
+    } else if (alertView.tag == 2) {
+        if (buttonIndex == 1) {
+            UITextField *linkURL = [alertView textFieldAtIndex:0];
+            UITextField *title = [alertView textFieldAtIndex:1];
+            if (!self.selectedLinkURL) {
+                [self insertLink:linkURL.text title:title.text];
+            } else {
+                [self updateLink:linkURL.text title:title.text];
+            }
+        }
+    }
+    
 }
+
+#pragma mark - Asset Picker
+
+- (void)showInsertURLAlternatePicker
+{
+    // Blank method. User should implement this in their subclass
+}
+
+- (void)showInsertImageAlternatePicker
+{
+    // Blank method. User should implement this in their subclass
+}
+
+
+#pragma mark - Keyboard status
+
+- (void)keyboardWillShowOrHide:(NSNotification *)notification
+{
+    // Orientation
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+	
+    // User Info
+    NSDictionary *info = notification.userInfo;
+    CGFloat duration = [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] floatValue];
+    int curve = [[info objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
+    CGRect keyboardEnd = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    
+    // Toolbar Sizes
+    CGFloat sizeOfToolbar = self.toolbarHolder.frame.size.height;
+    
+    // Keyboard Size
+    CGFloat keyboardHeight = UIInterfaceOrientationIsLandscape(orientation) ? keyboardEnd.size.width : keyboardEnd.size.height;
+    
+    // Correct Curve
+    UIViewAnimationOptions animationOptions = curve << 16;
+    
+	if ([notification.name isEqualToString:UIKeyboardWillShowNotification]) {
+        
+        self.isShowingKeyboard = YES;
+        [self.navigationController setToolbarHidden:YES animated:NO];
+        [UIView animateWithDuration:duration delay:0 options:animationOptions animations:^{
+            // Toolbar
+            CGRect frame = self.toolbarHolder.frame;
+            frame.origin.y = self.view.frame.size.height - (keyboardHeight + sizeOfToolbar);
+            self.toolbarHolder.frame = frame;
+            
+            // Editor View
+            CGRect editorFrame = self.editorView.frame;
+            editorFrame.size.height = (self.view.frame.size.height - keyboardHeight) - sizeOfToolbar;
+            self.editorView.frame = editorFrame;
+            self.editorViewFrame = self.editorView.frame;
+            self.editorView.scrollView.contentInset = UIEdgeInsetsZero;
+            self.editorView.scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
+            
+            // Source View
+            CGRect sourceFrame = self.sourceView.frame;
+            sourceFrame.size.height = (self.view.frame.size.height - keyboardHeight) - sizeOfToolbar;
+            self.sourceView.frame = sourceFrame;
+        } completion:nil];
+	} else {
+        self.isShowingKeyboard = NO;
+        [self.navigationController setToolbarHidden:NO animated:NO];
+		[UIView animateWithDuration:duration delay:0 options:animationOptions animations:^{
+            CGRect frame = self.toolbarHolder.frame;
+            frame.origin.y = self.view.frame.size.height + keyboardHeight;
+            self.toolbarHolder.frame = frame;
+            
+            // Editor View
+            CGRect editorFrame = self.editorView.frame;
+            editorFrame.size.height = self.view.frame.size.height;
+            self.editorView.frame = editorFrame;
+            self.editorViewFrame = self.editorView.frame;
+            self.editorView.scrollView.contentInset = UIEdgeInsetsZero;
+            self.editorView.scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
+            
+            // Source View
+            CGRect sourceFrame = self.sourceView.frame;
+            sourceFrame.size.height = self.view.frame.size.height;
+            self.sourceView.frame = sourceFrame;
+        } completion:nil];
+        
+	}
+}
+
+#pragma mark - Utilities
+
+- (NSString *)removeQuotesFromHTML:(NSString *)html
+{
+    html = [html stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+    html = [html stringByReplacingOccurrencesOfString:@"“" withString:@"&quot;"];
+    html = [html stringByReplacingOccurrencesOfString:@"”" withString:@"&quot;"];
+    html = [html stringByReplacingOccurrencesOfString:@"\r"  withString:@"\\r"];
+    html = [html stringByReplacingOccurrencesOfString:@"\n"  withString:@"\\n"];
+    return html;
+}
+
+- (NSString *)tidyHTML:(NSString *)html
+{
+    html = [html stringByReplacingOccurrencesOfString:@"<br>" withString:@"<br />"];
+    html = [html stringByReplacingOccurrencesOfString:@"<hr>" withString:@"<hr />"];
+    if (self.formatHTML) {
+        html = [self.editorView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"style_html('%@');", html]];
+    }
+    return html;
+}
+
+- (UIColor *)barButtonItemDefaultColor
+{
+    
+    if (self.toolbarItemTintColor) {
+        return self.toolbarItemTintColor;
+    }
+    
+    return [UIColor colorWithRed:0.0f/255.0f green:122.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+}
+
+- (UIColor *)barButtonItemSelectedDefaultColor
+{
+    if (self.toolbarItemSelectedTintColor) {
+        return self.toolbarItemSelectedTintColor;
+    }
+    return [UIColor blackColor];
+}
+
+- (NSString *)stringByDecodingURLFormat:(NSString *)string
+{
+    NSString *result = [string stringByReplacingOccurrencesOfString:@"+" withString:@" "];
+    result = [result stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    return result;
+}
+
+- (void)enableToolbarItems:(BOOL)enable
+{
+    NSArray *items = self.toolbar.items;
+    for (ZSSBarButtonItem *item in items) {
+        if (![item.label isEqualToString:@"source"]) {
+            item.enabled = enable;
+        }
+    }
+}
+
 
 @end
