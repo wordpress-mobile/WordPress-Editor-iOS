@@ -40,7 +40,8 @@ CGFloat const EPVCStandardOffset = 15.0;
 
 @implementation WPEditorViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
     // Source View
@@ -116,7 +117,6 @@ CGFloat const EPVCStandardOffset = 15.0;
     
     // Build the toolbar
     [self buildToolbar];
-
 }
 
 - (void)didMoveToParentViewController:(UIViewController *)parent
@@ -124,16 +124,15 @@ CGFloat const EPVCStandardOffset = 15.0;
     [super didMoveToParentViewController:parent];
 }
 
-- (void)setEnabledToolbarItems:(ZSSRichTextEditorToolbar)enabledToolbarItems {
+- (void)setEnabledToolbarItems:(ZSSRichTextEditorToolbar)enabledToolbarItems
+{
     
     _enabledToolbarItems = enabledToolbarItems;
     [self buildToolbar];
-    
 }
 
-
-- (void)setToolbarItemTintColor:(UIColor *)toolbarItemTintColor {
-    
+- (void)setToolbarItemTintColor:(UIColor *)toolbarItemTintColor
+{
     _toolbarItemTintColor = toolbarItemTintColor;
     
     // Update the color
@@ -141,19 +140,15 @@ CGFloat const EPVCStandardOffset = 15.0;
         item.tintColor = [self barButtonItemDefaultColor];
     }
     self.keyboardItem.tintColor = toolbarItemTintColor;
-    
 }
 
-
-- (void)setToolbarItemSelectedTintColor:(UIColor *)toolbarItemSelectedTintColor {
-    
+- (void)setToolbarItemSelectedTintColor:(UIColor *)toolbarItemSelectedTintColor
+{
     _toolbarItemSelectedTintColor = toolbarItemSelectedTintColor;
-    
 }
 
-
-- (NSArray *)itemsForToolbar {
-    
+- (NSArray *)itemsForToolbar
+{
     NSMutableArray *items = [[NSMutableArray alloc] init];
     
     // None
@@ -381,12 +376,10 @@ CGFloat const EPVCStandardOffset = 15.0;
     }
      
     return [NSArray arrayWithArray:items];
-    
 }
 
-
-- (void)buildToolbar {
-    
+- (void)buildToolbar
+{
     // Check to see if we have any toolbar items, if not, add them all
     NSArray *items = [self itemsForToolbar];
     if (items.count == 0 && !(_enabledToolbarItems & ZSSRichTextEditorToolbarNone)) {
@@ -458,7 +451,8 @@ CGFloat const EPVCStandardOffset = 15.0;
     self.toolbarItems = @[leftFixedSpacer, previewButton, centerFlexSpacer, optionsButton, centerFlexSpacer, photoButton, rightFixedSpacer];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
     
     // When restoring state, the navigationController is nil when the view loads,
@@ -486,7 +480,8 @@ CGFloat const EPVCStandardOffset = 15.0;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)viewWillDisappear:(BOOL)animated
+{
     [super viewWillDisappear:animated];
     
     [self.navigationController setToolbarHidden:YES animated:animated];
@@ -573,8 +568,8 @@ CGFloat const EPVCStandardOffset = 15.0;
 
 #pragma mark - Editor Interaction
 
-- (void)setHtml:(NSString *)html {
-    
+- (void)setHtml:(NSString *)html
+{
     if (!self.resourcesLoaded) {
         NSString *filePath = [[NSBundle mainBundle] pathForResource:@"editor" ofType:@"html"];
         NSData *htmlData = [NSData dataWithContentsOfFile:filePath];
@@ -592,30 +587,31 @@ CGFloat const EPVCStandardOffset = 15.0;
     NSString *cleanedHTML = [self removeQuotesFromHTML:self.sourceView.text];
 	NSString *trigger = [NSString stringWithFormat:@"zss_editor.setHTML(\"%@\");", cleanedHTML];
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
-    
 }
 
-- (NSString *)getHTML {
-    
-    NSString *html = [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.getHTML();"];
+- (NSString *)getHTML
+{
+    NSString *trigger = @"getEditorHTML();";
+	NSString *html = [self.editorView stringByEvaluatingJavaScriptFromString:trigger];
     html = [self removeQuotesFromHTML:html];
     html = [self tidyHTML:html];
 	return html;
 }
 
-- (void)dismissKeyboard {
+- (void)dismissKeyboard
+{
     [self.editorView stringByEvaluatingJavaScriptFromString:@"document.activeElement.blur()"];
     [self.sourceView resignFirstResponder];
     [self.view endEditing:YES];
 }
 
-
-- (void)focus {
+- (void)focus
+{
     [self.editorView stringByEvaluatingJavaScriptFromString:@"document.activeElement.focus()"];
 }
 
-
-- (void)showHTMLSource:(ZSSBarButtonItem *)barButtonItem {
+- (void)showHTMLSource:(ZSSBarButtonItem *)barButtonItem
+{
     if (self.sourceView.hidden) {
         self.sourceView.text = [self getHTML];
         self.sourceView.hidden = NO;
@@ -631,118 +627,140 @@ CGFloat const EPVCStandardOffset = 15.0;
     }
 }
 
-- (void)removeFormat {
+- (void)removeFormat
+{
     NSString *trigger = @"zss_editor.removeFormating();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)alignLeft {
+- (void)alignLeft
+{
     NSString *trigger = @"zss_editor.setJustifyLeft();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)alignCenter {
+- (void)alignCenter
+{
     NSString *trigger = @"zss_editor.setJustifyCenter();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)alignRight {
+- (void)alignRight
+{
     NSString *trigger = @"zss_editor.setJustifyRight();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)alignFull {
+- (void)alignFull
+{
     NSString *trigger = @"zss_editor.setJustifyFull();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)setBold {
+- (void)setBold
+{
     NSString *trigger = @"zss_editor.setBold();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)setItalic {
+- (void)setItalic
+{
     NSString *trigger = @"zss_editor.setItalic();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)setSubscript {
+- (void)setSubscript
+{
     NSString *trigger = @"zss_editor.setSubscript();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)setUnderline {
+- (void)setUnderline
+{
     NSString *trigger = @"zss_editor.setUnderline();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)setSuperscript {
+- (void)setSuperscript
+{
     NSString *trigger = @"zss_editor.setSuperscript();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)setStrikethrough {
+- (void)setStrikethrough
+{
     NSString *trigger = @"zss_editor.setStrikeThrough();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)setUnorderedList {
+- (void)setUnorderedList
+{
     NSString *trigger = @"zss_editor.setUnorderedList();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)setOrderedList {
+- (void)setOrderedList
+{
     NSString *trigger = @"zss_editor.setOrderedList();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)setHR {
+- (void)setHR
+{
     NSString *trigger = @"zss_editor.setHorizontalRule();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)setIndent {
+- (void)setIndent
+{
     NSString *trigger = @"zss_editor.setIndent();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)setOutdent {
+- (void)setOutdent
+{
     NSString *trigger = @"zss_editor.setOutdent();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)heading1 {
+- (void)heading1
+{
     NSString *trigger = @"zss_editor.setHeading('h1');";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)heading2 {
+- (void)heading2
+{
     NSString *trigger = @"zss_editor.setHeading('h2');";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)heading3 {
+- (void)heading3
+{
     NSString *trigger = @"zss_editor.setHeading('h3');";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)heading4 {
+- (void)heading4
+{
     NSString *trigger = @"zss_editor.setHeading('h4');";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)heading5 {
+- (void)heading5
+{
     NSString *trigger = @"zss_editor.setHeading('h5');";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)heading6 {
+- (void)heading6
+{
     NSString *trigger = @"zss_editor.setHeading('h6');";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)textColor {
-    
+- (void)textColor
+{
     // Save the selection location
     [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.prepareInsert();"];
     
@@ -752,11 +770,10 @@ CGFloat const EPVCStandardOffset = 15.0;
     colorPicker.tag = 1;
     colorPicker.title = NSLocalizedString(@"Text Color", nil);
     [self.navigationController pushViewController:colorPicker animated:YES];
-    
 }
 
-- (void)bgColor {
-    
+- (void)bgColor
+{
     // Save the selection location
     [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.prepareInsert();"];
     
@@ -766,11 +783,10 @@ CGFloat const EPVCStandardOffset = 15.0;
     colorPicker.tag = 2;
     colorPicker.title = NSLocalizedString(@"BG Color", nil);
     [self.navigationController pushViewController:colorPicker animated:YES];
-    
 }
 
-- (void)setSelectedColor:(UIColor*)color tag:(int)tag {
-   
+- (void)setSelectedColor:(UIColor*)color tag:(int)tag
+{
     NSString *hex = [NSString stringWithFormat:@"#%06x",HexColorFromUIColor(color)];
     NSString *trigger;
     if (tag == 1) {
@@ -779,30 +795,29 @@ CGFloat const EPVCStandardOffset = 15.0;
         trigger = [NSString stringWithFormat:@"zss_editor.setBackgroundColor(\"%@\");", hex];
     }
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
-    
 }
 
-- (void)undo:(ZSSBarButtonItem *)barButtonItem {
+- (void)undo:(ZSSBarButtonItem *)barButtonItem
+{
     [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.undo();"];
 }
 
-- (void)redo:(ZSSBarButtonItem *)barButtonItem {
+- (void)redo:(ZSSBarButtonItem *)barButtonItem
+{
     [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.redo();"];
 }
 
-- (void)insertLink {
-    
+- (void)insertLink
+{
     // Save the selection location
     [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.prepareInsert();"];
     
     // Show the dialog for inserting or editing a link
     [self showInsertLinkDialogWithLink:self.selectedLinkURL title:self.selectedLinkTitle];
-    
 }
 
-
-- (void)showInsertLinkDialogWithLink:(NSString *)url title:(NSString *)title {
-    
+- (void)showInsertLinkDialogWithLink:(NSString *)url title:(NSString *)title
+{
     // Insert Button Title
     NSString *insertButtonTitle = !self.selectedLinkURL ? NSLocalizedString(@"Insert", nil) : NSLocalizedString(@"Update", nil);
     
@@ -831,25 +846,22 @@ CGFloat const EPVCStandardOffset = 15.0;
     }
     
     [self.alertView show];
-    
 }
 
-
-- (void)insertLink:(NSString *)url title:(NSString *)title {
-    
+- (void)insertLink:(NSString *)url title:(NSString *)title
+{
     NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertLink(\"%@\", \"%@\");", url, title];
     [self.editorView stringByEvaluatingJavaScriptFromString:trigger];
-    
 }
 
-
-- (void)updateLink:(NSString *)url title:(NSString *)title {
+- (void)updateLink:(NSString *)url title:(NSString *)title
+{
     NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateLink(\"%@\", \"%@\");", url, title];
     [self.editorView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-
-- (void)dismissAlertView {
+- (void)dismissAlertView
+{
     [self.alertView dismissWithClickedButtonIndex:self.alertView.cancelButtonIndex animated:YES];
 }
 
@@ -870,21 +882,22 @@ CGFloat const EPVCStandardOffset = 15.0;
     [self buildToolbar];
 }
 
-- (void)removeLink {
+- (void)removeLink
+{
     [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.unlink();"];
-}//end
+}
 
-- (void)quickLink {
+- (void)quickLink
+{
     [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.quickLink();"];
 }
 
-- (void)insertImage {
-    
+- (void)insertImage
+{
     // Save the selection location
     [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.prepareInsert();"];
     
     [self showInsertImageDialogWithLink:self.selectedImageURL alt:self.selectedImageAlt];
-    
 }
 
 - (void)showInsertImageDialogWithLink:(NSString *)url alt:(NSString *)alt
@@ -922,7 +935,6 @@ CGFloat const EPVCStandardOffset = 15.0;
     }
     
     [self.alertView show];
-    
 }
 
 - (void)insertImage:(NSString *)url alt:(NSString *)alt
@@ -1002,20 +1014,23 @@ CGFloat const EPVCStandardOffset = 15.0;
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
-    
     NSString *urlString = [[request URL] absoluteString];
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
 		return NO;
-	} else if ([urlString rangeOfString:@"callback://"].location != NSNotFound) {
-        
+	} else if ([urlString rangeOfString:@"callback://"].location != NSNotFound) {        
         // We recieved the callback
-        NSString *className = [urlString stringByReplacingOccurrencesOfString:@"callback://" withString:@""];
-        [self updateToolBarWithButtonName:className];
-        
+        if([[[request URL] absoluteString] isEqualToString:@"callback://user-triggered-change"]) {
+            if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+                [self.delegate editorTextDidChange:self];
+            }
+        } else {
+            NSString *className = [urlString stringByReplacingOccurrencesOfString:@"callback://" withString:@""];
+            [self updateToolBarWithButtonName:className];
+        }
+        return NO;
     }
     
     return YES;
-    
 }
 
 #pragma mark - AlertView
@@ -1038,8 +1053,8 @@ CGFloat const EPVCStandardOffset = 15.0;
     return YES;
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
     if (alertView.tag == 1) {
         if (buttonIndex == 1) {
             UITextField *imageURL = [alertView textFieldAtIndex:0];
@@ -1061,7 +1076,6 @@ CGFloat const EPVCStandardOffset = 15.0;
             }
         }
     }
-    
 }
 
 #pragma mark - Asset Picker

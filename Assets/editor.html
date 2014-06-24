@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html contenteditable="true">
-  <head>
-    <title>ZSSRichTextEditor</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <script type="text/javascript" src="jquery-2.1.1.min.js"></script>
-    <script type="text/javascript" src="fastclick.min.js"></script>
-    <script type="text/javascript" src="js-beautifier.js"></script>
-    <script>
-        window.addEventListener('load', function() {FastClick.attach(document.body);}, false);
-    </script>
-    <script>
-    <!--editor-->
-    </script>
-    <style type="text/css">
-        * {outline: 0px solid transparent; -webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-touch-callout: none;}
-        html, body {padding:0; margin:0; font-family:Arial, Helvetica, sans-serif;}
-        body {padding:10px; overflow-y: scroll; -webkit-overflow-scrolling: touch;}
-        img.zs_active {border: 2px dashed #000;}
-    </style>
-  </head>
-  <body onLoad="zss_editor.init();" onclick="void(0)" id="zss_editor_content"><!--content--></body>
+    <head>
+        <title>ZSSRichTextEditor</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <script type="text/javascript" src="jquery-2.1.1.min.js"></script>
+        <script type="text/javascript" src="fastclick.js"></script>
+        <script type="text/javascript" src="js-beautifier.js"></script>
+        <script>
+            $(function() {
+              FastClick.attach(document.body);
+              });
+            </script>
+        <script>
+            <!--editor-->
+            </script>
+        <style type="text/css">
+            * {outline: 0px solid transparent; -webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-touch-callout: none;}
+            html, body {padding:0; margin:0; font-family:Arial, Helvetica, sans-serif;}
+            body {padding:10px; overflow-y: scroll; -webkit-overflow-scrolling: touch;}
+            img.zs_active {border: 2px dashed #000;}
+            </style>
+    </head>
+    <body onLoad="zss_editor.init();" onclick="void(0)" oninput="window.location='callback://user-triggered-change'" id="zss_editor_content"><!--content--></body>
 </html>

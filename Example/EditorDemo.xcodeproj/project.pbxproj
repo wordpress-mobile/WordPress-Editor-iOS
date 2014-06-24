@@ -32,7 +32,6 @@
 		74CC7102193FB36D007EF4D6 /* OpenSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 74DB7E27193F88AB00223E82 /* OpenSans-Light.ttf */; };
 		74CC7103193FB36D007EF4D6 /* OpenSans-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 74DB7E28193F88AB00223E82 /* OpenSans-LightItalic.ttf */; };
 		74CC7104193FB36D007EF4D6 /* OpenSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 74DB7E29193F88AB00223E82 /* OpenSans-Regular.ttf */; };
-		74DC732E1958702E004F5817 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74DC732D1958702E004F5817 /* Reveal.framework */; };
 		B1341A871FF54DCCAEE52D3A /* libPods-EditorDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 986CDAC2D08B4B22A292BF20 /* libPods-EditorDemo.a */; };
 /* End PBXBuildFile section */
 
@@ -79,7 +78,6 @@
 		74DB7E27193F88AB00223E82 /* OpenSans-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Light.ttf"; sourceTree = SOURCE_ROOT; };
 		74DB7E28193F88AB00223E82 /* OpenSans-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-LightItalic.ttf"; sourceTree = SOURCE_ROOT; };
 		74DB7E29193F88AB00223E82 /* OpenSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Regular.ttf"; sourceTree = SOURCE_ROOT; };
-		74DC732D1958702E004F5817 /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Reveal.framework; path = "../../../../../Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries/Reveal.framework"; sourceTree = "<group>"; };
 		986CDAC2D08B4B22A292BF20 /* libPods-EditorDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EditorDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -91,7 +89,6 @@
 				74587C59193E652B0001052D /* QuartzCore.framework in Frameworks */,
 				748D2A8B193E516000D5ACC8 /* CoreGraphics.framework in Frameworks */,
 				748D2A8D193E516000D5ACC8 /* UIKit.framework in Frameworks */,
-				74DC732E1958702E004F5817 /* Reveal.framework in Frameworks */,
 				748D2A89193E516000D5ACC8 /* Foundation.framework in Frameworks */,
 				B1341A871FF54DCCAEE52D3A /* libPods-EditorDemo.a in Frameworks */,
 			);
@@ -133,7 +130,6 @@
 		748D2A87193E516000D5ACC8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				74DC732D1958702E004F5817 /* Reveal.framework */,
 				74587C58193E652B0001052D /* QuartzCore.framework */,
 				748D2A88193E516000D5ACC8 /* Foundation.framework */,
 				748D2A8A193E516000D5ACC8 /* CoreGraphics.framework */,

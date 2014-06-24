@@ -42,7 +42,6 @@ zss_editor.init = function() {
 			$('img').removeClass('zs_active');
 		}
 	});
-			
 }//end
 
 zss_editor.backuprange = function(){
@@ -327,9 +326,8 @@ zss_editor.getHTML = function() {
     }
 
 	// Get the contents
-	var h = document.getElementById("zss_editor_content").innerHTML;
-
-	return h; 
+	var h = document.getElementById("zss_editor_content").innerHTML;    
+	return h;
 }
 
 zss_editor.isCommandEnabled = function(commandName) {
@@ -467,4 +465,4 @@ zss_editor.focusEditor = function() {
 
 zss_editor.blurEditor = function() {
     $('#zss_editor_content').blur();
-}//end
+}
