@@ -591,8 +591,7 @@ CGFloat const EPVCStandardOffset = 15.0;
 
 - (NSString *)getHTML
 {
-    NSString *trigger = @"getEditorHTML();";
-	NSString *html = [self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    NSString *html = [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.getHTML();"];
     html = [self removeQuotesFromHTML:html];
     html = [self tidyHTML:html];
 	return html;

@@ -47,6 +47,8 @@
 - (void)editorTitleDidChange:(WPEditorViewController *)editorController
 {
     NSLog(@"Editor title changed: %@", self.titleText);
+    NSString *s = editorController.bodyText;
+    NSLog(@"%@", s);
 }
 
 - (void)editorTextDidChange:(WPEditorViewController *)editorController
