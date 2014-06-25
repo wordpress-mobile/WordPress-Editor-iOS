@@ -61,7 +61,7 @@ CGFloat const EPVCStandardOffset = 15.0;
     self.editorView.delegate = self;
     self.editorView.hidesInputAccessoryView = YES;
     self.editorView.scalesPageToFit = YES;
-    self.editorView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+    self.editorView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
     self.editorView.dataDetectorTypes = UIDataDetectorTypeNone;
     self.editorView.scrollView.bounces = NO;
     self.editorView.backgroundColor = [WPStyleGuide itsEverywhereGrey];
@@ -381,8 +381,8 @@ CGFloat const EPVCStandardOffset = 15.0;
 {
     // Check to see if we have any toolbar items, if not, add them all
     NSArray *items = [self itemsForToolbar];
-    if (items.count == 0 && !(self.enabledToolbarItems & ZSSRichTextEditorToolbarNone)) {
-        self.enabledToolbarItems = ZSSRichTextEditorToolbarAll;
+    if (items.count == 0 && !(_enabledToolbarItems & ZSSRichTextEditorToolbarNone)) {
+        _enabledToolbarItems = ZSSRichTextEditorToolbarAll;
         items = [self itemsForToolbar];
     }
     
@@ -426,9 +426,9 @@ CGFloat const EPVCStandardOffset = 15.0;
                                                                    target:self
                                                                    action:@selector(didTouchSettings)];
     
-    previewButton.tintColor = [WPStyleGuide readGrey];
-    photoButton.tintColor = [WPStyleGuide readGrey];
-    optionsButton.tintColor = [WPStyleGuide readGrey];
+    previewButton.tintColor = [WPStyleGuide textFieldPlaceholderGrey];
+    photoButton.tintColor = [WPStyleGuide textFieldPlaceholderGrey];
+    optionsButton.tintColor = [WPStyleGuide textFieldPlaceholderGrey];
     
     previewButton.accessibilityLabel = NSLocalizedString(@"Preview post", nil);
     photoButton.accessibilityLabel = NSLocalizedString(@"Add media", nil);
@@ -447,7 +447,7 @@ CGFloat const EPVCStandardOffset = 15.0;
     leftFixedSpacer.width = -2.0f;
     rightFixedSpacer.width = -5.0f;
     
-    self.toolbarItems = @[leftFixedSpacer, previewButton, centerFlexSpacer, optionsButton, centerFlexSpacer, photoButton, rightFixedSpacer];
+    self.toolbarItems = @[leftFixedSpacer, photoButton, centerFlexSpacer, optionsButton, centerFlexSpacer, previewButton, rightFixedSpacer];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -459,7 +459,7 @@ CGFloat const EPVCStandardOffset = 15.0;
     self.navigationController.navigationBar.translucent = NO;
     self.navigationController.toolbarHidden = NO;
     UIToolbar *toolbar = self.navigationController.toolbar;
-    toolbar.barTintColor = [WPStyleGuide littleEddieGrey];
+    toolbar.barTintColor = [WPStyleGuide itsEverywhereGrey];
     toolbar.translucent = NO;
     toolbar.barStyle = UIBarStyleDefault;
     
