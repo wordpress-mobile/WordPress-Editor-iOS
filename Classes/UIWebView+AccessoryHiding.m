@@ -27,7 +27,8 @@
 static const char * const hackishFixClassName = "UIWebBrowserViewMinusAccessoryView";
 static Class hackishFixClass = Nil;
 
-- (UIView *)hackishlyFoundBrowserView {
+- (UIView *)hackishlyFoundBrowserView
+{
     UIScrollView *scrollView = self.scrollView;
     
     UIView *browserView = nil;
@@ -40,11 +41,13 @@ static Class hackishFixClass = Nil;
     return browserView;
 }
 
-- (id)methodReturningNil {
+- (id)methodReturningNil
+{
     return nil;
 }
 
-- (void)ensureHackishSubclassExistsOfBrowserViewClass:(Class)browserViewClass {
+- (void)ensureHackishSubclassExistsOfBrowserViewClass:(Class)browserViewClass
+{
     if (!hackishFixClass) {
         Class newClass = objc_allocateClassPair(browserViewClass, hackishFixClassName, 0);
         newClass = objc_allocateClassPair(browserViewClass, hackishFixClassName, 0);
@@ -56,12 +59,14 @@ static Class hackishFixClass = Nil;
     }
 }
 
-- (BOOL) hidesInputAccessoryView {
+- (BOOL) hidesInputAccessoryView
+{
     UIView *browserView = [self hackishlyFoundBrowserView];
     return [browserView class] == hackishFixClass;
 }
 
-- (void) setHidesInputAccessoryView:(BOOL)value {
+- (void) setHidesInputAccessoryView:(BOOL)value
+{
     UIView *browserView = [self hackishlyFoundBrowserView];
     if (browserView == nil) {
         return;
