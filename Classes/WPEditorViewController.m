@@ -42,6 +42,11 @@ CGFloat const EPVCStandardOffset = 10.0;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    //Only enable a few buttons by default
+    self.enabledToolbarItems = ZSSRichTextEditorToolbarBold | ZSSRichTextEditorToolbarItalic |
+    ZSSRichTextEditorToolbarUnderline | ZSSRichTextEditorToolbarInsertLink | ZSSRichTextEditorToolbarStrikeThrough;
+    
     [self buildTextViews];
     [self buildToolbar];
     [self buildBottomToolbar];
@@ -103,24 +108,24 @@ CGFloat const EPVCStandardOffset = 10.0;
 
 - (void)setEnabledToolbarItems:(ZSSRichTextEditorToolbar)enabledToolbarItems
 {
-    self.enabledToolbarItems = enabledToolbarItems;
+    _enabledToolbarItems = enabledToolbarItems;
     [self buildToolbar];
 }
 
 - (void)setToolbarItemTintColor:(UIColor *)toolbarItemTintColor
 {
-    self.toolbarItemTintColor = toolbarItemTintColor;
+    _toolbarItemTintColor = toolbarItemTintColor;
     
     // Update the color
     for (ZSSBarButtonItem *item in self.toolbar.items) {
         item.tintColor = [self barButtonItemDefaultColor];
     }
-    self.keyboardItem.tintColor = toolbarItemTintColor;
+    _keyboardItem.tintColor = toolbarItemTintColor;
 }
 
 - (void)setToolbarItemSelectedTintColor:(UIColor *)toolbarItemSelectedTintColor
 {
-    self.toolbarItemSelectedTintColor = toolbarItemSelectedTintColor;
+    _toolbarItemSelectedTintColor = toolbarItemSelectedTintColor;
 }
 
 - (NSArray *)itemsForToolbar
@@ -135,7 +140,7 @@ CGFloat const EPVCStandardOffset = 10.0;
     
     // Bold
     if (self.enabledToolbarItems & ZSSRichTextEditorToolbarBold || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
-        ZSSBarButtonItem *bold = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSbold.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setBold)];
+        ZSSBarButtonItem *bold = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_bold"] style:UIBarButtonItemStylePlain target:self action:@selector(setBold)];
         bold.label = @"bold";
         [items addObject:bold];
         
@@ -143,7 +148,7 @@ CGFloat const EPVCStandardOffset = 10.0;
     
     // Italic
     if (self.enabledToolbarItems & ZSSRichTextEditorToolbarItalic || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
-        ZSSBarButtonItem *italic = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSitalic.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setItalic)];
+        ZSSBarButtonItem *italic = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_italic"] style:UIBarButtonItemStylePlain target:self action:@selector(setItalic)];
         italic.label = @"italic";
         [items addObject:italic];
     }
@@ -164,14 +169,14 @@ CGFloat const EPVCStandardOffset = 10.0;
     
     // Strike Through
     if (self.enabledToolbarItems & ZSSRichTextEditorToolbarStrikeThrough || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
-        ZSSBarButtonItem *strikeThrough = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSstrikethrough.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setStrikethrough)];
+        ZSSBarButtonItem *strikeThrough = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_strikethrough"] style:UIBarButtonItemStylePlain target:self action:@selector(setStrikethrough)];
         strikeThrough.label = @"strikeThrough";
         [items addObject:strikeThrough];
     }
     
     // Underline
     if (self.enabledToolbarItems & ZSSRichTextEditorToolbarUnderline || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
-        ZSSBarButtonItem *underline = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSunderline.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setUnderline)];
+        ZSSBarButtonItem *underline = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_underline"] style:UIBarButtonItemStylePlain target:self action:@selector(setUnderline)];
         underline.label = @"underline";
         [items addObject:underline];
     }
@@ -325,7 +330,7 @@ CGFloat const EPVCStandardOffset = 10.0;
     
     // Insert Link
     if (self.enabledToolbarItems & ZSSRichTextEditorToolbarInsertLink || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
-        ZSSBarButtonItem *insertLink = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSlink.png"] style:UIBarButtonItemStylePlain target:self action:@selector(insertLink)];
+        ZSSBarButtonItem *insertLink = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_link"] style:UIBarButtonItemStylePlain target:self action:@selector(insertLink)];
         insertLink.label = @"link";
         [items addObject:insertLink];
     }
@@ -392,10 +397,10 @@ CGFloat const EPVCStandardOffset = 10.0;
         toolbarCropper.clipsToBounds = YES;
         
         // Use a toolbar so that we can tint
-        UIToolbar *keyboardToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(-7, -1, 44, 44)];
+        UIToolbar *keyboardToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(-15, -1, 44, 44)];
         [toolbarCropper addSubview:keyboardToolbar];
         
-        self.keyboardItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSkeyboard.png"] style:UIBarButtonItemStylePlain target:self action:@selector(dismissKeyboard)];
+        self.keyboardItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_keyboard"] style:UIBarButtonItemStylePlain target:self action:@selector(dismissKeyboard)];
         self.keyboardItem.tintColor = self.barButtonItemSelectedDefaultColor;
         keyboardToolbar.items = @[self.keyboardItem];
         [self.toolbarHolder addSubview:toolbarCropper];
@@ -415,7 +420,7 @@ CGFloat const EPVCStandardOffset = 10.0;
     }
     
     // get the width before we add custom buttons
-    CGFloat toolbarWidth = items.count == 0 ? 0.0f : (CGFloat)(items.count * 39) - 10;
+    CGFloat toolbarWidth = items.count == 0 ? 0.0f : (CGFloat)(items.count * 55) - 10;
     
     if(self.customBarButtonItems != nil)
     {
@@ -619,8 +624,8 @@ CGFloat const EPVCStandardOffset = 10.0;
 - (NSString *)getHTML
 {
     NSString *html = [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.getHTML();"];
-    html = [self removeQuotesFromHTML:html];
-    html = [self tidyHTML:html];
+//    html = [self removeQuotesFromHTML:html];
+//    html = [self tidyHTML:html];
 	return html;
 }
 
