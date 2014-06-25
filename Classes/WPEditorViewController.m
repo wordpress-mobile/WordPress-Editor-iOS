@@ -9,14 +9,16 @@
 #import "ZSSTextView.h"
 #import "UIWebView+AccessoryHiding.h"
 
-CGFloat const EPVCOptionsHeight = 44.0f;
-CGFloat const EPVCStandardOffset = 15.0;
+CGFloat const EPVCTextfieldHeight = 44.0f;
+CGFloat const EPVCStandardOffset = 10.0;
 
-@interface WPEditorViewController ()
+@interface WPEditorViewController () <UIWebViewDelegate, HRColorPickerViewControllerDelegate, UITextFieldDelegate>
+
 @property (nonatomic, strong) UIScrollView *toolBarScroll;
 @property (nonatomic, strong) UIToolbar *toolbar;
 @property (nonatomic, strong) UIView *toolbarHolder;
 @property (nonatomic, strong) NSString *htmlString;
+@property (nonatomic, strong) UITextField *titleTextField;
 @property (nonatomic, strong) UIWebView *editorView;
 @property (nonatomic, strong) ZSSTextView *sourceView;
 @property (nonatomic) CGRect editorViewFrame;
@@ -33,9 +35,6 @@ CGFloat const EPVCStandardOffset = 15.0;
 @property (nonatomic, strong) UIView *optionsSeparatorView;
 @property (nonatomic, strong) UIView *optionsView;
 
-- (NSString *)removeQuotesFromHTML:(NSString *)html;
-- (NSString *)tidyHTML:(NSString *)html;
-- (void)enableToolbarItems:(BOOL)enable;
 @end
 
 @implementation WPEditorViewController
@@ -43,86 +42,64 @@ CGFloat const EPVCStandardOffset = 15.0;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    // Source View
-    CGRect frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
-    self.sourceView = [[ZSSTextView alloc] initWithFrame:frame];
-    self.sourceView.hidden = YES;
-    self.sourceView.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    self.sourceView.autocorrectionType = UITextAutocorrectionTypeNo;
-    self.sourceView.font = [UIFont fontWithName:@"Courier" size:13.0];
-    self.sourceView.autoresizingMask =  UIViewAutoresizingFlexibleHeight;
-    self.sourceView.autoresizesSubviews = YES;
-    self.sourceView.delegate = self;
-    [self.view addSubview:self.sourceView];
-    
-    // Editor View
-    self.editorView = [[UIWebView alloc] initWithFrame:frame];
-    self.editorView.delegate = self;
-    self.editorView.hidesInputAccessoryView = YES;
-    self.editorView.scalesPageToFit = YES;
-    self.editorView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-    self.editorView.dataDetectorTypes = UIDataDetectorTypeNone;
-    self.editorView.scrollView.bounces = NO;
-    self.editorView.backgroundColor = [WPStyleGuide itsEverywhereGrey];
-    [self.view addSubview:self.editorView];
-    
-    // Scrolling View
-    self.toolBarScroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, IS_IPAD ? self.view.frame.size.width : self.view.frame.size.width - 44, 44)];
-    self.toolBarScroll.backgroundColor = [UIColor clearColor];
-    self.toolBarScroll.showsHorizontalScrollIndicator = NO;
-    
-    // Toolbar with icons
-    self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectZero];
-    self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    self.toolbar.backgroundColor = [UIColor clearColor];
-    [self.toolBarScroll addSubview:self.toolbar];
-    self.toolBarScroll.autoresizingMask = self.toolbar.autoresizingMask;
-    
-    // Background Toolbar
-    UIToolbar *backgroundToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
-    backgroundToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    
-    //Lower toolbar
-    [self buildBottomToolbar];
-    
-    // Parent holding view
-    self.toolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, 44)];
-    self.toolbarHolder.autoresizingMask = self.toolbar.autoresizingMask;
-    [self.toolbarHolder addSubview:self.toolBarScroll];
-    [self.toolbarHolder insertSubview:backgroundToolbar atIndex:0];
-    
-    // Hide Keyboard
-    if (!IS_IPAD) {
-        
-        // Toolbar holder used to crop and position toolbar
-        UIView *toolbarCropper = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width-44, 0, 44, 44)];
-        toolbarCropper.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-        toolbarCropper.clipsToBounds = YES;
-        
-        // Use a toolbar so that we can tint
-        UIToolbar *keyboardToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(-7, -1, 44, 44)];
-        [toolbarCropper addSubview:keyboardToolbar];
-        
-        self.keyboardItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSkeyboard.png"] style:UIBarButtonItemStylePlain target:self action:@selector(dismissKeyboard)];
-        keyboardToolbar.items = @[self.keyboardItem];
-        [self.toolbarHolder addSubview:toolbarCropper];
-        
-        UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0.6f, 44)];
-        line.backgroundColor = [UIColor lightGrayColor];
-        line.alpha = 0.7f;
-        [toolbarCropper addSubview:line];
-    }
-    [self.view addSubview:self.toolbarHolder];
-    
-    // Build the keyboard accessory toolbar
+    [self buildTextViews];
     [self buildToolbar];
+    [self buildBottomToolbar];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    // When restoring state, the navigationController is nil when the view loads,
+    // so configure its appearance here instead.
+    self.navigationController.navigationBar.translucent = NO;
+    self.navigationController.toolbarHidden = NO;
+    UIToolbar *toolbar = self.navigationController.toolbar;
+    toolbar.barTintColor = [WPStyleGuide itsEverywhereGrey];
+    toolbar.translucent = NO;
+    toolbar.barStyle = UIBarStyleDefault;
+    
+    if(self.navigationController.navigationBarHidden) {
+        [self.navigationController setNavigationBarHidden:NO animated:animated];
+    }
+    
+    if (self.navigationController.toolbarHidden) {
+        [self.navigationController setToolbarHidden:NO animated:animated];
+    }
+    
+    for (UIView *view in self.navigationController.toolbar.subviews) {
+        [view setExclusiveTouch:YES];
+    }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    [self.navigationController setToolbarHidden:YES animated:animated];
+	[self stopEditing];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+}
+
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
 }
 
 - (void)didMoveToParentViewController:(UIViewController *)parent
 {
     [super didMoveToParentViewController:parent];
 }
+
+#pragma - Toolbar
 
 - (void)setEnabledToolbarItems:(ZSSRichTextEditorToolbar)enabledToolbarItems
 {
@@ -377,8 +354,59 @@ CGFloat const EPVCStandardOffset = 15.0;
     return [NSArray arrayWithArray:items];
 }
 
+#pragma mark - Builders
+
 - (void)buildToolbar
 {
+    // Scrolling View
+    if (!self.toolBarScroll) {
+        self.toolBarScroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, IS_IPAD ? self.view.frame.size.width : self.view.frame.size.width - 44, 44)];
+        self.toolBarScroll.backgroundColor = [UIColor clearColor];
+        self.toolBarScroll.showsHorizontalScrollIndicator = NO;
+    }
+    
+    // Toolbar with icons
+    if (!self.toolbar) {
+        self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectZero];
+        self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        self.toolbar.backgroundColor = [UIColor clearColor];
+    }
+    [self.toolBarScroll addSubview:self.toolbar];
+    self.toolBarScroll.autoresizingMask = self.toolbar.autoresizingMask;
+    
+    // Background Toolbar
+    UIToolbar *backgroundToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
+    backgroundToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    
+    // Parent holding view
+    self.toolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, 44)];
+    self.toolbarHolder.autoresizingMask = self.toolbar.autoresizingMask;
+    [self.toolbarHolder addSubview:self.toolBarScroll];
+    [self.toolbarHolder insertSubview:backgroundToolbar atIndex:0];
+    
+    // Hide Keyboard
+    if (!IS_IPAD) {
+        // Toolbar holder used to crop and position toolbar
+        UIView *toolbarCropper = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width-44, 0, 44, 44)];
+        toolbarCropper.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+        toolbarCropper.clipsToBounds = YES;
+        
+        // Use a toolbar so that we can tint
+        UIToolbar *keyboardToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(-7, -1, 44, 44)];
+        [toolbarCropper addSubview:keyboardToolbar];
+        
+        self.keyboardItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSkeyboard.png"] style:UIBarButtonItemStylePlain target:self action:@selector(dismissKeyboard)];
+        self.keyboardItem.tintColor = self.barButtonItemSelectedDefaultColor;
+        keyboardToolbar.items = @[self.keyboardItem];
+        [self.toolbarHolder addSubview:toolbarCropper];
+        
+        UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0.6f, 44)];
+        line.backgroundColor = [UIColor lightGrayColor];
+        line.alpha = 0.7f;
+        [toolbarCropper addSubview:line];
+    }
+    [self.view addSubview:self.toolbarHolder];
+    
     // Check to see if we have any toolbar items, if not, add them all
     NSArray *items = [self itemsForToolbar];
     if (items.count == 0 && !(_enabledToolbarItems & ZSSRichTextEditorToolbarNone)) {
@@ -405,6 +433,55 @@ CGFloat const EPVCStandardOffset = 15.0;
     
     self.toolbar.frame = CGRectMake(0, 0, toolbarWidth, 44);
     self.toolBarScroll.contentSize = CGSizeMake(self.toolbar.frame.size.width, 44);
+}
+
+- (void)buildTextViews
+{
+    CGFloat viewWidth = CGRectGetWidth(self.view.frame);
+    UIViewAutoresizing mask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    CGRect frame = CGRectMake(EPVCStandardOffset, 0.0f, viewWidth - EPVCStandardOffset, EPVCTextfieldHeight);
+    
+    // Title TextField.
+    if (!self.titleTextField) {
+        self.titleTextField = [[UITextField alloc] initWithFrame:frame];
+        self.titleTextField.returnKeyType = UIReturnKeyDone;
+        self.titleTextField.delegate = self;
+        self.titleTextField.font = [WPStyleGuide postTitleFont];
+        self.titleTextField.textColor = [WPStyleGuide darkAsNightGrey];
+        self.titleTextField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        self.titleTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:(NSLocalizedString(@"Enter title here", @"Label for the title of the post field. Should be the same as WP core.")) attributes:(@{NSForegroundColorAttributeName: [WPStyleGuide textFieldPlaceholderGrey]})];
+        self.titleTextField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
+        self.titleTextField.keyboardType = UIKeyboardTypeAlphabet;
+        self.titleTextField.returnKeyType = UIReturnKeyNext;
+    }
+    [self.view addSubview:self.titleTextField];
+    
+    // Editor View
+    frame = CGRectMake(0.0f, frame.size.height, viewWidth, CGRectGetHeight(self.view.frame) - EPVCTextfieldHeight);
+    if (!self.editorView) {
+        self.editorView = [[UIWebView alloc] initWithFrame:frame];
+        self.editorView.delegate = self;
+        self.editorView.hidesInputAccessoryView = YES;
+        self.editorView.autoresizingMask = mask;
+        self.editorView.scalesPageToFit = YES;
+        self.editorView.dataDetectorTypes = UIDataDetectorTypeNone;
+        self.editorView.scrollView.bounces = NO;
+        self.editorView.backgroundColor = [WPStyleGuide itsEverywhereGrey];
+    }
+    [self.view addSubview:self.editorView];
+    
+    // Source View
+    if (!self.sourceView) {
+        self.sourceView = [[ZSSTextView alloc] initWithFrame:frame];
+        self.sourceView.hidden = YES;
+        self.sourceView.autocapitalizationType = UITextAutocapitalizationTypeNone;
+        self.sourceView.autocorrectionType = UITextAutocorrectionTypeNo;
+        self.sourceView.font = [UIFont fontWithName:@"Courier" size:13.0];
+        self.sourceView.autoresizingMask =  UIViewAutoresizingFlexibleHeight;
+        self.sourceView.autoresizesSubviews = YES;
+        self.sourceView.delegate = self;
+    }
+    [self.view addSubview:self.sourceView];
 }
 
 - (void)buildBottomToolbar
@@ -450,76 +527,16 @@ CGFloat const EPVCStandardOffset = 15.0;
     self.toolbarItems = @[leftFixedSpacer, photoButton, centerFlexSpacer, optionsButton, centerFlexSpacer, previewButton, rightFixedSpacer];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    
-    // When restoring state, the navigationController is nil when the view loads,
-    // so configure its appearance here instead.
-    self.navigationController.navigationBar.translucent = NO;
-    self.navigationController.toolbarHidden = NO;
-    UIToolbar *toolbar = self.navigationController.toolbar;
-    toolbar.barTintColor = [WPStyleGuide itsEverywhereGrey];
-    toolbar.translucent = NO;
-    toolbar.barStyle = UIBarStyleDefault;
-    
-    if(self.navigationController.navigationBarHidden) {
-        [self.navigationController setNavigationBarHidden:NO animated:animated];
-    }
-    
-    if (self.navigationController.toolbarHidden) {
-        [self.navigationController setToolbarHidden:NO animated:animated];
-    }
-    
-    for (UIView *view in self.navigationController.toolbar.subviews) {
-        [view setExclusiveTouch:YES];
-    }
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillHideNotification object:nil];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    
-    [self.navigationController setToolbarHidden:YES animated:animated];
-	[self stopEditing];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-}
-
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (void)focusTextEditor
-{
-    self.editorView.keyboardDisplayRequiresUserAction = NO;
-    NSString *js = [NSString stringWithFormat:@"zss_editor.focusEditor();"];
-    [self.editorView stringByEvaluatingJavaScriptFromString:js];
-}
-
-- (void)blurTextEditor
-{
-    NSString *js = [NSString stringWithFormat:@"zss_editor.blurEditor();"];
-    [self.editorView stringByEvaluatingJavaScriptFromString:js];
-}
-
 #pragma mark - Getters and Setters
 
 - (NSString*)titleText
 {
-    //return self.titleTextField.text;
+    return self.titleTextField.text;
 }
 
 - (void) setTitleText:(NSString*)titleText
 {
-    //[self.titleTextField setText:titleText];
+    [self.titleTextField setText:titleText];
 }
 
 - (NSString*)bodyText
@@ -559,10 +576,21 @@ CGFloat const EPVCStandardOffset = 15.0;
 
 - (void)stopEditing
 {
-    // With the titleTextField as a subview of textField, we need to resign and
-    // end editing to prevent the textField from becomeing first responder.
     [self dismissKeyboard];
     [self.view endEditing:YES];
+}
+
+- (void)focusTextEditor
+{
+    self.editorView.keyboardDisplayRequiresUserAction = NO;
+    NSString *js = [NSString stringWithFormat:@"zss_editor.focusEditor();"];
+    [self.editorView stringByEvaluatingJavaScriptFromString:js];
+}
+
+- (void)blurTextEditor
+{
+    NSString *js = [NSString stringWithFormat:@"zss_editor.blurEditor();"];
+    [self.editorView stringByEvaluatingJavaScriptFromString:js];
 }
 
 #pragma mark - Editor Interaction
@@ -615,13 +643,13 @@ CGFloat const EPVCStandardOffset = 15.0;
         self.sourceView.hidden = NO;
         barButtonItem.tintColor = [UIColor blackColor];
         self.editorView.hidden = YES;
-        [self enableToolbarItems:NO];
+        [self enableToolbarItems:NO shouldShowSourceButton:YES];
     } else {
         [self setHtml:self.sourceView.text];
         barButtonItem.tintColor = [self barButtonItemDefaultColor];
         self.sourceView.hidden = YES;
         self.editorView.hidden = NO;
-        [self enableToolbarItems:YES];
+        [self enableToolbarItems:YES shouldShowSourceButton:YES];
     }
 }
 
@@ -990,22 +1018,36 @@ CGFloat const EPVCStandardOffset = 15.0;
     
 }
 
-#pragma mark - UITextView Delegate
-    
-- (void)textViewDidChange:(UITextView *)textView
+#pragma mark - UITextField Delegate
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
-    CGRect line = [textView caretRectForPosition:textView.selectedTextRange.start];
-    CGFloat overflow = line.origin.y + line.size.height - ( textView.contentOffset.y + textView.bounds.size.height - textView.contentInset.bottom - textView.contentInset.top );
-    if ( overflow > 0 ) {
-        // We are at the bottom of the visible text and introduced a line feed, scroll down (iOS 7 does not do it)
-        // Scroll caret to visible area
-        CGPoint offset = textView.contentOffset;
-        offset.y += overflow + 7; // leave 7 pixels margin
-        // Cannot animate with setContentOffset:animated: or caret will not appear
-        [UIView animateWithDuration:.2 animations:^{
-            [textView setContentOffset:offset];
-        }];
+    if (textField == self.titleTextField) {
+        [self enableToolbarItems:NO shouldShowSourceButton:NO];
+        if ([self.delegate respondsToSelector: @selector(editorShouldBeginEditing:)]) {
+            return [self.delegate editorShouldBeginEditing:self];
+        }
     }
+    return YES;
+}
+    
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    if (textField == self.titleTextField) {
+        [self setTitle:[textField.text stringByReplacingCharactersInRange:range withString:string]];
+        if ([self.delegate respondsToSelector: @selector(editorTitleDidChange:)]) {
+            [self.delegate editorTitleDidChange:self];
+        }
+    }
+    return YES;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    if (textField == self.titleTextField) {
+        [self.titleTextField resignFirstResponder];
+    }
+    return YES;
 }
 
 #pragma mark - UIWebView Delegate
@@ -1154,8 +1196,12 @@ CGFloat const EPVCStandardOffset = 15.0;
             CGRect sourceFrame = self.sourceView.frame;
             sourceFrame.size.height = self.view.frame.size.height;
             self.sourceView.frame = sourceFrame;
-        } completion:nil];
-        
+        } completion:^(BOOL finished) {
+            if (self.sourceView.hidden) {
+                //Turn the source icon back "on"
+                [self enableToolbarItems:YES shouldShowSourceButton:YES];
+            }
+        }];
 	}
 }
 
@@ -1183,12 +1229,11 @@ CGFloat const EPVCStandardOffset = 15.0;
 
 - (UIColor *)barButtonItemDefaultColor
 {
-    
     if (self.toolbarItemTintColor) {
         return self.toolbarItemTintColor;
     }
     
-    return [UIColor colorWithRed:0.0f/255.0f green:122.0f/255.0f blue:255.0f/255.0f alpha:1.0f];
+    return [WPStyleGuide whisperGrey];
 }
 
 - (UIColor *)barButtonItemSelectedDefaultColor
@@ -1196,7 +1241,7 @@ CGFloat const EPVCStandardOffset = 15.0;
     if (self.toolbarItemSelectedTintColor) {
         return self.toolbarItemSelectedTintColor;
     }
-    return [UIColor blackColor];
+    return [WPStyleGuide newKidOnTheBlockBlue];
 }
 
 - (NSString *)stringByDecodingURLFormat:(NSString *)string
@@ -1206,11 +1251,13 @@ CGFloat const EPVCStandardOffset = 15.0;
     return result;
 }
 
-- (void)enableToolbarItems:(BOOL)enable
+- (void)enableToolbarItems:(BOOL)enable shouldShowSourceButton:(BOOL)showSource
 {
     NSArray *items = self.toolbar.items;
     for (ZSSBarButtonItem *item in items) {
-        if (![item.label isEqualToString:@"source"]) {
+        if ([item.label isEqualToString:@"source"]) {
+            item.enabled = showSource;
+        } else {
             item.enabled = enable;
         }
     }

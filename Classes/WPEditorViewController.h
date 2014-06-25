@@ -20,7 +20,7 @@
 
 @class ZSSBarButtonItem;
 
-@interface WPEditorViewController : UIViewController <UIWebViewDelegate, HRColorPickerViewControllerDelegate, UITextViewDelegate>
+@interface WPEditorViewController : UIViewController
 
 @property (nonatomic, weak) id<WPEditorViewControllerDelegate> delegate;
 @property (nonatomic, copy) NSString *titleText;
