@@ -57,6 +57,7 @@ CGFloat const EPVCStandardOffset = 10.0;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    self.view.backgroundColor = [UIColor whiteColor];
     
     // When restoring state, the navigationController is nil when the view loads,
     // so configure its appearance here instead.
@@ -402,7 +403,7 @@ CGFloat const EPVCStandardOffset = 10.0;
         toolbarCropper.clipsToBounds = YES;
         
         // Use a toolbar so that we can tint
-        UIToolbar *keyboardToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(-15, -1, 44, 44)];
+        UIToolbar *keyboardToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(-13, -1, 55, 44)];
         [toolbarCropper addSubview:keyboardToolbar];
         
         self.keyboardItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_keyboard"] style:UIBarButtonItemStylePlain target:self action:@selector(dismissKeyboard)];
@@ -425,7 +426,7 @@ CGFloat const EPVCStandardOffset = 10.0;
     }
     
     // get the width before we add custom buttons
-    CGFloat toolbarWidth = items.count == 0 ? 0.0f : (CGFloat)(items.count * 55) - 10;
+    CGFloat toolbarWidth = items.count == 0 ? 0.0f : (CGFloat)(items.count * 55);
     
     if(self.customBarButtonItems != nil)
     {
