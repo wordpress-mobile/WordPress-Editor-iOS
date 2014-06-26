@@ -8,6 +8,7 @@
 #import "HRColorUtil.h"
 #import "ZSSTextView.h"
 #import "UIWebView+AccessoryHiding.h"
+#import "WPInsetTextField.h"
 
 CGFloat const EPVCTextfieldHeight = 44.0f;
 CGFloat const EPVCStandardOffset = 10.0;
@@ -18,7 +19,7 @@ CGFloat const EPVCStandardOffset = 10.0;
 @property (nonatomic, strong) UIToolbar *toolbar;
 @property (nonatomic, strong) UIView *toolbarHolder;
 @property (nonatomic, strong) NSString *htmlString;
-@property (nonatomic, strong) UITextField *titleTextField;
+@property (nonatomic, strong) WPInsetTextField *titleTextField;
 @property (nonatomic, strong) UIWebView *editorView;
 @property (nonatomic, strong) ZSSTextView *sourceView;
 @property (nonatomic) CGRect editorViewFrame;
@@ -45,7 +46,8 @@ CGFloat const EPVCStandardOffset = 10.0;
     
     //Only enable a few buttons by default
     self.enabledToolbarItems = ZSSRichTextEditorToolbarBold | ZSSRichTextEditorToolbarItalic |
-    ZSSRichTextEditorToolbarUnderline | ZSSRichTextEditorToolbarInsertLink | ZSSRichTextEditorToolbarStrikeThrough;
+                               ZSSRichTextEditorToolbarUnderline | ZSSRichTextEditorToolbarInsertLink |
+                               ZSSRichTextEditorToolbarRemoveLink | ZSSRichTextEditorToolbarStrikeThrough;
     
     [self buildTextViews];
     [self buildToolbar];
@@ -381,11 +383,13 @@ CGFloat const EPVCStandardOffset = 10.0;
     
     // Background Toolbar
     UIToolbar *backgroundToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
+    backgroundToolbar.backgroundColor = [UIColor clearColor];
     backgroundToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
     // Parent holding view
     self.toolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, 44)];
     self.toolbarHolder.autoresizingMask = self.toolbar.autoresizingMask;
+    self.toolbarHolder.backgroundColor = [UIColor clearColor];
     [self.toolbarHolder addSubview:self.toolBarScroll];
     [self.toolbarHolder insertSubview:backgroundToolbar atIndex:0];
     
@@ -393,6 +397,7 @@ CGFloat const EPVCStandardOffset = 10.0;
     if (!IS_IPAD) {
         // Toolbar holder used to crop and position toolbar
         UIView *toolbarCropper = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width-44, 0, 44, 44)];
+        toolbarCropper.backgroundColor = [UIColor clearColor];
         toolbarCropper.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
         toolbarCropper.clipsToBounds = YES;
         
@@ -430,12 +435,10 @@ CGFloat const EPVCStandardOffset = 10.0;
             toolbarWidth += buttonItem.customView.frame.size.width + 11.0f;
         }
     }
-    
-    self.toolbar.items = items;
     for (ZSSBarButtonItem *item in items) {
         item.tintColor = [self barButtonItemDefaultColor];
     }
-    
+    self.toolbar.items = items;
     self.toolbar.frame = CGRectMake(0, 0, toolbarWidth, 44);
     self.toolBarScroll.contentSize = CGSizeMake(self.toolbar.frame.size.width, 44);
 }
@@ -444,11 +447,11 @@ CGFloat const EPVCStandardOffset = 10.0;
 {
     CGFloat viewWidth = CGRectGetWidth(self.view.frame);
     UIViewAutoresizing mask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    CGRect frame = CGRectMake(EPVCStandardOffset, 0.0f, viewWidth - EPVCStandardOffset, EPVCTextfieldHeight);
+    CGRect frame = CGRectMake(0.0f, 0.0f, viewWidth, EPVCTextfieldHeight);
     
     // Title TextField.
     if (!self.titleTextField) {
-        self.titleTextField = [[UITextField alloc] initWithFrame:frame];
+        self.titleTextField = [[WPInsetTextField alloc] initWithFrame:frame];
         self.titleTextField.returnKeyType = UIReturnKeyDone;
         self.titleTextField.delegate = self;
         self.titleTextField.font = [WPStyleGuide postTitleFont];
@@ -472,7 +475,7 @@ CGFloat const EPVCStandardOffset = 10.0;
         self.editorView.scalesPageToFit = YES;
         self.editorView.dataDetectorTypes = UIDataDetectorTypeNone;
         self.editorView.scrollView.bounces = NO;
-        self.editorView.backgroundColor = [WPStyleGuide itsEverywhereGrey];
+        self.editorView.backgroundColor = [UIColor whiteColor];
     }
     [self.view addSubview:self.editorView];
     
