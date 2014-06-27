@@ -861,7 +861,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     NSString *insertButtonTitle = !self.selectedLinkURL ? NSLocalizedString(@"Insert", nil) : NSLocalizedString(@"Update", nil);
     
     self.alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Insert Link", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:insertButtonTitle, nil];
-    self.alertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
+    self.alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
     self.alertView.tag = WPLinkAlertViewTag;
     UITextField *linkURL = [self.alertView textFieldAtIndex:0];
     linkURL.placeholder = NSLocalizedString(@"URL (required)", nil);
@@ -877,23 +877,15 @@ NSInteger const WPLinkAlertViewTag = 92;
     linkURL.rightView = am;
     linkURL.rightViewMode = UITextFieldViewModeAlways;
     
-    UITextField *alt = [self.alertView textFieldAtIndex:1];
-    alt.secureTextEntry = NO;
-    alt.placeholder = NSLocalizedString(@"Title", nil);
-    if (title) {
-        alt.text = title;
-    }
-    
     __weak __typeof(self)weakSelf = self;
     self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
         if (alertView.tag == WPLinkAlertViewTag) {
             if (buttonIndex == 1) {
                 UITextField *linkURL = [alertView textFieldAtIndex:0];
-                UITextField *title = [alertView textFieldAtIndex:1];
                 if (!self.selectedLinkURL) {
-                    [self insertLink:linkURL.text title:title.text];
+                    [self insertLink:linkURL.text title:@""];
                 } else {
-                    [self updateLink:linkURL.text title:title.text];
+                    [self updateLink:linkURL.text title:@""];
                 }
             }
         }
