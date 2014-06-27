@@ -4,6 +4,7 @@
 #import <WordPress-iOS-Shared/WPStyleGuide.h>
 #import <WordPress-iOS-Shared/WPTableViewCell.h>
 #import <WordPress-iOS-Shared/UIImage+Util.h>
+#import <UIAlertView+Blocks/UIAlertView+Blocks.h>
 #import "ZSSBarButtonItem.h"
 #import "HRColorUtil.h"
 #import "ZSSTextView.h"
@@ -12,6 +13,8 @@
 
 CGFloat const EPVCTextfieldHeight = 44.0f;
 CGFloat const EPVCStandardOffset = 10.0;
+NSInteger const WPImageAlertViewTag = 91;
+NSInteger const WPLinkAlertViewTag = 92;
 
 @interface WPEditorViewController () <UIWebViewDelegate, HRColorPickerViewControllerDelegate, UITextFieldDelegate>
 
@@ -859,7 +862,7 @@ CGFloat const EPVCStandardOffset = 10.0;
     
     self.alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Insert Link", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:insertButtonTitle, nil];
     self.alertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
-    self.alertView.tag = 2;
+    self.alertView.tag = WPLinkAlertViewTag;
     UITextField *linkURL = [self.alertView textFieldAtIndex:0];
     linkURL.placeholder = NSLocalizedString(@"URL (required)", nil);
     if (url) {
@@ -880,6 +883,39 @@ CGFloat const EPVCStandardOffset = 10.0;
     if (title) {
         alt.text = title;
     }
+    
+    __weak __typeof(self)weakSelf = self;
+    self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
+        if (alertView.tag == WPLinkAlertViewTag) {
+            if (buttonIndex == 1) {
+                UITextField *linkURL = [alertView textFieldAtIndex:0];
+                UITextField *title = [alertView textFieldAtIndex:1];
+                if (!self.selectedLinkURL) {
+                    [self insertLink:linkURL.text title:title.text];
+                } else {
+                    [self updateLink:linkURL.text title:title.text];
+                }
+            }
+        }
+        
+        // Don't dismiss the keyboard
+        // Hack from http://stackoverflow.com/a/7601631
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if([weakSelf.editorView resignFirstResponder] || [weakSelf.titleTextField resignFirstResponder]){
+                [weakSelf.editorView becomeFirstResponder];
+            }
+        });
+    };
+    
+    self.alertView.shouldEnableFirstOtherButtonBlock = ^BOOL(UIAlertView *alertView) {
+        if (alertView.tag == WPLinkAlertViewTag) {
+            UITextField *textField = [alertView textFieldAtIndex:0];
+            if ([textField.text length] == 0) {
+                return NO;
+            }
+        }
+        return YES;
+    };
     
     [self.alertView show];
 }
@@ -943,7 +979,7 @@ CGFloat const EPVCStandardOffset = 10.0;
     
     self.alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Insert Image", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:insertButtonTitle, nil];
     self.alertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
-    self.alertView.tag = 1;
+    self.alertView.tag = WPImageAlertViewTag;
     UITextField *imageURL = [self.alertView textFieldAtIndex:0];
     imageURL.placeholder = NSLocalizedString(@"URL (required)", nil);
     if (url) {
@@ -969,6 +1005,40 @@ CGFloat const EPVCStandardOffset = 10.0;
     if (alt) {
         alt1.text = alt;
     }
+    
+    __weak __typeof(self)weakSelf = self;
+    self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
+        if (alertView.tag == WPImageAlertViewTag) {
+            if (buttonIndex == 1) {
+                UITextField *imageURL = [alertView textFieldAtIndex:0];
+                UITextField *alt = [alertView textFieldAtIndex:1];
+                if (!self.selectedImageURL) {
+                    [self insertImage:imageURL.text alt:alt.text];
+                } else {
+                    [self updateImage:imageURL.text alt:alt.text];
+                }
+            }
+        }
+        
+        // Don't dismiss the keyboard
+        // Hack from http://stackoverflow.com/a/7601631
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if([weakSelf.editorView resignFirstResponder] || [weakSelf.titleTextField resignFirstResponder]){
+                [weakSelf.editorView becomeFirstResponder];
+            }
+        });
+    };
+    
+    self.alertView.shouldEnableFirstOtherButtonBlock = ^BOOL(UIAlertView *alertView) {
+        if (alertView.tag == WPImageAlertViewTag) {
+            UITextField *textField = [alertView textFieldAtIndex:0];
+            UITextField *textField2 = [alertView textFieldAtIndex:1];
+            if ([textField.text length] == 0 || [textField2.text length] == 0) {
+                return NO;
+            }
+        }
+        return YES;
+    };
     
     [self.alertView show];
 }
@@ -1081,51 +1151,6 @@ CGFloat const EPVCStandardOffset = 10.0;
     }
     
     return YES;
-}
-
-#pragma mark - AlertView
-
-- (BOOL)alertViewShouldEnableFirstOtherButton:(UIAlertView *)alertView
-{
-    if (alertView.tag == 1) {
-        UITextField *textField = [alertView textFieldAtIndex:0];
-        UITextField *textField2 = [alertView textFieldAtIndex:1];
-        if ([textField.text length] == 0 || [textField2.text length] == 0) {
-            return NO;
-        }
-    } else if (alertView.tag == 2) {
-        UITextField *textField = [alertView textFieldAtIndex:0];
-        if ([textField.text length] == 0) {
-            return NO;
-        }
-    }
-    
-    return YES;
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (alertView.tag == 1) {
-        if (buttonIndex == 1) {
-            UITextField *imageURL = [alertView textFieldAtIndex:0];
-            UITextField *alt = [alertView textFieldAtIndex:1];
-            if (!self.selectedImageURL) {
-                [self insertImage:imageURL.text alt:alt.text];
-            } else {
-                [self updateImage:imageURL.text alt:alt.text];
-            }
-        }
-    } else if (alertView.tag == 2) {
-        if (buttonIndex == 1) {
-            UITextField *linkURL = [alertView textFieldAtIndex:0];
-            UITextField *title = [alertView textFieldAtIndex:1];
-            if (!self.selectedLinkURL) {
-                [self insertLink:linkURL.text title:title.text];
-            } else {
-                [self updateLink:linkURL.text title:title.text];
-            }
-        }
-    }
 }
 
 #pragma mark - Asset Picker
