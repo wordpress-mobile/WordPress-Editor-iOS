@@ -1191,7 +1191,12 @@ NSInteger const WPLinkAlertViewTag = 92;
 	if ([notification.name isEqualToString:UIKeyboardWillShowNotification]) {
         
         self.isShowingKeyboard = YES;
+        if ([self shouldNavbarWhileTyping]) {
+            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+            [self.navigationController setNavigationBarHidden:YES animated:YES];
+        }
         [self.navigationController setToolbarHidden:YES animated:NO];
+        
         [UIView animateWithDuration:duration delay:0 options:animationOptions animations:^{
             // Toolbar
             CGRect frame = self.toolbarHolder.frame;
@@ -1213,7 +1218,11 @@ NSInteger const WPLinkAlertViewTag = 92;
         } completion:nil];
 	} else {
         self.isShowingKeyboard = NO;
+        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+        [self.navigationController setNavigationBarHidden:NO animated:YES];
         [self.navigationController setToolbarHidden:NO animated:NO];
+        [self.navigationController setToolbarHidden:NO animated:NO];
+        
 		[UIView animateWithDuration:duration delay:0 options:animationOptions animations:^{
             CGRect frame = self.toolbarHolder.frame;
             frame.origin.y = self.view.frame.size.height + keyboardHeight;
@@ -1238,6 +1247,24 @@ NSInteger const WPLinkAlertViewTag = 92;
             }
         }];
 	}
+}
+
+- (BOOL)shouldNavbarWhileTyping
+{
+    /*
+     Never hide for the iPad.
+     Always hide on the iPhone except for portrait + external keyboard
+     */
+    if (IS_IPAD) {
+        return NO;
+    }
+    
+    BOOL isLandscape = UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
+    if (!isLandscape) {
+        return NO;
+    }
+    
+    return YES;
 }
 
 #pragma mark - Utilities
