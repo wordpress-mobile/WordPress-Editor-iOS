@@ -369,10 +369,10 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 - (void)refreshUI
 {
-    if(self.titleText != nil || self.titleText != 0) {
+    if(self.titleText != nil || self.titleText.length != 0) {
         self.title = self.titleText;
     }
-    if(self.bodyText == nil || self.bodyText == 0) {
+    if(!self.bodyText || self.bodyText.length == 0) {
         self.tapToStartWritingLabel.hidden = NO;
         self.textView.text = @"";
     } else {
