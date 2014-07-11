@@ -50,8 +50,8 @@ NSInteger const WPLinkAlertViewTag = 92;
     
     //Only enable a few buttons by default
     self.enabledToolbarItems = ZSSRichTextEditorToolbarBold | ZSSRichTextEditorToolbarItalic |
-                               ZSSRichTextEditorToolbarUnderline | ZSSRichTextEditorToolbarInsertLink |
-                               ZSSRichTextEditorToolbarRemoveLink | ZSSRichTextEditorToolbarStrikeThrough;
+                               ZSSRichTextEditorToolbarUnderline | ZSSRichTextEditorToolbarBlockQuote |
+                               ZSSRichTextEditorToolbarInsertLink | ZSSRichTextEditorToolbarUnorderedList;
     
     [self buildTextViews];
     [self buildToolbar];
@@ -188,6 +188,13 @@ NSInteger const WPLinkAlertViewTag = 92;
         ZSSBarButtonItem *underline = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_underline"] style:UIBarButtonItemStylePlain target:self action:@selector(setUnderline)];
         underline.label = @"underline";
         [items addObject:underline];
+    }
+    
+    // Block quote
+    if (self.enabledToolbarItems & ZSSRichTextEditorToolbarBlockQuote || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *blockQuote = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_quote"] style:UIBarButtonItemStylePlain target:self action:@selector(setBlockQuote)];
+        blockQuote.label = @"blockQuote";
+        [items addObject:blockQuote];
     }
     
     // Remove Format
@@ -707,132 +714,207 @@ NSInteger const WPLinkAlertViewTag = 92;
 {
     NSString *trigger = @"zss_editor.removeFormating();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)alignLeft
 {
     NSString *trigger = @"zss_editor.setJustifyLeft();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)alignCenter
 {
     NSString *trigger = @"zss_editor.setJustifyCenter();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)alignRight
 {
     NSString *trigger = @"zss_editor.setJustifyRight();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)alignFull
 {
     NSString *trigger = @"zss_editor.setJustifyFull();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)setBold
 {
     NSString *trigger = @"zss_editor.setBold();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
+}
+
+- (void)setBlockQuote
+{
+    NSString *trigger = @"zss_editor.setBlockquote();";
+	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)setItalic
 {
     NSString *trigger = @"zss_editor.setItalic();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)setSubscript
 {
     NSString *trigger = @"zss_editor.setSubscript();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)setUnderline
 {
     NSString *trigger = @"zss_editor.setUnderline();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)setSuperscript
 {
     NSString *trigger = @"zss_editor.setSuperscript();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)setStrikethrough
 {
     NSString *trigger = @"zss_editor.setStrikeThrough();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)setUnorderedList
 {
     NSString *trigger = @"zss_editor.setUnorderedList();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)setOrderedList
 {
     NSString *trigger = @"zss_editor.setOrderedList();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)setHR
 {
     NSString *trigger = @"zss_editor.setHorizontalRule();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)setIndent
 {
     NSString *trigger = @"zss_editor.setIndent();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)setOutdent
 {
     NSString *trigger = @"zss_editor.setOutdent();";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)heading1
 {
     NSString *trigger = @"zss_editor.setHeading('h1');";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)heading2
 {
     NSString *trigger = @"zss_editor.setHeading('h2');";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)heading3
 {
     NSString *trigger = @"zss_editor.setHeading('h3');";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)heading4
 {
     NSString *trigger = @"zss_editor.setHeading('h4');";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)heading5
 {
     NSString *trigger = @"zss_editor.setHeading('h5');";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)heading6
 {
     NSString *trigger = @"zss_editor.setHeading('h6');";
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)textColor
@@ -871,16 +953,25 @@ NSInteger const WPLinkAlertViewTag = 92;
         trigger = [NSString stringWithFormat:@"zss_editor.setBackgroundColor(\"%@\");", hex];
     }
 	[self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)undo:(ZSSBarButtonItem *)barButtonItem
 {
     [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.undo();"];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)redo:(ZSSBarButtonItem *)barButtonItem
 {
     [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.redo();"];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)insertLink
@@ -953,12 +1044,18 @@ NSInteger const WPLinkAlertViewTag = 92;
 {
     NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertLink(\"%@\", \"%@\");", url, title];
     [self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)updateLink:(NSString *)url title:(NSString *)title
 {
     NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateLink(\"%@\", \"%@\");", url, title];
     [self.editorView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
 }
 
 - (void)dismissAlertView
@@ -1263,7 +1360,6 @@ NSInteger const WPLinkAlertViewTag = 92;
         } completion:nil];
 	} else {
         self.isShowingKeyboard = NO;
-        
         [self refreshUI];
         
         [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
