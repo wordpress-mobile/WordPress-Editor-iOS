@@ -26,7 +26,8 @@ NSInteger const WPLinkAlertViewTag = 92;
 @property (nonatomic, strong) UIWebView *editorView;
 @property (nonatomic, strong) ZSSTextView *sourceView;
 @property (nonatomic) CGRect editorViewFrame;
-@property (nonatomic) BOOL resourcesLoaded;
+@property (assign) BOOL resourcesLoaded;
+@property (nonatomic, strong) NSString *editorPlaceholderText;
 @property (nonatomic, strong) NSArray *editorItemsEnabled;
 @property (nonatomic, strong) UIAlertView *alertView;
 @property (nonatomic, strong) NSString *selectedLinkURL;
@@ -85,6 +86,8 @@ NSInteger const WPLinkAlertViewTag = 92;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillHideNotification object:nil];
+    
+    [self refreshUI];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -449,6 +452,11 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (void)buildTextViews
 {
+    if (!self.editorPlaceholderText) {
+        NSString *placeholderText = NSLocalizedString(@"Write your story here ...", @"Placeholder for the main body text.");
+        self.editorPlaceholderText = [NSString stringWithFormat:@"<div style=\"color:#c6c6c6;\">%@</div>", placeholderText];
+    }
+    
     CGFloat viewWidth = CGRectGetWidth(self.view.frame);
     UIViewAutoresizing mask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     CGRect frame = CGRectMake(0.0f, 0.0f, viewWidth, EPVCTextfieldHeight);
@@ -462,7 +470,7 @@ NSInteger const WPLinkAlertViewTag = 92;
         self.titleTextField.backgroundColor = [UIColor whiteColor];
         self.titleTextField.textColor = [WPStyleGuide darkAsNightGrey];
         self.titleTextField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        self.titleTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:(NSLocalizedString(@"Enter title here", @"Label for the title of the post field. Should be the same as WP core.")) attributes:(@{NSForegroundColorAttributeName: [WPStyleGuide textFieldPlaceholderGrey]})];
+        self.titleTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:(NSLocalizedString(@"Post title", @"Label for the title of the post field.")) attributes:(@{NSForegroundColorAttributeName: [WPStyleGuide textFieldPlaceholderGrey]})];
         self.titleTextField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
         self.titleTextField.keyboardType = UIKeyboardTypeAlphabet;
         self.titleTextField.returnKeyType = UIReturnKeyNext;
@@ -593,6 +601,35 @@ NSInteger const WPLinkAlertViewTag = 92;
     [self.view endEditing:YES];
 }
 
+- (void)refreshUI
+{
+    if(self.titleText != nil || self.titleText.length != 0) {
+        self.title = self.titleText;
+    }
+    
+    if ([self isBodyTextEmpty]) {
+        [self setHtml:self.editorPlaceholderText];
+    }
+}
+
+- (BOOL)isBodyTextEmpty
+{
+    if(!self.bodyText
+       || self.bodyText.length == 0
+       || [[self.bodyText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@"<br />"]) {
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)isEditorPlaceholderTextVisible
+{
+    if([[self.bodyText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:self.editorPlaceholderText]) {
+        return YES;
+    }
+    return NO;
+}
+
 - (void)focusTextEditor
 {
     self.editorView.keyboardDisplayRequiresUserAction = NO;
@@ -633,7 +670,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 {
     NSString *html = [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.getHTML();"];
 //    html = [self removeQuotesFromHTML:html];
-//    html = [self tidyHTML:html];
+    html = [self tidyHTML:html];
 	return html;
 }
 
@@ -1099,8 +1136,16 @@ NSInteger const WPLinkAlertViewTag = 92;
         if ([self.delegate respondsToSelector: @selector(editorShouldBeginEditing:)]) {
             return [self.delegate editorShouldBeginEditing:self];
         }
+        [self refreshUI];
     }
     return YES;
+}
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    if (textField == self.titleTextField) {
+        [self refreshUI];
+    }
 }
     
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
@@ -1114,11 +1159,13 @@ NSInteger const WPLinkAlertViewTag = 92;
     return YES;
 }
 
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    [self refreshUI];
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    if (textField == self.titleTextField) {
-        [self.titleTextField resignFirstResponder];
-    }
     return YES;
 }
 
@@ -1183,6 +1230,12 @@ NSInteger const WPLinkAlertViewTag = 92;
 	if ([notification.name isEqualToString:UIKeyboardWillShowNotification]) {
         
         self.isShowingKeyboard = YES;
+        
+        // Hide the placeholder if visible before editing
+        if (!self.titleTextField.isFirstResponder && [self isEditorPlaceholderTextVisible]) {
+            [self setHtml:@""];
+        }
+        
         if ([self shouldNavbarWhileTyping]) {
             [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
             [self.navigationController setNavigationBarHidden:YES animated:YES];
@@ -1210,6 +1263,9 @@ NSInteger const WPLinkAlertViewTag = 92;
         } completion:nil];
 	} else {
         self.isShowingKeyboard = NO;
+        
+        [self refreshUI];
+        
         [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
         [self.navigationController setNavigationBarHidden:NO animated:YES];
         [self.navigationController setToolbarHidden:NO animated:NO];

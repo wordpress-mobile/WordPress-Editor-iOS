@@ -1,27 +1,6 @@
 #import "UIWebView+AccessoryHiding.h"
 #import <objc/runtime.h>
 
-@interface UIWebBrowserView : UIView
-@end
-
-@interface UIWebBrowserView (UIWebBrowserView_Additions)
-@end
-
-@implementation UIWebBrowserView (UIWebBrowserView_Additions)
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
-{
-    if (action == @selector(_showTextStyleOptions:)) {
-        return NO;
-    } else if (action == @selector(_promptForReplace:)) {
-        return NO;
-    } else if (action == @selector(_define:)) {
-        return NO;
-    }
-    
-    return [super canPerformAction:action withSender:sender];
-}
-@end
-
 @implementation UIWebView (AccessoryHiding)
 
 static const char * const hackishFixClassName = "UIWebBrowserViewMinusAccessoryView";
