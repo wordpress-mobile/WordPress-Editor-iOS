@@ -39,6 +39,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 @property (nonatomic, strong) UIButton *optionsButton;
 @property (nonatomic, strong) UIView *optionsSeparatorView;
 @property (nonatomic, strong) UIView *optionsView;
+@property (nonatomic) BOOL didFinishLoadingEditor;
 
 @end
 
@@ -47,6 +48,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.didFinishLoadingEditor = NO;
     
     //Only enable a few buttons by default
     self.enabledToolbarItems = ZSSRichTextEditorToolbarBold | ZSSRichTextEditorToolbarItalic |
@@ -575,6 +577,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void) setBodyText:(NSString*)bodyText
 {
     [self setHtml:bodyText];
+    [self refreshUI];
 }
 
 #pragma mark - Actions
@@ -614,7 +617,7 @@ NSInteger const WPLinkAlertViewTag = 92;
         self.title = self.titleText;
     }
     
-    if ([self isBodyTextEmpty]) {
+    if (self.didFinishLoadingEditor && [self isBodyTextEmpty]) {
         [self setHtml:self.editorPlaceholderText];
     }
 }
@@ -623,6 +626,8 @@ NSInteger const WPLinkAlertViewTag = 92;
 {
     if(!self.bodyText
        || self.bodyText.length == 0
+       || [[self.bodyText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""]
+       || [[self.bodyText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@"<br>"]
        || [[self.bodyText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@"<br />"]) {
         return YES;
     }
@@ -677,7 +682,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 {
     NSString *html = [self.editorView stringByEvaluatingJavaScriptFromString:@"zss_editor.getHTML();"];
 //    html = [self removeQuotesFromHTML:html];
-    html = [self tidyHTML:html];
+//    html = [self tidyHTML:html];
 	return html;
 }
 
@@ -1268,13 +1273,19 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 #pragma mark - UIWebView Delegate
 
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    self.didFinishLoadingEditor = YES;
+    [self refreshUI];
+}
+
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSString *urlString = [[request URL] absoluteString];
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
 		return NO;
 	} else if ([urlString rangeOfString:@"callback://"].location != NSNotFound) {        
-        // We recieved the callback
+        // We recieved a callback
         if([[[request URL] absoluteString] isEqualToString:@"callback://user-triggered-change"]) {
             if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
                 [self.delegate editorTextDidChange:self];
