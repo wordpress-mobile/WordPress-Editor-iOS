@@ -10,5 +10,6 @@ end
 
 target "EditorDemoTests" do
 #   pod 'Expecta'
+  pod 'CocoaLumberjack', '~>1.8.1'
 end
 
