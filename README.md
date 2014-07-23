@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/wordpress-mobile/WordPress-iOS-Editor.svg?branch=develop)](https://travis-ci.org/wordpress-mobile/WordPress-iOS-Editor)
 ![WordPress Logo](http://s.w.org/about/images/logos/wordpress-logo-hoz-rgb.png)
 
 # WordPress-iOS-Editor
