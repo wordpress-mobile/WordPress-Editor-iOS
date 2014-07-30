@@ -154,6 +154,7 @@ install_resource "../../Assets/ZSSviewsource@2x.png"
 install_resource "../../Assets/editor.html"
 install_resource "../../Assets/fastclick.js"
 install_resource "../../Assets/ZSSRichTextEditor.js"
+install_resource "${BUILT_PRODUCTS_DIR}/WordPress-iOS-Shared.bundle"
 
 rsync -avr --copy-links --no-relative --exclude '*/.svn/*' --files-from="$RESOURCES_TO_COPY" / "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 if [[ "${ACTION}" == "install" ]]; then
