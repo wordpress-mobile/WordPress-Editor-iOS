@@ -451,7 +451,7 @@ zss_editor.enabledEditingItems = function(e) {
 }
 
 zss_editor.focusEditor = function() {
-    // Noop
+    $('#zss_editor_content').focus();
 }
 
 zss_editor.blurEditor = function() {
