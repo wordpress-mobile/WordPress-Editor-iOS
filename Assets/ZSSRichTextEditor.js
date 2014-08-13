@@ -457,3 +457,11 @@ zss_editor.focusEditor = function() {
 zss_editor.blurEditor = function() {
     $('#zss_editor_content').blur();
 }
+
+zss_editor.enableEditing = function () {
+	$('#szz_editor_content').setAttribute('contentEditable','false');
+}
+
+zss_editor.disableEditing = function () {
+	$('#szz_editor_content').setAttribute('contentEditable','false');
+}

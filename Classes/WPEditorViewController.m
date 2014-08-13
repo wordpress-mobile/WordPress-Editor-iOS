@@ -620,23 +620,46 @@ NSInteger const WPLinkAlertViewTag = 92;
     }
 }
 
+#pragma mark - UI Refreshing
+
+- (void)refreshUI
+{
+    if([self.titleText length] > 0) {
+        self.title = self.titleText;
+    }
+    
+    if (self.didFinishLoadingEditor) {
+		
+		if ([self isBodyTextEmpty]) {
+			[self setHtml:self.editorPlaceholderText];
+		}
+		
+		[self refreshUIEditMode];
+    }
+}
+
+/**
+ *	@brief		This method simply refreshes the UI according to the current edit mode.
+ *	@details	If the editor has not been completely loaded yet, this method does nothing.
+ */
+- (void)refreshUIEditMode
+{
+    if (self.didFinishLoadingEditor) {
+		if (self.mode == kWPEditorViewControllerModeEdit) {
+			[self enableEditing];
+		}
+		else {
+			[self disableEditing];
+		}
+	}
+}
+
 #pragma mark - Editor and Misc Methods
 
 - (void)stopEditing
 {
     [self dismissKeyboard];
     [self.view endEditing:YES];
-}
-
-- (void)refreshUI
-{
-    if(self.titleText != nil || self.titleText.length != 0) {
-        self.title = self.titleText;
-    }
-    
-    if (self.didFinishLoadingEditor && [self isBodyTextEmpty]) {
-        [self setHtml:self.editorPlaceholderText];
-    }
 }
 
 - (BOOL)isBodyTextEmpty
@@ -657,6 +680,24 @@ NSInteger const WPLinkAlertViewTag = 92;
         return YES;
     }
     return NO;
+}
+
+- (void)enableEditing
+{
+	NSString *js = [NSString stringWithFormat:@"zss_editor.enableEditing();"];
+    [self.editorView stringByEvaluatingJavaScriptFromString:js];
+	
+	[self refreshUIEditMode];
+}
+
+- (void)disableEditing
+{
+	[self stopEditing];
+	
+	NSString *js = [NSString stringWithFormat:@"zss_editor.disableEditing();"];
+    [self.editorView stringByEvaluatingJavaScriptFromString:js];
+	
+	[self refreshUIEditMode];
 }
 
 - (void)focusTextEditor

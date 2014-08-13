@@ -48,6 +48,16 @@ WPEditorViewControllerMode;
 #pragma mark - Editing
 
 /**
+ *	@brief		Enables editing.
+ */
+- (void)enableEditing;
+
+/**
+ *	@brief		Disables editing.
+ */
+- (void)disableEditing;
+
+/**
  *  Stop all editing activities.
  */
 - (void)stopEditing;
