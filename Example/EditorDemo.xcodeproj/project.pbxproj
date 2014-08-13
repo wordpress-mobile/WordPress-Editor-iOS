@@ -26,6 +26,7 @@
 		748D2AAD193E516000D5ACC8 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748D2A8C193E516000D5ACC8 /* UIKit.framework */; };
 		748D2AB5193E516000D5ACC8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 748D2AB3193E516000D5ACC8 /* InfoPlist.strings */; };
 		748D2AB7193E516000D5ACC8 /* EditorDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 748D2AB6193E516000D5ACC8 /* EditorDemoTests.m */; };
+		74BC21D7199BB1AE003D3E42 /* Reveal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74BC21D6199BB1AE003D3E42 /* Reveal.framework */; };
 		B1341A871FF54DCCAEE52D3A /* libPods-EditorDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 986CDAC2D08B4B22A292BF20 /* libPods-EditorDemo.a */; };
 /* End PBXBuildFile section */
 
@@ -66,6 +67,7 @@
 		748D2AB2193E516000D5ACC8 /* EditorDemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "EditorDemoTests-Info.plist"; sourceTree = "<group>"; };
 		748D2AB4193E516000D5ACC8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		748D2AB6193E516000D5ACC8 /* EditorDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditorDemoTests.m; sourceTree = "<group>"; };
+		74BC21D6199BB1AE003D3E42 /* Reveal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Reveal.framework; path = "../../../../../Applications/Reveal.app/Contents/SharedSupport/iOS-Libraries/Reveal.framework"; sourceTree = "<group>"; };
 		8F0D2F2F6052444E9D8DDC88 /* Pods-EditorDemoTests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EditorDemoTests.xcconfig"; path = "Pods/Pods-EditorDemoTests.xcconfig"; sourceTree = "<group>"; };
 		986CDAC2D08B4B22A292BF20 /* libPods-EditorDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EditorDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -78,6 +80,7 @@
 				74587C59193E652B0001052D /* QuartzCore.framework in Frameworks */,
 				748D2A8B193E516000D5ACC8 /* CoreGraphics.framework in Frameworks */,
 				748D2A8D193E516000D5ACC8 /* UIKit.framework in Frameworks */,
+				74BC21D7199BB1AE003D3E42 /* Reveal.framework in Frameworks */,
 				748D2A89193E516000D5ACC8 /* Foundation.framework in Frameworks */,
 				B1341A871FF54DCCAEE52D3A /* libPods-EditorDemo.a in Frameworks */,
 			);
@@ -121,6 +124,7 @@
 		748D2A87193E516000D5ACC8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				74BC21D6199BB1AE003D3E42 /* Reveal.framework */,
 				74587C58193E652B0001052D /* QuartzCore.framework */,
 				748D2A88193E516000D5ACC8 /* Foundation.framework */,
 				748D2A8A193E516000D5ACC8 /* CoreGraphics.framework */,

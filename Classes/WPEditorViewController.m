@@ -34,7 +34,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 @property (nonatomic, strong) NSString *selectedLinkTitle;
 @property (nonatomic, strong) NSString *selectedImageURL;
 @property (nonatomic, strong) NSString *selectedImageAlt;
-@property (nonatomic, strong) UIBarButtonItem *keyboardItem;
+@property (nonatomic, strong) UIBarButtonItem *htmlBarButtonItem;
 @property (nonatomic, strong) NSMutableArray *customBarButtonItems;
 @property (nonatomic, strong) UIButton *optionsButton;
 @property (nonatomic, strong) UIView *optionsSeparatorView;
@@ -51,10 +51,11 @@ NSInteger const WPLinkAlertViewTag = 92;
     self.didFinishLoadingEditor = NO;
     
     //Only enable a few buttons by default
-    self.enabledToolbarItems = ZSSRichTextEditorToolbarBold | ZSSRichTextEditorToolbarItalic |
-                               ZSSRichTextEditorToolbarUnderline | ZSSRichTextEditorToolbarBlockQuote |
-                               ZSSRichTextEditorToolbarInsertLink | ZSSRichTextEditorToolbarUnorderedList |
-                               ZSSRichTextEditorToolbarViewSource | ZSSRichTextEditorToolbarRemoveLink;
+    self.enabledToolbarItems = ZSSRichTextEditorToolbarInsertImage | ZSSRichTextEditorToolbarBold |
+                               ZSSRichTextEditorToolbarItalic | ZSSRichTextEditorToolbarUnderline |
+                               ZSSRichTextEditorToolbarBlockQuote | ZSSRichTextEditorToolbarInsertLink |
+                               ZSSRichTextEditorToolbarUnorderedList | ZSSRichTextEditorToolbarOrderedList |
+                               ZSSRichTextEditorToolbarRemoveLink;
     
     [self buildTextViews];
     [self buildToolbar];
@@ -71,7 +72,6 @@ NSInteger const WPLinkAlertViewTag = 92;
     self.navigationController.navigationBar.translucent = NO;
     self.navigationController.toolbarHidden = NO;
     UIToolbar *toolbar = self.navigationController.toolbar;
-    toolbar.barTintColor = [WPStyleGuide itsEverywhereGrey];
     toolbar.translucent = NO;
     toolbar.barStyle = UIBarStyleDefault;
     
@@ -140,7 +140,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     for (ZSSBarButtonItem *item in self.toolbar.items) {
         item.tintColor = [self barButtonItemDefaultColor];
     }
-    _keyboardItem.tintColor = toolbarItemTintColor;
+    _htmlBarButtonItem.tintColor = toolbarItemTintColor;
 }
 
 - (void)setToolbarItemSelectedTintColor:(UIColor *)toolbarItemSelectedTintColor
@@ -153,23 +153,31 @@ NSInteger const WPLinkAlertViewTag = 92;
     NSMutableArray *items = [[NSMutableArray alloc] init];
     
     // None
-    if(self.enabledToolbarItems & ZSSRichTextEditorToolbarNone)
-    {
+    if(self.enabledToolbarItems & ZSSRichTextEditorToolbarNone) {
         return items;
+    }
+    
+    // Image
+    if (self.enabledToolbarItems & ZSSRichTextEditorToolbarInsertImage || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
+        ZSSBarButtonItem *insertImage = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_media"] style:UIBarButtonItemStylePlain target:self action:@selector(didTouchMediaOptions)];
+        insertImage.label = @"image";
+        insertImage.accessibilityLabel = NSLocalizedString(@"Insert Image", @"Accessibility label for insert image button on formatting toolbar.");
+        [items addObject:insertImage];
     }
     
     // Bold
     if (self.enabledToolbarItems & ZSSRichTextEditorToolbarBold || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
         ZSSBarButtonItem *bold = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_bold"] style:UIBarButtonItemStylePlain target:self action:@selector(setBold)];
         bold.label = @"bold";
+        bold.accessibilityLabel = NSLocalizedString(@"Bold", @"Accessibility label for bold button on formatting toolbar.");
         [items addObject:bold];
-        
     }
     
     // Italic
     if (self.enabledToolbarItems & ZSSRichTextEditorToolbarItalic || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
         ZSSBarButtonItem *italic = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_italic"] style:UIBarButtonItemStylePlain target:self action:@selector(setItalic)];
         italic.label = @"italic";
+        italic.accessibilityLabel = NSLocalizedString(@"Italic", @"Accessibility label for italic button on formatting toolbar.");
         [items addObject:italic];
     }
     
@@ -191,6 +199,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     if (self.enabledToolbarItems & ZSSRichTextEditorToolbarStrikeThrough || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
         ZSSBarButtonItem *strikeThrough = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_strikethrough"] style:UIBarButtonItemStylePlain target:self action:@selector(setStrikethrough)];
         strikeThrough.label = @"strikeThrough";
+        strikeThrough.accessibilityLabel = NSLocalizedString(@"Strike Through", @"Accessibility label for strikethrough button on formatting toolbar.");
         [items addObject:strikeThrough];
     }
     
@@ -198,6 +207,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     if (self.enabledToolbarItems & ZSSRichTextEditorToolbarUnderline || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
         ZSSBarButtonItem *underline = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_underline"] style:UIBarButtonItemStylePlain target:self action:@selector(setUnderline)];
         underline.label = @"underline";
+        underline.accessibilityLabel = NSLocalizedString(@"Underline", @"Accessibility label for underline button on formatting toolbar.");
         [items addObject:underline];
     }
     
@@ -205,6 +215,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     if (self.enabledToolbarItems & ZSSRichTextEditorToolbarBlockQuote || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
         ZSSBarButtonItem *blockQuote = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_quote"] style:UIBarButtonItemStylePlain target:self action:@selector(setBlockQuote)];
         blockQuote.label = @"blockQuote";
+        blockQuote.accessibilityLabel = NSLocalizedString(@"Block Quote", @"Accessibility label for block quote button on formatting toolbar.");
         [items addObject:blockQuote];
     }
     
@@ -317,6 +328,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     if (self.enabledToolbarItems & ZSSRichTextEditorToolbarUnorderedList || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
         ZSSBarButtonItem *ul = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSunorderedlist.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setUnorderedList)];
         ul.label = @"unorderedList";
+        ul.accessibilityLabel = NSLocalizedString(@"Unordered List", @"Accessibility label for unordered list button on formatting toolbar.");
         [items addObject:ul];
     }
     
@@ -324,6 +336,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     if (self.enabledToolbarItems & ZSSRichTextEditorToolbarOrderedList || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
         ZSSBarButtonItem *ol = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSorderedlist.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setOrderedList)];
         ol.label = @"orderedList";
+        ol.accessibilityLabel = NSLocalizedString(@"Ordered List", @"Accessibility label for ordered list button on formatting toolbar.");
         [items addObject:ol];
     }
     
@@ -348,17 +361,11 @@ NSInteger const WPLinkAlertViewTag = 92;
         [items addObject:outdent];
     }
     
-    // Image
-    if (self.enabledToolbarItems & ZSSRichTextEditorToolbarInsertImage || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
-        ZSSBarButtonItem *insertImage = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSimage.png"] style:UIBarButtonItemStylePlain target:self action:@selector(insertImage)];
-        insertImage.label = @"image";
-        [items addObject:insertImage];
-    }
-    
     // Insert Link
     if (self.enabledToolbarItems & ZSSRichTextEditorToolbarInsertLink || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
         ZSSBarButtonItem *insertLink = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_link"] style:UIBarButtonItemStylePlain target:self action:@selector(insertLink)];
         insertLink.label = @"link";
+        insertLink.accessibilityLabel = NSLocalizedString(@"Insert Link", @"Accessibility label for insert link button on formatting toolbar.");
         [items addObject:insertLink];
     }
     
@@ -366,6 +373,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     if (self.enabledToolbarItems & ZSSRichTextEditorToolbarRemoveLink || self.enabledToolbarItems & ZSSRichTextEditorToolbarAll) {
         ZSSBarButtonItem *removeLink = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSunlink.png"] style:UIBarButtonItemStylePlain target:self action:@selector(removeLink)];
         removeLink.label = @"removeLink";
+        removeLink.accessibilityLabel = NSLocalizedString(@"Remove Link", @"Accessibility label for remove link button on formatting toolbar.");
         [items addObject:removeLink];
     }
     
@@ -393,7 +401,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     // Scrolling View
     if (!self.toolBarScroll) {
         self.toolBarScroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, IS_IPAD ? self.view.frame.size.width : self.view.frame.size.width - 44, 44)];
-        self.toolBarScroll.backgroundColor = [UIColor clearColor];
+        self.toolBarScroll.backgroundColor = [UIColor whiteColor];
         self.toolBarScroll.showsHorizontalScrollIndicator = NO;
     }
     
@@ -401,20 +409,20 @@ NSInteger const WPLinkAlertViewTag = 92;
     if (!self.toolbar) {
         self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectZero];
         self.toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        self.toolbar.backgroundColor = [UIColor clearColor];
+        self.toolbar.backgroundColor = [UIColor whiteColor];
     }
     [self.toolBarScroll addSubview:self.toolbar];
     self.toolBarScroll.autoresizingMask = self.toolbar.autoresizingMask;
     
     // Background Toolbar
     UIToolbar *backgroundToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
-    backgroundToolbar.backgroundColor = [UIColor clearColor];
+    backgroundToolbar.backgroundColor = [UIColor whiteColor];
     backgroundToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
     // Parent holding view
     self.toolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, 44)];
     self.toolbarHolder.autoresizingMask = self.toolbar.autoresizingMask;
-    self.toolbarHolder.backgroundColor = [UIColor clearColor];
+    self.toolbarHolder.backgroundColor = [UIColor whiteColor];
     [self.toolbarHolder addSubview:self.toolBarScroll];
     [self.toolbarHolder insertSubview:backgroundToolbar atIndex:0];
     
@@ -422,17 +430,22 @@ NSInteger const WPLinkAlertViewTag = 92;
     if (!IS_IPAD) {
         // Toolbar holder used to crop and position toolbar
         UIView *toolbarCropper = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width-44, 0, 44, 44)];
-        toolbarCropper.backgroundColor = [UIColor clearColor];
+        toolbarCropper.backgroundColor = [UIColor whiteColor];
         toolbarCropper.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
         toolbarCropper.clipsToBounds = YES;
         
         // Use a toolbar so that we can tint
-        UIToolbar *keyboardToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(-13, -1, 55, 44)];
-        [toolbarCropper addSubview:keyboardToolbar];
+        UIToolbar *htmlItemToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, -1, 55, 44)];
+        [toolbarCropper addSubview:htmlItemToolbar];
         
-        self.keyboardItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_keyboard"] style:UIBarButtonItemStylePlain target:self action:@selector(dismissKeyboard)];
-        self.keyboardItem.tintColor = self.barButtonItemSelectedDefaultColor;
-        keyboardToolbar.items = @[self.keyboardItem];
+        
+        self.htmlBarButtonItem =  [[UIBarButtonItem alloc] initWithTitle:@"HTML" style:UIBarButtonItemStylePlain target:self action:@selector(showHTMLSource:)];
+        UIFont * font = [UIFont boldSystemFontOfSize:10];
+        NSDictionary * attributes = @{NSFontAttributeName: font};
+        [self.htmlBarButtonItem setTitleTextAttributes:attributes forState:UIControlStateNormal];
+        self.htmlBarButtonItem.tintColor = self.barButtonItemDefaultColor;
+        self.htmlBarButtonItem.accessibilityLabel = NSLocalizedString(@"Display HTML", @"Accessibility label for display HTML button on formatting toolbar.");
+        htmlItemToolbar.items = @[self.htmlBarButtonItem];
         [self.toolbarHolder addSubview:toolbarCropper];
         
         UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0.6f, 44)];
@@ -717,7 +730,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     if (self.sourceView.hidden) {
         self.sourceView.text = [self getHTML];
         self.sourceView.hidden = NO;
-        barButtonItem.tintColor = [UIColor blackColor];
+        barButtonItem.tintColor = [self barButtonItemSelectedDefaultColor];
         self.editorView.hidden = YES;
         [self enableToolbarItems:NO shouldShowSourceButton:YES];
     } else {
@@ -1457,7 +1470,7 @@ NSInteger const WPLinkAlertViewTag = 92;
         return self.toolbarItemTintColor;
     }
     
-    return [WPStyleGuide whisperGrey];
+    return [WPStyleGuide allTAllShadeGrey];
 }
 
 - (UIColor *)barButtonItemSelectedDefaultColor
