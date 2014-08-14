@@ -700,8 +700,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 	
 	NSString *js = [NSString stringWithFormat:@"zss_editor.disableEditing();"];
     [self.editorView stringByEvaluatingJavaScriptFromString:js];
-	
-	[self refreshUIEditMode];
 }
 
 - (void)focusTextEditor
