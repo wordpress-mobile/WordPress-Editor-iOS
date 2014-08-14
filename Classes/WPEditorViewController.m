@@ -1310,19 +1310,23 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
-	if (self.isEdi)
-    if (textField == self.titleTextField) {
-        
-		[self enableToolbarItems:NO shouldShowSourceButton:NO];
-		
-        if ([self.delegate respondsToSelector: @selector(editorDidBeginEditing:)]) {
-            [self.delegate editorDidBeginEditing:self];
-        }
-		
-        [self refreshUI];
-    }
+	BOOL result = NO;
 	
-    return YES;
+	if (!self.isEditingDisabled)
+	{
+		if (textField == self.titleTextField) {
+			
+			[self enableToolbarItems:NO shouldShowSourceButton:NO];
+			
+			if ([self.delegate respondsToSelector: @selector(editorDidBeginEditing:)]) {
+				[self.delegate editorDidBeginEditing:self];
+			}
+			
+			[self refreshUI];
+		}
+	}
+	
+    return result;
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField
@@ -1392,7 +1396,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	NSAssert([url isKindOfClass:[NSURL class]],
 			 @"Expected param url to be a non-nil, NSURL object.");
 	
-	NSString* resourceSpecifier = [url resourceSpecifier];
+	NSString* resourceSpecifier = [[url resourceSpecifier] stringByReplacingOccurrencesOfString:@"//" withString:@""];
 	
 	static NSString* kUserTriggeredChangeSpecifier = @"user-triggered-change";
 	static NSString* kFocusInSpecifier = @"focusin";
