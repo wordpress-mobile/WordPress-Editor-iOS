@@ -23,10 +23,14 @@
 }
 #pragma mark - WPEditorViewControllerDelegate
 
-- (BOOL)editorShouldBeginEditing:(WPEditorViewController *)editorController
+- (void)editorDidBeginEditing:(WPEditorViewController *)editorController
 {
-    NSLog(@"Editor should begin editing?");
-    return YES;
+    NSLog(@"Editor did begin editing.");
+}
+
+- (void)editorDidEndEditing:(WPEditorViewController *)editorController
+{
+    NSLog(@"Editor did end editing.");
 }
 
 - (void)editorDidPressSettings:(WPEditorViewController *)editorController
