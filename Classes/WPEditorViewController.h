@@ -14,6 +14,7 @@ WPEditorViewControllerMode;
 
 @optional
 
+- (void)editorDidEndEditing:(WPEditorViewController *)editorController;
 - (BOOL)editorShouldBeginEditing:(WPEditorViewController *)editorController;
 
 - (void)editorTitleDidChange:(WPEditorViewController *)editorController;

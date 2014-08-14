@@ -660,6 +660,10 @@ NSInteger const WPLinkAlertViewTag = 92;
 {
     [self dismissKeyboard];
     [self.view endEditing:YES];
+	
+	if ([self.delegate respondsToSelector:@selector(editorDidEndEditing:)]) {
+		[self.delegate editorDidEndEditing:self];
+	}
 }
 
 - (BOOL)isBodyTextEmpty
