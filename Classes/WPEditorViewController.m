@@ -41,11 +41,12 @@ NSInteger const WPLinkAlertViewTag = 92;
 @property (nonatomic) BOOL didFinishLoadingEditor;
 
 #pragma mark - Properties: Editor Mode
+@property (nonatomic, assign, readwrite, getter=isEditingDisabled) BOOL editingDisabled;
 @property (nonatomic, assign, readwrite) WPEditorViewControllerMode mode;
 
 #pragma mark - Properties: Editor View
-@property (nonatomic, strong) UIWebView *editorView;
-@property (nonatomic, assign) BOOL editorViewIsEditing;
+@property (nonatomic, strong, readwrite) UIWebView *editorView;
+@property (nonatomic, assign, readwrite) BOOL editorViewIsEditing;
 
 @end
 
@@ -693,17 +694,21 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (BOOL)isEditing
 {
-	return self.editorViewIsEditing || self.titleTextField.isEditing;
+	return !self.isEditingDisabled && (self.titleTextField.isEditing || self.editorViewIsEditing);
 }
 
 - (void)enableEditing
 {
+	self.editingDisabled = NO;
+	
 	NSString *js = [NSString stringWithFormat:@"zss_editor.enableEditing();"];
     [self.editorView stringByEvaluatingJavaScriptFromString:js];
 }
 
 - (void)disableEditing
 {
+	self.editingDisabled = YES;
+	
 	[self stopEditing];
 	
 	NSString *js = [NSString stringWithFormat:@"zss_editor.disableEditing();"];
@@ -1305,13 +1310,18 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
+	if (self.isEdi)
     if (textField == self.titleTextField) {
-        [self enableToolbarItems:NO shouldShowSourceButton:NO];
-        if ([self.delegate respondsToSelector: @selector(editorShouldBeginEditing:)]) {
-            return [self.delegate editorShouldBeginEditing:self];
+        
+		[self enableToolbarItems:NO shouldShowSourceButton:NO];
+		
+        if ([self.delegate respondsToSelector: @selector(editorDidBeginEditing:)]) {
+            [self.delegate editorDidBeginEditing:self];
         }
+		
         [self refreshUI];
     }
+	
     return YES;
 }
 
