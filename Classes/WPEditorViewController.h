@@ -12,9 +12,7 @@
 - (void)editorTitleDidChange:(WPEditorViewController *)editorController;
 - (void)editorTextDidChange:(WPEditorViewController *)editorController;
 
-- (void)editorDidPressSettings:(WPEditorViewController *)editorController;
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController;
-- (void)editorDidPressPreview:(WPEditorViewController *)editorController;
 
 @end
 

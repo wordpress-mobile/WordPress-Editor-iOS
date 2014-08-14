@@ -36,9 +36,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 @property (nonatomic, strong) NSString *selectedImageAlt;
 @property (nonatomic, strong) UIBarButtonItem *htmlBarButtonItem;
 @property (nonatomic, strong) NSMutableArray *customBarButtonItems;
-@property (nonatomic, strong) UIButton *optionsButton;
-@property (nonatomic, strong) UIView *optionsSeparatorView;
-@property (nonatomic, strong) UIView *optionsView;
 @property (nonatomic) BOOL didFinishLoadingEditor;
 
 @end
@@ -59,28 +56,21 @@ NSInteger const WPLinkAlertViewTag = 92;
     
     [self buildTextViews];
     [self buildToolbar];
-    [self buildBottomToolbar];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [self.navigationController setToolbarHidden:YES animated:YES];
     [super viewWillAppear:animated];
     self.view.backgroundColor = [UIColor whiteColor];
     
     // When restoring state, the navigationController is nil when the view loads,
     // so configure its appearance here instead.
     self.navigationController.navigationBar.translucent = NO;
-    self.navigationController.toolbarHidden = NO;
-    UIToolbar *toolbar = self.navigationController.toolbar;
-    toolbar.translucent = NO;
-    toolbar.barStyle = UIBarStyleDefault;
+     self.navigationController.toolbarHidden = YES;
     
     if(self.navigationController.navigationBarHidden) {
         [self.navigationController setNavigationBarHidden:NO animated:animated];
-    }
-    
-    if (self.navigationController.toolbarHidden) {
-        [self.navigationController setToolbarHidden:NO animated:animated];
     }
     
     for (UIView *view in self.navigationController.toolbar.subviews) {
@@ -91,6 +81,8 @@ NSInteger const WPLinkAlertViewTag = 92;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShowOrHide:) name:UIKeyboardWillHideNotification object:nil];
     
     [self refreshUI];
+    [self.titleTextField becomeFirstResponder];
+    [self.navigationController setToolbarHidden:YES animated:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -537,49 +529,6 @@ NSInteger const WPLinkAlertViewTag = 92;
     [self.view addSubview:self.sourceView];
 }
 
-- (void)buildBottomToolbar
-{
-    if ([self.toolbarItems count] > 0) {
-        return;
-    }
-    
-    UIBarButtonItem *previewButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_preview"]
-                                                                      style:UIBarButtonItemStylePlain
-                                                                     target:self
-                                                                     action:@selector(didTouchPreview)];
-    UIBarButtonItem *photoButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_media"]
-                                                                    style:UIBarButtonItemStylePlain
-                                                                   target:self
-                                                                   action:@selector(didTouchMediaOptions)];
-    UIBarButtonItem *optionsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_options"]
-                                                                    style:UIBarButtonItemStylePlain
-                                                                   target:self
-                                                                   action:@selector(didTouchSettings)];
-    
-    previewButton.tintColor = [WPStyleGuide textFieldPlaceholderGrey];
-    photoButton.tintColor = [WPStyleGuide textFieldPlaceholderGrey];
-    optionsButton.tintColor = [WPStyleGuide textFieldPlaceholderGrey];
-    
-    previewButton.accessibilityLabel = NSLocalizedString(@"Preview post", nil);
-    photoButton.accessibilityLabel = NSLocalizedString(@"Add media", nil);
-    optionsButton.accessibilityLabel = NSLocalizedString(@"Options", @"Title of the Post Settings tableview cell in the Post Editor. Tapping shows settings and options related to the post being edited.");
-    
-    UIBarButtonItem *leftFixedSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                                                                     target:nil
-                                                                                     action:nil];
-    UIBarButtonItem *rightFixedSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                                                                      target:nil
-                                                                                      action:nil];
-    UIBarButtonItem *centerFlexSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                                                      target:nil
-                                                                                      action:nil];
-    
-    leftFixedSpacer.width = -2.0f;
-    rightFixedSpacer.width = -5.0f;
-    
-    self.toolbarItems = @[leftFixedSpacer, photoButton, centerFlexSpacer, optionsButton, centerFlexSpacer, previewButton, rightFixedSpacer];
-}
-
 #pragma mark - Getters and Setters
 
 - (NSString*)titleText
@@ -604,20 +553,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 }
 
 #pragma mark - Actions
-
-- (void)didTouchSettings
-{
-    if ([self.delegate respondsToSelector: @selector(editorDidPressSettings:)]) {
-        [self.delegate editorDidPressSettings:self];
-    }
-}
-
-- (void)didTouchPreview
-{
-    if ([self.delegate respondsToSelector: @selector(editorDidPressPreview:)]) {
-        [self.delegate editorDidPressPreview:self];
-    }
-}
 
 - (void)didTouchMediaOptions
 {
@@ -1371,16 +1306,10 @@ NSInteger const WPLinkAlertViewTag = 92;
             [self setHtml:@""];
         }
         
-        if ([self shouldHideNavbarWhileTyping]) {
-            [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-            [self.navigationController setNavigationBarHidden:YES animated:YES];
-        }
-        [self.navigationController setToolbarHidden:YES animated:NO];
-        
         [UIView animateWithDuration:duration delay:0 options:animationOptions animations:^{
             // Toolbar
             CGRect frame = self.toolbarHolder.frame;
-            frame.origin.y = self.view.frame.size.height - (keyboardHeight + sizeOfToolbar);
+            frame.origin.y = self.view.frame.size.height - keyboardHeight - sizeOfToolbar;
             self.toolbarHolder.frame = frame;
             
             // Editor View
@@ -1393,7 +1322,7 @@ NSInteger const WPLinkAlertViewTag = 92;
             
             // Source View
             CGRect sourceFrame = self.sourceView.frame;
-            sourceFrame.size.height = (self.view.frame.size.height - keyboardHeight) - sizeOfToolbar;
+            sourceFrame.size.height = (self.view.frame.size.height - keyboardHeight - sizeOfToolbar - sizeOfToolbar);
             self.sourceView.frame = sourceFrame;
         } completion:nil];
 	} else {
@@ -1428,18 +1357,6 @@ NSInteger const WPLinkAlertViewTag = 92;
             }
         }];
 	}
-}
-
-- (BOOL)shouldHideNavbarWhileTyping
-{
-    /*
-     Never hide for the iPad.
-     Always hide on the iPhone except for portrait + external keyboard
-     */
-    if (IS_IPAD) {
-        return NO;
-    }
-    return YES;
 }
 
 #pragma mark - Utilities
