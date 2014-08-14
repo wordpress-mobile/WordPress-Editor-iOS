@@ -41,6 +41,22 @@ zss_editor.init = function() {
 			$('img').removeClass('zs_active');
 		}
 	});
+	
+	editor.bind('focusin', function(e) {
+		if (zss_editor.isUsingiOS) {
+			window.location = "callback://focusin";
+		} else {
+			console.log("callback://focusin");
+		}
+	});
+	
+	editor.bind('focusout', function(e) {
+		if (zss_editor.isUsingiOS) {
+			window.location = "callback://focusout";
+		} else {
+			console.log("callback://focusout");
+		}
+	});
 }//end
 
 zss_editor.backuprange = function(){
@@ -334,7 +350,7 @@ zss_editor.isCommandEnabled = function(commandName) {
 }
 
 zss_editor.enabledEditingItems = function(e) {
-	
+
 	var items = [];
 	if (zss_editor.isCommandEnabled('bold')) {
 		items.push('bold');

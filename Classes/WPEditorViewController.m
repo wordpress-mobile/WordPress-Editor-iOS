@@ -23,7 +23,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 @property (nonatomic, strong) UIView *toolbarHolder;
 @property (nonatomic, strong) NSString *htmlString;
 @property (nonatomic, strong) WPInsetTextField *titleTextField;
-@property (nonatomic, strong) UIWebView *editorView;
 @property (nonatomic, strong) ZSSTextView *sourceView;
 @property (nonatomic) CGRect editorViewFrame;
 @property (assign) BOOL resourcesLoaded;
@@ -43,6 +42,10 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 #pragma mark - Properties: Editor Mode
 @property (nonatomic, assign, readwrite) WPEditorViewControllerMode mode;
+
+#pragma mark - Properties: Editor View
+@property (nonatomic, strong) UIWebView *editorView;
+@property (nonatomic, assign) BOOL editorViewIsEditing;
 
 @end
 
@@ -690,7 +693,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (BOOL)isEditing
 {
-	
+	return self.editorViewIsEditing || self.titleTextField.isEditing;
 }
 
 - (void)enableEditing
@@ -1348,25 +1351,55 @@ NSInteger const WPLinkAlertViewTag = 92;
     [self refreshUI];
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+-            (BOOL)webView:(UIWebView *)webView
+shouldStartLoadWithRequest:(NSURLRequest *)request
+			navigationType:(UIWebViewNavigationType)navigationType
 {
-    NSString *urlString = [[request URL] absoluteString];
+	static NSString* const kCallbackScheme = @"callback";
+	BOOL result = NO;
+	
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-		return NO;
-	} else if ([urlString rangeOfString:@"callback://"].location != NSNotFound) {        
-        // We recieved a callback
-        if([[[request URL] absoluteString] isEqualToString:@"callback://user-triggered-change"]) {
-            if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
-                [self.delegate editorTextDidChange:self];
-            }
-        } else {
-            NSString *className = [urlString stringByReplacingOccurrencesOfString:@"callback://" withString:@""];
-            [self updateToolBarWithButtonName:className];
-        }
-        return NO;
+		result = NO;
+	} else {
+		NSURL *url = [request URL];
+		BOOL isCallbackURL = [[url scheme] isEqualToString:kCallbackScheme];
+		
+		if (isCallbackURL) {
+			[self handleWebViewCallbackURL:url];
+		}
+		
+		// DRM: We don't want any default handling for callbacks, even if we won't handle some.
+		result = YES;
     }
     
-    return YES;
+    return result;
+}
+
+#pragma mark - UIWebView Delegate helpers
+
+- (void)handleWebViewCallbackURL:(NSURL*)url
+{
+	NSAssert([url isKindOfClass:[NSURL class]],
+			 @"Expected param url to be a non-nil, NSURL object.");
+	
+	NSString* resourceSpecifier = [url resourceSpecifier];
+	
+	static NSString* kUserTriggeredChangeSpecifier = @"user-triggered-change";
+	static NSString* kFocusInSpecifier = @"focusin";
+	static NSString* kFocusOutSpecifier = @"focusout";
+	
+	if ([resourceSpecifier isEqualToString:kUserTriggeredChangeSpecifier]) {
+		if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+			[self.delegate editorTextDidChange:self];
+		}
+	} else if ([resourceSpecifier isEqualToString:kFocusInSpecifier]){
+		self.editorViewIsEditing = YES;
+	} else if ([resourceSpecifier isEqualToString:kFocusOutSpecifier]){
+		self.editorViewIsEditing = NO;
+	} else {
+		NSString *className = resourceSpecifier;
+		[self updateToolBarWithButtonName:className];
+	}
 }
 
 #pragma mark - Asset Picker
