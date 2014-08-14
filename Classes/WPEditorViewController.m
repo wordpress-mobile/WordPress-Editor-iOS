@@ -686,6 +686,13 @@ NSInteger const WPLinkAlertViewTag = 92;
     return NO;
 }
 
+#pragma mark - Editing
+
+- (BOOL)isEditing
+{
+	
+}
+
 - (void)enableEditing
 {
 	NSString *js = [NSString stringWithFormat:@"zss_editor.enableEditing();"];
@@ -698,6 +705,8 @@ NSInteger const WPLinkAlertViewTag = 92;
 	
 	NSString *js = [NSString stringWithFormat:@"zss_editor.disableEditing();"];
     [self.editorView stringByEvaluatingJavaScriptFromString:js];
+	
+	NSLog([self.editorView stringByEvaluatingJavaScriptFromString:@"document.body.innerHTML"]);
 }
 
 - (void)focusTextEditor

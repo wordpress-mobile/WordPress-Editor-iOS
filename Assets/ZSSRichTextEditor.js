@@ -431,7 +431,6 @@ zss_editor.enabledEditingItems = function(e) {
         } else {
             zss_editor.currentEditingImage = null;
         }
-			
 	}
 	
 	if (items.length > 0) {
@@ -447,7 +446,6 @@ zss_editor.enabledEditingItems = function(e) {
 			console.log("callback://");
 		}
 	}
-	
 }
 
 zss_editor.focusEditor = function() {
@@ -459,9 +457,9 @@ zss_editor.blurEditor = function() {
 }
 
 zss_editor.enableEditing = function () {
-	$('#szz_editor_content').setAttribute('contentEditable','false');
+	document.body.contentEditable = true;
 }
 
 zss_editor.disableEditing = function () {
-	$('#szz_editor_content').setAttribute('contentEditable','false');
+	document.body.contentEditable = false;
 }

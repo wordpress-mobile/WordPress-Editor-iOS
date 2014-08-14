@@ -50,6 +50,11 @@ WPEditorViewControllerMode;
 #pragma mark - Editing
 
 /**
+ *	@brief		Use this method to know if the user is currently editing the content.
+ */
+- (BOOL)isEditing;
+
+/**
  *	@brief		Enables editing.
  */
 - (void)enableEditing;
