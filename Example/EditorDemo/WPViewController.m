@@ -16,11 +16,6 @@
 	self.delegate = self;
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
 #pragma mark - WPEditorViewControllerDelegate
 
 - (void)editorDidBeginEditing:(WPEditorViewController *)editorController

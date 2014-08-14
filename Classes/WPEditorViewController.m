@@ -628,10 +628,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (void)refreshUI
 {
-    if([self.titleText length] > 0) {
-        self.title = self.titleText;
-    }
-    
     if (self.didFinishLoadingEditor) {
 		
 		if ([self isBodyTextEmpty]) {
