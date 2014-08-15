@@ -643,6 +643,11 @@ NSInteger const WPLinkAlertViewTag = 92;
 {
 	self.mode = kWPEditorViewControllerModeEdit;
 	
+	// DRM: WORKAROUND: UIWebView seems to display the keyboard's input access view sometimes even
+	// if the keyboard is not shown.
+	//
+	self.editorView.usesCustomInputAccessoryView = YES;
+	
 	[self focusTextEditor];
 }
 
@@ -652,6 +657,11 @@ NSInteger const WPLinkAlertViewTag = 92;
 	
     [self dismissKeyboard];
     [self.view endEditing:YES];
+	
+	// DRM: WORKAROUND: UIWebView seems to display the keyboard's input access view sometimes even
+	// if the keyboard is not shown.
+	//
+	self.editorView.usesCustomInputAccessoryView = NO;
 	
 	if ([self.delegate respondsToSelector:@selector(editorDidEndEditing:)]) {
 		[self.delegate editorDidEndEditing:self];
@@ -689,8 +699,19 @@ NSInteger const WPLinkAlertViewTag = 92;
 {
 	self.editingDisabled = NO;
 	
+	if (self.didFinishLoadingEditor)
+	{
+		[self enableEditingInHTMLEditor];
+	}
+}
+
+- (void)enableEditingInHTMLEditor
+{
+	NSAssert(self.editingDisabled == NO,
+			 @"This method should not be called directly, unless you know editingDisabled is configured already.");
+	
 	NSString *js = [NSString stringWithFormat:@"zss_editor.enableEditing();"];
-    [self.editorView stringByEvaluatingJavaScriptFromString:js];
+	[self.editorView stringByEvaluatingJavaScriptFromString:js];
 }
 
 - (void)disableEditing
@@ -699,8 +720,19 @@ NSInteger const WPLinkAlertViewTag = 92;
 	
 	[self stopEditing];
 	
+	if (self.didFinishLoadingEditor)
+	{
+		[self disableEditingInHTMLEditor];
+	}
+}
+
+- (void)disableEditingInHTMLEditor
+{
+	NSAssert(self.editingDisabled,
+			 @"This method should not be called directly, unless you know editingDisabled is configured already.");
+	
 	NSString *js = [NSString stringWithFormat:@"zss_editor.disableEditing();"];
-    [self.editorView stringByEvaluatingJavaScriptFromString:js];
+	[self.editorView stringByEvaluatingJavaScriptFromString:js];
 }
 
 - (void)focusTextEditor
@@ -1347,6 +1379,13 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
     self.didFinishLoadingEditor = YES;
+	
+	if (self.editingDisabled) {
+		[self disableEditingInHTMLEditor];
+	} else {
+		[self enableEditingInHTMLEditor];
+	}
+	
     [self refreshUI];
 }
 
