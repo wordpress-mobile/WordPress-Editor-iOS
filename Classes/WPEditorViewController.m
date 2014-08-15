@@ -132,15 +132,6 @@ NSInteger const WPLinkAlertViewTag = 92;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-    if (toInterfaceOrientation == UIInterfaceOrientationMaskLandscape) {
-        //noop
-    } else {
-        self.toolbarHolder.frame = CGRectMake(0, self.view.frame.size.width, self.view.frame.size.width, 44);
-    }
-}
-
 #pragma mark - Toolbar
 
 - (void)setEnabledToolbarItems:(ZSSRichTextEditorToolbar)enabledToolbarItems
