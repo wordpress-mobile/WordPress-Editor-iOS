@@ -437,12 +437,14 @@ NSInteger const WPLinkAlertViewTag = 92;
         toolbarCropper.clipsToBounds = YES;
         
         // Use a toolbar so that we can tint
-        UIToolbar *keyboardToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(-13, -1, 55, 44)];
+        UIToolbar *keyboardToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
         [toolbarCropper addSubview:keyboardToolbar];
         
         self.keyboardItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_keyboard"] style:UIBarButtonItemStylePlain target:self action:@selector(dismissKeyboard)];
+		self.keyboardItem.imageInsets = UIEdgeInsetsMake(0, -22, 0, 0);
         self.keyboardItem.tintColor = self.barButtonItemSelectedDefaultColor;
         keyboardToolbar.items = @[self.keyboardItem];
+		keyboardToolbar.barTintColor = [WPStyleGuide itsEverywhereGrey];
         [self.toolbarHolder addSubview:toolbarCropper];
         
         UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0.6f, 44)];
@@ -476,6 +478,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     }
     self.toolbar.items = items;
     self.toolbar.frame = CGRectMake(0, 0, toolbarWidth, 44);
+	self.toolbar.barTintColor = [WPStyleGuide itsEverywhereGrey];
     self.toolBarScroll.contentSize = CGSizeMake(self.toolbar.frame.size.width, 44);
 }
 
