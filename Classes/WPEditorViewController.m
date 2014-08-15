@@ -453,7 +453,12 @@ NSInteger const WPLinkAlertViewTag = 92;
         line.alpha = 0.7f;
         [toolbarCropper addSubview:line];
     }
-	self.editorView.usesCustomInputAccessoryView = YES;
+	
+	// DRM: WORKAROUND: setting this property to NO prevents a bug on UIWebView that shows the
+	// input accessory view sometimes even if the keyboard is not shown.  We will set this property
+	// to YES when editing starts.
+	//
+	self.editorView.usesCustomInputAccessoryView = NO;
 	self.editorView.customInputAccessoryView = self.toolbarHolder;
 	self.titleTextField.inputAccessoryView = self.toolbarHolder;
     
@@ -644,11 +649,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (void)startEditing
 {
-	// DRM: WORKAROUND: UIWebView seems to display the keyboard's input access view sometimes even
-	// if the keyboard is not shown.
-	//
-	self.editorView.usesCustomInputAccessoryView = YES;
-	
 	[self focusTextEditor];
 }
 
@@ -656,11 +656,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 {
     [self dismissKeyboard];
     [self.view endEditing:YES];
-	
-	// DRM: WORKAROUND: UIWebView seems to display the keyboard's input access view sometimes even
-	// if the keyboard is not shown.
-	//
-	self.editorView.usesCustomInputAccessoryView = NO;
 	
 	if ([self.delegate respondsToSelector:@selector(editorDidEndEditing:)]) {
 		[self.delegate editorDidEndEditing:self];
@@ -1438,6 +1433,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 		
 		result = YES;
 	} else if ([resourceSpecifier isEqualToString:kFocusInSpecifier]){
+		
+		// DRM: WORKAROUND: UIWebView seems to display the keyboard's input access view sometimes even
+		// if the keyboard is not shown.
+		//
+		self.editorView.usesCustomInputAccessoryView = YES;
 		self.editorViewIsEditing = YES;
 		
 		[self tellOurDelegateEditingChangedIfNecessary];
@@ -1445,6 +1445,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 		
 		result = YES;
 	} else if ([resourceSpecifier isEqualToString:kFocusOutSpecifier]){
+		
+		// DRM: WORKAROUND: UIWebView seems to display the keyboard's input access view sometimes even
+		// if the keyboard is not shown.
+		//
+		self.editorView.usesCustomInputAccessoryView = NO;
 		self.editorViewIsEditing = NO;
 		
 		[self tellOurDelegateEditingChangedIfNecessary];
