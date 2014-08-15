@@ -1313,6 +1313,8 @@ NSInteger const WPLinkAlertViewTag = 92;
 			}
 			
 			[self refreshUI];
+			
+			result = YES;
 		}
 	}
 	
@@ -1360,7 +1362,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 			navigationType:(UIWebViewNavigationType)navigationType
 {
 	static NSString* const kCallbackScheme = @"callback";
-	BOOL result = NO;
+	BOOL result = YES;
 	
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
 		result = NO;
@@ -1369,11 +1371,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 		BOOL isCallbackURL = [[url scheme] isEqualToString:kCallbackScheme];
 		
 		if (isCallbackURL) {
-			[self handleWebViewCallbackURL:url];
+			result = ![self handleWebViewCallbackURL:url];
 		}
-		
-		// DRM: We don't want any default handling for callbacks, even if we won't handle some.
-		result = YES;
     }
     
     return result;
@@ -1381,10 +1380,19 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 #pragma mark - UIWebView Delegate helpers
 
-- (void)handleWebViewCallbackURL:(NSURL*)url
+/**
+ *	@brief		Handles UIWebView callbacks.
+ *
+ *	@param		url		The url for the callback.  Cannot be nil.
+ *
+ *	@returns	YES if the callback was handled, NO otherwise.
+ */
+- (BOOL)handleWebViewCallbackURL:(NSURL*)url
 {
 	NSAssert([url isKindOfClass:[NSURL class]],
 			 @"Expected param url to be a non-nil, NSURL object.");
+	
+	BOOL result = NO;
 	
 	NSString* resourceSpecifier = [[url resourceSpecifier] stringByReplacingOccurrencesOfString:@"//" withString:@""];
 	
@@ -1396,14 +1404,24 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 		if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
 			[self.delegate editorTextDidChange:self];
 		}
+		
+		result = YES;
 	} else if ([resourceSpecifier isEqualToString:kFocusInSpecifier]){
 		self.editorViewIsEditing = YES;
+		
+		result = YES;
 	} else if ([resourceSpecifier isEqualToString:kFocusOutSpecifier]){
 		self.editorViewIsEditing = NO;
+		
+		result = YES;
 	} else {
 		NSString *className = resourceSpecifier;
 		[self updateToolBarWithButtonName:className];
+		
+		result = YES;
 	}
+	
+	return result;
 }
 
 #pragma mark - Asset Picker

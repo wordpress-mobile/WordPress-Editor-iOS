@@ -15,7 +15,7 @@
     [self setBodyText:htmlParam];
 	self.delegate = self;
 	
-	[self startEditing];
+	[self enableEditing];
 }
 
 #pragma mark - WPEditorViewControllerDelegate
