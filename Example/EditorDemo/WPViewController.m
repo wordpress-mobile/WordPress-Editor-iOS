@@ -14,6 +14,8 @@
     [self setTitleText:@"I'm editing a post!"];
     [self setBodyText:htmlParam];
 	self.delegate = self;
+	
+	[self startEditing];
 }
 
 #pragma mark - WPEditorViewControllerDelegate

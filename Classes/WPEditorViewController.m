@@ -656,8 +656,17 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 #pragma mark - Editor and Misc Methods
 
+- (void)startEditing
+{
+	self.mode = kWPEditorViewControllerModeEdit;
+	
+	[self focusTextEditor];
+}
+
 - (void)stopEditing
 {
+	self.mode = kWPEditorViewControllerModePreview;
+	
     [self dismissKeyboard];
     [self.view endEditing:YES];
 	
