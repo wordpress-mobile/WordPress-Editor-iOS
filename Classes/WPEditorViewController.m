@@ -1449,7 +1449,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     CGRect keyboardEnd = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     
     // Toolbar Sizes
-    CGFloat sizeOfToolbar = self.toolbarHolder.frame.size.height;
+    CGFloat toolbarHeight = self.toolbarHolder.frame.size.height;
     
     // Keyboard Size
     CGFloat keyboardHeight = UIInterfaceOrientationIsLandscape(orientation) ? keyboardEnd.size.width : keyboardEnd.size.height;
@@ -1475,19 +1475,19 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         [UIView animateWithDuration:duration delay:0 options:animationOptions animations:^{
             // Toolbar
             CGRect frame = self.toolbarHolder.frame;
-            frame.origin.y = self.view.frame.size.height - (keyboardHeight + sizeOfToolbar);
+            frame.origin.y = self.view.frame.size.height - (keyboardHeight + toolbarHeight);
             self.toolbarHolder.frame = frame;
             
             // Editor View
             CGRect editorFrame = self.editorView.frame;
-            editorFrame.size.height = (self.view.frame.size.height - keyboardHeight - sizeOfToolbar - sizeOfToolbar);
+            editorFrame.size.height = (self.view.frame.size.height - keyboardHeight - toolbarHeight - toolbarHeight);
             self.editorView.frame = editorFrame;
             self.editorView.scrollView.contentInset = UIEdgeInsetsZero;
             self.editorView.scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
             
             // Source View
             CGRect sourceFrame = self.sourceView.frame;
-            sourceFrame.size.height = (self.view.frame.size.height - keyboardHeight) - sizeOfToolbar;
+            sourceFrame.size.height = (self.view.frame.size.height - keyboardHeight) - toolbarHeight;
             self.sourceView.frame = sourceFrame;
         } completion:nil];
 	} else {
@@ -1505,7 +1505,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             
             // Editor View
             CGRect editorFrame = self.editorView.frame;
-            editorFrame.size.height = self.view.frame.size.height - sizeOfToolbar;
+            editorFrame.size.height = self.view.frame.size.height - toolbarHeight;
             self.editorView.frame = editorFrame;
             self.editorView.scrollView.contentInset = UIEdgeInsetsZero;
             self.editorView.scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
