@@ -452,8 +452,9 @@ NSInteger const WPLinkAlertViewTag = 92;
         line.alpha = 0.7f;
         [toolbarCropper addSubview:line];
     }
-    //[self.view addSubview:self.toolbarHolder];
+	self.editorView.usesCustomInputAccessoryView = YES;
 	self.editorView.customInputAccessoryView = self.toolbarHolder;
+	self.titleTextField.inputAccessoryView = self.toolbarHolder;
     
     // Check to see if we have any toolbar items, if not, add them all
     NSArray *items = [self itemsForToolbar];
@@ -514,7 +515,6 @@ NSInteger const WPLinkAlertViewTag = 92;
     if (!self.editorView) {
         self.editorView = [[UIWebView alloc] initWithFrame:frame];
         self.editorView.delegate = self;
-        self.editorView.usesCustomInputAccessoryView = YES;
         self.editorView.autoresizesSubviews = YES;
         self.editorView.autoresizingMask = mask;
         self.editorView.scalesPageToFit = YES;
@@ -1292,8 +1292,7 @@ NSInteger const WPLinkAlertViewTag = 92;
         } else {
             item.tintColor = [self barButtonItemDefaultColor];
         }
-    }//end
-    
+    }
 }
 
 #pragma mark - UITextField Delegate
@@ -1409,6 +1408,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	} else if ([resourceSpecifier isEqualToString:kFocusInSpecifier]){
 		self.editorViewIsEditing = YES;
 		
+		[self enableToolbarItems:YES shouldShowSourceButton:NO];
+		
 		result = YES;
 	} else if ([resourceSpecifier isEqualToString:kFocusOutSpecifier]){
 		self.editorViewIsEditing = NO;
@@ -1460,7 +1461,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     // Correct Curve
     UIViewAnimationOptions animationOptions = curve;
-    
+	
 	// DRM: WORKAROUND: for some weird reason, we are receiving multiple UIKeyboardWillShow notifications.
 	// We will simply ignore repeated notifications.
 	//
@@ -1586,6 +1587,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)enableToolbarItems:(BOOL)enable shouldShowSourceButton:(BOOL)showSource
 {
     NSArray *items = self.toolbar.items;
+	
     for (ZSSBarButtonItem *item in items) {
         if ([item.label isEqualToString:@"source"]) {
             item.enabled = showSource;
