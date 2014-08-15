@@ -24,7 +24,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 @property (nonatomic, strong) NSString *htmlString;
 @property (nonatomic, strong) WPInsetTextField *titleTextField;
 @property (nonatomic, strong) ZSSTextView *sourceView;
-@property (nonatomic) CGRect editorViewFrame;
 @property (assign) BOOL resourcesLoaded;
 @property (nonatomic, strong) NSString *editorPlaceholderText;
 @property (nonatomic, strong) NSArray *editorItemsEnabled;
@@ -1446,7 +1445,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     // User Info
     NSDictionary *info = notification.userInfo;
     CGFloat duration = [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] floatValue];
-    int curve = [[info objectForKey:UIKeyboardAnimationCurveUserInfoKey] intValue];
+    NSUInteger curve = [[info objectForKey:UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
     CGRect keyboardEnd = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     
     // Toolbar Sizes
@@ -1456,7 +1455,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     CGFloat keyboardHeight = UIInterfaceOrientationIsLandscape(orientation) ? keyboardEnd.size.width : keyboardEnd.size.height;
     
     // Correct Curve
-    UIViewAnimationOptions animationOptions = curve << 16;
+    UIViewAnimationOptions animationOptions = curve;
     
 	if ([notification.name isEqualToString:UIKeyboardWillShowNotification]) {
         
@@ -1483,7 +1482,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             CGRect editorFrame = self.editorView.frame;
             editorFrame.size.height = (self.view.frame.size.height - keyboardHeight - sizeOfToolbar - sizeOfToolbar);
             self.editorView.frame = editorFrame;
-            self.editorViewFrame = self.editorView.frame;
             self.editorView.scrollView.contentInset = UIEdgeInsetsZero;
             self.editorView.scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
             
@@ -1509,7 +1507,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             CGRect editorFrame = self.editorView.frame;
             editorFrame.size.height = self.view.frame.size.height - sizeOfToolbar;
             self.editorView.frame = editorFrame;
-            self.editorViewFrame = self.editorView.frame;
             self.editorView.scrollView.contentInset = UIEdgeInsetsZero;
             self.editorView.scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
             
