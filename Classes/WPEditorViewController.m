@@ -47,12 +47,20 @@ NSInteger const WPLinkAlertViewTag = 92;
     [super viewDidLoad];
     self.didFinishLoadingEditor = NO;
     
-    //Only enable a few buttons by default
-    self.enabledToolbarItems = ZSSRichTextEditorToolbarInsertImage | ZSSRichTextEditorToolbarBold |
-                               ZSSRichTextEditorToolbarItalic | ZSSRichTextEditorToolbarUnderline |
-                               ZSSRichTextEditorToolbarBlockQuote | ZSSRichTextEditorToolbarInsertLink |
-                               ZSSRichTextEditorToolbarUnorderedList | ZSSRichTextEditorToolbarOrderedList |
-                               ZSSRichTextEditorToolbarRemoveLink;
+    // iPad gets the HTML source button
+    if (IS_IPAD) {
+        self.enabledToolbarItems = ZSSRichTextEditorToolbarInsertImage | ZSSRichTextEditorToolbarBold |
+                                ZSSRichTextEditorToolbarItalic | ZSSRichTextEditorToolbarUnderline |
+                                ZSSRichTextEditorToolbarBlockQuote | ZSSRichTextEditorToolbarInsertLink |
+                                ZSSRichTextEditorToolbarUnorderedList | ZSSRichTextEditorToolbarOrderedList |
+                                ZSSRichTextEditorToolbarRemoveLink | ZSSRichTextEditorToolbarViewSource;
+    } else {
+        self.enabledToolbarItems = ZSSRichTextEditorToolbarInsertImage | ZSSRichTextEditorToolbarBold |
+                                ZSSRichTextEditorToolbarItalic | ZSSRichTextEditorToolbarUnderline |
+                                ZSSRichTextEditorToolbarBlockQuote | ZSSRichTextEditorToolbarInsertLink |
+                                ZSSRichTextEditorToolbarUnorderedList | ZSSRichTextEditorToolbarOrderedList |
+                                ZSSRichTextEditorToolbarRemoveLink;
+    }
     
     [self buildTextViews];
     [self buildToolbar];
@@ -477,7 +485,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 {
     if (!self.editorPlaceholderText) {
         NSString *placeholderText = NSLocalizedString(@"Write your story here ...", @"Placeholder for the main body text.");
-        self.editorPlaceholderText = [NSString stringWithFormat:@"<div style=\"color:#c6c6c6;\">%@<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div>", placeholderText];
+        self.editorPlaceholderText = [NSString stringWithFormat:@"<div style=\"color:#A1BCCD;\">%@<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div>", placeholderText];
     }
     
     CGFloat viewWidth = CGRectGetWidth(self.view.frame);
@@ -491,7 +499,7 @@ NSInteger const WPLinkAlertViewTag = 92;
         self.titleTextField.delegate = self;
         self.titleTextField.font = [WPStyleGuide postTitleFont];
         self.titleTextField.backgroundColor = [UIColor whiteColor];
-        self.titleTextField.textColor = [WPStyleGuide darkAsNightGrey];
+        self.titleTextField.textColor = [WPStyleGuide bigEddieGrey];
         self.titleTextField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.titleTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:(NSLocalizedString(@"Post title", @"Label for the title of the post field.")) attributes:(@{NSForegroundColorAttributeName: [WPStyleGuide textFieldPlaceholderGrey]})];
         self.titleTextField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
@@ -521,7 +529,6 @@ NSInteger const WPLinkAlertViewTag = 92;
         self.sourceView.hidden = YES;
         self.sourceView.autocapitalizationType = UITextAutocapitalizationTypeNone;
         self.sourceView.autocorrectionType = UITextAutocorrectionTypeNo;
-        self.sourceView.font = [UIFont fontWithName:@"Courier" size:13.0];
         self.sourceView.autoresizingMask =  UIViewAutoresizingFlexibleHeight;
         self.sourceView.autoresizesSubviews = YES;
         self.sourceView.delegate = self;
