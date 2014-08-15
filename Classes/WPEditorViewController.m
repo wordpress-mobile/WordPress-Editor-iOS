@@ -116,10 +116,12 @@ NSInteger const WPLinkAlertViewTag = 92;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(keyboardWillShow:)
-												 name:UIKeyboardWillShowNotification object:nil];
+												 name:UIKeyboardWillShowNotification
+											   object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(keyboardWillHide:)
-												 name:UIKeyboardWillHideNotification object:nil];
+												 name:UIKeyboardWillHideNotification
+											   object:nil];
     
     [self refreshUI];
 }
@@ -1497,7 +1499,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	// DRM: WORKAROUND: for some weird reason, we are receiving multiple UIKeyboardWillShow notifications.
 	// We will simply ignore repeated notifications.
 	//
-	if (self.isShowingKeyboard) {
+	if (!self.isShowingKeyboard) {
 		
 		self.isShowingKeyboard = YES;
 		
