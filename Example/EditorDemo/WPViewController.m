@@ -29,19 +29,9 @@
     return YES;
 }
 
-- (void)editorDidPressSettings:(WPEditorViewController *)editorController
-{
-    NSLog(@"Pressed Settings!");
-}
-
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController
 {
     NSLog(@"Pressed Media!");
-}
-
-- (void)editorDidPressPreview:(WPEditorViewController *)editorController
-{
-    NSLog(@"Pressed Preview!");
 }
 
 - (void)editorTitleDidChange:(WPEditorViewController *)editorController
