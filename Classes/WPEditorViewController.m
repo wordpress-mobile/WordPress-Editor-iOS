@@ -8,7 +8,7 @@
 #import "ZSSBarButtonItem.h"
 #import "HRColorUtil.h"
 #import "ZSSTextView.h"
-#import "UIWebView+AccessoryHiding.h"
+#import "UIWebView+CustomInputAccessoryView.h"
 #import "WPInsetTextField.h"
 
 CGFloat const EPVCTextfieldHeight = 44.0f;
@@ -450,7 +450,8 @@ NSInteger const WPLinkAlertViewTag = 92;
         line.alpha = 0.7f;
         [toolbarCropper addSubview:line];
     }
-    [self.view addSubview:self.toolbarHolder];
+    //[self.view addSubview:self.toolbarHolder];
+	self.editorView.customInputAccessoryView = self.toolbarHolder;
     
     // Check to see if we have any toolbar items, if not, add them all
     NSArray *items = [self itemsForToolbar];
@@ -510,7 +511,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     if (!self.editorView) {
         self.editorView = [[UIWebView alloc] initWithFrame:frame];
         self.editorView.delegate = self;
-        self.editorView.hidesInputAccessoryView = YES;
+        self.editorView.usesCustomInputAccessoryView = YES;
         self.editorView.autoresizesSubviews = YES;
         self.editorView.autoresizingMask = mask;
         self.editorView.scalesPageToFit = YES;
