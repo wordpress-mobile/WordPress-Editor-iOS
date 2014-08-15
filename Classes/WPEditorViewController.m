@@ -1474,11 +1474,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         [self.navigationController setToolbarHidden:YES animated:NO];
         
         [UIView animateWithDuration:duration delay:0 options:animationOptions animations:^{
-            // Toolbar
-            CGRect frame = self.toolbarHolder.frame;
-            frame.origin.y = self.view.frame.size.height - (keyboardHeight + toolbarHeight);
-            self.toolbarHolder.frame = frame;
-            
             // Editor View
             CGRect editorFrame = self.editorView.frame;
             editorFrame.size.height = (self.view.frame.size.height - keyboardHeight - toolbarHeight - toolbarHeight);
@@ -1500,10 +1495,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         [self.navigationController setToolbarHidden:NO animated:NO];
         
 		[UIView animateWithDuration:duration delay:0 options:animationOptions animations:^{
-            CGRect frame = self.toolbarHolder.frame;
-            frame.origin.y = self.view.frame.size.height + keyboardHeight;
-            self.toolbarHolder.frame = frame;
-            
             // Editor View
             CGRect editorFrame = self.editorView.frame;
             editorFrame.size.height = self.view.frame.size.height - toolbarHeight;
