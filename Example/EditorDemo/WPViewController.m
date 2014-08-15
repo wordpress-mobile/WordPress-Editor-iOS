@@ -1,7 +1,6 @@
 #import "WPViewController.h"
 
 @interface WPViewController ()
-
 @end
 
 @implementation WPViewController
@@ -14,8 +13,6 @@
     [self setTitleText:@"I'm editing a post!"];
     [self setBodyText:htmlParam];
 	self.delegate = self;
-	
-	[self enableEditing];
 }
 
 #pragma mark - WPEditorViewControllerDelegate

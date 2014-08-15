@@ -38,9 +38,8 @@ NSInteger const WPLinkAlertViewTag = 92;
 @property (nonatomic, strong) UIView *optionsView;
 @property (nonatomic) BOOL didFinishLoadingEditor;
 
-#pragma mark - Properties: Editor Mode
+#pragma mark - Properties: Editability
 @property (nonatomic, assign, readwrite, getter=isEditingDisabled) BOOL editingDisabled;
-@property (nonatomic, assign, readwrite) WPEditorViewControllerMode mode;
 @property (nonatomic, assign, readwrite) BOOL wasEditing;
 
 #pragma mark - Properties: Editor View
@@ -61,7 +60,11 @@ NSInteger const WPLinkAlertViewTag = 92;
 	self = [super init];
 	
 	if (self) {
-		_mode = mode;
+		if (mode == kWPEditorViewControllerModePreview) {
+			_editingDisabled = YES;
+		} else {
+			_editingDisabled = NO;
+		}
 	}
 	
 	return self;
@@ -641,8 +644,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (void)startEditing
 {
-	self.mode = kWPEditorViewControllerModeEdit;
-	
 	// DRM: WORKAROUND: UIWebView seems to display the keyboard's input access view sometimes even
 	// if the keyboard is not shown.
 	//
@@ -653,8 +654,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (void)stopEditing
 {
-	self.mode = kWPEditorViewControllerModePreview;
-	
     [self dismissKeyboard];
     [self.view endEditing:YES];
 	
