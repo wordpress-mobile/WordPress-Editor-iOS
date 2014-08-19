@@ -56,15 +56,32 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 #pragma mark - Initializers
 
+- (instancetype)init
+{
+	return [self initWithMode:kWPEditorViewControllerModeEdit];
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+	self = [super initWithCoder:aDecoder];
+	
+	if (self)
+	{
+		_editing = YES;
+	}
+	
+	return self;
+}
+
 - (instancetype)initWithMode:(WPEditorViewControllerMode)mode
 {
 	self = [super init];
 	
 	if (self) {
 		if (mode == kWPEditorViewControllerModePreview) {
-			_editingEnabled = NO;
+			_editing = NO;
 		} else {
-			_editingEnabled = YES;
+			_editing = YES;
 		}
 	}
 	
@@ -117,7 +134,11 @@ NSInteger const WPLinkAlertViewTag = 92;
     }
     
 	[self startObservingKeyboardNotifications];
-    
+	
+	if (self.isEditing) {
+		[self startEditing];
+	}
+	
     [self refreshUI];
 }
 
@@ -731,21 +752,27 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (void)startEditing
 {
-	[self enableEditing];
-	[self focusTextEditor];
-	
 	self.editing = YES;
+	
+	// We need the editor ready before executing the steps in the conditional block below.
+	// If it's not ready, this method will be called again on webViewDidFinishLoad:
+	//
+	if (self.didFinishLoadingEditor)
+	{
+		[self enableEditing];
+		[self focusTextEditor];
 
-	[self tellOurDelegateEditingDidBegin];
+		[self tellOurDelegateEditingDidBegin];
+	}
 }
 
 - (void)stopEditing
 {
+	self.editing = NO;
+	
 	[self disableEditing];
     [self dismissKeyboard];
     [self.view endEditing:YES];
-	
-	self.editing = NO;
 	
 	[self tellOurDelegateEditingDidEnd];
 }
@@ -1394,8 +1421,8 @@ NSInteger const WPLinkAlertViewTag = 92;
 {
     self.didFinishLoadingEditor = YES;
 	
-	if (self.editingEnabled) {
-		[self enableEditingInHTMLEditor];
+	if (self.editing) {
+		[self startEditing];
 	} else {
 		[self disableEditingInHTMLEditor];
 	}
