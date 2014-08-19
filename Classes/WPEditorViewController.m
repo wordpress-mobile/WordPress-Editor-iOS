@@ -1595,8 +1595,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         self.isShowingKeyboard = NO;
         [self refreshUI];
         
-        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
-        [self.navigationController setNavigationBarHidden:NO animated:YES];
         [self.navigationController setToolbarHidden:NO animated:NO];
         
 		[UIView animateWithDuration:duration delay:0 options:animationOptions animations:^{
