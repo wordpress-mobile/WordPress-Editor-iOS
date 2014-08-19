@@ -1508,10 +1508,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 			[self setHtml:@""];
 		}
 		
-		if ([self shouldHideNavbarWhileTyping]) {
-			[[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-			[self.navigationController setNavigationBarHidden:YES animated:YES];
-		}
 		[self.navigationController setToolbarHidden:YES animated:NO];
 		
 		CGRect localizedKeyboardEnd = [self.view convertRect:keyboardEnd fromView:nil];
@@ -1573,18 +1569,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             self.sourceView.frame = sourceFrame;
         } completion:nil];
 	}
-}
-
-- (BOOL)shouldHideNavbarWhileTyping
-{
-    /*
-     Never hide for the iPad.
-     Always hide on the iPhone except for portrait + external keyboard
-     */
-    if (IS_IPAD) {
-        return NO;
-    }
-    return YES;
 }
 
 #pragma mark - Utilities
