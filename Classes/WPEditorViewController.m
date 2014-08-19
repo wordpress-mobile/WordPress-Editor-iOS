@@ -135,8 +135,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
-	[self stopEditing];
 	
 	[self stopObservingKeyboardNotifications];
 }
