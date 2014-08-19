@@ -1501,17 +1501,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 		CGPoint keyboardOrigin = localizedKeyboardEnd.origin;
 		CGFloat vOffset = self.view.frame.size.height - keyboardOrigin.y;
 		
-		[UIView animateWithDuration:duration delay:0 options:animationOptions animations:^{
-			// Editor View
-			CGRect editorFrame = self.editorView.frame;
-			editorFrame.size.height -= vOffset;
-			self.editorView.frame = editorFrame;
-			
-			// Source View
-			CGRect sourceFrame = self.sourceView.frame;
-			sourceFrame.size.height = (self.view.frame.size.height - keyboardHeight);
-			self.sourceView.frame = sourceFrame;
-		} completion:nil];
+		CGRect editorFrame = self.editorView.frame;
+		editorFrame.size.height -= vOffset;
+		
+		CGRect sourceFrame = self.sourceView.frame;
+		sourceFrame.size.height -= vOffset;
+		
+		[self setEditorFrame:editorFrame
+				 sourceFrame:sourceFrame
+					animated:YES
+			animationOptions:animationOptions
+					duration:duration];
 	}
 }
 
@@ -1533,18 +1533,47 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 		
         self.isShowingKeyboard = NO;
         [self refreshUI];
-        
-		[UIView animateWithDuration:duration delay:0 options:animationOptions animations:^{
-            // Editor View
-            CGRect editorFrame = self.editorView.frame;
-            editorFrame.size.height = self.view.frame.size.height - editorFrame.origin.y;
-            self.editorView.frame = editorFrame;
-            
-            // Source View
-            CGRect sourceFrame = self.sourceView.frame;
-            sourceFrame.size.height = self.view.frame.size.height;
-            self.sourceView.frame = sourceFrame;
-        } completion:nil];
+		
+		CGRect editorFrame = self.editorView.frame;
+		editorFrame.size.height = self.view.frame.size.height - editorFrame.origin.y;
+		
+		CGRect sourceFrame = self.sourceView.frame;
+		sourceFrame.size.height = self.view.frame.size.height - sourceFrame.origin.y;
+		
+		[self setEditorFrame:editorFrame
+				 sourceFrame:sourceFrame
+					animated:YES
+			animationOptions:animationOptions
+					duration:duration];
+	}
+}
+
+#pragma mark - Editor frame
+
+- (void)setEditorFrame:(CGRect)editorFrame
+		   sourceFrame:(CGRect)sourceFrame
+			  animated:(BOOL)animated
+	  animationOptions:(UIViewAnimationOptions)animationOptions
+			  duration:(CGFloat)duration
+{
+	__weak typeof(self) weakSelf = self;
+	
+	void (^privateSetFrames)(CGRect frame, CGRect sourceFrame) = ^void(CGRect editorFrame,
+																	   CGRect sourceFrame)
+	{
+		weakSelf.editorView.frame = editorFrame;
+		weakSelf.sourceView.frame = sourceFrame;
+	};
+	
+	if (animated) {
+		[UIView animateWithDuration:duration
+							  delay:0
+							options:animationOptions
+						 animations:^{
+			privateSetFrames(editorFrame, sourceFrame);
+		} completion:nil];
+	} else {
+		privateSetFrames(editorFrame, sourceFrame);
 	}
 }
 
