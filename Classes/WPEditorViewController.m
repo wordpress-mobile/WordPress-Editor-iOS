@@ -1349,7 +1349,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
     if (textField == self.titleTextField) {
-        [self setTitle:[textField.text stringByReplacingCharactersInRange:range withString:string]];
         if ([self.delegate respondsToSelector: @selector(editorTitleDidChange:)]) {
             [self.delegate editorTitleDidChange:self];
         }
