@@ -760,7 +760,8 @@ NSInteger const WPLinkAlertViewTag = 92;
 	if (self.didFinishLoadingEditor)
 	{
 		[self enableEditing];
-		[self focusTextEditor];
+		
+		[self.titleTextField becomeFirstResponder];
 
 		[self tellOurDelegateEditingDidBegin];
 	}
