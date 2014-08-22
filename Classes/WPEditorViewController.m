@@ -20,7 +20,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 @property (nonatomic, strong) UIScrollView *toolBarScroll;
 @property (nonatomic, strong) UIToolbar *toolbar;
-@property (nonatomic, strong) UIView *toolbarHolder;
 @property (nonatomic, strong) NSString *htmlString;
 @property (nonatomic, strong) ZSSTextView *sourceView;
 @property (assign) BOOL resourcesLoaded;
@@ -31,7 +30,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 @property (nonatomic, strong) NSString *selectedLinkTitle;
 @property (nonatomic, strong) NSString *selectedImageURL;
 @property (nonatomic, strong) NSString *selectedImageAlt;
-@property (nonatomic, strong) UIBarButtonItem *htmlBarButtonItem;
 @property (nonatomic, strong) NSMutableArray *customBarButtonItems;
 @property (nonatomic) BOOL didFinishLoadingEditor;
 
@@ -46,6 +44,13 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 #pragma mark - Properties: Title Text View
 @property (nonatomic, strong) WPInsetTextField *titleTextField;
+
+#pragma mark - Properties: Toolbar Holders
+@property (nonatomic, strong) UIView *rightToolbarHolder;
+@property (nonatomic, strong) UIView *toolbarHolder;
+
+#pragma mark - Properties: Toolbar items
+@property (nonatomic, strong, readwrite) UIBarButtonItem* htmlBarButtonItem;
 
 @end
 
@@ -149,6 +154,66 @@ NSInteger const WPLinkAlertViewTag = 92;
 	[self stopObservingKeyboardNotifications];
 }
 
+#pragma mark - Getters
+
+- (UIBarButtonItem*)htmlBarButtonItem
+{
+	if (!_htmlBarButtonItem) {
+		UIBarButtonItem* htmlBarButtonItem =  [[UIBarButtonItem alloc] initWithTitle:@"HTML"
+																			   style:UIBarButtonItemStylePlain
+																			  target:self
+																			  action:@selector(showHTMLSource:)];
+		
+		UIFont * font = [UIFont boldSystemFontOfSize:10];
+		NSDictionary * attributes = @{NSFontAttributeName: font};
+		[htmlBarButtonItem setTitleTextAttributes:attributes forState:UIControlStateNormal];
+		htmlBarButtonItem.accessibilityLabel = NSLocalizedString(@"Display HTML",
+																 @"Accessibility label for display HTML button on formatting toolbar.");
+		
+		UIButton* customButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+		[customButton setTitle:@"HTML" forState:UIControlStateNormal];
+		[customButton setTitleColor:self.barButtonItemDefaultColor forState:UIControlStateNormal];
+		customButton.font = font;
+		htmlBarButtonItem.customView = customButton;
+		
+		_htmlBarButtonItem = htmlBarButtonItem;
+	}
+	
+	return _htmlBarButtonItem;
+}
+
+- (UIView*)rightToolbarHolder
+{
+	if (!_rightToolbarHolder) {
+		
+		UIView *rightToolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width-44, 0, 44, 44)];
+		rightToolbarHolder.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+		rightToolbarHolder.clipsToBounds = YES;
+		
+		UIToolbar *htmlItemToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+		[rightToolbarHolder addSubview:htmlItemToolbar];
+		
+		static int kiPodToolbarMarginWidth = 16;
+		
+		UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+																						   target:nil
+																						   action:nil];
+		negativeSeparator.width = -kiPodToolbarMarginWidth;
+		
+		htmlItemToolbar.items = @[negativeSeparator, [self htmlBarButtonItem]];
+		htmlItemToolbar.barTintColor = [WPStyleGuide itsEverywhereGrey];
+		
+		UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0.6f, 44)];
+		line.backgroundColor = [UIColor lightGrayColor];
+		line.alpha = 0.7f;
+		[rightToolbarHolder addSubview:line];
+
+		_rightToolbarHolder = rightToolbarHolder;
+	}
+	
+	return _rightToolbarHolder;
+}
+
 #pragma mark - Keyboard notifications
 
 - (void)startObservingKeyboardNotifications
@@ -185,7 +250,8 @@ NSInteger const WPLinkAlertViewTag = 92;
     for (ZSSBarButtonItem *item in self.toolbar.items) {
         item.tintColor = [self barButtonItemDefaultColor];
     }
-    _htmlBarButtonItem.tintColor = toolbarItemTintColor;
+	
+    self.htmlBarButtonItem.tintColor = toolbarItemTintColor;
 }
 
 - (void)setToolbarItemSelectedTintColor:(UIColor *)toolbarItemSelectedTintColor
@@ -901,39 +967,8 @@ NSInteger const WPLinkAlertViewTag = 92;
     [self.toolbarHolder addSubview:self.toolBarScroll];
     [self.toolbarHolder insertSubview:backgroundToolbar atIndex:0];
     
-    // Hide Keyboard
     if (!IS_IPAD) {
-        // Toolbar holder used to crop and position toolbar
-        UIView *rightToolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width-44, 0, 44, 44)];
-        rightToolbarHolder.backgroundColor = [WPStyleGuide itsEverywhereGrey];
-        rightToolbarHolder.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-        rightToolbarHolder.clipsToBounds = YES;
-        
-        // Use a toolbar so that we can tint
-        UIToolbar *htmlItemToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
-        [rightToolbarHolder addSubview:htmlItemToolbar];
-		
-        UIBarButtonItem* htmlBarButtonItem =  [[UIBarButtonItem alloc] initWithTitle:@"HTML"
-																			   style:UIBarButtonItemStylePlain
-																			  target:self
-																			  action:@selector(showHTMLSource:)];
-		
-        UIFont * font = [UIFont boldSystemFontOfSize:10];
-        NSDictionary * attributes = @{NSFontAttributeName: font};
-        [htmlBarButtonItem setTitleTextAttributes:attributes forState:UIControlStateNormal];
-        htmlBarButtonItem.tintColor = self.barButtonItemDefaultColor;
-        htmlBarButtonItem.accessibilityLabel = NSLocalizedString(@"Display HTML",
-																 @"Accessibility label for display HTML button on formatting toolbar.");
-		
-        htmlItemToolbar.items = @[htmlBarButtonItem];
-		htmlItemToolbar.barTintColor = [WPStyleGuide itsEverywhereGrey];
-        
-        UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0.6f, 44)];
-        line.backgroundColor = [UIColor lightGrayColor];
-        line.alpha = 0.7f;
-        [rightToolbarHolder addSubview:line];
-		
-        [self.toolbarHolder addSubview:rightToolbarHolder];
+        [self.toolbarHolder addSubview:[self rightToolbarHolder]];
     }
 	
 	self.editorView.usesGUIFixes = YES;
