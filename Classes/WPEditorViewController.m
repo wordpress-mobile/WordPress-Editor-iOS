@@ -904,31 +904,36 @@ NSInteger const WPLinkAlertViewTag = 92;
     // Hide Keyboard
     if (!IS_IPAD) {
         // Toolbar holder used to crop and position toolbar
-        UIView *toolbarCropper = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width-44, 0, 44, 44)];
-        toolbarCropper.backgroundColor = [WPStyleGuide itsEverywhereGrey];
-        toolbarCropper.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-        toolbarCropper.clipsToBounds = YES;
+        UIView *rightToolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width-44, 0, 44, 44)];
+        rightToolbarHolder.backgroundColor = [WPStyleGuide itsEverywhereGrey];
+        rightToolbarHolder.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+        rightToolbarHolder.clipsToBounds = YES;
         
         // Use a toolbar so that we can tint
-        UIToolbar *htmlItemToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, -1, 55, 44)];
-        [toolbarCropper addSubview:htmlItemToolbar];
-        
-        
-        self.htmlBarButtonItem =  [[UIBarButtonItem alloc] initWithTitle:@"HTML" style:UIBarButtonItemStylePlain target:self action:@selector(showHTMLSource:)];
+        UIToolbar *htmlItemToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+        [rightToolbarHolder addSubview:htmlItemToolbar];
+		
+        UIBarButtonItem* htmlBarButtonItem =  [[UIBarButtonItem alloc] initWithTitle:@"HTML"
+																			   style:UIBarButtonItemStylePlain
+																			  target:self
+																			  action:@selector(showHTMLSource:)];
+		
         UIFont * font = [UIFont boldSystemFontOfSize:10];
         NSDictionary * attributes = @{NSFontAttributeName: font};
-        [self.htmlBarButtonItem setTitleTextAttributes:attributes forState:UIControlStateNormal];
-        self.htmlBarButtonItem.tintColor = self.barButtonItemDefaultColor;
-        self.htmlBarButtonItem.accessibilityLabel = NSLocalizedString(@"Display HTML", @"Accessibility label for display HTML button on formatting toolbar.");
-        htmlItemToolbar.items = @[self.htmlBarButtonItem];
+        [htmlBarButtonItem setTitleTextAttributes:attributes forState:UIControlStateNormal];
+        htmlBarButtonItem.tintColor = self.barButtonItemDefaultColor;
+        htmlBarButtonItem.accessibilityLabel = NSLocalizedString(@"Display HTML",
+																 @"Accessibility label for display HTML button on formatting toolbar.");
+		
+        htmlItemToolbar.items = @[htmlBarButtonItem];
 		htmlItemToolbar.barTintColor = [WPStyleGuide itsEverywhereGrey];
-
-        [self.toolbarHolder addSubview:toolbarCropper];
         
         UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0.6f, 44)];
         line.backgroundColor = [UIColor lightGrayColor];
         line.alpha = 0.7f;
-        [toolbarCropper addSubview:line];
+        [rightToolbarHolder addSubview:line];
+		
+        [self.toolbarHolder addSubview:rightToolbarHolder];
     }
 	
 	self.editorView.usesGUIFixes = YES;
@@ -945,7 +950,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     // get the width before we add custom buttons
     CGFloat toolbarWidth = items.count == 0 ? 0.0f : (CGFloat)(items.count * 55);
     
-    if(self.customBarButtonItems != nil)
+    if (self.customBarButtonItems != nil)
     {
         items = [items arrayByAddingObjectsFromArray:self.customBarButtonItems];
         for(ZSSBarButtonItem *buttonItem in self.customBarButtonItems)
