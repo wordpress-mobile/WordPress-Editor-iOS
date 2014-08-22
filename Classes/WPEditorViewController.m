@@ -905,7 +905,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     if (!IS_IPAD) {
         // Toolbar holder used to crop and position toolbar
         UIView *toolbarCropper = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width-44, 0, 44, 44)];
-        toolbarCropper.backgroundColor = [UIColor whiteColor];
+        toolbarCropper.backgroundColor = [WPStyleGuide itsEverywhereGrey];
         toolbarCropper.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
         toolbarCropper.clipsToBounds = YES;
         
