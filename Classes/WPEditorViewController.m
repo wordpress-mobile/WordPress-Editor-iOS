@@ -5,11 +5,13 @@
 #import <WordPress-iOS-Shared/WPTableViewCell.h>
 #import <WordPress-iOS-Shared/UIImage+Util.h>
 #import <UIAlertView+Blocks/UIAlertView+Blocks.h>
-#import "ZSSBarButtonItem.h"
+
 #import "HRColorUtil.h"
-#import "ZSSTextView.h"
 #import "UIWebView+GUIFixes.h"
+#import "WPEditorToolbarButton.h"
 #import "WPInsetTextField.h"
+#import "ZSSBarButtonItem.h"
+#import "ZSSTextView.h"
 
 CGFloat const EPVCTextfieldHeight = 44.0f;
 CGFloat const EPVCStandardOffset = 10.0;
@@ -170,10 +172,12 @@ NSInteger const WPLinkAlertViewTag = 92;
 		htmlBarButtonItem.accessibilityLabel = NSLocalizedString(@"Display HTML",
 																 @"Accessibility label for display HTML button on formatting toolbar.");
 		
-		UIButton* customButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+		WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
 		[customButton setTitle:@"HTML" forState:UIControlStateNormal];
 		[customButton setTitleColor:self.barButtonItemDefaultColor forState:UIControlStateNormal];
-		customButton.font = font;
+		[customButton setTitleColor:self.barButtonItemSelectedDefaultColor forState:UIControlStateSelected];
+		customButton.reversesTitleShadowWhenHighlighted = YES;
+		customButton.titleLabel.font = font;
 		htmlBarButtonItem.customView = customButton;
 		
 		_htmlBarButtonItem = htmlBarButtonItem;
