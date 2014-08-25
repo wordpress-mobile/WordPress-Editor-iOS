@@ -57,6 +57,10 @@ zss_editor.init = function() {
 			console.log("callback://focusout");
 		}
 	});
+	
+	editor.bind('keyup', function(e) {
+		zss_editor.enabledEditingItems(e);
+	});
 }//end
 
 zss_editor.backuprange = function(){
