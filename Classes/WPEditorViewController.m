@@ -1941,7 +1941,8 @@ typedef enum
 {
 	if (textField == self.titleTextField) {
 		
-		[self enableToolbarItems:NO shouldShowSourceButton:NO];
+		[self enableToolbarItems:NO
+		  shouldShowSourceButton:NO];
 		
 		[self refreshUI];
 	}
@@ -2037,7 +2038,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 		
 		self.editorViewIsEditing = YES;
 		
-		[self enableToolbarItems:YES shouldShowSourceButton:NO];
+		[self enableToolbarItems:YES
+		  shouldShowSourceButton:NO];
 		
 		result = YES;
 	} else if ([resourceSpecifier isEqualToString:kFocusOutSpecifier]){
@@ -2227,11 +2229,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSArray *items = self.toolbar.items;
 	
-    for (UIBarButtonItem *item in items) {
+    for (ZSSBarButtonItem *item in items) {
         if (item.tag == kWPEditorViewControllerElementShowSourceBarButton) {
             item.enabled = showSource;
         } else {
             item.enabled = enable;
+			
+			if (!enable) {
+				[item setSelected:NO];
+			}
         }
     }
 }

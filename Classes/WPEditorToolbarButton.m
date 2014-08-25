@@ -96,14 +96,14 @@ static const int kBottomLineHeight = 2;
 
 - (void)slideOutBottomLineView
 {
-	NSAssert(_bottomLineView, @"The bottom line view should exist here");
-	
-	CGRect newFrame = self.bottomLineView.frame;
-	newFrame.origin.y = self.frame.size.height;
-	
-	[UIView animateWithDuration:kAnimationDuration animations:^{
-		self.bottomLineView.frame = newFrame;
-	}];
+	if (self.bottomLineView) {
+		CGRect newFrame = self.bottomLineView.frame;
+		newFrame.origin.y = self.frame.size.height;
+		
+		[UIView animateWithDuration:kAnimationDuration animations:^{
+			self.bottomLineView.frame = newFrame;
+		}];
+	}
 }
 
 #pragma mark - UIControl
