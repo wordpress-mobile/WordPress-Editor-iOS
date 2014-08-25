@@ -18,6 +18,44 @@ CGFloat const EPVCStandardOffset = 10.0;
 NSInteger const WPImageAlertViewTag = 91;
 NSInteger const WPLinkAlertViewTag = 92;
 
+typedef enum
+{
+	kWPEditorViewControllerElementTagUnknown = -1,
+	kWPEditorViewControllerElementTagJustifyLeftBarButton,
+	kWPEditorViewControllerElementTagJustifyCenterBarButton,
+	kWPEditorViewControllerElementTagJustifyRightBarButton,
+	kWPEditorViewControllerElementTagJustifyFullBarButton,
+	kWPEditorViewControllerElementTagBackgroundColorBarButton,
+	kWPEditorViewControllerElementTagBlockQuoteBarButton,
+	kWPEditorViewControllerElementTagBoldBarButton,
+	kWPEditorViewControllerElementTagH1BarButton,
+	kWPEditorViewControllerElementTagH2BarButton,
+	kWPEditorViewControllerElementTagH3BarButton,
+	kWPEditorViewControllerElementTagH4BarButton,
+	kWPEditorViewControllerElementTagH5BarButton,
+	kWPEditorViewControllerElementTagH6BarButton,
+	kWPEditorViewControllerElementTagHorizontalRuleBarButton,
+	kWPEditorViewControllerElementTagIndentBarButton,
+	kWPEditorViewControllerElementTagInsertImageBarButton,
+	kWPEditorViewControllerElementTagInsertLinkBarButton,
+	kWPEditorViewControllerElementTagItalicBarButton,
+	kWPEditorViewControllerElementOrderedListBarButton,
+	kWPEditorViewControllerElementOutdentBarButton,
+	kWPEditorViewControllerElementQuickLinkBarButton,
+	kWPEditorViewControllerElementRedoBarButton,
+	kWPEditorViewControllerElementRemoveFormatBarButton,
+	kWPEditorViewControllerElementRemoveLinkBarButton,
+	kWPEditorViewControllerElementShowSourceBarButton,
+	kWPEditorViewControllerElementStrikeThroughBarButton,
+	kWPEditorViewControllerElementSubscriptBarButton,
+	kWPEditorViewControllerElementSuperscriptBarButton,
+	kWPEditorViewControllerElementTextColorBarButton,
+	kWPEditorViewControllerElementUnderlineBarButton,
+	kWPEditorViewControllerElementUnorderedListBarButton,
+	kWPEditorViewControllerElementUndoBarButton,
+	
+} WPEditorViewControllerElementTag;
+
 @interface WPEditorViewController () <UIWebViewDelegate, HRColorPickerViewControllerDelegate, UITextFieldDelegate>
 
 @property (nonatomic, strong) UIScrollView *toolBarScroll;
@@ -99,21 +137,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     [super viewDidLoad];
     self.didFinishLoadingEditor = NO;
     
-    // iPad gets the HTML source button
-    if (IS_IPAD) {
-        self.enabledToolbarItems = ZSSRichTextEditorToolbarInsertImage | ZSSRichTextEditorToolbarBold |
-                                ZSSRichTextEditorToolbarItalic | ZSSRichTextEditorToolbarUnderline |
-                                ZSSRichTextEditorToolbarBlockQuote | ZSSRichTextEditorToolbarInsertLink |
-                                ZSSRichTextEditorToolbarUnorderedList | ZSSRichTextEditorToolbarOrderedList |
-                                ZSSRichTextEditorToolbarRemoveLink | ZSSRichTextEditorToolbarViewSource;
-    } else {
-        self.enabledToolbarItems = ZSSRichTextEditorToolbarInsertImage | ZSSRichTextEditorToolbarBold |
-                                ZSSRichTextEditorToolbarItalic | ZSSRichTextEditorToolbarUnderline |
-                                ZSSRichTextEditorToolbarBlockQuote | ZSSRichTextEditorToolbarInsertLink |
-                                ZSSRichTextEditorToolbarUnorderedList | ZSSRichTextEditorToolbarOrderedList |
-                                ZSSRichTextEditorToolbarRemoveLink;
-    }
-    
+	self.enabledToolbarItems = [self defaultToolbarItems];
     [self buildTextViews];
     [self buildToolbar];
 }
@@ -154,6 +178,27 @@ NSInteger const WPLinkAlertViewTag = 92;
     [super viewWillDisappear:animated];
 	
 	[self stopObservingKeyboardNotifications];
+}
+
+#pragma mark - Default toolbar items
+
+- (ZSSRichTextEditorToolbar)defaultToolbarItems
+{
+	ZSSRichTextEditorToolbar defaultToolbarItems = (ZSSRichTextEditorToolbarInsertImage
+													| ZSSRichTextEditorToolbarBold
+													| ZSSRichTextEditorToolbarItalic
+													| ZSSRichTextEditorToolbarUnderline
+													| ZSSRichTextEditorToolbarBlockQuote
+													| ZSSRichTextEditorToolbarInsertLink
+													| ZSSRichTextEditorToolbarOrderedList
+													| ZSSRichTextEditorToolbarRemoveLink);
+	
+	// iPad gets the HTML source button too
+	if (IS_IPAD) {
+		defaultToolbarItems = defaultToolbarItems | ZSSRichTextEditorToolbarViewSource;
+	}
+	
+	return defaultToolbarItems;
 }
 
 #pragma mark - Getters
@@ -243,6 +288,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)setEnabledToolbarItems:(ZSSRichTextEditorToolbar)enabledToolbarItems
 {
     _enabledToolbarItems = enabledToolbarItems;
+	
     [self buildToolbar];
 }
 
@@ -251,7 +297,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     _toolbarItemTintColor = toolbarItemTintColor;
     
     // Update the color
-    for (ZSSBarButtonItem *item in self.toolbar.items) {
+    for (UIBarButtonItem *item in self.toolbar.items) {
         item.tintColor = [self barButtonItemDefaultColor];
     }
 	
@@ -573,368 +619,423 @@ NSInteger const WPLinkAlertViewTag = 92;
 	return [self canShowToolbarOption:ZSSRichTextEditorToolbarUnorderedList];
 }
 
+#pragma mark - Toolbar: buttons
+
 - (ZSSBarButtonItem*)alignLeftBarButton
 {
 	ZSSBarButtonItem *alignLeft = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSleftjustify.png"]
-																	style:UIBarButtonItemStylePlain
-																   target:self
-																   action:@selector(alignLeft)];
-	alignLeft.label = @"justifyLeft";
+																  style:UIBarButtonItemStylePlain
+																 target:self
+																 action:@selector(alignLeft)];
+	alignLeft.tag = kWPEditorViewControllerElementTagJustifyLeftBarButton;
+	alignLeft.htmlProperty = @"justifyLeft";
 	
 	return alignLeft;
 }
 
-- (ZSSBarButtonItem*)alignCenterBarButton
+- (UIBarButtonItem*)alignCenterBarButton
 {
 	ZSSBarButtonItem *alignCenter = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSScenterjustify.png"]
-																	  style:UIBarButtonItemStylePlain
-																	 target:self
-																	 action:@selector(alignCenter)];
-	alignCenter.label = @"justifyCenter";
+																	style:UIBarButtonItemStylePlain
+																   target:self
+																   action:@selector(alignCenter)];
+	alignCenter.tag = kWPEditorViewControllerElementTagJustifyCenterBarButton;
+	alignCenter.htmlProperty = @"justifyCenter";
 	
 	return alignCenter;
 }
 
-- (ZSSBarButtonItem*)alignFullBarButton
+- (UIBarButtonItem*)alignFullBarButton
 {
 	ZSSBarButtonItem *alignFull = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSforcejustify.png"]
-																	style:UIBarButtonItemStylePlain
-																   target:self
-																   action:@selector(alignFull)];
-	alignFull.label = @"justifyFull";
+																  style:UIBarButtonItemStylePlain
+																 target:self
+																 action:@selector(alignFull)];
+	alignFull.tag = kWPEditorViewControllerElementTagJustifyFullBarButton;
+	alignFull.htmlProperty = @"justifyFull";
 	
 	return alignFull;
 }
 
-- (ZSSBarButtonItem*)alignRightBarButton
+- (UIBarButtonItem*)alignRightBarButton
 {
 	ZSSBarButtonItem *alignRight = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSrightjustify.png"]
-																	 style:UIBarButtonItemStylePlain
-																	target:self
-																	action:@selector(alignRight)];
-	alignRight.label = @"justifyRight";
+																   style:UIBarButtonItemStylePlain
+																  target:self
+																  action:@selector(alignRight)];
+	alignRight.tag = kWPEditorViewControllerElementTagJustifyRightBarButton;
+	alignRight.htmlProperty = @"justifyRight";
 	
 	return alignRight;
 }
 
-- (ZSSBarButtonItem*)backgroundColorBarButton
+- (UIBarButtonItem*)backgroundColorBarButton
 {
 	ZSSBarButtonItem *bgColor = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSbgcolor.png"]
-																  style:UIBarButtonItemStylePlain
-																 target:self
-																 action:@selector(bgColor)];
-	bgColor.label = @"backgroundColor";
+																style:UIBarButtonItemStylePlain
+															   target:self
+															   action:@selector(bgColor)];
+	bgColor.tag = kWPEditorViewControllerElementTagBackgroundColorBarButton;
+	bgColor.htmlProperty = @"backgroundColor";
 	
 	return bgColor;
 }
 
-- (ZSSBarButtonItem*)blockQuoteBarButton
+- (UIBarButtonItem*)blockQuoteBarButton
 {
 	ZSSBarButtonItem *blockQuote = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_quote"]
-																	 style:UIBarButtonItemStylePlain
-																	target:self
-																	action:@selector(setBlockQuote)];
-	blockQuote.label = @"blockQuote";
+																   style:UIBarButtonItemStylePlain
+																  target:self
+																  action:@selector(setBlockQuote)];
+	blockQuote.tag = kWPEditorViewControllerElementTagBlockQuoteBarButton;
+	blockQuote.htmlProperty = @"blockQuote";
 	blockQuote.accessibilityLabel = NSLocalizedString(@"Block Quote",
 													  @"Accessibility label for block quote button on formatting toolbar.");
 	
 	return blockQuote;
 }
 
-- (ZSSBarButtonItem*)boldBarButton
+- (UIBarButtonItem*)boldBarButton
 {
 	ZSSBarButtonItem *bold = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_bold"]
-															   style:UIBarButtonItemStylePlain
-															  target:self
-															  action:@selector(setBold)];
-	bold.label = @"bold";
+															 style:UIBarButtonItemStylePlain
+															target:self
+															action:@selector(setBold)];
+	bold.tag = kWPEditorViewControllerElementTagBoldBarButton;
+	bold.htmlProperty = @"bold";
 	bold.accessibilityLabel = NSLocalizedString(@"Bold",
 												@"Accessibility label for bold button on formatting toolbar.");
 	
 	return bold;
 }
 
-- (ZSSBarButtonItem*)header1BarButton
+- (WPEditorToolbarButton*)header1BarButton
 {
 	ZSSBarButtonItem *h1 = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSh1.png"]
-															 style:UIBarButtonItemStylePlain
-															target:self
-															action:@selector(heading1)];
-	h1.label = @"h1";
+														   style:UIBarButtonItemStylePlain
+														  target:self
+														  action:@selector(heading1)];
+	h1.tag = kWPEditorViewControllerElementTagH1BarButton;
+	h1.htmlProperty = @"h1";
 	
 	return h1;
 }
 
-- (ZSSBarButtonItem*)header2BarButton
+- (UIBarButtonItem*)header2BarButton
 {
 	ZSSBarButtonItem *h2 = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSh2.png"]
-															 style:UIBarButtonItemStylePlain
-															target:self
-															action:@selector(heading2)];
-	h2.label = @"h2";
+														   style:UIBarButtonItemStylePlain
+														  target:self
+														  action:@selector(heading2)];
+	h2.tag = kWPEditorViewControllerElementTagH2BarButton;
+	h2.htmlProperty = @"h2";
 	
 	return h2;
 }
 
-- (ZSSBarButtonItem*)header3BarButton
+- (UIBarButtonItem*)header3BarButton
 {
 	ZSSBarButtonItem *h3 = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSh3.png"]
-															 style:UIBarButtonItemStylePlain
-															target:self
-															action:@selector(heading3)];
-	h3.label = @"h3";
+														   style:UIBarButtonItemStylePlain
+														  target:self
+														  action:@selector(heading3)];
+	h3.tag = kWPEditorViewControllerElementTagH3BarButton;
+	h3.htmlProperty = @"h3";
 	
 	return h3;
 }
 
-- (ZSSBarButtonItem*)header4BarButton
+- (UIBarButtonItem*)header4BarButton
 {
 	ZSSBarButtonItem *h4 = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSh4.png"]
-															 style:UIBarButtonItemStylePlain
-															target:self
-															action:@selector(heading4)];
-	h4.label = @"h4";
+														   style:UIBarButtonItemStylePlain
+														  target:self
+														  action:@selector(heading4)];
+	h4.tag = kWPEditorViewControllerElementTagH4BarButton;
+	h4.htmlProperty = @"h4";
 	
 	return h4;
 }
 
-- (ZSSBarButtonItem*)header5BarButton
+- (UIBarButtonItem*)header5BarButton
 {
 	ZSSBarButtonItem *h5 = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSh5.png"]
-															 style:UIBarButtonItemStylePlain
-															target:self
-															action:@selector(heading5)];
-	h5.label = @"h5";
+														   style:UIBarButtonItemStylePlain
+														  target:self
+														  action:@selector(heading5)];
+	h5.tag = kWPEditorViewControllerElementTagH5BarButton;
+	h5.htmlProperty = @"h5";
 	
 	return h5;
 }
 
-- (ZSSBarButtonItem*)header6BarButton
+- (UIBarButtonItem*)header6BarButton
 {
 	ZSSBarButtonItem *h6 = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSh6.png"]
-															 style:UIBarButtonItemStylePlain
-															target:self
-															action:@selector(heading6)];
-	h6.label = @"h6";
+														   style:UIBarButtonItemStylePlain
+														  target:self
+														  action:@selector(heading6)];
+	h6.tag = kWPEditorViewControllerElementTagH6BarButton;
+	h6.htmlProperty = @"h6";
 	
 	return h6;
 }
 		
-- (ZSSBarButtonItem*)horizontalRuleBarButton
+- (UIBarButtonItem*)horizontalRuleBarButton
 {
 	ZSSBarButtonItem *hr = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSShorizontalrule.png"]
-															 style:UIBarButtonItemStylePlain
-															target:self
-															action:@selector(setHR)];
-	hr.label = @"horizontalRule";
+														   style:UIBarButtonItemStylePlain
+														  target:self
+														  action:@selector(setHR)];
+	hr.tag = kWPEditorViewControllerElementTagHorizontalRuleBarButton;
+	hr.htmlProperty = @"horizontalRule";
 	
 	return hr;
 }
 
-- (ZSSBarButtonItem*)indentBarButton
+- (UIBarButtonItem*)indentBarButton
 {
 	ZSSBarButtonItem *indent = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSindent.png"]
-																 style:UIBarButtonItemStylePlain
-																target:self
-																action:@selector(setIndent)];
-	indent.label = @"indent";
+															   style:UIBarButtonItemStylePlain
+															  target:self
+															  action:@selector(setIndent)];
+
+	indent.tag = kWPEditorViewControllerElementTagIndentBarButton;
+	indent.htmlProperty = @"indent";
 	
 	return indent;
 }
 
-- (ZSSBarButtonItem*)insertImageBarButton
+- (UIBarButtonItem*)insertImageBarButton
 {
 	ZSSBarButtonItem *insertImage = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_media"]
-																	  style:UIBarButtonItemStylePlain
-																	 target:self
-																	 action:@selector(didTouchMediaOptions)];
-	insertImage.label = @"image";
+																	style:UIBarButtonItemStylePlain
+																   target:self
+																   action:@selector(didTouchMediaOptions)];
+
+	insertImage.tag = kWPEditorViewControllerElementTagInsertImageBarButton;
+	insertImage.htmlProperty = @"image";
 	insertImage.accessibilityLabel = NSLocalizedString(@"Insert Image",
 													   @"Accessibility label for insert image button on formatting toolbar.");
 	
 	return insertImage;
 }
 
-- (ZSSBarButtonItem*)inserLinkBarButton
+- (UIBarButtonItem*)inserLinkBarButton
 {
 	ZSSBarButtonItem *insertLink = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_link"]
-																	 style:UIBarButtonItemStylePlain
-																	target:self
-																	action:@selector(insertLink)];
-	insertLink.label = @"link";
+																   style:UIBarButtonItemStylePlain
+																  target:self
+																  action:@selector(insertLink)];
+
+	insertLink.tag = kWPEditorViewControllerElementTagInsertLinkBarButton;
+	insertLink.htmlProperty = @"link";
 	insertLink.accessibilityLabel = NSLocalizedString(@"Insert Link",
 													  @"Accessibility label for insert link button on formatting toolbar.");
 	
 	return insertLink;
 }
 
-- (ZSSBarButtonItem*)italicBarButton
+- (UIBarButtonItem*)italicBarButton
 {
 	ZSSBarButtonItem *italic = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_italic"]
-																 style:UIBarButtonItemStylePlain
-																target:self
-																action:@selector(setItalic)];
-	italic.label = @"italic";
+															   style:UIBarButtonItemStylePlain
+															  target:self
+															  action:@selector(setItalic)];
+
+	italic.tag = kWPEditorViewControllerElementTagItalicBarButton;
+	italic.htmlProperty = @"italic";
 	italic.accessibilityLabel = NSLocalizedString(@"Italic",
 												  @"Accessibility label for italic button on formatting toolbar.");
 	
 	return italic;
 }
 
-- (ZSSBarButtonItem*)orderedListBarButton
+- (UIBarButtonItem*)orderedListBarButton
 {
 	ZSSBarButtonItem *ol = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSorderedlist.png"]
-															 style:UIBarButtonItemStylePlain
-															target:self
-															action:@selector(setOrderedList)];
-	ol.label = @"orderedList";
+														   style:UIBarButtonItemStylePlain
+														  target:self
+														  action:@selector(setOrderedList)];
+
+	ol.tag = kWPEditorViewControllerElementOrderedListBarButton;
+	ol.htmlProperty = @"orderedList";
 	ol.accessibilityLabel = NSLocalizedString(@"Ordered List", @"Accessibility label for ordered list button on formatting toolbar.");
 	
 	return ol;
 }
 
-- (ZSSBarButtonItem*)outdentBarButton
+- (UIBarButtonItem*)outdentBarButton
 {
 	ZSSBarButtonItem *outdent = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSoutdent.png"]
-																  style:UIBarButtonItemStylePlain
-																 target:self
-																 action:@selector(setOutdent)];
-	outdent.label = @"outdent";
+																style:UIBarButtonItemStylePlain
+															   target:self
+															   action:@selector(setOutdent)];
+
+	outdent.tag = kWPEditorViewControllerElementOutdentBarButton;
+	outdent.htmlProperty = @"outdent";
 	
 	return outdent;
 }
 
-- (ZSSBarButtonItem*)quickLinkBarButton
+- (UIBarButtonItem*)quickLinkBarButton
 {
 	ZSSBarButtonItem *quickLink = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSquicklink.png"]
-																	style:UIBarButtonItemStylePlain
-																   target:self
-																   action:@selector(quickLink)];
-	quickLink.label = @"quickLink";
+																  style:UIBarButtonItemStylePlain
+																 target:self
+																 action:@selector(quickLink)];
+
+	quickLink.tag = kWPEditorViewControllerElementQuickLinkBarButton;
+	quickLink.htmlProperty = @"quickLink";
 	
 	return quickLink;
 }
 
-- (ZSSBarButtonItem*)redoBarButton
+- (UIBarButtonItem*)redoBarButton
 {
 	ZSSBarButtonItem *redoButton = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSredo.png"]
-																	 style:UIBarButtonItemStylePlain
-																	target:self
-																	action:@selector(redo:)];
-	redoButton.label = @"redo";
+																   style:UIBarButtonItemStylePlain
+																  target:self
+																  action:@selector(redo:)];
+
+	redoButton.tag = kWPEditorViewControllerElementRedoBarButton;
+	redoButton.htmlProperty = @"redo";
 	
 	return redoButton;
 }
 
-- (ZSSBarButtonItem*)removeFormatBarButton
+- (UIBarButtonItem*)removeFormatBarButton
 {
 	ZSSBarButtonItem *removeFormat = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSclearstyle.png"]
-																	   style:UIBarButtonItemStylePlain
-																	  target:self
-																	  action:@selector(removeFormat)];
-	removeFormat.label = @"removeFormat";
+																	 style:UIBarButtonItemStylePlain
+																	target:self
+																	action:@selector(removeFormat)];
+
+	removeFormat.tag = kWPEditorViewControllerElementRemoveFormatBarButton;
+	removeFormat.htmlProperty = @"removeFormat";
 	
 	return removeFormat;
 }
 
-- (ZSSBarButtonItem*)removeLinkBarButton
+- (UIBarButtonItem*)removeLinkBarButton
 {
 	ZSSBarButtonItem *removeLink = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSunlink.png"]
-																	 style:UIBarButtonItemStylePlain
-																	target:self
-																	action:@selector(removeLink)];
-	removeLink.label = @"removeLink";
+																   style:UIBarButtonItemStylePlain
+																  target:self
+																  action:@selector(removeLink)];
+
+	removeLink.tag = kWPEditorViewControllerElementRemoveLinkBarButton;
+	removeLink.htmlProperty = @"removeLink";
 	removeLink.accessibilityLabel = NSLocalizedString(@"Remove Link", @"Accessibility label for remove link button on formatting toolbar.");
 	
 	return removeLink;
 }
 
-- (ZSSBarButtonItem*)showSourceBarButton
+- (UIBarButtonItem*)showSourceBarButton
 {
 	ZSSBarButtonItem *showSource = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSviewsource.png"]
-																	 style:UIBarButtonItemStylePlain
-																	target:self
-																	action:@selector(showHTMLSource:)];
-	showSource.label = @"source";
+																   style:UIBarButtonItemStylePlain
+																  target:self
+																  action:@selector(showHTMLSource:)];
+
+	showSource.tag = kWPEditorViewControllerElementShowSourceBarButton;
+	showSource.htmlProperty = @"source";
 	
 	return showSource;
 }
 
-- (ZSSBarButtonItem*)strikeThroughBarButton
+- (UIBarButtonItem*)strikeThroughBarButton
 {
 	ZSSBarButtonItem *strikeThrough = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_strikethrough"]
-																		style:UIBarButtonItemStylePlain
-																	   target:self
-																	   action:@selector(setStrikethrough)];
-	strikeThrough.label = @"strikeThrough";
+																	  style:UIBarButtonItemStylePlain
+																	 target:self
+																	 action:@selector(setStrikethrough)];
+
+	strikeThrough.tag = kWPEditorViewControllerElementStrikeThroughBarButton;
+	strikeThrough.htmlProperty = @"strikeThrough";
 	strikeThrough.accessibilityLabel = NSLocalizedString(@"Strike Through",
 														 @"Accessibility label for strikethrough button on formatting toolbar.");
 	
 	return strikeThrough;
 }
 
-- (ZSSBarButtonItem*)subscriptBarButton
+- (UIBarButtonItem*)subscriptBarButton
 {
 	ZSSBarButtonItem *subscript = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSsubscript.png"]
-																	style:UIBarButtonItemStylePlain
-																   target:self
-																   action:@selector(setSubscript)];
-	subscript.label = @"subscript";
+																  style:UIBarButtonItemStylePlain
+																 target:self
+																 action:@selector(setSubscript)];
+
+	subscript.tag = kWPEditorViewControllerElementSubscriptBarButton;
+	subscript.htmlProperty = @"subscript";
 	
 	return subscript;
 }
 
-- (ZSSBarButtonItem*)superscriptBarButton
+- (UIBarButtonItem*)superscriptBarButton
 {
-	ZSSBarButtonItem *superscript = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSsuperscript.png"] style:UIBarButtonItemStylePlain target:self action:@selector(setSuperscript)];
-	superscript.label = @"superscript";
+	ZSSBarButtonItem *superscript = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSsuperscript.png"]
+																	style:UIBarButtonItemStylePlain
+																   target:self
+																   action:@selector(setSuperscript)];
+
+	superscript.tag = kWPEditorViewControllerElementSuperscriptBarButton;
+	superscript.htmlProperty = @"superscript";
 	
 	return superscript;
 }
 
-- (ZSSBarButtonItem*)textColorBarButton
+- (UIBarButtonItem*)textColorBarButton
 {
 	ZSSBarButtonItem *textColor = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSStextcolor.png"]
-																	style:UIBarButtonItemStylePlain
-																   target:self
-																   action:@selector(textColor)];
-	textColor.label = @"textColor";
+																  style:UIBarButtonItemStylePlain
+																 target:self
+																 action:@selector(textColor)];
+
+	textColor.tag = kWPEditorViewControllerElementTextColorBarButton;
+	textColor.htmlProperty = @"textColor";
 	
 	return textColor;
 }
 
-- (ZSSBarButtonItem*)underlineBarButton
+- (UIBarButtonItem*)underlineBarButton
 {
 	ZSSBarButtonItem *underline = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_format_underline"]
-																	style:UIBarButtonItemStylePlain
-																   target:self
-																   action:@selector(setUnderline)];
-	underline.label = @"underline";
+																  style:UIBarButtonItemStylePlain
+																 target:self
+																 action:@selector(setUnderline)];
+
+	underline.tag = kWPEditorViewControllerElementUnderlineBarButton;
+	underline.htmlProperty = @"underline";
 	underline.accessibilityLabel = NSLocalizedString(@"Underline",
 													 @"Accessibility label for underline button on formatting toolbar.");
 	
 	return underline;
 }
 
-- (ZSSBarButtonItem*)unorderedListBarButton
+- (UIBarButtonItem*)unorderedListBarButton
 {
 	ZSSBarButtonItem *ul = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSunorderedlist.png"]
-															 style:UIBarButtonItemStylePlain
-															target:self
-															action:@selector(setUnorderedList)];
-	ul.label = @"unorderedList";
+														   style:UIBarButtonItemStylePlain
+														  target:self
+														  action:@selector(setUnorderedList)];
+
+	ul.tag = kWPEditorViewControllerElementUnorderedListBarButton;
+	ul.htmlProperty = @"unorderedList";
 	ul.accessibilityLabel = NSLocalizedString(@"Unordered List", @"Accessibility label for unordered list button on formatting toolbar.");
 	
 	return ul;
 }
 
-- (ZSSBarButtonItem*)undoBarButton
+- (UIBarButtonItem*)undoBarButton
 {
 	ZSSBarButtonItem *undoButton = [[ZSSBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ZSSundo.png"]
-																	 style:UIBarButtonItemStylePlain
-																	target:self
-																	action:@selector(undo:)];
-	undoButton.label = @"undo";
+																   style:UIBarButtonItemStylePlain
+																  target:self
+																  action:@selector(undo:)];
+
+	undoButton.tag = kWPEditorViewControllerElementUndoBarButton;
+	undoButton.htmlProperty = @"undo";
 	
 	return undoButton;
 }
@@ -992,12 +1093,12 @@ NSInteger const WPLinkAlertViewTag = 92;
     if (self.customBarButtonItems != nil)
     {
         items = [items arrayByAddingObjectsFromArray:self.customBarButtonItems];
-        for(ZSSBarButtonItem *buttonItem in self.customBarButtonItems)
+        for(UIBarButtonItem *buttonItem in self.customBarButtonItems)
         {
             toolbarWidth += buttonItem.customView.frame.size.width + 11.0f;
         }
     }
-    for (ZSSBarButtonItem *item in items) {
+    for (UIBarButtonItem *item in items) {
         item.tintColor = [self barButtonItemDefaultColor];
     }
     self.toolbar.items = items;
@@ -1262,7 +1363,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     [self.view endEditing:YES];
 }
 
-- (void)showHTMLSource:(ZSSBarButtonItem *)barButtonItem
+- (void)showHTMLSource:(UIBarButtonItem *)barButtonItem
 {
     if (self.sourceView.hidden) {
         self.sourceView.text = [self getHTML];
@@ -1643,7 +1744,7 @@ NSInteger const WPLinkAlertViewTag = 92;
     [button setTitleColor:[self barButtonItemDefaultColor] forState:UIControlStateNormal];
     [button setTitleColor:[self barButtonItemSelectedDefaultColor] forState:UIControlStateHighlighted];
     
-    ZSSBarButtonItem *barButtonItem = [[ZSSBarButtonItem alloc] initWithCustomView:button];
+    UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
     [self.customBarButtonItems addObject:barButtonItem];
     
     [self buildToolbar];
@@ -1781,10 +1882,15 @@ NSInteger const WPLinkAlertViewTag = 92;
     NSLog(@"%@", itemNames);
     self.editorItemsEnabled = itemNames;
     
-    // Highlight items
-    NSArray *items = self.toolbar.items;
+	[self selectToolbarItemsForHtmlProperties:itemNames];
+}
+
+- (void)selectToolbarItemsForHtmlProperties:(NSArray*)htmlProperties
+{
+	NSArray *items = self.toolbar.items;
+	
     for (ZSSBarButtonItem *item in items) {
-        if ([itemNames containsObject:item.label]) {
+        if ([htmlProperties containsObject:item.htmlProperty]) {
             item.tintColor = [self barButtonItemSelectedDefaultColor];
         } else {
             item.tintColor = [self barButtonItemDefaultColor];
@@ -2091,12 +2197,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     return result;
 }
 
-- (void)enableToolbarItems:(BOOL)enable shouldShowSourceButton:(BOOL)showSource
+- (void)enableToolbarItems:(BOOL)enable
+	shouldShowSourceButton:(BOOL)showSource
 {
     NSArray *items = self.toolbar.items;
 	
-    for (ZSSBarButtonItem *item in items) {
-        if ([item.label isEqualToString:@"source"]) {
+    for (UIBarButtonItem *item in items) {
+        if (item.tag == kWPEditorViewControllerElementShowSourceBarButton) {
             item.enabled = showSource;
         } else {
             item.enabled = enable;
