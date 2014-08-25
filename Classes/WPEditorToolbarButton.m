@@ -59,18 +59,17 @@ static const int kBottomLineHeight = 2;
 	NSAssert(!_bottomLineView, @"The bottom line view should not exist here");
 	
 	CGRect bottomLineFrame = self.frame;
-	bottomLineFrame.origin.x = bottomLineFrame.origin.x + kBottomLineHMargin;
+	bottomLineFrame.origin.x = kBottomLineHMargin;
 	bottomLineFrame.origin.y = bottomLineFrame.size.height;
 	bottomLineFrame.size.width = bottomLineFrame.size.width - kBottomLineHMargin * 2;
 	bottomLineFrame.size.height = kBottomLineHeight;
 	
 	UIView* bottomLineView = [[UIView alloc] initWithFrame:bottomLineFrame];
-	bottomLineView.backgroundColor = [self titleColorForState:UIControlStateSelected];
+	bottomLineView.backgroundColor = self.tintColor;
 	bottomLineView.userInteractionEnabled = NO;
 	
-	self.bottomLineView = bottomLineView;
-	
 	[self addSubview:bottomLineView];
+	self.bottomLineView = bottomLineView;
 }
 
 - (void)destroyBottomLineView
@@ -115,9 +114,11 @@ static const int kBottomLineHeight = 2;
 	
 	if (highlighted) {
 		self.titleLabel.alpha = 0.5f;
+		self.imageView.alpha = 0.5f;
 		self.bottomLineView.alpha = 0.5f;
 	} else {
 		self.titleLabel.alpha = 1.0f;
+		self.imageView.alpha = 1.0f;
 		self.bottomLineView.alpha = 1.0f;
 	}
 }
@@ -127,9 +128,39 @@ static const int kBottomLineHeight = 2;
 	[super setSelected:selected];
 	
 	if (selected) {
+		self.tintColor = self.selectedTintColor;
 		[self slideInBottomLineView];
 	} else {
+		self.tintColor = self.normalTintColor;
 		[self slideOutBottomLineView];
+	}
+}
+
+#pragma mark - Tint color
+
+- (void)setNormalTintColor:(UIColor *)normalTintColor
+{
+	if (_normalTintColor != normalTintColor) {
+		_normalTintColor = normalTintColor;
+		
+		[self setTitleColor:normalTintColor forState:UIControlStateNormal];
+		
+		if (!self.selected) {
+			self.tintColor = normalTintColor;
+		}
+	}
+}
+
+- (void)setSelectedTintColor:(UIColor *)selectedTintColor
+{
+	if (_selectedTintColor != selectedTintColor) {
+		_selectedTintColor = selectedTintColor;
+		
+		[self setTitleColor:selectedTintColor forState:UIControlStateSelected];
+		
+		if (self.selected) {
+			self.tintColor = selectedTintColor;
+		}
 	}
 }
 
