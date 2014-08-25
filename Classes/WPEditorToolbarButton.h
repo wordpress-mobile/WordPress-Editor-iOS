@@ -1,11 +1,3 @@
-//
-//  WPEditorToolbarButton.h
-//  Pods
-//
-//  Created by Diego E. Rey Mendez on 8/22/14.
-//
-//
-
 #import <UIKit/UIKit.h>
 
 @interface WPEditorToolbarButton : UIButton
