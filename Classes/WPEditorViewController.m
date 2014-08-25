@@ -208,8 +208,8 @@ typedef enum
 	if (!_htmlBarButtonItem) {
 		UIBarButtonItem* htmlBarButtonItem =  [[UIBarButtonItem alloc] initWithTitle:@"HTML"
 																			   style:UIBarButtonItemStylePlain
-																			  target:self
-																			  action:@selector(showHTMLSource:)];
+																			  target:nil
+																			  action:nil];
 		
 		UIFont * font = [UIFont boldSystemFontOfSize:10];
 		NSDictionary * attributes = @{NSFontAttributeName: font};
@@ -223,6 +223,10 @@ typedef enum
 		customButton.selectedTintColor = self.barButtonItemSelectedDefaultColor;
 		customButton.reversesTitleShadowWhenHighlighted = YES;
 		customButton.titleLabel.font = font;
+		[customButton addTarget:self
+						 action:@selector(showHTMLSource:)
+			   forControlEvents:UIControlEventTouchUpInside];
+		
 		htmlBarButtonItem.customView = customButton;
 		
 		_htmlBarButtonItem = htmlBarButtonItem;
