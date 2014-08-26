@@ -40,16 +40,7 @@ zss_editor.init = function() {
 			$('img').removeClass('zs_active');
 		}
 	}, false);
-	
-	// Bind an event so we always know what styles are applied
-/*	$(document).on('selecstionchange', function(e) {
-		zss_editor.enabledEditingItems(e);
-		var clicked = $(e.target);
-		if (!clicked.hasClass('zs_active')) {
-			$('img').removeClass('zs_active');
-		}
-	});
-*/
+
 	editor.bind('focusin', function(e) {
 		if (zss_editor.isUsingiOS) {
 			window.location = "callback://focusin";
