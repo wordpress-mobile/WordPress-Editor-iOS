@@ -33,15 +33,23 @@ zss_editor.init = function() {
 	// Main editor div
 	var editor = $('#zss_editor_content');
 	
+	document.addEventListener("selectionchange", function(e) {
+		zss_editor.enabledEditingItems(e);
+		var clicked = $(e.target);
+		if (!clicked.hasClass('zs_active')) {
+			$('img').removeClass('zs_active');
+		}
+	}, false);
+	
 	// Bind an event so we always know what styles are applied
-	editor.bind('touchend', function(e) {
+/*	$(document).on('selecstionchange', function(e) {
 		zss_editor.enabledEditingItems(e);
 		var clicked = $(e.target);
 		if (!clicked.hasClass('zs_active')) {
 			$('img').removeClass('zs_active');
 		}
 	});
-	
+*/
 	editor.bind('focusin', function(e) {
 		if (zss_editor.isUsingiOS) {
 			window.location = "callback://focusin";
@@ -60,8 +68,22 @@ zss_editor.init = function() {
 	
 	editor.bind('keyup', function(e) {
 		zss_editor.enabledEditingItems(e);
+		if (zss_editor.isUsingiOS) {
+			window.location = "callback://user-triggered-change";
+		} else {
+			console.log("callback://user-triggered-change");
+		}
 	});
+	
 }//end
+
+zss_editor.log = function(msg){
+	if (zss_editor.isUsingiOS) {
+		window.location = "callback://" + msg;
+	} else {
+		console.log("callback://" + msg);
+	}
+}
 
 zss_editor.backuprange = function(){
 	var selection = window.getSelection();
@@ -415,15 +437,33 @@ zss_editor.enabledEditingItems = function(e) {
         console.log(nodeName);
 		
 		// Background Color
-		var bgColor = t.css('backgroundColor');
-		if (bgColor.length != 0 && bgColor != 'rgba(0, 0, 0, 0)' && bgColor != 'rgb(0, 0, 0)' && bgColor != 'transparent') {
-			items.push('backgroundColor');
+		try
+		{
+			var bgColor = t.css('backgroundColor');
+			if (bgColor && bgColor.length != 0 && bgColor != 'rgba(0, 0, 0, 0)' && bgColor != 'rgb(0, 0, 0)' && bgColor != 'transparent') {
+				items.push('backgroundColor');
+			}
 		}
+		catch(e)
+		{
+			// DRM: I had to add these stupid try-catch blocks to solve an issue with t.css throwing
+			// exceptions for no reason.
+		}
+		
 		// Text Color
-		var textColor = t.css('color');
-		if (textColor.length != 0 && textColor != 'rgba(0, 0, 0, 0)' && textColor != 'rgb(0, 0, 0)' && textColor != 'transparent') {
-			items.push('textColor');
+		try
+		{
+			var textColor = t.css('color');
+			if (textColor && textColor.length != 0 && textColor != 'rgba(0, 0, 0, 0)' && textColor != 'rgb(0, 0, 0)' && textColor != 'transparent') {
+				items.push('textColor');
+			}
 		}
+		catch(e)
+		{
+			// DRM: I had to add these stupid try-catch blocks to solve an issue with t.css throwing
+			// exceptions for no reason.
+		}
+			
 		// Link
 		if (nodeName == 'a') {
             zss_editor.currentEditingLink = t;
