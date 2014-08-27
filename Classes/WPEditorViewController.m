@@ -1188,12 +1188,12 @@ typedef enum
 
 - (NSString*)bodyText
 {
-    return [self getHTML];
+    return [self.editorView getHTML];
 }
 
 - (void)setBodyText:(NSString*)bodyText
 {
-    [self setHtml:bodyText];
+    [self.editorView setHtml:bodyText];
     [self refreshUI];
 }
 
@@ -1213,7 +1213,7 @@ typedef enum
     if (self.didFinishLoadingEditor) {
 		
 		if (!self.isEditing && [self isBodyTextEmpty]) {
-			[self setHtml:self.editorPlaceholderText];
+			[self.editorView setHtml:self.editorPlaceholderText];
 		}
     }
 }
@@ -1848,7 +1848,7 @@ didFailLoadWithError:(NSError *)error
 		
 		// Hide the placeholder if visible before editing
 		if (!self.titleTextField.isFirstResponder && [self isEditorPlaceholderTextVisible]) {
-			[self setHtml:@""];
+			[self.editorView setHtml:@""];
 		}
 		
 		CGRect localizedKeyboardEnd = [self.view convertRect:keyboardEnd fromView:nil];
@@ -1922,16 +1922,6 @@ didFailLoadWithError:(NSError *)error
 
 #pragma mark - Utilities
 
-- (NSString *)tidyHTML:(NSString *)html
-{
-    html = [html stringByReplacingOccurrencesOfString:@"<br>" withString:@"<br />"];
-    html = [html stringByReplacingOccurrencesOfString:@"<hr>" withString:@"<hr />"];
-    if (self.formatHTML) {
-        html = [self.editorView.webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"style_html(\"%@\");", html]];
-    }
-    return html;
-}
-
 - (UIColor *)barButtonItemDefaultColor
 {
     if (self.toolbarItemTintColor) {
@@ -1987,19 +1977,6 @@ didFailLoadWithError:(NSError *)error
 	if ([self.delegate respondsToSelector: @selector(editorDidEndEditing:)]) {
 		[self.delegate editorDidEndEditing:self];
 	}
-}
-
-#pragma mark - Methods that will be removed after WPEditorView migration
-
-
-- (void)setHtml:(NSString *)html
-{
-	[self.editorView setHtml:html];
-}
-
-- (NSString *)getHTML
-{
-	return [self.editorView getHTML];
 }
 
 
