@@ -44,10 +44,6 @@ typedef NS_ENUM(NSInteger, ZSSRichTextEditorToolbar) {
  *  The viewController used with ZSSRichTextEditor
  */
 @interface WPEditorViewController ()
-/**
- *  The base URL to use for the webView
- */
-@property (nonatomic, strong) NSURL *baseURL;
 
 /**
  *  If the HTML should be formatted to be pretty
