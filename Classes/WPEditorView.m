@@ -5,13 +5,23 @@
 #import "ZSSTextView.h"
 
 @interface WPEditorView () <UIWebViewDelegate>
+
+#pragma mark - Resources state
 @property (assign) BOOL resourcesLoaded;
+
+#pragma mark - Editing state
+@property (nonatomic, assign, readwrite, getter = isEditing) BOOL editing;
+
+#pragma mark - Selection
 @property (nonatomic, strong) NSString *selectedLinkURL;
 @property (nonatomic, strong) NSString *selectedLinkTitle;
 @property (nonatomic, strong) NSString *selectedImageURL;
 @property (nonatomic, strong) NSString *selectedImageAlt;
+
+#pragma mark - Subviews
 @property (nonatomic, strong) ZSSTextView *sourceView;
 @property (nonatomic, strong, readonly) UIWebView* webView;
+
 @end
 
 @implementation WPEditorView
@@ -296,7 +306,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
 }
 
-- (void)prepareInsert
+- (void)saveSelection
 {
     [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.prepareInsert();"];
 }
@@ -364,14 +374,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 #pragma mark - Editor focus
 
-- (void)focusTextEditor
+- (void)focus
 {
     self.webView.keyboardDisplayRequiresUserAction = NO;
     NSString *js = [NSString stringWithFormat:@"zss_editor.focusEditor();"];
     [self.webView stringByEvaluatingJavaScriptFromString:js];
 }
 
-- (void)blurTextEditor
+- (void)blur
 {
     NSString *js = [NSString stringWithFormat:@"zss_editor.blurEditor();"];
     [self.webView stringByEvaluatingJavaScriptFromString:js];
@@ -422,16 +432,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 #pragma mark - Styles
-
-
-- (void)removeFormat
-{
-    NSString *trigger = @"zss_editor.removeFormating();";
-	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
-    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
-        [self.delegate editorTextDidChange:self];
-    }
-}
 
 - (void)alignLeft
 {
@@ -631,6 +631,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
 }
 
+
+- (void)removeFormat
+{
+    NSString *trigger = @"zss_editor.removeFormating();";
+	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
+}
 
 
 @end

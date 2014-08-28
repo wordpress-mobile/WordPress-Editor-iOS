@@ -12,7 +12,6 @@
 #import "WPEditorView.h"
 #import "WPInsetTextField.h"
 #import "ZSSBarButtonItem.h"
-#import "ZSSTextView.h"
 
 CGFloat const EPVCTextfieldHeight = 44.0f;
 CGFloat const EPVCStandardOffset = 10.0;
@@ -1437,7 +1436,7 @@ typedef enum
 - (void)textColor
 {
     // Save the selection location
-	[self.editorView prepareInsert];
+	[self.editorView saveSelection];
     
     // Call the picker
     HRColorPickerViewController *colorPicker = [HRColorPickerViewController cancelableFullColorPickerViewControllerWithColor:[UIColor whiteColor]];
@@ -1450,7 +1449,7 @@ typedef enum
 - (void)bgColor
 {
     // Save the selection location
-	[self.editorView prepareInsert];
+	[self.editorView saveSelection];
     
     // Call the picker
     HRColorPickerViewController *colorPicker = [HRColorPickerViewController cancelableFullColorPickerViewControllerWithColor:[UIColor whiteColor]];
@@ -1478,7 +1477,7 @@ typedef enum
 - (void)insertLink
 {
     // Save the selection location
-	[self.editorView prepareInsert];
+	[self.editorView saveSelection];
     
     // Show the dialog for inserting or editing a link
     [self showInsertLinkDialogWithLink:self.selectedLinkURL title:self.selectedLinkTitle];
@@ -1586,7 +1585,7 @@ typedef enum
 - (void)insertImage
 {
     // Save the selection location
-	[self.editorView prepareInsert];
+	[self.editorView saveSelection];
     
     [self showInsertImageDialogWithLink:self.selectedImageURL alt:self.selectedImageAlt];
 }

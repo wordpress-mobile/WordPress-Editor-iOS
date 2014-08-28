@@ -64,21 +64,58 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 @interface WPEditorView : UIView
 
+/**
+ *	@brief		The editor's delegate.
+ */
 @property (nonatomic, weak, readwrite) id<WPEditorViewDelegate> delegate;
-@property (nonatomic, assign, readwrite, getter = isEditing) BOOL editing;
+
+/**
+ *	@brief		Stores the current edit mode state for this view.
+ */
+@property (nonatomic, assign, readonly, getter = isEditing) BOOL editing;
 
 #pragma mark - Interaction
 
 - (void)setHtml:(NSString *)html;
 - (void)insertHTML:(NSString *)html;
 - (NSString *)getHTML;
+
+/**
+ *	@brief		Undo the last operation.
+ */
 - (void)undo;
+
+/**
+ *	@brief		Redo the last operation.
+ */
 - (void)redo;
-- (void)prepareInsert; // DRM: TODO: review if this is really necessary...
+
+/**
+ *	@brief		Saves the current text selection.
+ *	@details	The selection is restored automatically by some insert operations when called.
+ *				The only important step is to call this method before an insertion of a link or
+ *				image.
+ */
+- (void)saveSelection;
+
+/**
+ *	@brief		Inserts a link at the last saved selection.
+ *
+ *	@param		url		The url that will open when the link is clicked.
+ *	@param		title	The title for the link.
+ */
 - (void)insertLink:(NSString *)url
 			 title:(NSString *)title;
+
+/**
+ *	@brief		Updates the link at the last saved selection.
+ *
+ *	@param		url		The url that will open when the link is clicked.
+ *	@param		title	The title for the link.
+ */
 - (void)updateLink:(NSString *)url
 			 title:(NSString *)title;
+
 - (void)setSelectedColor:(UIColor*)color
 					 tag:(int)tag;
 - (void)removeLink;
@@ -88,8 +125,17 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 #pragma mark - Editor focus
 
-- (void)focusTextEditor;
-- (void)blurTextEditor;
+/**
+ *	@brief		Assigns focus to the editor.
+ *	@todo		DRM: Replace this with becomeFirstResponder????
+ */
+- (void)focus;
+
+/**
+ *	@brief		Resigns focus from the editor.
+ *	@todo		DRM: Replace this with resignFirstResponder????
+ */
+- (void)blur;
 
 #pragma mark - Editor mode
 
@@ -99,16 +145,25 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 #pragma mark - Editing lock
 
+/**
+ *	@brief		Disables editing.
+ */
 - (void)disableEditing;
+
+/**
+ *	@brief		Enables editing.
+ */
 - (void)enableEditing;
 
 #pragma mark - Customization
 
+/**
+ *	@brief		Sets the input accessory view for the editor.
+ */
 - (void)setInputAccessoryView:(UIView*)inputAccessoryView;
 
 #pragma mark - Styles
 
-- (void)removeFormat;
 - (void)alignLeft;
 - (void)alignCenter;
 - (void)alignRight;
@@ -131,5 +186,6 @@ stylesForCurrentSelection:(NSArray*)styles;
 - (void)heading4;
 - (void)heading5;
 - (void)heading6;
+- (void)removeFormat;
 
 @end
