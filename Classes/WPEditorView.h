@@ -1,11 +1,3 @@
-//
-//  WPEditorView.h
-//  Pods
-//
-//  Created by Diego E. Rey Mendez on 8/27/14.
-//
-//
-
 #import <UIKit/UIKit.h>
 
 @class WPEditorView;

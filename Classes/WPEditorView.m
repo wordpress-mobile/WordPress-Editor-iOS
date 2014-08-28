@@ -1,11 +1,3 @@
-//
-//  WPEditorView.m
-//  Pods
-//
-//  Created by Diego E. Rey Mendez on 8/27/14.
-//
-//
-
 #import "WPEditorView.h"
 
 #import "UIWebView+GUIFixes.h"
