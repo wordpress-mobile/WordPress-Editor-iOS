@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
                    Reusable component for displaying the WordPress.com post editor in an iOS application
                    DESC
 
-  s.homepage     = "http://make.wordpress.org/mobile"
+  s.homepage     = "http://apps.wordpress.org"
   s.license      = 'GPLv2'
   s.author       = { "Matt Bumgardner" => "matt.bumgardner@automattic.com" }
   s.source       = { :git => "https://github.com/wordpress-mobile/WordPress-iOS-Editor.git", :tag => "0.1.6" }
