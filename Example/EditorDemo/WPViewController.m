@@ -10,8 +10,8 @@
     [super viewDidLoad];
     NSString *path = [[NSBundle mainBundle] pathForResource:@"content" ofType:@"html"];
     NSString *htmlParam = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-    //[self setTitleText:@"I'm editing a post!"];
-    //[self setBodyText:htmlParam];
+    [self setTitleText:@"I'm editing a post!"];
+    [self setBodyText:htmlParam];
 	self.delegate = self;
 }
 
