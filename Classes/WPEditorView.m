@@ -33,16 +33,6 @@
 	return self;
 }
 
-- (BOOL)resignFirstResponder
-{
-	// DRM: TODO: review if this is necessary at all.
-	//
-    [self.webView stringByEvaluatingJavaScriptFromString:@"document.activeElement.blur()"];
-    [self.sourceView resignFirstResponder];
-	
-	return [super resignFirstResponder];
-}
-
 #pragma mark - Init helpers
 
 - (void)createSourceViewWithFrame:(CGRect)frame
