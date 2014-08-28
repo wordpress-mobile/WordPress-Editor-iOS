@@ -53,11 +53,14 @@ DEPENDENCIES:
   - UIAlertView+Blocks
   - WordPress-iOS-Editor (from `../`)
   - WordPress-iOS-Shared (~> 0.0.5)
-  - WordPressCom-Analytics-iOS
+  - WordPressCom-Analytics-iOS (from `git://github.com/wordpress-mobile/WordPressCom-Analytics-iOS.git`, branch `feature/editor-updates`)
 
 EXTERNAL SOURCES:
   WordPress-iOS-Editor:
     :path: ../
+  WordPressCom-Analytics-iOS:
+    :branch: feature/editor-updates
+    :git: git://github.com/wordpress-mobile/WordPressCom-Analytics-iOS.git
 
 SPEC CHECKSUMS:
   AFNetworking: 6d7b76aa5d04c8c37daad3eef4b7e3f2a7620da3
