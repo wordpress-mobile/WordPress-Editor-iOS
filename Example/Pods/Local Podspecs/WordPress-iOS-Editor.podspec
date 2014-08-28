@@ -21,5 +21,5 @@ Pod::Spec.new do |s|
   s.dependency 'CocoaLumberjack', '~>1.8.1'
   s.dependency 'UIAlertView+Blocks'
   s.dependency 'WordPress-iOS-Shared', '~>0.0.9'
-  s.dependency 'WordPressCom-Analytics-iOS'
+  s.dependency 'WordPressCom-Analytics-iOS', '~>0.0.4'
 end
