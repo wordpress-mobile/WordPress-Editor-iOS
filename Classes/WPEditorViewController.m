@@ -1174,7 +1174,6 @@ typedef enum
         self.editorView.autoresizesSubviews = YES;
         self.editorView.autoresizingMask = mask;
         self.editorView.backgroundColor = [UIColor whiteColor];
-		self.editorView.placeholderHTMLString = @"Hola!</br></br><b>hola!</b>";
     }
 	
     [self.view addSubview:self.editorView];
