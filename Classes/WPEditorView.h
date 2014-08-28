@@ -67,14 +67,24 @@ stylesForCurrentSelection:(NSArray*)styles;
 @property (nonatomic, weak, readwrite) id<WPEditorViewDelegate> delegate;
 @property (nonatomic, assign, readwrite, getter = isEditing) BOOL editing;
 
-// DRM: TODO: after the full migration is complete... make this property private only.
-@property (nonatomic, strong, readonly) UIWebView* webView;
-
 #pragma mark - Interaction
 
 - (void)setHtml:(NSString *)html;
 - (void)insertHTML:(NSString *)html;
 - (NSString *)getHTML;
+- (void)undo;
+- (void)redo;
+- (void)prepareInsert; // DRM: TODO: review if this is really necessary...
+- (void)insertLink:(NSString *)url
+			 title:(NSString *)title;
+- (void)updateLink:(NSString *)url
+			 title:(NSString *)title;
+- (void)setSelectedColor:(UIColor*)color
+					 tag:(int)tag;
+- (void)removeLink;
+- (void)quickLink;
+- (void)insertImage:(NSString *)url alt:(NSString *)alt;
+- (void)updateImage:(NSString *)url alt:(NSString *)alt;
 
 #pragma mark - Editor focus
 
@@ -95,7 +105,6 @@ stylesForCurrentSelection:(NSArray*)styles;
 #pragma mark - Customization
 
 - (void)setInputAccessoryView:(UIView*)inputAccessoryView;
-
 
 #pragma mark - Styles
 

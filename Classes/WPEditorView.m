@@ -1,6 +1,7 @@
 #import "WPEditorView.h"
 
 #import "UIWebView+GUIFixes.h"
+#import "HRColorUtil.h"
 #import "ZSSTextView.h"
 
 @interface WPEditorView () <UIWebViewDelegate>
@@ -10,6 +11,7 @@
 @property (nonatomic, strong) NSString *selectedImageURL;
 @property (nonatomic, strong) NSString *selectedImageAlt;
 @property (nonatomic, strong) ZSSTextView *sourceView;
+@property (nonatomic, strong, readonly) UIWebView* webView;
 @end
 
 @implementation WPEditorView
@@ -284,6 +286,90 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSString *html = [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.getHTML();"];
 	return html;
+}
+
+- (void)undo
+{
+    [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.undo();"];
+	
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
+}
+
+- (void)redo
+{
+    [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.redo();"];
+	
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
+}
+
+- (void)prepareInsert
+{
+    [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.prepareInsert();"];
+}
+
+- (void)insertLink:(NSString *)url
+			 title:(NSString *)title
+{
+    NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertLink(\"%@\", \"%@\");", url, title];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+	
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
+}
+
+- (void)updateLink:(NSString *)url
+			 title:(NSString *)title
+{
+    NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateLink(\"%@\", \"%@\");", url, title];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+	
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
+}
+
+- (void)setSelectedColor:(UIColor*)color tag:(int)tag
+{
+    NSString *hex = [NSString stringWithFormat:@"#%06x",HexColorFromUIColor(color)];
+    NSString *trigger;
+    if (tag == 1) {
+        trigger = [NSString stringWithFormat:@"zss_editor.setTextColor(\"%@\");", hex];
+    } else if (tag == 2) {
+        trigger = [NSString stringWithFormat:@"zss_editor.setBackgroundColor(\"%@\");", hex];
+    }
+	
+	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
+	
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
+}
+
+- (void)removeLink
+{
+    [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.unlink();"];
+}
+
+- (void)quickLink
+{
+    [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.quickLink();"];
+}
+
+- (void)insertImage:(NSString *)url alt:(NSString *)alt
+{
+    NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertImage(\"%@\", \"%@\");", url, alt];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)updateImage:(NSString *)url alt:(NSString *)alt
+{
+    NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateImage(\"%@\", \"%@\");", url, alt];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
 #pragma mark - Editor focus
