@@ -1174,6 +1174,13 @@ typedef enum
         self.editorView.autoresizesSubviews = YES;
         self.editorView.autoresizingMask = mask;
         self.editorView.backgroundColor = [UIColor whiteColor];
+		
+		NSString* placeholderHTMLString = @"Share your story here...";
+		
+		NSString* hexColorStr = [NSString stringWithFormat:@"#%06x", HexColorFromUIColor([WPStyleGuide textFieldPlaceholderGrey])];
+		placeholderHTMLString = [NSString stringWithFormat:@"<font color='%@'>%@<font>", hexColorStr, placeholderHTMLString];
+		
+		self.editorView.placeholderHTMLString = placeholderHTMLString;
     }
 	
     [self.view addSubview:self.editorView];

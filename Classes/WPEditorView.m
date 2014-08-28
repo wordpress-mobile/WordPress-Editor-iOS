@@ -131,31 +131,6 @@
 #pragma mark - Placeholder
 
 /**
- *	@brief		Call this method to know if the placeholder HTML string can be shown.
- *
- *	@return		YES if it can be shown.  NO otherwise.
- */
-- (BOOL)canShowPlaceholder
-{
-	return [self canShowPlaceholder:self.placeholderHTMLString];
-}
-
-/**
- *	@brief		Call this method to know if the specified placeholder HTML string can be shown.
- *
- *	@param		placeholder		The placeholder HTML string.  Can be nil.
- *
- *	@return		YES if it can be shown.  NO otherwise.
- */
-- (BOOL)canShowPlaceholder:(NSString*)placeholder
-{
-	return (self.resourcesLoaded
-			&& !self.isEditing
-			&& [placeholder length] > 0
-			&& [self editorIsEmpty]);
-}
-
-/**
  *	@brief		Refreshes the placeholder text, by either showing it or hiding it according to
  *				several conditions.
  */
@@ -181,7 +156,9 @@
 		self.showingPlaceholder = NO;
 		[self setHtml:@""];
 	} else {
-		BOOL shouldShowPlaceholder = !self.isShowingPlaceholder && self.resourcesLoaded && !self.isEditing && [[self getHTML] length] == 0;
+		BOOL shouldShowPlaceholder = (!self.isShowingPlaceholder && self.resourcesLoaded && !self.isEditing
+									  && ([[self getHTML] length] == 0
+										  || [[self getHTML] isEqualToString:@"<br>"]));
 		
 		if (shouldShowPlaceholder) {
 			self.showingPlaceholder = YES;
