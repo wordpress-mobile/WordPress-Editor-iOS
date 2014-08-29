@@ -371,8 +371,9 @@ zss_editor.setBackgroundColor = function(color) {
 // Needs addClass method
 
 zss_editor.insertLink = function(url, title) {
-	
+
     zss_editor.restorerange();
+	
     var sel = document.getSelection();
 	if (sel.toString().length != 0) {
         if (sel.rangeCount) {

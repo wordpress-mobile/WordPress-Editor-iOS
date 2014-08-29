@@ -13,10 +13,10 @@
 @property (nonatomic, assign, readwrite, getter = isEditing) BOOL editing;
 
 #pragma mark - Selection
-@property (nonatomic, strong) NSString *selectedLinkURL;
-@property (nonatomic, strong) NSString *selectedLinkTitle;
-@property (nonatomic, strong) NSString *selectedImageURL;
-@property (nonatomic, strong) NSString *selectedImageAlt;
+@property (nonatomic, strong, readwrite) NSString *selectedLinkURL;
+@property (nonatomic, strong, readwrite) NSString *selectedLinkTitle;
+@property (nonatomic, strong, readwrite) NSString *selectedImageURL;
+@property (nonatomic, strong, readwrite) NSString *selectedImageAlt;
 
 #pragma mark - Subviews
 @property (nonatomic, strong) ZSSTextView *sourceView;
@@ -308,6 +308,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSArray *styleStrings = [styles componentsSeparatedByString:@","];
     NSMutableArray *itemsModified = [[NSMutableArray alloc] init];
 	
+	self.selectedImageURL = nil;
+	self.selectedImageAlt = nil;
+	self.selectedLinkURL = nil;
+	self.selectedLinkTitle = nil;
+	
     for (NSString *styleString in styleStrings) {
         NSString *updatedItem = styleString;
         if ([styleString hasPrefix:@"link:"]) {
@@ -320,11 +325,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             self.selectedImageURL = [styleString stringByReplacingOccurrencesOfString:@"image:" withString:@""];
         } else if ([styleString hasPrefix:@"image-alt:"]) {
             self.selectedImageAlt = [self stringByDecodingURLFormat:[styleString stringByReplacingOccurrencesOfString:@"image-alt:" withString:@""]];
-        } else {
-            self.selectedImageURL = nil;
-            self.selectedImageAlt = nil;
-            self.selectedLinkURL = nil;
-            self.selectedLinkTitle = nil;
         }
         [itemsModified addObject:updatedItem];
     }
