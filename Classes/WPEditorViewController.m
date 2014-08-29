@@ -1094,12 +1094,14 @@ typedef enum
     backgroundToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
     // Parent holding view
-    self.toolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, 44)];
-    self.toolbarHolder.autoresizingMask = self.toolbar.autoresizingMask;
-    self.toolbarHolder.backgroundColor = [UIColor whiteColor];
-    [self.toolbarHolder addSubview:self.toolBarScroll];
-    [self.toolbarHolder insertSubview:backgroundToolbar atIndex:0];
-    
+	if (!self.toolbarHolder) {
+		self.toolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, 44)];
+		self.toolbarHolder.autoresizingMask = self.toolbar.autoresizingMask;
+		self.toolbarHolder.backgroundColor = [UIColor whiteColor];
+		[self.toolbarHolder addSubview:self.toolBarScroll];
+		[self.toolbarHolder insertSubview:backgroundToolbar atIndex:0];
+	}
+	
     if (!IS_IPAD) {
         [self.toolbarHolder addSubview:[self rightToolbarHolder]];
     }
@@ -1507,7 +1509,7 @@ typedef enum
 }
 
 - (void)showInsertLinkDialogWithLink:(NSString *)url title:(NSString *)title
-{
+{	
     // Insert Button Title
 	NSString *insertButtonTitle = url ? NSLocalizedString(@"Update", nil) : NSLocalizedString(@"Insert", nil);
     
@@ -1523,7 +1525,7 @@ typedef enum
     if (url) {
         linkURL.text = url;
     }
-    
+
     // Picker Button
     UIButton *am = [UIButton buttonWithType:UIButtonTypeCustom];
     am.frame = CGRectMake(0, 0, 25, 25);
@@ -1533,7 +1535,7 @@ typedef enum
     linkURL.rightViewMode = UITextFieldViewModeAlways;
     
     __weak __typeof(self) weakSelf = self;
-	
+
     self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
         if (alertView.tag == WPLinkAlertViewTag) {
             if (buttonIndex == 1) {
@@ -1553,10 +1555,11 @@ typedef enum
                 [weakSelf.editorView becomeFirstResponder];
             }
         });
+		[weakSelf.editorView becomeFirstResponder];
     };
-    
+
     self.alertView.shouldEnableFirstOtherButtonBlock = ^BOOL(UIAlertView *alertView) {
-        if (alertView.tag == WPLinkAlertViewTag) {
+		if (alertView.tag == WPLinkAlertViewTag) {
             UITextField *textField = [alertView textFieldAtIndex:0];
             if ([textField.text length] == 0) {
                 return NO;
