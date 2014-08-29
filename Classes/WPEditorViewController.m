@@ -65,7 +65,6 @@ typedef enum
 @property (nonatomic, strong) NSString *editorPlaceholderText;
 @property (nonatomic, strong) NSArray *editorItemsEnabled;
 @property (nonatomic, strong) UIAlertView *alertView;
-@property (nonatomic, strong) NSString *selectedLinkURL;
 @property (nonatomic, strong) NSString *selectedLinkTitle;
 @property (nonatomic, strong) NSString *selectedImageURL;
 @property (nonatomic, strong) NSString *selectedImageAlt;
@@ -955,7 +954,7 @@ typedef enum
 													 @"Accessibility label for remove link button on formatting toolbar.");
 	
 	ZSSBarButtonItem *barButtonItem = [self barButtonItemWithTag:kWPEditorViewControllerElementRemoveFormatBarButton
-													htmlProperty:@"removeLink"
+													htmlProperty:@"link"
 													   imageName:@"ZSSunlink.png"
 														  target:self
 														selector:@selector(removeLink)
@@ -1503,16 +1502,20 @@ typedef enum
 	[self.editorView saveSelection];
     
     // Show the dialog for inserting or editing a link
-    [self showInsertLinkDialogWithLink:self.selectedLinkURL title:self.selectedLinkTitle];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedLink];
+	[self showInsertLinkDialogWithLink:self.editorView.selectedLinkURL title:self.selectedLinkTitle];
+	[WPAnalytics track:WPAnalyticsStatEditorTappedLink];
 }
 
 - (void)showInsertLinkDialogWithLink:(NSString *)url title:(NSString *)title
 {
     // Insert Button Title
-    NSString *insertButtonTitle = !self.selectedLinkURL ? NSLocalizedString(@"Insert", nil) : NSLocalizedString(@"Update", nil);
+	NSString *insertButtonTitle = url ? NSLocalizedString(@"Update", nil) : NSLocalizedString(@"Insert", nil);
     
-    self.alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Insert Link", nil) message:nil delegate:self cancelButtonTitle:NSLocalizedString(@"Cancel", nil) otherButtonTitles:insertButtonTitle, nil];
+    self.alertView = [[UIAlertView alloc] initWithTitle:insertButtonTitle
+												message:nil
+											   delegate:self
+									  cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
+									  otherButtonTitles:insertButtonTitle, nil];
     self.alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
     self.alertView.tag = WPLinkAlertViewTag;
     UITextField *linkURL = [self.alertView textFieldAtIndex:0];
@@ -1529,15 +1532,16 @@ typedef enum
     linkURL.rightView = am;
     linkURL.rightViewMode = UITextFieldViewModeAlways;
     
-    __weak __typeof(self)weakSelf = self;
+    __weak __typeof(self) weakSelf = self;
+	
     self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
         if (alertView.tag == WPLinkAlertViewTag) {
             if (buttonIndex == 1) {
                 UITextField *linkURL = [alertView textFieldAtIndex:0];
-                if (!self.selectedLinkURL) {
-                    [self insertLink:linkURL.text title:@""];
+                if (!url) {
+                    [weakSelf insertLink:linkURL.text title:@""];
                 } else {
-                    [self updateLink:linkURL.text title:@""];
+                    [weakSelf updateLink:linkURL.text title:@""];
                 }
             }
         }
