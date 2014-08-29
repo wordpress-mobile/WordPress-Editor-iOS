@@ -391,18 +391,27 @@ zss_editor.insertLink = function(url, title) {
 	zss_editor.enabledEditingItems();
 }
 
-zss_editor.updateLink = function(url, title) {
+zss_editor.updateLink = function(url) {
 	
     zss_editor.restorerange();
 	
-    if (zss_editor.currentEditingLink) {
-        var c = zss_editor.currentEditingLink;
-        c.attr('href', url);
-        c.attr('title', title);
+	var currentLinkNode = zss_editor.closerParentNode('a');
+	
+    if (currentLinkNode) {
+		currentLinkNode.setAttribute("href", url);
     }
     zss_editor.enabledEditingItems();
-    
-}//end
+}
+
+zss_editor.unlink = function() {
+	
+	var currentLinkNode = zss_editor.closerParentNode('a');
+	
+	if (currentLinkNode) {
+		zss_editor.unwrapNode(currentLinkNode);
+	}
+	zss_editor.enabledEditingItems();
+}
 
 zss_editor.updateImage = function(url, alt) {
 	
@@ -448,16 +457,6 @@ zss_editor.currentLinkNode = function() {
 			items.push('link:' + href);
 		}
 	}
-}
-
-zss_editor.unlink = function() {
-	
-	var currentLinkNode = zss_editor.closerParentNode('a');
-	
-	if (currentLinkNode) {
-		zss_editor.unwrapNode(currentLinkNode);
-    }
-    zss_editor.enabledEditingItems();
 }
 
 zss_editor.quickLink = function() {

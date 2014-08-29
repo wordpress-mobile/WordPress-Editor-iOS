@@ -407,7 +407,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)updateLink:(NSString *)url
 			 title:(NSString *)title
 {
-    NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateLink(\"%@\", \"%@\");", url, title];
+    NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateLink(\"%@\");", url];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 	
     if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
