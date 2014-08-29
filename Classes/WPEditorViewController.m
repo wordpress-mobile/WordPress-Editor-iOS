@@ -145,7 +145,7 @@ typedef enum
     [super viewWillAppear:animated];
 	
     self.view.backgroundColor = [UIColor whiteColor];
-    
+
     // When restoring state, the navigationController is nil when the view loads,
     // so configure its appearance here instead.
     self.navigationController.navigationBar.translucent = NO;
@@ -1291,7 +1291,7 @@ typedef enum
 }
 
 - (void)showHTMLSource:(UIBarButtonItem *)barButtonItem
-{
+{	
     if ([self.editorView isInVisualMode]) {
 		[self.editorView showHTMLSource];
 		
