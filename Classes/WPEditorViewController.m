@@ -954,7 +954,7 @@ typedef enum
 													 @"Accessibility label for remove link button on formatting toolbar.");
 	
 	ZSSBarButtonItem *barButtonItem = [self barButtonItemWithTag:kWPEditorViewControllerElementRemoveFormatBarButton
-													htmlProperty:@"removeLink"
+													htmlProperty:@"link"
 													   imageName:@"ZSSunlink.png"
 														  target:self
 														selector:@selector(removeLink)

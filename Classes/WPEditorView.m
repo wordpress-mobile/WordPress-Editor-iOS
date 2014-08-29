@@ -175,8 +175,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
 	NSURL *url = [request URL];
 	
-	BOOL handled = [self handleWebViewCallbackURL:url];
-	BOOL shouldLoad = !handled;
+	BOOL shouldLoad = NO;
+	
+	// DRM: we don't want people loading different pages by clicking on links.
+	//	
+	if (navigationType != UIWebViewNavigationTypeLinkClicked) {
+		BOOL handled = [self handleWebViewCallbackURL:url];
+		shouldLoad = !handled;
+	}
 
 	return shouldLoad;
 }
@@ -299,23 +305,21 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)processStyles:(NSString *)styles
 {
-    // Items that are enabled
-    NSArray *itemNames = [styles componentsSeparatedByString:@","];
-    
-    // Special case for link
+    NSArray *styleStrings = [styles componentsSeparatedByString:@","];
     NSMutableArray *itemsModified = [[NSMutableArray alloc] init];
-    for (NSString *linkItem in itemNames) {
-        NSString *updatedItem = linkItem;
-        if ([linkItem hasPrefix:@"link:"]) {
+	
+    for (NSString *styleString in styleStrings) {
+        NSString *updatedItem = styleString;
+        if ([styleString hasPrefix:@"link:"]) {
             updatedItem = @"link";
-            self.selectedLinkURL = [linkItem stringByReplacingOccurrencesOfString:@"link:" withString:@""];
-        } else if ([linkItem hasPrefix:@"link-title:"]) {
-            self.selectedLinkTitle = [self stringByDecodingURLFormat:[linkItem stringByReplacingOccurrencesOfString:@"link-title:" withString:@""]];
-        } else if ([linkItem hasPrefix:@"image:"]) {
+            self.selectedLinkURL = [self stringByDecodingURLFormat:[styleString stringByReplacingOccurrencesOfString:@"link:" withString:@""]];
+        } else if ([styleString hasPrefix:@"link-title:"]) {
+            self.selectedLinkTitle = [self stringByDecodingURLFormat:[styleString stringByReplacingOccurrencesOfString:@"link-title:" withString:@""]];
+        } else if ([styleString hasPrefix:@"image:"]) {
             updatedItem = @"image";
-            self.selectedImageURL = [linkItem stringByReplacingOccurrencesOfString:@"image:" withString:@""];
-        } else if ([linkItem hasPrefix:@"image-alt:"]) {
-            self.selectedImageAlt = [self stringByDecodingURLFormat:[linkItem stringByReplacingOccurrencesOfString:@"image-alt:" withString:@""]];
+            self.selectedImageURL = [styleString stringByReplacingOccurrencesOfString:@"image:" withString:@""];
+        } else if ([styleString hasPrefix:@"image-alt:"]) {
+            self.selectedImageAlt = [self stringByDecodingURLFormat:[styleString stringByReplacingOccurrencesOfString:@"image-alt:" withString:@""]];
         } else {
             self.selectedImageURL = nil;
             self.selectedImageAlt = nil;
@@ -325,12 +329,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         [itemsModified addObject:updatedItem];
     }
 	
-    itemNames = [NSArray arrayWithArray:itemsModified];
-    NSLog(@"%@", itemNames);
+    styleStrings = [NSArray arrayWithArray:itemsModified];
+    NSLog(@"%@", styleStrings);
     
 	if ([self.delegate respondsToSelector:@selector(editorView:stylesForCurrentSelection:)])
 	{
-		[self.delegate editorView:self stylesForCurrentSelection:itemNames];
+		[self.delegate editorView:self stylesForCurrentSelection:styleStrings];
 	}
 }
 
@@ -369,8 +373,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)undo
 {
     [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.undo();"];
-
-	[self refreshPlaceholder];
 	
     if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
         [self.delegate editorTextDidChange:self];
@@ -380,8 +382,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)redo
 {
     [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.redo();"];
-
-	[self refreshPlaceholder];
 	
     if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
         [self.delegate editorTextDidChange:self];
@@ -435,8 +435,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)removeLink
 {
     [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.unlink();"];
-	
-	[self refreshPlaceholder];
 }
 
 - (void)quickLink
