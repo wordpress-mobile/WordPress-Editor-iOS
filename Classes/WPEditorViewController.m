@@ -1481,7 +1481,7 @@ typedef enum
 
 - (void)showInsertLinkDialogWithLink:(NSString *)url title:(NSString *)title
 {
-	[self.editorView blur];
+	[self.editorView endEditing];
 	
     // Insert Button Title
 	NSString *insertButtonTitle = url ? NSLocalizedString(@"Update", nil) : NSLocalizedString(@"Insert", nil);
