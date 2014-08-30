@@ -35,6 +35,7 @@ zss_editor.init = function() {
 	var editor = $('#zss_editor_content');
 
 	document.addEventListener("selectionchange", function(e) {
+
 		// DRM: only do something here if the editor has focus.  The reason is that when the
 		// selection changes due to the editor loosing focus, the focusout event will not be
 		// sent if we try to load a callback here.
@@ -47,27 +48,6 @@ zss_editor.init = function() {
 			}
 		}
 	}, false);
-	
-	editor.bind('tap', function(e) {
-				
-		//$('#zss_editor_content').focus();
-				
-		//zss_editor.focusEditor();
-		var range = document.createRange();
-		range.selectNode(e.target);
-		selection.removeAllRanges();
-		selection.addRange(range);
-		e.preventDefault();
-	});
-	
-	editor.bind('doubletap', function(e) {
-		zss_editor.focusEditor();
-		var range = document.createRange();
-		range.selectNode(e.target);
-		selection.removeAllRanges();
-		selection.addRange(range);
-		e.preventDefault();
-	});
 
 	editor.bind('focus', function(e) {
 		zss_editor.callback("callback-focus-in");
