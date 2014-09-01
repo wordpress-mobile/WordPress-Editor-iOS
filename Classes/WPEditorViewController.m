@@ -173,10 +173,9 @@ typedef enum
 	ZSSRichTextEditorToolbar defaultToolbarItems = (ZSSRichTextEditorToolbarInsertImage
 													| ZSSRichTextEditorToolbarBold
 													| ZSSRichTextEditorToolbarItalic
-													| ZSSRichTextEditorToolbarStrikeThrough
 													| ZSSRichTextEditorToolbarUnderline
-													| ZSSRichTextEditorToolbarBlockQuote
 													| ZSSRichTextEditorToolbarInsertLink
+													| ZSSRichTextEditorToolbarBlockQuote
                                                     | ZSSRichTextEditorToolbarUnorderedList
 													| ZSSRichTextEditorToolbarOrderedList);
 	
