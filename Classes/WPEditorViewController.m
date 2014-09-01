@@ -65,7 +65,6 @@ typedef enum
 @property (nonatomic, strong) NSString *editorPlaceholderText;
 @property (nonatomic, strong) NSArray *editorItemsEnabled;
 @property (nonatomic, strong) UIAlertView *alertView;
-@property (nonatomic, strong) NSString *selectedLinkTitle;
 @property (nonatomic, strong) NSString *selectedImageURL;
 @property (nonatomic, strong) NSString *selectedImageAlt;
 @property (nonatomic, strong) NSMutableArray *customBarButtonItems;
@@ -179,8 +178,7 @@ typedef enum
 													| ZSSRichTextEditorToolbarBlockQuote
 													| ZSSRichTextEditorToolbarInsertLink
                                                     | ZSSRichTextEditorToolbarUnorderedList
-													| ZSSRichTextEditorToolbarOrderedList
-													| ZSSRichTextEditorToolbarRemoveLink);
+													| ZSSRichTextEditorToolbarOrderedList);
 	
 	// iPad gets the HTML source button too
 	if (IS_IPAD) {
@@ -835,7 +833,7 @@ typedef enum
 													htmlProperty:@"link"
 													   imageName:@"icon_format_link"
 														  target:self
-														selector:@selector(insertLink)
+														selector:@selector(linkBarButtonTapped:)
 											  accessibilityLabel:accessibilityLabel];
 	
 	return barButtonItem;
@@ -1472,14 +1470,16 @@ typedef enum
     [self.editorView redo];
 }
 
-- (void)insertLink
+- (void)linkBarButtonTapped:(WPEditorToolbarButton*)button
 {
-    // Save the selection location
 	[self.editorView saveSelection];
-    
-    // Show the dialog for inserting or editing a link
-	[self showInsertLinkDialogWithLink:self.editorView.selectedLinkURL];
-	[WPAnalytics track:WPAnalyticsStatEditorTappedLink];
+	
+	if ([self.editorView isSelectionALink]) {
+		[self removeLink];
+	} else {
+		[self showInsertLinkDialogWithLink:self.editorView.selectedLinkURL];
+		[WPAnalytics track:WPAnalyticsStatEditorTappedLink];
+	}
 }
 
 - (void)showInsertLinkDialogWithLink:(NSString*)url

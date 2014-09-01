@@ -193,11 +193,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	
 	BOOL shouldLoad = NO;
 	
-	if (navigationType == UIWebViewNavigationTypeLinkClicked) {
-		if ([self.delegate respondsToSelector:@selector(editorView:linkTapped:)]) {
-			[self.delegate editorView:self linkTapped:url];
-		}
-	} else {
+	if (navigationType != UIWebViewNavigationTypeLinkClicked) {
 		BOOL handled = [self handleWebViewCallbackURL:url];
 		shouldLoad = !handled;
 	}
@@ -477,6 +473,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateImage(\"%@\", \"%@\");", url, alt];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+#pragma mark - Links
+
+- (BOOL)isSelectionALink
+{
+	return self.selectedLinkURL != nil;
 }
 
 #pragma mark - Editor: HTML interaction

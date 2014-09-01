@@ -139,6 +139,15 @@ stylesForCurrentSelection:(NSArray*)styles;
 - (void)insertImage:(NSString *)url alt:(NSString *)alt;
 - (void)updateImage:(NSString *)url alt:(NSString *)alt;
 
+#pragma mark - Links
+
+/**
+ *	@brief		Call this method to know if the current selection is part of a link.
+ *
+ *	@return		YES if the current selection is part of a link.
+ */
+- (BOOL)isSelectionALink;
+
 #pragma mark - Editor focus
 
 /**
