@@ -1512,7 +1512,7 @@ typedef enum
 
 	self.alertView.willPresentBlock = ^(UIAlertView* alertView) {
 		
-		[self.editorView endEditing];
+		[weakSelf.editorView endEditing];
 	};
 	
 	self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
