@@ -35,7 +35,8 @@ zss_editor.init = function() {
 	var editor = $('#zss_editor_content');
 
 	document.addEventListener("selectionchange", function(e) {
-
+		zss_editor.currentEditingLink = null;
+							  
 		// DRM: only do something here if the editor has focus.  The reason is that when the
 		// selection changes due to the editor loosing focus, the focusout event will not be
 		// sent if we try to load a callback here.
@@ -607,7 +608,13 @@ zss_editor.sendEnabledStyles = function(e) {
 		items.push('strikeThrough');
 	}
 	if (zss_editor.isCommandEnabled('underline')) {
-		items.push('underline');
+		var isUnderlined = false;
+		
+		// DRM: 'underline' gets highlighted if it's inside of a link... so we need a special test
+		// in that case.
+		if (!zss_editor.currentEditingLink) {
+			items.push('underline');
+		}
 	}
 	if (zss_editor.isCommandEnabled('insertOrderedList')) {
 		items.push('orderedList');
