@@ -4,7 +4,7 @@
 #import "HRColorUtil.h"
 #import "ZSSTextView.h"
 
-@interface WPEditorView () <UIWebViewDelegate>
+@interface WPEditorView () <UITextViewDelegate, UIWebViewDelegate>
 
 #pragma mark - Misc state
 @property (nonatomic, assign, readwrite, getter = isShowingPlaceholder) BOOL showingPlaceholder;
@@ -261,6 +261,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 		}
 		
 		handled = YES;
+	} else if ([self isLinkTappedScheme:scheme]) {
+		if ([self.delegate respondsToSelector:@selector(editorView:linkTapped:)]) {
+			[self.delegate editorView:self linkTapped:url];
+		}
 	} else if ([self isSelectionStyleScheme:scheme]) {
 		NSString* styles = [[url resourceSpecifier] stringByReplacingOccurrencesOfString:@"//" withString:@""];
 		
@@ -301,6 +305,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (BOOL)isFocusOutScheme:(NSString*)scheme
 {
 	static NSString* const kCallbackScheme = @"callback-focus-out";
+	
+	return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isLinkTappedScheme:(NSString*)scheme
+{
+	static NSString* const kCallbackScheme = @"callback-link-tap";
 	
 	return [scheme isEqualToString:kCallbackScheme];
 }
@@ -810,15 +821,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
-	UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-	
 	NSDictionary *info = notification.userInfo;
-	CGFloat duration = [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] floatValue];
-	NSUInteger curve = [[info objectForKey:UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
 	CGRect keyboardEnd = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-	
-	CGFloat keyboardHeight = UIInterfaceOrientationIsLandscape(orientation) ? keyboardEnd.size.width : keyboardEnd.size.height;
-	UIViewAnimationOptions animationOptions = curve;
 	
 	CGRect localizedKeyboardEnd = [self convertRect:keyboardEnd fromView:nil];
 	CGPoint keyboardOrigin = localizedKeyboardEnd.origin;
@@ -841,15 +845,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
-	UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-	
-	NSDictionary *info = notification.userInfo;
-	CGFloat duration = [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] floatValue];
-	NSUInteger curve = [[info objectForKey:UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
-	CGRect keyboardEnd = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-	
-	UIViewAnimationOptions animationOptions = curve;
-	
 	self.webView.scrollView.contentInset = UIEdgeInsetsZero;
 	self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
 	self.sourceView.contentInset = UIEdgeInsetsZero;

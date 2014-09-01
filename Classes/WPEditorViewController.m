@@ -57,7 +57,7 @@ typedef enum
 	
 } WPEditorViewControllerElementTag;
 
-@interface WPEditorViewController () <UIAlertViewDelegate, UIWebViewDelegate, HRColorPickerViewControllerDelegate, UITextFieldDelegate>
+@interface WPEditorViewController () <HRColorPickerViewControllerDelegate, UIAlertViewDelegate, UITextFieldDelegate, WPEditorViewDelegate>
 
 @property (nonatomic, strong) UIScrollView *toolBarScroll;
 @property (nonatomic, strong) UIToolbar *toolbar;
@@ -715,7 +715,7 @@ typedef enum
 	return barButtonItem;
 }
 
-- (WPEditorToolbarButton*)header1BarButton
+- (UIBarButtonItem*)header1BarButton
 {
 	ZSSBarButtonItem *barButtonItem = [self barButtonItemWithTag:kWPEditorViewControllerElementTagH1BarButton
 													htmlProperty:@"h1"
@@ -1435,7 +1435,7 @@ typedef enum
 {
     // Save the selection location
 	[self.editorView saveSelection];
-    
+
     // Call the picker
     HRColorPickerViewController *colorPicker = [HRColorPickerViewController cancelableFullColorPickerViewControllerWithColor:[UIColor whiteColor]];
     colorPicker.delegate = self;
@@ -1478,11 +1478,11 @@ typedef enum
 	[self.editorView saveSelection];
     
     // Show the dialog for inserting or editing a link
-	[self showInsertLinkDialogWithLink:self.editorView.selectedLinkURL title:self.selectedLinkTitle];
+	[self showInsertLinkDialogWithLink:self.editorView.selectedLinkURL];
 	[WPAnalytics track:WPAnalyticsStatEditorTappedLink];
 }
 
-- (void)showInsertLinkDialogWithLink:(NSString *)url title:(NSString *)title
+- (void)showInsertLinkDialogWithLink:(NSString*)url
 {
     // Insert Button Title
 	NSString *insertButtonTitle = url ? NSLocalizedString(@"Update", nil) : NSLocalizedString(@"Insert", nil);
@@ -1634,10 +1634,10 @@ typedef enum
             if (buttonIndex == 1) {
                 UITextField *imageURL = [alertView textFieldAtIndex:0];
                 UITextField *alt = [alertView textFieldAtIndex:1];
-                if (!self.selectedImageURL) {
-                    [self insertImage:imageURL.text alt:alt.text];
+                if (!weakSelf.selectedImageURL) {
+                    [weakSelf insertImage:imageURL.text alt:alt.text];
                 } else {
-                    [self updateImage:imageURL.text alt:alt.text];
+                    [weakSelf updateImage:imageURL.text alt:alt.text];
                 }
             }
         }
@@ -1776,7 +1776,7 @@ typedef enum
 - (BOOL)editorView:(WPEditorView*)editorView linkTapped:(NSURL *)url
 {
 	if (self.isEditing) {
-		[self updateLink:url.absoluteString];
+		[self showInsertLinkDialogWithLink:url.absoluteString];
 	}
 	
 	return YES;

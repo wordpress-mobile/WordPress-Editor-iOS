@@ -49,6 +49,14 @@ zss_editor.init = function() {
 		}
 	}, false);
 
+	editor.bind('tap', function(e) {
+		var targetNode = e.target;
+				
+		if (targetNode.nodeName.toLowerCase() == 'a') {
+			zss_editor.callback('callback-link-tap', targetNode.href);
+		}
+	});
+	
 	editor.bind('focus', function(e) {
 		zss_editor.callback("callback-focus-in");
 	});
