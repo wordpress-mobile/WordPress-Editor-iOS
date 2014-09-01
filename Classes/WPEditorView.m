@@ -193,9 +193,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	
 	BOOL shouldLoad = NO;
 	
-	// DRM: we don't want people loading different pages by clicking on links.
-	//	
-	if (navigationType != UIWebViewNavigationTypeLinkClicked) {
+	if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+		if ([self.delegate respondsToSelector:@selector(editorView:linkTapped:)]) {
+			[self.delegate editorView:self linkTapped:url];
+		}
+	} else {
 		BOOL handled = [self handleWebViewCallbackURL:url];
 		shouldLoad = !handled;
 	}
@@ -408,9 +410,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)insertLink:(NSString *)url
-			 title:(NSString *)title
 {
-    NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertLink(\"%@\", \"%@\");", url, title];
+    NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertLink(\"%@\");", url];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 	
     if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
@@ -419,7 +420,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 - (void)updateLink:(NSString *)url
-			 title:(NSString *)title
 {
     NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateLink(\"%@\");", url];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];

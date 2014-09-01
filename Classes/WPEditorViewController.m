@@ -164,7 +164,6 @@ typedef enum
 	}
 	
     [self refreshUI];
-    [self.titleTextField becomeFirstResponder];
     [self.navigationController setToolbarHidden:YES animated:animated];
 }
 
@@ -1062,12 +1061,12 @@ typedef enum
     }
     [self.toolBarScroll addSubview:self.toolbar];
     self.toolBarScroll.autoresizingMask = self.toolbar.autoresizingMask;
-    
+	
     // Background Toolbar
     UIToolbar *backgroundToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
     backgroundToolbar.backgroundColor = [UIColor whiteColor];
     backgroundToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    
+	
     // Parent holding view
 	if (!self.toolbarHolder) {
 		self.toolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, 44)];
@@ -1485,8 +1484,6 @@ typedef enum
 
 - (void)showInsertLinkDialogWithLink:(NSString *)url title:(NSString *)title
 {
-	[self.editorView endEditing];
-	
     // Insert Button Title
 	NSString *insertButtonTitle = url ? NSLocalizedString(@"Update", nil) : NSLocalizedString(@"Insert", nil);
     
@@ -1513,28 +1510,26 @@ typedef enum
     
     __weak __typeof(self) weakSelf = self;
 
-    self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
-        if (alertView.tag == WPLinkAlertViewTag) {
-            if (buttonIndex == 1) {
-                UITextField *linkURL = [alertView textFieldAtIndex:0];
-                if (!url) {
-                    [weakSelf insertLink:linkURL.text title:@""];
-                } else {
-                    [weakSelf updateLink:linkURL.text title:@""];
-                }
-            }
-        }
-        
-        // Don't dismiss the keyboard
-        // Hack from http://stackoverflow.com/a/7601631
-		/*
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if([weakSelf.editorView resignFirstResponder] || [weakSelf.titleTextField resignFirstResponder]){
-                [weakSelf.editorView becomeFirstResponder];
-            }
-        });*/
+	self.alertView.willPresentBlock = ^(UIAlertView* alertView) {
+		
+		[self.editorView endEditing];
+	};
+	
+	self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
+		[weakSelf.editorView focus];
+		
+		if (alertView.tag == WPLinkAlertViewTag) {
+			if (buttonIndex == 1) {
+				UITextField *linkURL = [alertView textFieldAtIndex:0];
+				if (!url) {
+					[weakSelf insertLink:linkURL.text];
+				} else {
+					[weakSelf updateLink:linkURL.text];
+				}
+			}
+		}
     };
-
+	
     self.alertView.shouldEnableFirstOtherButtonBlock = ^BOOL(UIAlertView *alertView) {
 		if (alertView.tag == WPLinkAlertViewTag) {
             UITextField *textField = [alertView textFieldAtIndex:0];
@@ -1548,14 +1543,14 @@ typedef enum
     [self.alertView show];
 }
 
-- (void)insertLink:(NSString *)url title:(NSString *)title
+- (void)insertLink:(NSString *)url
 {
-    [self.editorView insertLink:url title:title];
+    [self.editorView insertLink:url];
 }
 
-- (void)updateLink:(NSString *)url title:(NSString *)title
+- (void)updateLink:(NSString *)url
 {
-	[self.editorView updateLink:url title:title];
+	[self.editorView updateLink:url];
 }
 
 - (void)dismissAlertView
@@ -1776,6 +1771,15 @@ typedef enum
         [self enableToolbarItems:NO
           shouldShowSourceButton:YES];
     }
+}
+
+- (BOOL)editorView:(WPEditorView*)editorView linkTapped:(NSURL *)url
+{
+	if (self.isEditing) {
+		[self updateLink:url.absoluteString];
+	}
+	
+	return YES;
 }
 
 - (void)editorView:(WPEditorView*)editorView stylesForCurrentSelection:(NSArray*)styles

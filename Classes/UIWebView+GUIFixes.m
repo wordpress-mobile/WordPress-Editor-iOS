@@ -36,9 +36,6 @@ static Class fixClass = Nil;
 		}
 		
 		view = [(UIWebView*)parentWebView customInputAccessoryView];
-	} else {
-		int i = 1;
-		i++;
 	}
 	
 	return view;

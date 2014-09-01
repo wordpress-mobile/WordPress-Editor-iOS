@@ -351,7 +351,7 @@ zss_editor.setBackgroundColor = function(color) {
 
 // Needs addClass method
 
-zss_editor.insertLink = function(url, title) {
+zss_editor.insertLink = function(url) {
 
     zss_editor.restorerange();
 	
@@ -361,7 +361,6 @@ zss_editor.insertLink = function(url, title) {
 			
 			var el = document.createElement("a");
     		el.setAttribute("href", url);
-            el.setAttribute("title", title);
 			
             var range = sel.getRangeAt(0).cloneRange();
             range.surroundContents(el);
@@ -396,49 +395,20 @@ zss_editor.unlink = function() {
 }
 
 zss_editor.updateImage = function(url, alt) {
-	
+
     zss_editor.restorerange();
-	
+
     if (zss_editor.currentEditingImage) {
         var c = zss_editor.currentEditingImage;
         c.attr('src', url);
         c.attr('alt', alt);
     }
     zss_editor.sendEnabledStyles();
-	
+
 }//end
 
 zss_editor.unwrapNode = function(node) {
-	
 	var newObject = $(node).replaceWith(node.innerHTML);
-	
-	var finalSelection = window.getSelection();
-	var finalRange = selection.getRangeAt(0).cloneRange();
-	
-	finalRange.setEnd(finalRange.startContainer, finalRange.startOffset + 1);
-	
-	selection.removeAllRanges();
-	selection.addRange(finalRange);
-}
-
-zss_editor.currentLinkNode = function() {
-	
-	// Find all relevant parent tags
-	var parentTags = zss_editor.closerParentTag('a');
-	
-	for (var i = 0; i < parentTags.length; i++) {
-		var currentNode = parentTags[i];
-		
-		if (currentNode.nodeName.toLowerCase() == 'a') {
-			zss_editor.currentEditingLink = currentNode;
-			
-			var title = currentNode.text;
-			var href = encodeURIComponent(currentNode.href);
-			
-			items.push('link-title:' + title);
-			items.push('link:' + href);
-		}
-	}
 }
 
 zss_editor.quickLink = function() {
@@ -716,20 +686,20 @@ zss_editor.sendEnabledStyles = function(e) {
 }
 
 zss_editor.isFocused = function() {
-	return editor.is(":focus");
+
+	return $('#zss_editor_content').is(":focus");
 }
 
 zss_editor.focusEditor = function() {
+
 	if (!zss_editor.isFocused()) {
 		$('#zss_editor_content').focus();
-		zss_editor.isFocused = true;
 	}
 }
 
 zss_editor.blurEditor = function() {
 	if (zss_editor.isFocused()) {
 		$('#zss_editor_content').blur();
-		zss_editor.isFocused = false;
 	}
 }
 
