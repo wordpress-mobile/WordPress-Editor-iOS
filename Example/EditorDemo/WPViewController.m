@@ -1,7 +1,6 @@
 #import "WPViewController.h"
 
 @interface WPViewController ()
-
 @end
 
 @implementation WPViewController
@@ -16,22 +15,16 @@
 	self.delegate = self;
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
 #pragma mark - WPEditorViewControllerDelegate
 
-- (BOOL)editorShouldBeginEditing:(WPEditorViewController *)editorController
+- (void)editorDidBeginEditing:(WPEditorViewController *)editorController
 {
-    NSLog(@"Editor should begin editing?");
-    return YES;
+    NSLog(@"Editor did begin editing.");
 }
 
-- (void)editorDidPressSettings:(WPEditorViewController *)editorController
+- (void)editorDidEndEditing:(WPEditorViewController *)editorController
 {
-    NSLog(@"Pressed Settings!");
+    NSLog(@"Editor did end editing.");
 }
 
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController
@@ -39,14 +32,11 @@
     NSLog(@"Pressed Media!");
 }
 
-- (void)editorDidPressPreview:(WPEditorViewController *)editorController
-{
-    NSLog(@"Pressed Preview!");
-}
-
 - (void)editorTitleDidChange:(WPEditorViewController *)editorController
 {
     NSLog(@"Editor title changed: %@", self.titleText);
+    NSString *s = editorController.bodyText;
+    NSLog(@"%@", s);
 }
 
 - (void)editorTextDidChange:(WPEditorViewController *)editorController

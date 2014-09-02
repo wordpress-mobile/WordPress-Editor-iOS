@@ -1,10 +1,12 @@
 #import "WPAppDelegate.h"
+#import <WordPress-iOS-Editor/WPEditorViewController.h>
 
 @implementation WPAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
+    //Default to white
+    [[UIToolbar appearanceWhenContainedIn:[WPEditorViewController class], nil] setBarTintColor:[UIColor whiteColor]];
     return YES;
 }
 							
