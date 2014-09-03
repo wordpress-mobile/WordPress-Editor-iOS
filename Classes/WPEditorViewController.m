@@ -1478,7 +1478,7 @@ typedef enum
 		[self removeLink];
 	} else {
 		[self showInsertLinkDialogWithLink:self.editorView.selectedLinkURL
-									 title:self.editorView.selectedLinkTitle];
+									 title:[self.editorView selectedText]];
 		[WPAnalytics track:WPAnalyticsStatEditorTappedLink];
 	}
 }
@@ -1486,7 +1486,9 @@ typedef enum
 - (void)showInsertLinkDialogWithLink:(NSString*)url
 							   title:(NSString*)title
 {
-	NSString *insertButtonTitle = url ? NSLocalizedString(@"Update", nil) : NSLocalizedString(@"Insert", nil);
+	BOOL isInsertingNewLink = (url == nil);
+	
+	NSString *insertButtonTitle = isInsertingNewLink ? NSLocalizedString(@"Insert", nil) : NSLocalizedString(@"Update", nil);
 	
 	if (!url) {
 		NSURL* pasteboardUrl = [self urlFromPasteboard];
@@ -1541,10 +1543,11 @@ typedef enum
 		if (alertView.tag == WPLinkAlertViewTag) {
 			if (buttonIndex == 1) {
 				UITextField *linkURL = [alertView textFieldAtIndex:0];
-				if (!url) {
-					[weakSelf insertLink:linkURL.text];
+				UITextField *linkTitle = [alertView textFieldAtIndex:1];
+				if (isInsertingNewLink) {
+					[weakSelf insertLink:linkURL.text title:linkTitle.text];
 				} else {
-					[weakSelf updateLink:linkURL.text];
+					[weakSelf updateLink:linkURL.text title:linkTitle.text];
 				}
 			}
 		}
@@ -1564,13 +1567,15 @@ typedef enum
 }
 
 - (void)insertLink:(NSString *)url
+			 title:(NSString*)title
 {
-    [self.editorView insertLink:url];
+	[self.editorView insertLink:url title:title];
 }
 
 - (void)updateLink:(NSString *)url
+			 title:(NSString*)title
 {
-	[self.editorView updateLink:url];
+	[self.editorView updateLink:url title:title];
 }
 
 - (void)dismissAlertView

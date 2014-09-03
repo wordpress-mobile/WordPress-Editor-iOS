@@ -131,6 +131,12 @@ zss_editor.restorerange = function(){
     selection.addRange(range);
 }
 
+zss_editor.getSelectedText = function() {
+	var selection = window.getSelection();
+	
+	return selection.toString();
+}
+
 zss_editor.setBold = function() {
 	document.execCommand('bold', false, null);
 	zss_editor.sendEnabledStyles();
@@ -368,7 +374,7 @@ zss_editor.setBackgroundColor = function(color) {
 
 // Needs addClass method
 
-zss_editor.insertLink = function(url) {
+zss_editor.insertLink = function(url, title) {
 
     zss_editor.restorerange();
 	
@@ -377,7 +383,8 @@ zss_editor.insertLink = function(url) {
         if (sel.rangeCount) {
 			
 			var el = document.createElement("a");
-    		el.setAttribute("href", url);
+			el.setAttribute("href", url);
+			el.innerHTML = title;
 			
             var range = sel.getRangeAt(0).cloneRange();
             range.surroundContents(el);
@@ -388,7 +395,7 @@ zss_editor.insertLink = function(url) {
 	zss_editor.sendEnabledStyles();
 }
 
-zss_editor.updateLink = function(url) {
+zss_editor.updateLink = function(url, title) {
 	
     zss_editor.restorerange();
 	
@@ -396,6 +403,7 @@ zss_editor.updateLink = function(url) {
 	
     if (currentLinkNode) {
 		currentLinkNode.setAttribute("href", url);
+		currentLinkNode.innerHTML = title;
     }
     zss_editor.sendEnabledStyles();
 }

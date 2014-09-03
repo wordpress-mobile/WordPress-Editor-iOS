@@ -315,6 +315,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 		}
 	} onComplete:^{
 		
+		[self saveSelection];
+		
 		if ([self.delegate respondsToSelector:@selector(editorView:linkTapped:title:)]) {
 			[self.delegate editorView:self linkTapped:tappedUrl title:tappedUrlTitle];
 		}
@@ -522,29 +524,18 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
 }
 
+#pragma mark - Selection
+
 - (void)saveSelection
 {
     [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.prepareInsert();"];
 }
 
-- (void)insertLink:(NSString *)url
+- (NSString*)selectedText
 {
-    NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertLink(\"%@\");", url];
-    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+	NSString* selectedText = [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.getSelectedText();"];
 	
-    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
-        [self.delegate editorTextDidChange:self];
-    }
-}
-
-- (void)updateLink:(NSString *)url
-{
-    NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateLink(\"%@\");", url];
-    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
-	
-    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
-        [self.delegate editorTextDidChange:self];
-    }
+	return selectedText;
 }
 
 - (void)setSelectedColor:(UIColor*)color tag:(int)tag
@@ -564,15 +555,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
 }
 
-- (void)removeLink
-{
-    [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.unlink();"];
-}
-
-- (void)quickLink
-{
-    [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.quickLink();"];
-}
+#pragma mark - Images
 
 - (void)insertImage:(NSString *)url alt:(NSString *)alt
 {
@@ -588,9 +571,47 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 #pragma mark - Links
 
+- (void)insertLink:(NSString *)url
+			 title:(NSString*)title
+{
+	NSAssert([url isKindOfClass:[NSString class]], @"Expecting a non-nil NSString object here.");
+	NSAssert([title isKindOfClass:[NSString class]], @"Expecting a non-nil NSString object here.");
+	
+	NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertLink(\"%@\",\"%@\");", url, title];
+	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
+	
+	if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+		[self.delegate editorTextDidChange:self];
+	}
+}
+
 - (BOOL)isSelectionALink
 {
 	return self.selectedLinkURL != nil;
+}
+
+- (void)updateLink:(NSString *)url
+			 title:(NSString*)title
+{
+	NSAssert([url isKindOfClass:[NSString class]], @"Expecting a non-nil NSString object here.");
+	NSAssert([title isKindOfClass:[NSString class]], @"Expecting a non-nil NSString object here.");
+	
+	NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateLink(\"%@\",\"%@\");", url, title];
+	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
+	
+	if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+		[self.delegate editorTextDidChange:self];
+	}
+}
+
+- (void)removeLink
+{
+	[self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.unlink();"];
+}
+
+- (void)quickLink
+{
+	[self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.quickLink();"];
 }
 
 #pragma mark - Editor: HTML interaction
