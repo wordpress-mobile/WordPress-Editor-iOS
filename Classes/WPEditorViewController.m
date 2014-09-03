@@ -1501,19 +1501,15 @@ typedef enum
 									  otherButtonTitles:insertButtonTitle, nil];
     self.alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
     self.alertView.tag = WPLinkAlertViewTag;
-    UITextField *linkURL = [self.alertView textFieldAtIndex:0];
-    linkURL.placeholder = NSLocalizedString(@"URL (required)", nil);
+	
+	UITextField *linkURL = [self.alertView textFieldAtIndex:0];
+	
+	linkURL.clearButtonMode = UITextFieldViewModeWhileEditing;
+	linkURL.placeholder = NSLocalizedString(@"URL (required)", nil);
+	
     if (url) {
         linkURL.text = url;
     }
-
-    // Picker Button
-    UIButton *am = [UIButton buttonWithType:UIButtonTypeCustom];
-    am.frame = CGRectMake(0, 0, 25, 25);
-    [am setImage:[UIImage imageNamed:@"ZSSpicker.png"] forState:UIControlStateNormal];
-    [am addTarget:self action:@selector(showInsertURLAlternatePicker) forControlEvents:UIControlEventTouchUpInside];
-    linkURL.rightView = am;
-    linkURL.rightViewMode = UITextFieldViewModeAlways;
     
     __weak __typeof(self) weakSelf = self;
 
