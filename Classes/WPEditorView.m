@@ -400,12 +400,22 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 #pragma mark - Callback parsing
 
+/**
+ *	@brief		Extract the components that make up a parameter.
+ *	@details	Should always be two (for example: 'value=65' would return @['value', '65']).
+ *
+ *	@param		parameter	The string parameter to parse.  Cannot be nil.
+ *
+ *	@returns	An array containing each component.
+ */
 - (NSArray*)componentsFromParameter:(NSString*)parameter
 {
 	NSAssert([parameter isKindOfClass:[NSString class]],
 			 @"We are expecting to receive a non-nil NSString object here.");
 	
 	NSArray* components = [parameter componentsSeparatedByString:kDefaultCallbackParameterComponentSeparator];
+	NSAssert([components count] == 2,
+			 @"We're expecting exactly two components here.");
 	
 	return components;
 }
@@ -436,8 +446,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 				 @"We're expecting to have a non-nil NSString object here.");
 		
 		NSArray* components = [self componentsFromParameter:parameter];
-		NSAssert([components count] == 2,
-				 @"We're expecting exactly two components here.");
 		
 		block([components objectAtIndex:0], [components objectAtIndex:1]);
 	}
@@ -447,6 +455,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	}
 }
 
+/**
+ *	@brief		Extract the parameters that make up a callback URL.
+ *
+ *	@param		url		The callback URL to parse.  Cannot be nil.
+ *
+ *	@returns	An array containing each parameter.
+ */
 - (NSArray*)parametersFromCallbackURL:(NSURL*)url
 {
 	NSAssert([url isKindOfClass:[NSURL class]],
