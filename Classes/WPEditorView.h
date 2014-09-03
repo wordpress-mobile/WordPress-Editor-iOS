@@ -44,12 +44,14 @@
  *
  *	@param		editorView		The editor view.
  *	@param		url				The url that should be loaded.
+ *	@param		title			The title of the link that was tapped.
  *
  *	@return		YES if the tap was handled by the receiver and default handler should be supressed,
  *				NO if it wasn't.
  */
 - (BOOL)editorView:(WPEditorView*)editorView
-		linkTapped:(NSURL*)url;
+		linkTapped:(NSURL*)url
+			 title:(NSString*)title;
 
 /**
  *	@brief		Received when the selection is changed.
@@ -92,6 +94,7 @@ stylesForCurrentSelection:(NSArray*)styles;
 @property (nonatomic, copy, readwrite) NSString* placeholderHTMLString;
 
 #pragma mark - Selection
+@property (nonatomic, strong, readonly) NSString *selectedLinkTitle;
 @property (nonatomic, strong, readonly) NSString *selectedLinkURL;
 
 #pragma mark - Interaction

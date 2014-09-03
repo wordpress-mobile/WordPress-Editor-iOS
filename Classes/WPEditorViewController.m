@@ -1477,12 +1477,14 @@ typedef enum
 	if ([self.editorView isSelectionALink]) {
 		[self removeLink];
 	} else {
-		[self showInsertLinkDialogWithLink:self.editorView.selectedLinkURL];
+		[self showInsertLinkDialogWithLink:self.editorView.selectedLinkURL
+									 title:self.editorView.selectedLinkTitle];
 		[WPAnalytics track:WPAnalyticsStatEditorTappedLink];
 	}
 }
 
 - (void)showInsertLinkDialogWithLink:(NSString*)url
+							   title:(NSString*)title
 {
 	NSString *insertButtonTitle = url ? NSLocalizedString(@"Update", nil) : NSLocalizedString(@"Insert", nil);
 	
@@ -1491,15 +1493,17 @@ typedef enum
 		
 		url = [pasteboardUrl absoluteString];
 	}
-	
-    // Insert Button Title
     
     self.alertView = [[UIAlertView alloc] initWithTitle:insertButtonTitle
 												message:nil
 											   delegate:self
 									  cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
 									  otherButtonTitles:insertButtonTitle, nil];
-    self.alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+	
+	// The reason why we're setting a login & password style, is that it's the only style that
+	// supports having two edit fields.  We'll customize the password field to behave as we want.
+	//
+    self.alertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
     self.alertView.tag = WPLinkAlertViewTag;
 	
 	UITextField *linkURL = [self.alertView textFieldAtIndex:0];
@@ -1510,7 +1514,20 @@ typedef enum
     if (url) {
         linkURL.text = url;
     }
-    
+	
+	UITextField *linkNameTextField = [self.alertView textFieldAtIndex:1];
+	
+	linkNameTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
+	linkNameTextField.placeholder = NSLocalizedString(@"Link Name (required)", nil);
+	linkNameTextField.secureTextEntry = NO;
+	linkNameTextField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
+	linkNameTextField.autocorrectionType = UITextAutocorrectionTypeDefault;
+	linkNameTextField.spellCheckingType = UITextSpellCheckingTypeDefault;
+	
+	if (title) {
+		linkNameTextField.text = title;
+	}
+	
     __weak __typeof(self) weakSelf = self;
 
 	self.alertView.willPresentBlock = ^(UIAlertView* alertView) {
@@ -1804,10 +1821,13 @@ typedef enum
     }
 }
 
-- (BOOL)editorView:(WPEditorView*)editorView linkTapped:(NSURL *)url
+- (BOOL)editorView:(WPEditorView*)editorView
+		linkTapped:(NSURL *)url
+			 title:(NSString*)title
 {
 	if (self.isEditing) {
-		[self showInsertLinkDialogWithLink:url.absoluteString];
+		[self showInsertLinkDialogWithLink:url.absoluteString
+									 title:title];
 	}
 	
 	return YES;

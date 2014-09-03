@@ -11,6 +11,8 @@
 // The editor object
 var zss_editor = {};
 
+zss_editor.defaultCallbackSeparator = ',';
+
 // If we are using iOS or desktop
 zss_editor.isUsingiOS = true;
 
@@ -54,9 +56,12 @@ zss_editor.init = function() {
 				
 		setTimeout(function() {
 			var targetNode = e.target;
-		   
+			var arguments = ['url=' + encodeURIComponent(targetNode.href),
+							 'title=' + encodeURIComponent(targetNode.innerHTML)];
+				   
 			if (targetNode.nodeName.toLowerCase() == 'a') {
-				zss_editor.callback('callback-link-tap', targetNode.href);
+				zss_editor.callback('callback-link-tap',
+									arguments.join(zss_editor.defaultCallbackSeparator));
 			}
 		}, 400);
 	});
@@ -105,7 +110,7 @@ zss_editor.stylesCallback = function(stylesArray) {
 	var stylesString = '';
 	
 	if (stylesArray.length > 0) {
-		stylesString = stylesArray.join(',');
+		stylesString = stylesArray.join(zss_editor.defaultCallbackSeparator);
 	}
 
 	zss_editor.callback("callback-selection-style", stylesString);
