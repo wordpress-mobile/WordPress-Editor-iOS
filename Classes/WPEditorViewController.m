@@ -1,11 +1,12 @@
 #import "WPEditorViewController.h"
 #import "WPEditorViewController_Internal.h"
+#import <MobileCoreServices/MobileCoreServices.h>
+#import <UIAlertView+Blocks/UIAlertView+Blocks.h>
 #import <UIKit/UIKit.h>
 #import <WordPressCom-Analytics-iOS/WPAnalytics.h>
 #import <WordPress-iOS-Shared/WPStyleGuide.h>
 #import <WordPress-iOS-Shared/WPTableViewCell.h>
 #import <WordPress-iOS-Shared/UIImage+Util.h>
-#import <UIAlertView+Blocks/UIAlertView+Blocks.h>
 
 #import "HRColorUtil.h"
 #import "UIWebView+GUIFixes.h"
@@ -1483,8 +1484,15 @@ typedef enum
 
 - (void)showInsertLinkDialogWithLink:(NSString*)url
 {
-    // Insert Button Title
 	NSString *insertButtonTitle = url ? NSLocalizedString(@"Update", nil) : NSLocalizedString(@"Insert", nil);
+	
+	if (!url) {
+		NSURL* pasteboardUrl = [self urlFromPasteboard];
+		
+		url = [pasteboardUrl absoluteString];
+	}
+	
+    // Insert Button Title
     
     self.alertView = [[UIAlertView alloc] initWithTitle:insertButtonTitle
 												message:nil
@@ -1686,6 +1694,34 @@ typedef enum
         }
     }
 }
+
+#pragma mark - UIPasteboard interaction
+
+/**
+ *	@brief		Returns an URL from the general pasteboard.
+ *
+ *	@param		The URL or nil if no valid URL is found.
+ */
+- (NSURL*)urlFromPasteboard
+{
+	NSURL* url = nil;
+	
+	UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
+	
+	NSString* const kURLPasteboardType = (__bridge NSString*)kUTTypeURL;
+	NSString* const kTextPasteboardType = (__bridge NSString*)kUTTypeText;
+	
+	if ([pasteboard containsPasteboardTypes:@[kURLPasteboardType]]) {
+		url = [pasteboard valueForPasteboardType:kURLPasteboardType];
+	} else if ([pasteboard containsPasteboardTypes:@[kTextPasteboardType]]) {
+		NSString* urlString = [pasteboard valueForPasteboardType:kTextPasteboardType];
+		
+		url = [NSURL URLWithString:urlString];
+	}
+	
+	return url;
+}
+
 
 #pragma mark - UITextField Delegate
 
