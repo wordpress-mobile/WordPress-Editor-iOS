@@ -82,7 +82,7 @@ typedef enum
 #pragma mark - Properties: Toolbar
 @property (nonatomic, strong) UIToolbar *backgroundToolbar;
 @property (nonatomic, strong) UIToolbar *leftToolbar;
-@property (nonatomic, strong) UIView *leftToolbarHolder;
+@property (nonatomic, strong) UIView *mainToolbarHolder;
 @property (nonatomic, strong) UIToolbar *rightToolbar;
 @property (nonatomic, strong) UIView *rightToolbarHolder;
 @property (nonatomic, strong) UIScrollView *toolbarScroll;
@@ -1059,10 +1059,41 @@ typedef enum
 
 - (void)buildToolbar
 {
+    // Parent holding view
+	if (!self.mainToolbarHolder) {
+		self.mainToolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(0,
+																		  CGRectGetHeight(self.view.frame),
+																		  CGRectGetWidth(self.view.frame),
+																		  44)];
+		self.mainToolbarHolder.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+	}
+	
+    // Background Toolbar
+	if (!self.backgroundToolbar) {
+		UIToolbar *backgroundToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0,
+																				   0,
+																				   CGRectGetWidth(self.view.frame),
+																				   44)];
+		backgroundToolbar.barTintColor = [self toolbarBackgroundColor];
+		backgroundToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+		backgroundToolbar.translucent = NO;
+		self.backgroundToolbar = backgroundToolbar;
+		
+		[self.mainToolbarHolder addSubview:self.backgroundToolbar];
+	}
+	
     // Scrolling View
     if (!self.toolbarScroll) {
-        self.toolbarScroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, IS_IPAD ? self.view.frame.size.width : self.view.frame.size.width - 44, 44)];
+		CGFloat scrollviewHeight = IS_IPAD ? self.view.frame.size.width : self.view.frame.size.width - 44;
+		
+        self.toolbarScroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0,
+																			0,
+																			scrollviewHeight,
+																			44)];
         self.toolbarScroll.showsHorizontalScrollIndicator = NO;
+		self.toolbarScroll.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+		
+		[self.mainToolbarHolder addSubview:self.toolbarScroll];
     }
     
     // Toolbar with icons
@@ -1070,33 +1101,15 @@ typedef enum
         self.leftToolbar = [[UIToolbar alloc] initWithFrame:CGRectZero];
         self.leftToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.leftToolbar.barTintColor = [self toolbarBackgroundColor];
+		
+		[self.toolbarScroll addSubview:self.leftToolbar];
     }
-    [self.toolbarScroll addSubview:self.leftToolbar];
-    self.toolbarScroll.autoresizingMask = self.leftToolbar.autoresizingMask;
-	
-    // Background Toolbar
-	if (!self.backgroundToolbar) {
-		UIToolbar *backgroundToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
-		backgroundToolbar.barTintColor = [self toolbarBackgroundColor];
-		backgroundToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-		backgroundToolbar.translucent = NO;
-		self.backgroundToolbar = backgroundToolbar;
-	}
-	
-    // Parent holding view
-	if (!self.leftToolbarHolder) {
-		self.leftToolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, 44)];
-		self.leftToolbarHolder.autoresizingMask = self.leftToolbar.autoresizingMask;
-		self.leftToolbarHolder.backgroundColor = [UIColor clearColor];
-		[self.leftToolbarHolder addSubview:self.toolbarScroll];
-		[self.leftToolbarHolder insertSubview:self.backgroundToolbar atIndex:0];
-	}
 	
     if (!IS_IPAD) {
-        [self.leftToolbarHolder addSubview:[self rightToolbarHolder]];
+        [self.mainToolbarHolder addSubview:[self rightToolbarHolder]];
     }
 	
-	[self.editorView setInputAccessoryView:self.leftToolbarHolder];
+	[self.editorView setInputAccessoryView:self.mainToolbarHolder];
     
     // Check to see if we have any toolbar items, if not, add them all
     NSArray *items = [self itemsForToolbar];
