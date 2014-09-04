@@ -50,6 +50,11 @@ WPEditorViewControllerMode;
  */
 @property (nonatomic, copy, readwrite) UIColor* toolbarBackgroundColor;
 
+/**
+ *	@brief		The border color for the toolbar.
+ */
+@property (nonatomic, copy, readwrite) UIColor* toolbarBorderColor;
+
 #pragma mark - Editing
 
 /**

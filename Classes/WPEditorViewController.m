@@ -5,6 +5,7 @@
 #import <WordPress-iOS-Shared/WPStyleGuide.h>
 #import <WordPress-iOS-Shared/WPTableViewCell.h>
 #import <WordPress-iOS-Shared/UIImage+Util.h>
+#import <WordPress-iOS-Shared/UIColor+Helpers.h>
 #import <UIAlertView+Blocks/UIAlertView+Blocks.h>
 
 #import "HRColorUtil.h"
@@ -57,6 +58,8 @@ typedef enum
 	
 } WPEditorViewControllerElementTag;
 
+static NSString* const kDefaultBorderColorHexValue = @"c8c8c8";
+
 @interface WPEditorViewController () <HRColorPickerViewControllerDelegate, UIAlertViewDelegate, UITextFieldDelegate, WPEditorViewDelegate>
 
 @property (nonatomic, strong) NSString *htmlString;
@@ -80,12 +83,13 @@ typedef enum
 @property (nonatomic, strong) WPInsetTextField *titleTextField;
 
 #pragma mark - Properties: Toolbar
-@property (nonatomic, strong) UIToolbar *backgroundToolbar;
-@property (nonatomic, strong) UIToolbar *leftToolbar;
 @property (nonatomic, strong) UIView *mainToolbarHolder;
-@property (nonatomic, strong) UIToolbar *rightToolbar;
-@property (nonatomic, strong) UIView *rightToolbarHolder;
-@property (nonatomic, strong) UIScrollView *toolbarScroll;
+@property (nonatomic, weak) UIView *mainToolbarHolderContent;
+@property (nonatomic, weak) UIView *mainToolbarHolderTopBorder;
+@property (nonatomic, weak) UIToolbar *leftToolbar;
+@property (nonatomic, weak) UIToolbar *rightToolbar;
+@property (nonatomic, weak) UIView *rightToolbarHolder;
+@property (nonatomic, weak) UIScrollView *toolbarScroll;
 
 #pragma mark - Properties: Toolbar items
 @property (nonatomic, strong, readwrite) UIBarButtonItem* htmlBarButtonItem;
@@ -109,6 +113,7 @@ typedef enum
 	{
 		_editing = YES;
 		_toolbarBackgroundColor = [UIColor whiteColor];
+		_toolbarBorderColor = [UIColor colorWithHexString:kDefaultBorderColorHexValue];
 	}
 	
 	return self;
@@ -126,6 +131,7 @@ typedef enum
 		}
 		
 		_toolbarBackgroundColor = [UIColor whiteColor];
+		_toolbarBorderColor = [UIColor colorWithHexString:kDefaultBorderColorHexValue];
 	}
 	
 	return self;
@@ -226,9 +232,11 @@ typedef enum
 
 - (UIView*)rightToolbarHolder
 {
-	if (!_rightToolbarHolder) {
+	UIView* rightToolbarHolder = _rightToolbarHolder;
+	
+	if (!rightToolbarHolder) {
 		
-		UIView *rightToolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width-44, 0, 44, 44)];
+		rightToolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width-44, 0, 44, 44)];
 		rightToolbarHolder.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
 		rightToolbarHolder.clipsToBounds = YES;
 		
@@ -248,14 +256,12 @@ typedef enum
 		toolbar.barTintColor = self.toolbarBackgroundColor;
 		
 		UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0.6f, 44)];
-		line.backgroundColor = [UIColor lightGrayColor];
+		line.backgroundColor = self.toolbarBorderColor;
 		line.alpha = 0.7f;
 		[rightToolbarHolder addSubview:line];
-
-		_rightToolbarHolder = rightToolbarHolder;
 	}
 	
-	return _rightToolbarHolder;
+	return rightToolbarHolder;
 }
 
 #pragma mark - Coloring
@@ -265,9 +271,18 @@ typedef enum
 	if (_toolbarBackgroundColor != toolbarBackgroundColor) {
 		_toolbarBackgroundColor = toolbarBackgroundColor;
 		
-		self.backgroundToolbar.barTintColor = toolbarBackgroundColor;
+		self.mainToolbarHolder.backgroundColor = toolbarBackgroundColor;
 		self.leftToolbar.barTintColor = toolbarBackgroundColor;
 		self.rightToolbar.barTintColor = toolbarBackgroundColor;
+	}
+}
+
+- (void)setToolbarBorderColor:(UIColor *)toolbarBorderColor
+{
+	if (_toolbarBorderColor != toolbarBorderColor) {
+		_toolbarBorderColor = toolbarBorderColor;
+		
+		self.mainToolbarHolderTopBorder.backgroundColor = toolbarBorderColor;
 	}
 }
 
@@ -1061,15 +1076,11 @@ typedef enum
 {
     // Parent holding view
 	if (!self.mainToolbarHolder) {
-		self.mainToolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(0,
-																		  CGRectGetHeight(self.view.frame),
-																		  CGRectGetWidth(self.view.frame),
-																		  44)];
-		self.mainToolbarHolder.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+		[self buildMainToolbarHolder];
 	}
 	
     // Background Toolbar
-	if (!self.backgroundToolbar) {
+	/*if (!self.backgroundToolbar) {
 		UIToolbar *backgroundToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0,
 																				   0,
 																				   CGRectGetWidth(self.view.frame),
@@ -1077,36 +1088,42 @@ typedef enum
 		backgroundToolbar.barTintColor = [self toolbarBackgroundColor];
 		backgroundToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		backgroundToolbar.translucent = NO;
+		//backgroundToolbar.layer.borderColor = self.toolbarBorderColor.CGColor;
+		
 		self.backgroundToolbar = backgroundToolbar;
 		
 		[self.mainToolbarHolder addSubview:self.backgroundToolbar];
 	}
+	 */
 	
     // Scrolling View
     if (!self.toolbarScroll) {
-		CGFloat scrollviewHeight = IS_IPAD ? self.view.frame.size.width : self.view.frame.size.width - 44;
+		CGFloat scrollviewHeight = IS_IPAD ? CGRectGetWidth(self.view.frame) : CGRectGetWidth(self.view.frame) - 44;
 		
-        self.toolbarScroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0,
+        UIScrollView* toolbarScroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0,
 																			0,
 																			scrollviewHeight,
 																			44)];
-        self.toolbarScroll.showsHorizontalScrollIndicator = NO;
-		self.toolbarScroll.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        toolbarScroll.showsHorizontalScrollIndicator = NO;
+		toolbarScroll.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		
-		[self.mainToolbarHolder addSubview:self.toolbarScroll];
+		[self.mainToolbarHolderContent addSubview:toolbarScroll];
+		self.toolbarScroll = toolbarScroll;
     }
     
     // Toolbar with icons
     if (!self.leftToolbar) {
-        self.leftToolbar = [[UIToolbar alloc] initWithFrame:CGRectZero];
-        self.leftToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        self.leftToolbar.barTintColor = [self toolbarBackgroundColor];
+		UIToolbar* leftToolbar = [[UIToolbar alloc] initWithFrame:CGRectZero];
+        leftToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+        leftToolbar.barTintColor = [self toolbarBackgroundColor];
+		leftToolbar.translucent = NO;
 		
-		[self.toolbarScroll addSubview:self.leftToolbar];
+		[self.toolbarScroll addSubview:leftToolbar];
+		self.leftToolbar = leftToolbar;
     }
 	
     if (!IS_IPAD) {
-        [self.mainToolbarHolder addSubview:[self rightToolbarHolder]];
+        [self.mainToolbarHolderContent addSubview:[self rightToolbarHolder]];
     }
 	
 	[self.editorView setInputAccessoryView:self.mainToolbarHolder];
@@ -1137,6 +1154,35 @@ typedef enum
     self.leftToolbar.items = items;
     self.leftToolbar.frame = CGRectMake(0, 0, toolbarWidth, 44);
     self.toolbarScroll.contentSize = CGSizeMake(self.leftToolbar.frame.size.width, 44);
+}
+
+- (void)buildMainToolbarHolder
+{
+	NSAssert(!self.mainToolbarHolder, @"This is supposed to be called only once.");
+	
+	UIView* mainToolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(0,
+																		 CGRectGetHeight(self.view.frame),
+																		 CGRectGetWidth(self.view.frame),
+																		 44)];
+	mainToolbarHolder.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+	mainToolbarHolder.backgroundColor = self.toolbarBackgroundColor;
+	
+	CGRect subviewFrame = mainToolbarHolder.frame;
+	subviewFrame.origin = CGPointZero;
+	
+	UIView* mainToolbarHolderContent = [[UIView alloc] initWithFrame:subviewFrame];
+	
+	subviewFrame.size.height = 1.0f;
+	
+	UIView* mainToolbarHolderTopBorder = [[UIView alloc] initWithFrame:subviewFrame];
+	mainToolbarHolderTopBorder.backgroundColor = self.toolbarBorderColor;
+	
+	[mainToolbarHolder addSubview:mainToolbarHolderContent];
+	[mainToolbarHolder addSubview:mainToolbarHolderTopBorder];
+	
+	self.mainToolbarHolder = mainToolbarHolder;
+	self.mainToolbarHolderContent = mainToolbarHolderContent;
+	self.mainToolbarHolderTopBorder = mainToolbarHolderTopBorder;
 }
 
 - (void)buildTextViews
