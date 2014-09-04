@@ -1062,7 +1062,6 @@ typedef enum
     // Scrolling View
     if (!self.toolbarScroll) {
         self.toolbarScroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, IS_IPAD ? self.view.frame.size.width : self.view.frame.size.width - 44, 44)];
-
         self.toolbarScroll.showsHorizontalScrollIndicator = NO;
     }
     
@@ -1080,6 +1079,7 @@ typedef enum
 		UIToolbar *backgroundToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
 		backgroundToolbar.barTintColor = [self toolbarBackgroundColor];
 		backgroundToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+		backgroundToolbar.translucent = NO;
 		self.backgroundToolbar = backgroundToolbar;
 	}
 	
