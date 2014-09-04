@@ -1511,8 +1511,8 @@ typedef enum
 	
 	UITextField *linkURL = [self.alertView textFieldAtIndex:0];
 	
-	linkURL.clearButtonMode = UITextFieldViewModeWhileEditing;
-	linkURL.placeholder = NSLocalizedString(@"URL (required)", nil);
+	linkURL.clearButtonMode = UITextFieldViewModeAlways;
+	linkURL.placeholder = NSLocalizedString(@"URL", nil);
 	
     if (url) {
         linkURL.text = url;
@@ -1520,8 +1520,8 @@ typedef enum
 	
 	UITextField *linkNameTextField = [self.alertView textFieldAtIndex:1];
 	
-	linkNameTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
-	linkNameTextField.placeholder = NSLocalizedString(@"Link Name (required)", nil);
+	linkNameTextField.clearButtonMode = UITextFieldViewModeAlways;
+	linkNameTextField.placeholder = NSLocalizedString(@"Link Name", nil);
 	linkNameTextField.secureTextEntry = NO;
 	linkNameTextField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
 	linkNameTextField.autocorrectionType = UITextAutocorrectionTypeDefault;
@@ -1538,14 +1538,15 @@ typedef enum
 		[weakSelf.editorView endEditing];
 	};
 	
-	self.alertView.willDismissBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
+	self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
 		[weakSelf.editorView focus];
-		//[weakSelf.editorView restoreSelection];
+		[weakSelf.editorView restoreSelection];
 		
 		if (alertView.tag == WPLinkAlertViewTag) {
 			if (buttonIndex == 1) {
 				UITextField *linkURL = [alertView textFieldAtIndex:0];
 				UITextField *linkTitle = [alertView textFieldAtIndex:1];
+				
 				if (isInsertingNewLink) {
 					[weakSelf insertLink:linkURL.text title:linkTitle.text];
 				} else {

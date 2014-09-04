@@ -725,7 +725,6 @@ zss_editor.focusEditor = function() {
 
 	if (!zss_editor.isFocused()) {
 		$('#zss_editor_content').focus();
-		zss_editor.restoreRange();
 	}
 }
 
