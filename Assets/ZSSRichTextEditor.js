@@ -122,7 +122,7 @@ zss_editor.backuprange = function(){
     zss_editor.currentSelection = {"startContainer": range.startContainer, "startOffset":range.startOffset,"endContainer":range.endContainer, "endOffset":range.endOffset};
 }
 
-zss_editor.restorerange = function(){
+zss_editor.restoreRange = function(){
 	var selection = window.getSelection();
     selection.removeAllRanges();
     var range = document.createRange();
@@ -356,7 +356,7 @@ zss_editor.setOutdent = function() {
 }
 
 zss_editor.setTextColor = function(color) {
-    zss_editor.restorerange();
+    zss_editor.restoreRange();
 	document.execCommand("styleWithCSS", null, true);
 	document.execCommand('foreColor', false, color);
 	document.execCommand("styleWithCSS", null, false);
@@ -365,7 +365,7 @@ zss_editor.setTextColor = function(color) {
 }
 
 zss_editor.setBackgroundColor = function(color) {
-	zss_editor.restorerange();
+	zss_editor.restoreRange();
 	document.execCommand("styleWithCSS", null, true);
 	document.execCommand('hiliteColor', false, color);
 	document.execCommand("styleWithCSS", null, false);
@@ -376,7 +376,7 @@ zss_editor.setBackgroundColor = function(color) {
 
 zss_editor.insertLink = function(url, title) {
 
-    zss_editor.restorerange();
+    zss_editor.restoreRange();
 	
     var sel = document.getSelection();
 	if (sel.toString().length != 0) {
@@ -397,7 +397,7 @@ zss_editor.insertLink = function(url, title) {
 
 zss_editor.updateLink = function(url, title) {
 	
-    zss_editor.restorerange();
+    zss_editor.restoreRange();
 	
 	var currentLinkNode = zss_editor.closerParentNode('a');
 	
@@ -421,7 +421,7 @@ zss_editor.unlink = function() {
 
 zss_editor.updateImage = function(url, alt) {
 
-    zss_editor.restorerange();
+    zss_editor.restoreRange();
 
     if (zss_editor.currentEditingImage) {
         var c = zss_editor.currentEditingImage;
@@ -473,7 +473,7 @@ zss_editor.prepareInsert = function() {
 }
 
 zss_editor.insertImage = function(url, alt) {
-	zss_editor.restorerange();
+	zss_editor.restoreRange();
 	var html = '<img src="'+url+'" alt="'+alt+'" />';
 	zss_editor.insertHTML(html);
 	zss_editor.sendEnabledStyles();
@@ -725,6 +725,7 @@ zss_editor.focusEditor = function() {
 
 	if (!zss_editor.isFocused()) {
 		$('#zss_editor_content').focus();
+		zss_editor.restoreRange();
 	}
 }
 

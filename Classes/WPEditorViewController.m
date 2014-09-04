@@ -1488,19 +1488,20 @@ typedef enum
 {
 	BOOL isInsertingNewLink = (url == nil);
 	
-	NSString *insertButtonTitle = isInsertingNewLink ? NSLocalizedString(@"Insert", nil) : NSLocalizedString(@"Update", nil);
-	
 	if (!url) {
 		NSURL* pasteboardUrl = [self urlFromPasteboard];
 		
 		url = [pasteboardUrl absoluteString];
 	}
-    
-    self.alertView = [[UIAlertView alloc] initWithTitle:insertButtonTitle
+	
+	NSString *insertButtonTitle = isInsertingNewLink ? NSLocalizedString(@"Insert", nil) : NSLocalizedString(@"Update", nil);
+	NSString *removeButtonTitle = isInsertingNewLink ? nil : NSLocalizedString(@"Remove Link", nil);
+	
+	self.alertView = [[UIAlertView alloc] initWithTitle:insertButtonTitle
 												message:nil
 											   delegate:self
 									  cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-									  otherButtonTitles:insertButtonTitle, nil];
+									  otherButtonTitles:insertButtonTitle, removeButtonTitle, nil];
 	
 	// The reason why we're setting a login & password style, is that it's the only style that
 	// supports having two edit fields.  We'll customize the password field to behave as we want.
@@ -1537,8 +1538,9 @@ typedef enum
 		[weakSelf.editorView endEditing];
 	};
 	
-	self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
+	self.alertView.willDismissBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
 		[weakSelf.editorView focus];
+		//[weakSelf.editorView restoreSelection];
 		
 		if (alertView.tag == WPLinkAlertViewTag) {
 			if (buttonIndex == 1) {
@@ -1549,6 +1551,8 @@ typedef enum
 				} else {
 					[weakSelf updateLink:linkURL.text title:linkTitle.text];
 				}
+			} else if (buttonIndex == 2) {
+				[weakSelf removeLink];
 			}
 		}
     };

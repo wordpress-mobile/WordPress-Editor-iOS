@@ -115,6 +115,9 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 #pragma mark - Selection
 
+
+- (void)restoreSelection;
+
 /**
  *	@brief		Saves the current text selection.
  *	@details	The selection is restored automatically by some insert operations when called.

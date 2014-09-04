@@ -526,6 +526,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 #pragma mark - Selection
 
+- (void)restoreSelection
+{
+	[self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.restoreRange();"];
+}
+
 - (void)saveSelection
 {
     [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.prepareInsert();"];
