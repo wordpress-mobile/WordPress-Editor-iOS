@@ -55,6 +55,16 @@ WPEditorViewControllerMode;
  */
 @property (nonatomic, copy, readwrite) UIColor* toolbarBorderColor;
 
+/**
+ *  Color to tint the toolbar items
+ */
+@property (nonatomic, strong) UIColor *toolbarItemTintColor;
+
+/**
+ *  Color to tint selected items
+ */
+@property (nonatomic, strong) UIColor *toolbarItemSelectedTintColor;
+
 #pragma mark - Editing
 
 /**

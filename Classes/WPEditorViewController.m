@@ -58,7 +58,7 @@ typedef enum
 	
 } WPEditorViewControllerElementTag;
 
-static NSString* const kDefaultBorderColorHexValue = @"c8c8c8";
+static NSString* const kDefaultBorderColorHex = @"c8c8c8";
 
 @interface WPEditorViewController () <HRColorPickerViewControllerDelegate, UIAlertViewDelegate, UITextFieldDelegate, WPEditorViewDelegate>
 
@@ -111,9 +111,7 @@ static NSString* const kDefaultBorderColorHexValue = @"c8c8c8";
 	
 	if (self)
 	{
-		_editing = YES;
-		_toolbarBackgroundColor = [UIColor whiteColor];
-		_toolbarBorderColor = [UIColor colorWithHexString:kDefaultBorderColorHexValue];
+		[self sharedInitializationWithEditing:YES];
 	}
 	
 	return self;
@@ -124,17 +122,35 @@ static NSString* const kDefaultBorderColorHexValue = @"c8c8c8";
 	self = [super init];
 	
 	if (self) {
+		
+		BOOL editing = NO;
+		
 		if (mode == kWPEditorViewControllerModePreview) {
-			_editing = NO;
+			editing = NO;
 		} else {
-			_editing = YES;
+			editing = YES;
 		}
 		
-		_toolbarBackgroundColor = [UIColor whiteColor];
-		_toolbarBorderColor = [UIColor colorWithHexString:kDefaultBorderColorHexValue];
+		[self sharedInitializationWithEditing:editing];
 	}
 	
 	return self;
+}
+
+#pragma mark - Shared Initialization Code
+
+- (void)sharedInitializationWithEditing:(BOOL)editing
+{
+	if (editing == kWPEditorViewControllerModePreview) {
+		_editing = NO;
+	} else {
+		_editing = YES;
+	}
+	
+	_toolbarBackgroundColor = [UIColor whiteColor];
+	_toolbarBorderColor = [UIColor colorWithHexString:kDefaultBorderColorHex];
+	_toolbarItemTintColor = [WPStyleGuide allTAllShadeGrey];
+	_toolbarItemSelectedTintColor = [WPStyleGuide baseDarkerBlue];
 }
 
 #pragma mark - UIViewController
@@ -214,8 +230,8 @@ static NSString* const kDefaultBorderColorHexValue = @"c8c8c8";
 		
 		WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
 		[customButton setTitle:@"HTML" forState:UIControlStateNormal];
-		customButton.normalTintColor = self.barButtonItemDefaultColor;
-		customButton.selectedTintColor = self.barButtonItemSelectedDefaultColor;
+		customButton.normalTintColor = self.toolbarItemTintColor;
+		customButton.selectedTintColor = self.toolbarItemSelectedTintColor;
 		customButton.reversesTitleShadowWhenHighlighted = YES;
 		customButton.titleLabel.font = font;
 		[customButton addTarget:self
@@ -299,7 +315,7 @@ static NSString* const kDefaultBorderColorHexValue = @"c8c8c8";
     
     // Update the color
     for (UIBarButtonItem *item in self.leftToolbar.items) {
-        item.tintColor = [self barButtonItemDefaultColor];
+        item.tintColor = [self toolbarItemTintColor];
     }
 	
     self.htmlBarButtonItem.tintColor = toolbarItemTintColor;
@@ -643,8 +659,8 @@ static NSString* const kDefaultBorderColorHexValue = @"c8c8c8";
 
 	WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
 	[customButton setImage:buttonImage forState:UIControlStateNormal];
-	customButton.backgroundColor = [UIColor clearColor];
-	customButton.normalTintColor = self.barButtonItemDefaultColor;
+	customButton.normalTintColor = self.toolbarItemTintColor;
+	customButton.selectedTintColor = self.toolbarItemSelectedTintColor;
 	[customButton addTarget:self
 					 action:selector
 		   forControlEvents:UIControlEventTouchUpInside];
@@ -1148,7 +1164,7 @@ static NSString* const kDefaultBorderColorHexValue = @"c8c8c8";
         }
     }
     for (UIBarButtonItem *item in items) {
-        item.tintColor = [self barButtonItemDefaultColor];
+        item.tintColor = [self toolbarItemTintColor];
     }
 	
     self.leftToolbar.items = items;
@@ -1378,7 +1394,7 @@ static NSString* const kDefaultBorderColorHexValue = @"c8c8c8";
     } else {
 		[self.editorView showVisualEditor];
 		
-        barButtonItem.tintColor = [self barButtonItemDefaultColor];
+        barButtonItem.tintColor = [self toolbarItemTintColor];
         [self enableToolbarItems:YES shouldShowSourceButton:YES];
     }
     [WPAnalytics track:WPAnalyticsStatEditorTappedHTML];
@@ -1643,8 +1659,8 @@ static NSString* const kDefaultBorderColorHexValue = @"c8c8c8";
     }
     
     button.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:28.5f];
-    [button setTitleColor:[self barButtonItemDefaultColor] forState:UIControlStateNormal];
-    [button setTitleColor:[self barButtonItemSelectedDefaultColor] forState:UIControlStateHighlighted];
+    [button setTitleColor:self.toolbarItemTintColor forState:UIControlStateNormal];
+    [button setTitleColor:self.toolbarItemSelectedTintColor forState:UIControlStateHighlighted];
     
     UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
     [self.customBarButtonItems addObject:barButtonItem];
