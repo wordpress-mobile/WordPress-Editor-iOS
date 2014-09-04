@@ -43,6 +43,13 @@ WPEditorViewControllerMode;
  */
 - (instancetype)initWithMode:(WPEditorViewControllerMode)mode;
 
+#pragma mark - Coloring
+
+/**
+ *	@brief		The background color for the toolbar.
+ */
+@property (nonatomic, copy, readwrite) UIColor* toolbarBackgroundColor;
+
 #pragma mark - Editing
 
 /**
