@@ -1078,7 +1078,6 @@ typedef enum
     }
 	
 	[self.editorView setInputAccessoryView:self.toolbarHolder];
-	self.titleTextField.inputAccessoryView = self.toolbarHolder;
     
     // Check to see if we have any toolbar items, if not, add them all
     NSArray *items = [self itemsForToolbar];
