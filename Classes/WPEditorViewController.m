@@ -286,13 +286,18 @@ typedef enum
 		toolbar.items = @[negativeSeparator, [self htmlBarButtonItem]];
 		toolbar.barTintColor = self.toolbarBackgroundColor;
 		
-		UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0,
-																0,
-																0.6f,
-																CGRectGetWidth(rightToolbarHolder.frame))];
-		line.backgroundColor = self.toolbarBorderColor;
-		line.alpha = 0.7f;
-		[rightToolbarHolder addSubview:line];
+		static const CGFloat kDividerLineWidth = 0.6;
+		static const CGFloat kDividerLineHeight = 28;
+		
+		CGRect dividerLineFrame = CGRectMake(0,
+											 floorf((kWPEditorViewControllerToolbarHeight - kDividerLineHeight) / 2),
+											 kDividerLineWidth,
+											 kDividerLineHeight);
+		
+		UIView *dividerLine = [[UIView alloc] initWithFrame:dividerLineFrame];
+		dividerLine.backgroundColor = self.toolbarBorderColor;
+		dividerLine.alpha = 0.7f;
+		[rightToolbarHolder addSubview:dividerLine];
 	}
 	
 	return rightToolbarHolder;
