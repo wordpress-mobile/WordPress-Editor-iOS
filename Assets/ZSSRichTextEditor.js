@@ -379,19 +379,18 @@ zss_editor.insertLink = function(url, title) {
     zss_editor.restoreRange();
 	
     var sel = document.getSelection();
-	if (sel.toString().length != 0) {
-        if (sel.rangeCount) {
-			
-			var el = document.createElement("a");
-			el.setAttribute("href", url);
-			
-            var range = sel.getRangeAt(0).cloneRange();
-			range.surroundContents(el);
-			el.innerHTML = title;
-            sel.removeAllRanges();
-            sel.addRange(range);
-        }
+	if (sel.rangeCount) {
+
+		var el = document.createElement("a");
+		el.setAttribute("href", url);
+		
+		var range = sel.getRangeAt(0).cloneRange();
+		range.surroundContents(el);
+		el.innerHTML = title;
+		sel.removeAllRanges();
+		sel.addRange(range);
 	}
+
 	zss_editor.sendEnabledStyles();
 }
 
