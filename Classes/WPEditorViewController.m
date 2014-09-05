@@ -239,9 +239,9 @@ typedef enum
 																 @"Accessibility label for display HTML button on formatting toolbar.");
 		
 		CGRect customButtonFrame = CGRectMake(0,
-											  0,
-											  kWPEditorViewControllerToolbarButtonWidth,
-											  kWPEditorViewControllerToolbarButtonHeight);
+                                              0,
+                                              kWPEditorViewControllerToolbarButtonWidth,
+                                              kWPEditorViewControllerToolbarButtonHeight);
 		
 		WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:customButtonFrame];
 		[customButton setTitle:@"HTML" forState:UIControlStateNormal];
