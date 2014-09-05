@@ -21,6 +21,11 @@ CGFloat const EPVCStandardOffset = 10.0;
 NSInteger const WPImageAlertViewTag = 91;
 NSInteger const WPLinkAlertViewTag = 92;
 
+static const CGFloat kWPEditorViewControllerToolbarButtonWidth = 40.0f;
+static const CGFloat kWPEditorViewControllerToolbarButtonHeight = 40.0f;
+static const CGFloat kWPEditorViewControllerToolbarHeight = 40.0f;
+static NSString* const kWPEditorViewControllerDefaultBorderColorHex = @"c8c8c8";
+
 typedef enum
 {
 	kWPEditorViewControllerElementTagUnknown = -1,
@@ -58,8 +63,6 @@ typedef enum
 	kWPEditorViewControllerElementUndoBarButton,
 	
 } WPEditorViewControllerElementTag;
-
-static NSString* const kDefaultBorderColorHex = @"c8c8c8";
 
 @interface WPEditorViewController () <HRColorPickerViewControllerDelegate, UIAlertViewDelegate, UITextFieldDelegate, WPEditorViewDelegate>
 
@@ -149,7 +152,7 @@ static NSString* const kDefaultBorderColorHex = @"c8c8c8";
 	}
 	
 	_toolbarBackgroundColor = [UIColor whiteColor];
-	_toolbarBorderColor = [UIColor colorWithHexString:kDefaultBorderColorHex];
+	_toolbarBorderColor = [UIColor colorWithHexString:kWPEditorViewControllerDefaultBorderColorHex];
 	_toolbarItemTintColor = [WPStyleGuide allTAllShadeGrey];
 	_toolbarItemSelectedTintColor = [WPStyleGuide baseDarkerBlue];
 }
@@ -229,7 +232,10 @@ static NSString* const kDefaultBorderColorHex = @"c8c8c8";
 		htmlBarButtonItem.accessibilityLabel = NSLocalizedString(@"Display HTML",
 																 @"Accessibility label for display HTML button on formatting toolbar.");
 		
-		WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+		WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:CGRectMake(0,
+																									  0,
+																									  kWPEditorViewControllerToolbarButtonWidth,
+																									  kWPEditorViewControllerToolbarButtonHeight)];
 		[customButton setTitle:@"HTML" forState:UIControlStateNormal];
 		customButton.normalTintColor = self.toolbarItemTintColor;
 		customButton.selectedTintColor = self.toolbarItemSelectedTintColor;
@@ -253,11 +259,19 @@ static NSString* const kDefaultBorderColorHex = @"c8c8c8";
 	
 	if (!rightToolbarHolder) {
 		
-		rightToolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(self.view.frame.size.width-44, 0, 44, 44)];
+		rightToolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.view.frame) - kWPEditorViewControllerToolbarButtonWidth,
+																	  0,
+																	  kWPEditorViewControllerToolbarButtonWidth,
+																	  kWPEditorViewControllerToolbarHeight)];
 		rightToolbarHolder.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
 		rightToolbarHolder.clipsToBounds = YES;
 		
-		UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+		CGRect toolbarFrame = CGRectMake(0,
+										 0,
+										 CGRectGetWidth(rightToolbarHolder.frame),
+										 CGRectGetHeight(rightToolbarHolder.frame));
+		
+		UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:toolbarFrame];
 		self.rightToolbar = toolbar;
 		
 		[rightToolbarHolder addSubview:toolbar];
@@ -272,7 +286,10 @@ static NSString* const kDefaultBorderColorHex = @"c8c8c8";
 		toolbar.items = @[negativeSeparator, [self htmlBarButtonItem]];
 		toolbar.barTintColor = self.toolbarBackgroundColor;
 		
-		UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0.6f, 44)];
+		UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0,
+																0,
+																0.6f,
+																CGRectGetWidth(rightToolbarHolder.frame))];
 		line.backgroundColor = self.toolbarBorderColor;
 		line.alpha = 0.7f;
 		[rightToolbarHolder addSubview:line];
@@ -658,7 +675,10 @@ static NSString* const kDefaultBorderColorHex = @"c8c8c8";
 
 	UIImage* buttonImage = [[UIImage imageNamed:imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
-	WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+	WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:CGRectMake(0,
+																								  0,
+																								  kWPEditorViewControllerToolbarButtonWidth,
+																								  kWPEditorViewControllerToolbarButtonHeight)];
 	[customButton setImage:buttonImage forState:UIControlStateNormal];
 	customButton.normalTintColor = self.toolbarItemTintColor;
 	customButton.selectedTintColor = self.toolbarItemSelectedTintColor;
@@ -1133,8 +1153,12 @@ static NSString* const kDefaultBorderColorHex = @"c8c8c8";
     }
 	
     self.leftToolbar.items = items;
-    self.leftToolbar.frame = CGRectMake(0, 0, toolbarWidth, 44);
-    self.toolbarScroll.contentSize = CGSizeMake(self.leftToolbar.frame.size.width, 44);
+    self.leftToolbar.frame = CGRectMake(0,
+										0,
+										toolbarWidth,
+										kWPEditorViewControllerToolbarHeight);
+    self.toolbarScroll.contentSize = CGSizeMake(CGRectGetWidth(self.leftToolbar.frame),
+												kWPEditorViewControllerToolbarHeight);
 }
 
 - (void)buildLeftToolbar
@@ -1157,7 +1181,7 @@ static NSString* const kDefaultBorderColorHex = @"c8c8c8";
 	UIView* mainToolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(0,
 																		 CGRectGetHeight(self.view.frame),
 																		 CGRectGetWidth(self.view.frame),
-																		 44)];
+																		 kWPEditorViewControllerToolbarHeight)];
 	mainToolbarHolder.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	mainToolbarHolder.backgroundColor = self.toolbarBackgroundColor;
 	
@@ -1235,12 +1259,18 @@ static NSString* const kDefaultBorderColorHex = @"c8c8c8";
 {
 	NSAssert(!self.toolbarScroll, @"This is supposed to be called only once.");
 	
-	CGFloat scrollviewHeight = IS_IPAD ? CGRectGetWidth(self.view.frame) : CGRectGetWidth(self.view.frame) - 44;
+	CGFloat scrollviewHeight = CGRectGetWidth(self.view.frame);
+ 
+	if (!IS_IPAD) {
+		scrollviewHeight -= kWPEditorViewControllerToolbarButtonWidth;
+	}
 	
-	UIScrollView* toolbarScroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0,
-																				 0,
-																				 scrollviewHeight,
-																				 44)];
+	CGRect toolbarScrollFrame = CGRectMake(0,
+										   0,
+										   scrollviewHeight,
+										   kWPEditorViewControllerToolbarHeight);
+	
+	UIScrollView* toolbarScroll = [[UIScrollView alloc] initWithFrame:toolbarScrollFrame];
 	toolbarScroll.showsHorizontalScrollIndicator = NO;
 	toolbarScroll.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	
