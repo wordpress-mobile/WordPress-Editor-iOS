@@ -1739,10 +1739,29 @@ typedef enum
 	} else if ([pasteboard containsPasteboardTypes:@[kTextPasteboardType]]) {
 		NSString* urlString = [pasteboard valueForPasteboardType:kTextPasteboardType];
 		
-		url = [NSURL URLWithString:urlString];
+		NSURL* prevalidatedUrl = [NSURL URLWithString:urlString];
+		
+		if ([self isURLValid:prevalidatedUrl]) {
+			url = prevalidatedUrl;
+		}
 	}
 	
 	return url;
+}
+
+/**
+ *	@brief		Validates a URL.
+ *	@details	The validations we perform here are pretty basic.  But the idea of having this
+ *				method is to add any additional checks we want to perform, as we come up with them.
+ *
+ *	@parameter	url		The URL to validate.  You will usually call [NSURL URLWithString] to create
+ *						this URL from a string, before passing it to this method.  Cannot be nil.
+ */
+- (BOOL)isURLValid:(NSURL*)url
+{
+	NSParameterAssert([url isKindOfClass:[NSURL class]]);
+	
+	return url && url.scheme && url.host;
 }
 
 
