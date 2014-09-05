@@ -233,10 +233,12 @@ typedef enum
 		htmlBarButtonItem.accessibilityLabel = NSLocalizedString(@"Display HTML",
 																 @"Accessibility label for display HTML button on formatting toolbar.");
 		
-		WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:CGRectMake(0,
-																									  0,
-																									  kWPEditorViewControllerToolbarButtonWidth,
-																									  kWPEditorViewControllerToolbarButtonHeight)];
+		CGRect customButtonFrame = CGRectMake(0,
+											  0,
+											  kWPEditorViewControllerToolbarButtonWidth,
+											  kWPEditorViewControllerToolbarButtonHeight);
+		
+		WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:customButtonFrame];
 		[customButton setTitle:@"HTML" forState:UIControlStateNormal];
 		customButton.normalTintColor = self.toolbarItemTintColor;
 		customButton.selectedTintColor = self.toolbarItemSelectedTintColor;
