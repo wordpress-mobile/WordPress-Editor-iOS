@@ -225,8 +225,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
  */
 - (BOOL)handleWebViewCallbackURL:(NSURL*)url
 {
-	NSAssert([url isKindOfClass:[NSURL class]],
-			 @"Expected param url to be a non-nil, NSURL object.");
+	NSParameterAssert([url isKindOfClass:[NSURL class]]);
 
 	BOOL handled = NO;
 
@@ -296,8 +295,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
  */
 - (void)handleLinkTappedCallback:(NSURL*)url
 {
-	NSAssert([url isKindOfClass:[NSURL class]],
-			 @"We are expecting to receive a non nil url object here.");
+	NSParameterAssert([url isKindOfClass:[NSURL class]]);
 	
 	static NSString* const kTappedUrlParameterName = @"url";
 	static NSString* const kTappedUrlTitleParameterName = @"title";
@@ -412,8 +410,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
  */
 - (NSArray*)componentsFromParameter:(NSString*)parameter
 {
-	NSAssert([parameter isKindOfClass:[NSString class]],
-			 @"We are expecting to receive a non-nil NSString object here.");
+	NSParameterAssert([parameter isKindOfClass:[NSString class]]);
 	
 	NSArray* components = [parameter componentsSeparatedByString:kDefaultCallbackParameterComponentSeparator];
 	NSAssert([components count] == 2,
@@ -435,9 +432,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	   andExecuteBlockForEachParameter:(WPEditorViewCallbackParameterProcessingBlock)block
 							onComplete:(WPEditorViewNoParamsCompletionBlock)onCompleteBlock
 {
-	NSAssert([url isKindOfClass:[NSURL class]],
-			 @"We are expecting to receive a non-nil NSURL object here.");
-	NSAssert(block, @"We are expecting a non-nil block here.");
+	NSParameterAssert([url isKindOfClass:[NSURL class]]);
+	NSParameterAssert(block);
 	
 	NSArray* parameters = [self parametersFromCallbackURL:url];
 	NSAssert([parameters count] == 2,
@@ -466,8 +462,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
  */
 - (NSArray*)parametersFromCallbackURL:(NSURL*)url
 {
-	NSAssert([url isKindOfClass:[NSURL class]],
-			 @"We are expecting to receive a non-nil NSURL object here.");
+	NSParameterAssert([url isKindOfClass:[NSURL class]]);
 	
 	NSArray* parameters = [[url resourceSpecifier] componentsSeparatedByString:kDefaultCallbackParameterSeparator];
 	
@@ -579,8 +574,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)insertLink:(NSString *)url
 			 title:(NSString*)title
 {
-	NSAssert([url isKindOfClass:[NSString class]], @"Expecting a non-nil NSString object here.");
-	NSAssert([title isKindOfClass:[NSString class]], @"Expecting a non-nil NSString object here.");
+	NSParameterAssert([url isKindOfClass:[NSString class]]);
+	NSParameterAssert([title isKindOfClass:[NSString class]]);
 	
 	NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertLink(\"%@\",\"%@\");", url, title];
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
@@ -598,8 +593,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)updateLink:(NSString *)url
 			 title:(NSString*)title
 {
-	NSAssert([url isKindOfClass:[NSString class]], @"Expecting a non-nil NSString object here.");
-	NSAssert([title isKindOfClass:[NSString class]], @"Expecting a non-nil NSString object here.");
+	NSParameterAssert([url isKindOfClass:[NSString class]]);
+	NSParameterAssert([title isKindOfClass:[NSString class]]);
 	
 	NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateLink(\"%@\",\"%@\");", url, title];
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
