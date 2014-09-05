@@ -71,17 +71,17 @@ static const int kBottomLineHeight = 2;
 - (void)touchDragInside:(id)sender
 {
 	[UIView animateWithDuration:kAnimationDurationNormal
-					 animations:^void()
-	 {
-		 [self setAlpha:kHighlightedAlpha];
-	 }];
+					 animations:
+     ^{
+         [self setAlpha:kHighlightedAlpha];
+     }];
 }
 
 - (void)touchDragOutside:(id)sender
 {
 	[UIView animateWithDuration:kAnimationDurationNormal
-					 animations:^void()
-	 {
+					 animations:
+     ^{
 		 [self setAlpha:kNormalAlpha];
 	 }];
 }
