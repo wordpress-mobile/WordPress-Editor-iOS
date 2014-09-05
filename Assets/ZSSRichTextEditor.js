@@ -384,10 +384,10 @@ zss_editor.insertLink = function(url, title) {
 			
 			var el = document.createElement("a");
 			el.setAttribute("href", url);
-			el.innerHTML = title;
 			
             var range = sel.getRangeAt(0).cloneRange();
-            range.surroundContents(el);
+			range.surroundContents(el);
+			el.innerHTML = title;
             sel.removeAllRanges();
             sel.addRange(range);
         }

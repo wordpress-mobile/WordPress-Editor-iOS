@@ -1544,13 +1544,17 @@ typedef enum
 		
 		if (alertView.tag == WPLinkAlertViewTag) {
 			if (buttonIndex == 1) {
-				UITextField *linkURL = [alertView textFieldAtIndex:0];
-				UITextField *linkTitle = [alertView textFieldAtIndex:1];
+				NSString *linkURL = [alertView textFieldAtIndex:0].text;
+				NSString *linkTitle = [alertView textFieldAtIndex:1].text;
+				
+				if ([linkTitle length] == 0) {
+					linkTitle = linkURL;
+				}
 				
 				if (isInsertingNewLink) {
-					[weakSelf insertLink:linkURL.text title:linkTitle.text];
+					[weakSelf insertLink:linkURL title:linkTitle];
 				} else {
-					[weakSelf updateLink:linkURL.text title:linkTitle.text];
+					[weakSelf updateLink:linkURL title:linkTitle];
 				}
 			} else if (buttonIndex == 2) {
 				[weakSelf removeLink];
