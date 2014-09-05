@@ -238,7 +238,7 @@ typedef enum
 		htmlBarButtonItem.accessibilityLabel = NSLocalizedString(@"Display HTML",
 																 @"Accessibility label for display HTML button on formatting toolbar.");
 		
-		CGRect customButtonFrame = CGRectMake(0,
+        CGRect customButtonFrame = CGRectMake(0,
                                               0,
                                               kWPEditorViewControllerToolbarButtonWidth,
                                               kWPEditorViewControllerToolbarButtonHeight);
