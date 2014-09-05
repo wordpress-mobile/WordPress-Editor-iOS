@@ -1090,52 +1090,16 @@ static NSString* const kDefaultBorderColorHex = @"c8c8c8";
 
 - (void)buildToolbar
 {
-    // Parent holding view
 	if (!self.mainToolbarHolder) {
 		[self buildMainToolbarHolder];
 	}
 	
-    // Background Toolbar
-	/*if (!self.backgroundToolbar) {
-		UIToolbar *backgroundToolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0,
-																				   0,
-																				   CGRectGetWidth(self.view.frame),
-																				   44)];
-		backgroundToolbar.barTintColor = [self toolbarBackgroundColor];
-		backgroundToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-		backgroundToolbar.translucent = NO;
-		//backgroundToolbar.layer.borderColor = self.toolbarBorderColor.CGColor;
-		
-		self.backgroundToolbar = backgroundToolbar;
-		
-		[self.mainToolbarHolder addSubview:self.backgroundToolbar];
-	}
-	 */
-	
-    // Scrolling View
     if (!self.toolbarScroll) {
-		CGFloat scrollviewHeight = IS_IPAD ? CGRectGetWidth(self.view.frame) : CGRectGetWidth(self.view.frame) - 44;
-		
-        UIScrollView* toolbarScroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0,
-																			0,
-																			scrollviewHeight,
-																			44)];
-        toolbarScroll.showsHorizontalScrollIndicator = NO;
-		toolbarScroll.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-		
-		[self.mainToolbarHolderContent addSubview:toolbarScroll];
-		self.toolbarScroll = toolbarScroll;
+		[self buildToolbarScroll];
     }
     
-    // Toolbar with icons
     if (!self.leftToolbar) {
-		UIToolbar* leftToolbar = [[UIToolbar alloc] initWithFrame:CGRectZero];
-        leftToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        leftToolbar.barTintColor = [self toolbarBackgroundColor];
-		leftToolbar.translucent = NO;
-		
-		[self.toolbarScroll addSubview:leftToolbar];
-		self.leftToolbar = leftToolbar;
+		[self buildLeftToolbar];
     }
 	
     if (!IS_IPAD) {
@@ -1170,6 +1134,19 @@ static NSString* const kDefaultBorderColorHex = @"c8c8c8";
     self.leftToolbar.items = items;
     self.leftToolbar.frame = CGRectMake(0, 0, toolbarWidth, 44);
     self.toolbarScroll.contentSize = CGSizeMake(self.leftToolbar.frame.size.width, 44);
+}
+
+- (void)buildLeftToolbar
+{
+	NSAssert(!self.leftToolbar, @"This is supposed to be called only once.");
+	
+	UIToolbar* leftToolbar = [[UIToolbar alloc] initWithFrame:CGRectZero];
+	leftToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+	leftToolbar.barTintColor = [self toolbarBackgroundColor];
+	leftToolbar.translucent = NO;
+	
+	[self.toolbarScroll addSubview:leftToolbar];
+	self.leftToolbar = leftToolbar;
 }
 
 - (void)buildMainToolbarHolder
@@ -1251,6 +1228,23 @@ static NSString* const kDefaultBorderColorHex = @"c8c8c8";
     }
 	
     [self.view addSubview:self.editorView];
+}
+
+- (void)buildToolbarScroll
+{
+	NSAssert(!self.toolbarScroll, @"This is supposed to be called only once.");
+	
+	CGFloat scrollviewHeight = IS_IPAD ? CGRectGetWidth(self.view.frame) : CGRectGetWidth(self.view.frame) - 44;
+	
+	UIScrollView* toolbarScroll = [[UIScrollView alloc] initWithFrame:CGRectMake(0,
+																				 0,
+																				 scrollviewHeight,
+																				 44)];
+	toolbarScroll.showsHorizontalScrollIndicator = NO;
+	toolbarScroll.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+	
+	[self.mainToolbarHolderContent addSubview:toolbarScroll];
+	self.toolbarScroll = toolbarScroll;
 }
 
 #pragma mark - Getters and Setters
