@@ -29,8 +29,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 static const CGFloat kWPEditorViewControllerToolbarButtonWidth = 40.0f;
 static const CGFloat kWPEditorViewControllerToolbarButtonHeight = 40.0f;
 static const CGFloat kWPEditorViewControllerToolbarHeight = 40.0f;
-static NSString* const kWPEditorViewControllerDefaultToolbarItemColorHex = @"7c7c7c";
-static NSString* const kWPEditorViewControllerDefaultBorderColorHex = @"c8c8c8";
 
 typedef enum
 {
@@ -156,10 +154,10 @@ typedef enum
 	} else {
 		_editing = YES;
 	}
-	
+    
 	_toolbarBackgroundColor = [UIColor whiteColor];
-	_toolbarBorderColor = [UIColor colorWithHexString:kWPEditorViewControllerDefaultBorderColorHex];
-	_toolbarItemTintColor = [UIColor colorWithHexString:kWPEditorViewControllerDefaultToolbarItemColorHex];
+    _toolbarBorderColor = [WPStyleGuide readGrey];
+    _toolbarItemTintColor = [WPStyleGuide textFieldPlaceholderGrey];
 	_toolbarItemSelectedTintColor = [WPStyleGuide baseDarkerBlue];
 }
 
