@@ -16,6 +16,11 @@
 #import "WPInsetTextField.h"
 #import "ZSSBarButtonItem.h"
 
+// Keep an eye on this constant on different iOS versions
+static int kToolbarFirstItemExtraPadding = 6;
+static int kToolbarItemPadding = 10;
+static int kiPodToolbarMarginWidth = 16;
+
 CGFloat const EPVCTextfieldHeight = 44.0f;
 CGFloat const EPVCStandardOffset = 10.0;
 NSInteger const WPImageAlertViewTag = 91;
@@ -279,8 +284,6 @@ typedef enum
 		
 		[rightToolbarHolder addSubview:toolbar];
 		
-		static int kiPodToolbarMarginWidth = 16;
-		
 		UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
 																						   target:nil
 																						   action:nil];
@@ -359,10 +362,10 @@ typedef enum
 	return !(self.enabledToolbarItems & ZSSRichTextEditorToolbarNone);
 }
 
-- (NSArray *)itemsForToolbar
+- (NSMutableArray *)itemsForToolbar
 {
     NSMutableArray *items = [[NSMutableArray alloc] init];
-    
+	
     if ([self hasSomeEnabledToolbarItems]) {
 		if ([self canShowInsertImageBarButton]) {
 			[items addObject:[self insertImageBarButton]];
@@ -493,7 +496,7 @@ typedef enum
 		}
 	}
 		
-    return [NSArray arrayWithArray:items];
+	return items;
 }
 
 #pragma mark - Toolbar: helper methods
@@ -694,7 +697,7 @@ typedef enum
 					 action:selector
 		   forControlEvents:UIControlEventTouchUpInside];
 	barButtonItem.customView = customButton;
-
+	
 	return barButtonItem;
 }
 
@@ -1138,27 +1141,34 @@ typedef enum
 	[self.editorView setInputAccessoryView:self.mainToolbarHolder];
     
     // Check to see if we have any toolbar items, if not, add them all
-    NSArray *items = [self itemsForToolbar];
+    NSMutableArray *items = [self itemsForToolbar];
     if (items.count == 0 && !(_enabledToolbarItems & ZSSRichTextEditorToolbarNone)) {
         _enabledToolbarItems = ZSSRichTextEditorToolbarAll;
         items = [self itemsForToolbar];
-    }
-    
-    // get the width before we add custom buttons
-    CGFloat toolbarWidth = items.count == 0 ? 0.0f : (CGFloat)(items.count * 55);
-    
+	}
+	
+	CGFloat toolbarWidth = items.count == 0 ? 0.0f : kToolbarFirstItemExtraPadding + (CGFloat)(items.count * kWPEditorViewControllerToolbarButtonWidth);
+	
     if (self.customBarButtonItems != nil)
     {
-        items = [items arrayByAddingObjectsFromArray:self.customBarButtonItems];
+		[items addObjectsFromArray:self.customBarButtonItems];
 		
         for(UIBarButtonItem *buttonItem in self.customBarButtonItems)
         {
             toolbarWidth += buttonItem.customView.frame.size.width + 11.0f;
         }
     }
-    for (UIBarButtonItem *item in items) {
-        item.tintColor = [self toolbarItemTintColor];
-    }
+	
+	UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+																					   target:nil
+																					   action:nil];
+	negativeSeparator.width = -kToolbarItemPadding;
+	
+	// This code adds a negative separator between all the toolbar buttons
+	//
+	for (NSInteger i = [items count]; i >= 0; i--) {
+		[items insertObject:negativeSeparator atIndex:i];
+	}
 	
     self.leftToolbar.items = items;
     self.leftToolbar.frame = CGRectMake(0,
@@ -1780,7 +1790,6 @@ typedef enum
     UITextField *alt1 = [self.alertView textFieldAtIndex:1];
     alt1.secureTextEntry = NO;
     UIView *test = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
-    test.backgroundColor = [UIColor redColor];
     alt1.rightView = test;
     alt1.placeholder = NSLocalizedString(@"Alt", nil);
     alt1.clearButtonMode = UITextFieldViewModeAlways;
