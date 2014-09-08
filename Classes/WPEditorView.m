@@ -471,6 +471,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 #pragma mark - URL & HTML utilities
 
+/**
+ *  @brief      Adds slashes to the specified HTML string, to prevent injections when calling JS
+ *              code.
+ *
+ *  @param      html        The HTML string to add slashes to.  Cannot be nil.
+ *
+ *  @returns    The HTML string with the added slashes.
+ */
 - (NSString *)addSlashes:(NSString *)html
 {
     html = [html stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
