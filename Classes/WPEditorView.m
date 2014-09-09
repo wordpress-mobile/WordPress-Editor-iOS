@@ -225,9 +225,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	BOOL handled = NO;
 
 	NSString *scheme = [url scheme];
-	
+
 	NSLog(@"WebEditor callback received: %@", url);
-	
+
 	if ([self isUserTriggeredChangeScheme:scheme]) {
 		[self refreshPlaceholder];
 
@@ -236,7 +236,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 		}
 
 		handled = YES;
-	} else if ([self isFocusInScheme:scheme]){
+    } else if ([self isSubscribedKeyPressedScheme:scheme]) {
+
+        if ([self.delegate respondsToSelector:@selector(editorView:subscribedKeyPressed:)]) {
+
+            int keyCode = [[url resourceSpecifier] intValue];
+            [self.delegate editorView:self subscribedKeyPressed:keyCode];
+        }
+
+        handled = YES;
+    } else if ([self isFocusInScheme:scheme]){
 		self.editing = YES;
 
 		[self refreshPlaceholder];
@@ -324,6 +333,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	static NSString* const kCallbackScheme = @"callback-user-triggered-change";
 	
 	return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isSubscribedKeyPressedScheme:(NSString*)scheme
+{
+    static NSString* const kCallbackScheme = @"callback-subscribed-key-pressed";
+
+    return [scheme isEqualToString:kCallbackScheme];
 }
 
 - (void)processStyles:(NSString *)styles

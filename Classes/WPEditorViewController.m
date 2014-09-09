@@ -1788,6 +1788,12 @@ typedef enum
 	[self selectToolbarItemsForStyles:styles];
 }
 
+- (void)editorView:(WPEditorView*)editorView subscribedKeyPressed:(int)keyCode
+{
+    if ([self.delegate respondsToSelector:@selector(editorDidStartMention:)]) {
+        [self.delegate editorDidStartMention:self];
+    }
+}
 
 #ifdef DEBUG
 -      (void)webView:(UIWebView *)webView

@@ -22,6 +22,8 @@ WPEditorViewControllerMode;
 
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController;
 
+- (void)editorDidStartMention:(WPEditorViewController *)editorController;
+
 @end
 
 @class ZSSBarButtonItem;

@@ -74,6 +74,13 @@ zss_editor.init = function() {
 		zss_editor.callback("callback-user-triggered-change");
 	});
 
+	editor.bind('keypress', function(e) {
+		var subscribedKeyCodes = [ 64 /* @ */ ];
+		if ( -1 !== subscribedKeyCodes.indexOf( e.keyCode ) ) {
+			zss_editor.callback("callback-subscribed-key-pressed", e.keyCode);
+		}
+	});
+
 }//end
 
 zss_editor.log = function(msg) {
