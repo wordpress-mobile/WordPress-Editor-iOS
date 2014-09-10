@@ -1930,8 +1930,6 @@ typedef enum
 		
 		[self enableToolbarItems:NO
 		  shouldShowSourceButton:YES];
-		
-		[self refreshUI];
 	}
 }
     
@@ -1943,13 +1941,6 @@ typedef enum
         }
     }
     return YES;
-}
-
-- (void)textFieldDidEndEditing:(UITextField *)textField
-{
-	if (textField == self.titleTextField) {
-		[self refreshUI];
-	}
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
