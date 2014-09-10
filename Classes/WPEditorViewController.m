@@ -79,6 +79,9 @@ typedef enum
 @property (nonatomic, strong) NSMutableArray *customBarButtonItems;
 @property (nonatomic) BOOL didFinishLoadingEditor;
 
+#pragma mark - Properties: First Setup On View Will Appear
+@property (nonatomic, assign, readwrite) BOOL isFirstSetupComplete;
+
 #pragma mark - Properties: Editability
 @property (nonatomic, assign, readwrite, getter=isEditingEnabled) BOOL editingEnabled;
 @property (nonatomic, assign, readwrite, getter=isEditing) BOOL editing;
@@ -167,8 +170,13 @@ typedef enum
 {
     [super viewDidLoad];
 	
+    // It's important to set this up here, in case the main view of the VC is unloaded due to low
+    // memory (it can happen if the view is hidden).
+    //
+    self.isFirstSetupComplete = NO;
     self.didFinishLoadingEditor = NO;
-	self.enabledToolbarItems = [self defaultToolbarItems];
+    self.enabledToolbarItems = [self defaultToolbarItems];
+    self.view.backgroundColor = [UIColor whiteColor];
 	
     [self buildTextViews];
     [self buildToolbar];
@@ -176,24 +184,26 @@ typedef enum
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    [self.navigationController setToolbarHidden:YES animated:YES];
     [super viewWillAppear:animated];
 	
-    self.view.backgroundColor = [UIColor whiteColor];
+    if (!self.isFirstSetupComplete) {
+        self.isFirstSetupComplete = YES;
 
-    // When restoring state, the navigationController is nil when the view loads,
-    // so configure its appearance here instead.
-    self.navigationController.navigationBar.translucent = NO;
-    
-    for (UIView *view in self.navigationController.toolbar.subviews) {
-        [view setExclusiveTouch:YES];
+        // When restoring state, the navigationController is nil when the view loads,
+        // so configure its appearance here instead.
+        self.navigationController.navigationBar.translucent = NO;
+        
+        for (UIView *view in self.navigationController.toolbar.subviews) {
+            [view setExclusiveTouch:YES];
+        }
+        
+        if (self.isEditing) {
+            [self startEditing];
+        }
+        
+        [self refreshUI];
     }
-	
-	if (self.isEditing) {
-		[self startEditing];
-	}
-	
-    [self refreshUI];
+    
     [self.navigationController setToolbarHidden:YES animated:animated];
 }
 
@@ -1387,6 +1397,8 @@ typedef enum
 	{
 		[self.editorView disableEditing];
 	}
+    
+    [self.titleTextField endEditing:YES];
 }
 
 - (void)startEditing
@@ -1399,9 +1411,7 @@ typedef enum
 	if (self.didFinishLoadingEditor)
 	{
 		[self enableEditing];
-		
 		[self.titleTextField becomeFirstResponder];
-
 		[self tellOurDelegateEditingDidBegin];
 	}
 }
@@ -1411,19 +1421,10 @@ typedef enum
 	self.editing = NO;
 	
 	[self disableEditing];
-    [self dismissKeyboard];
-    [self.view endEditing:YES];
-	
 	[self tellOurDelegateEditingDidEnd];
 }
 
 #pragma mark - Editor Interaction
-
-- (void)dismissKeyboard
-{
-	[self.editorView resignFirstResponder];
-    [self.view endEditing:YES];
-}
 
 - (void)showHTMLSource:(UIBarButtonItem *)barButtonItem
 {	
