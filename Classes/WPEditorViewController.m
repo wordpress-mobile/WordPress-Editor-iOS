@@ -82,10 +82,11 @@ typedef enum
 #pragma mark - Properties: First Setup On View Will Appear
 @property (nonatomic, assign, readwrite) BOOL isFirstSetupComplete;
 
-#pragma mark - Properties: Editability
+#pragma mark - Properties: Editing
 @property (nonatomic, assign, readwrite, getter=isEditingEnabled) BOOL editingEnabled;
 @property (nonatomic, assign, readwrite, getter=isEditing) BOOL editing;
 @property (nonatomic, assign, readwrite) BOOL wasEditing;
+@property (nonatomic, assign, readwrite) BOOL wasFocusOnEditorView;
 
 #pragma mark - Properties: Editor View
 @property (nonatomic, strong, readwrite) WPEditorView *editorView;
@@ -202,9 +203,21 @@ typedef enum
         }
         
         [self refreshUI];
+    } else {
+        [self restoreEditSelection];
     }
     
     [self.navigationController setToolbarHidden:YES animated:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    // It's important to save the edit selection before the view disappears, because as soon as it
+    // disappears the first responder is changed.
+    //
+    [self saveEditSelection];
 }
 
 #pragma mark - Default toolbar items
@@ -1399,6 +1412,38 @@ typedef enum
 	}
     
     [self.titleTextField endEditing:YES];
+}
+
+/**
+ *  @brief      Restored the previously saved edit selection.
+ *  @details    Will only really do anything if editing is enabled.
+ */
+- (void)restoreEditSelection
+{
+    if (self.isEditing) {
+        if (self.wasFocusOnEditorView) {
+            [self.editorView restoreSelection];
+        } else {
+            [self.titleTextField becomeFirstResponder];
+        }
+    }
+}
+
+/**
+ *  @brief      Saves the current edit selection, if any.
+ */
+- (void)saveEditSelection
+{
+    if (self.isEditing) {
+        if ([self.titleTextField isFirstResponder]) {
+            self.wasFocusOnEditorView = NO;
+        } else {
+            self.wasFocusOnEditorView = YES;
+            [self.editorView saveSelection];
+        }
+    } else {
+        self.wasFocusOnEditorView = NO;
+    }
 }
 
 - (void)startEditing
