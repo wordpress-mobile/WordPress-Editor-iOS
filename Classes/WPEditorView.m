@@ -177,7 +177,7 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 	
 	if (shouldHidePlaceholer) {
 		self.showingPlaceholder = NO;
-		[self setHtml:@""];
+        [self setHtml:@"" refreshPlaceholder:NO];
 	} else {
 		BOOL shouldShowPlaceholder = (!self.isShowingPlaceholder && self.resourcesLoaded && !self.isEditing
 									  && ([[self getHTML] length] == 0
@@ -185,7 +185,7 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 		
 		if (shouldShowPlaceholder) {
 			self.showingPlaceholder = YES;
-			[self setHtml:self.placeholderHTMLString];
+			[self setHtml:self.placeholderHTMLString refreshPlaceholder:NO];
 		}
 	}
 }
@@ -637,6 +637,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setHtml:(NSString *)html
 {
+    [self setHtml:html refreshPlaceholder:YES];
+}
+
+-    (void)setHtml:(NSString *)html
+refreshPlaceholder:(BOOL)refreshPlaceholder
+{
 	if (!self.resourcesLoaded) {
 		self.preloadedHTML = html;
 	} else {
@@ -645,7 +651,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 		NSString *trigger = [NSString stringWithFormat:@"zss_editor.setHTML(\"%@\");", cleanedHTML];
 		[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 		
-		if ([html length] == 0) {
+		if (refreshPlaceholder && [html length] == 0) {
 			[self refreshPlaceholder];
 		}
 	}
@@ -661,7 +667,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (NSString *)getHTML
 {
-    NSString *html = [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.getHTML();"];
+    NSString *html = nil;
+    
+    if (!self.isShowingPlaceholder) {
+        html = [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.getHTML();"];
+    }
+    
 	return html;
 }
 
