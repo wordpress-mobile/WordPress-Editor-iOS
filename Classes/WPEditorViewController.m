@@ -1554,6 +1554,13 @@ typedef enum
     [self.editorView focus];
 }
 
+- (void)insertText:(NSString *)text
+{
+    [self.editorView insertText:text];
+    [self.editorView becomeFirstResponder];
+    [self.editorView focus];
+}
+
 - (void)updateLink:(NSString *)url
 {
 	[self.editorView updateLink:url];

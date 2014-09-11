@@ -137,6 +137,7 @@ stylesForCurrentSelection:(NSArray*)styles;
  */
 - (void)insertLink:(NSString *)url;
 - (void)insertLinkWithText:(NSString *)url text:(NSString *)text;
+- (void)insertText:(NSString *)text;
 
 /**
  *	@brief		Updates the link at the last saved selection.

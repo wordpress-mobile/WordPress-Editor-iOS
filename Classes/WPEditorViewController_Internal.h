@@ -96,6 +96,7 @@ typedef NS_ENUM(NSInteger, ZSSRichTextEditorToolbar) {
  */
 - (void)insertLink:(NSString *)url;
 - (void)insertLinkWithText:(NSString *)url text:(NSString *)text;
+- (void)insertText:(NSString *)text;
 
 /**
  *  Dismisses the current AlertView

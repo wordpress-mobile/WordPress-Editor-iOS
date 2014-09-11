@@ -77,6 +77,7 @@ zss_editor.init = function() {
         }
                 
         if (isAtStartOfTerm) {
+                e.preventDefault(); // consume the key
                 zss_editor.backuprange();
                 zss_editor.callback("callback-term-started", e.keyCode);
         } else {
@@ -399,6 +400,12 @@ zss_editor.insertLink = function(url, text) {
         zss_editor.insertHTML(html);
 	}
 	zss_editor.sendEnabledStyles();
+}
+
+zss_editor.insertText = function(text) {
+    zss_editor.restorerange();
+    zss_editor.insertHTML(text);
+    zss_editor.sendEnabledStyles();
 }
 
 zss_editor.updateLink = function(url) {

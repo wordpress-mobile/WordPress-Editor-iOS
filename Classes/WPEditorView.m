@@ -451,6 +451,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
 }
 
+- (void)insertText:(NSString *)text
+{
+    NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertText(\"%@\");", text];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
+}
+
 - (void)updateLink:(NSString *)url
 {
     NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateLink(\"%@\");", url];
