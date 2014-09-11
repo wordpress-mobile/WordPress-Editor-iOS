@@ -173,9 +173,9 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
  */
 - (void)refreshPlaceholder:(NSString*)placeholder
 {
-	BOOL shouldHidePlacehodler = self.isShowingPlaceholder && self.isEditing;
+	BOOL shouldHidePlaceholder = self.isShowingPlaceholder && self.isEditing;
 	
-	if (shouldHidePlacehodler) {
+	if (shouldHidePlaceholder) {
 		self.showingPlaceholder = NO;
         [self setHtml:@"" refreshPlaceholder:NO];
 	} else {
