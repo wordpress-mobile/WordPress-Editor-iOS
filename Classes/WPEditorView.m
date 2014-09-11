@@ -237,9 +237,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 		handled = YES;
     } else if ([self isTermStartedScheme:scheme]) {
-
-        NSLog( @"in handleWebViewCallbackURL, isTermStartedScheme" );
-        
         if ([self.delegate respondsToSelector:@selector(editorView:termStarted:)]) {
 
             int keyCode = [[url resourceSpecifier] intValue];
