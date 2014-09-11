@@ -69,16 +69,20 @@ zss_editor.init = function() {
 		zss_editor.callback("callback-focus-out");
 	});
 	
-	editor.bind('keyup', function(e) {
-		zss_editor.sendEnabledStyles(e);
-		zss_editor.callback("callback-user-triggered-change");
-	});
-
 	editor.bind('keypress', function(e) {
-		var subscribedKeyCodes = [ 64 /* @ */ ];
-		if ( -1 !== subscribedKeyCodes.indexOf( e.keyCode ) ) {
-			zss_editor.callback("callback-subscribed-key-pressed", e.keyCode);
-		}
+        var isAtStartOfTerm = false;
+        var startOfTermKeyCodes = [ 64 /* @ */ ];
+        if ( -1 !== startOfTermKeyCodes.indexOf( e.keyCode ) ) {
+                isAtStartOfTerm = zss_editor.isAtStartOfWord();               
+        }
+                
+        if (isAtStartOfTerm) {
+                zss_editor.backuprange();
+                zss_editor.callback("callback-term-started", e.keyCode);
+        } else {
+                zss_editor.sendEnabledStyles(e);
+                zss_editor.callback("callback-user-triggered-change");
+        }
 	});
 
 }//end
@@ -370,8 +374,9 @@ zss_editor.setBackgroundColor = function(color) {
 
 // Needs addClass method
 
-zss_editor.insertLink = function(url) {
+// note: insertLink will use the text argument, if given, only if no text is currently selected
 
+zss_editor.insertLink = function(url, text) {
     zss_editor.restorerange();
 	
     var sel = document.getSelection();
@@ -386,6 +391,12 @@ zss_editor.insertLink = function(url) {
             sel.removeAllRanges();
             sel.addRange(range);
         }
+    } else {
+        if ('undefined' === typeof(text)) {
+            text = url;
+        }
+        var html = '<a href="' + url + '">' + text + '</a> ';
+        zss_editor.insertHTML(html);
 	}
 	zss_editor.sendEnabledStyles();
 }
@@ -734,4 +745,29 @@ zss_editor.enableEditing = function () {
 
 zss_editor.disableEditing = function () {
 	document.body.contentEditable = false;
+}
+
+zss_editor.isAtStartOfWord = function () {
+    var atStartOfWord = false;
+    
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0);
+    
+    if ( 0 == range.startOffset) {
+        atStartOfWord = true;
+    } else {
+        // check for a nbsp or a traditional space before the caret
+        var rangeClone = range.cloneRange();
+        rangeClone.setStart( range.startContainer, range.startOffset - 1 );
+        rangeClone.setEnd( range.startContainer, range.startOffset );
+        var rangeContents = rangeClone.toString();
+        if (0 < rangeContents.length) {
+            if (160 == rangeContents.charCodeAt(0)) { // nbsp
+                atStartOfWord = true;
+            } else if (32 == rangeContents.charCodeAt(0)) { // traditional space
+                atStartOfWord = true;
+            }
+        }
+    }
+    return atStartOfWord;
 }

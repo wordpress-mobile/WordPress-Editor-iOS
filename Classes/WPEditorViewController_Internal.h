@@ -95,6 +95,7 @@ typedef NS_ENUM(NSInteger, ZSSRichTextEditorToolbar) {
  *  @param title The title for the link
  */
 - (void)insertLink:(NSString *)url;
+- (void)insertLinkWithText:(NSString *)url text:(NSString *)text;
 
 /**
  *  Dismisses the current AlertView

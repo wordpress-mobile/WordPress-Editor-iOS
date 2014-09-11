@@ -52,7 +52,7 @@
 		linkTapped:(NSURL*)url;
 
 /**
- *	@brief		Received when the user presses a subscribed key in the editor.
+ *	@brief		Received when the user starts creating a term key in the editor.
  *
  *	@param		editorView		The editor view.
  *	@param		keyCode         The keyCode of the pressed key.
@@ -60,7 +60,8 @@
  *	@return		YES if the keyCode was handled by the receiver and default handler should be supressed,
  *				NO if it wasn't.
  */
-- (BOOL)editorView:(WPEditorView*)editorView subscribedKeyPressed:(int)keyCode;
+- (BOOL)editorView:(WPEditorView*)editorView
+       termStarted:(int)keyCode;
 
 /**
  *	@brief		Received when the selection is changed.
@@ -135,6 +136,7 @@ stylesForCurrentSelection:(NSArray*)styles;
  *	@param		url		The url that will open when the link is clicked.
  */
 - (void)insertLink:(NSString *)url;
+- (void)insertLinkWithText:(NSString *)url text:(NSString *)text;
 
 /**
  *	@brief		Updates the link at the last saved selection.

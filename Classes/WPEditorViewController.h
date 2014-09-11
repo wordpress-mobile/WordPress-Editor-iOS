@@ -22,7 +22,7 @@ WPEditorViewControllerMode;
 
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController;
 
-- (void)editorDidStartMention:(WPEditorViewController *)editorController;
+- (void)editorDidStartTerm:(WPEditorViewController *)editorController keyCode:(int)keyCode;
 
 @end
 

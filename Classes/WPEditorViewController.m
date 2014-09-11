@@ -1547,6 +1547,13 @@ typedef enum
     [self.editorView insertLink:url];
 }
 
+- (void)insertLinkWithText:(NSString *)url text:(NSString *)text
+{
+    [self.editorView insertLinkWithText:url text:text];
+    [self.editorView becomeFirstResponder];
+    [self.editorView focus];
+}
+
 - (void)updateLink:(NSString *)url
 {
 	[self.editorView updateLink:url];
@@ -1788,10 +1795,10 @@ typedef enum
 	[self selectToolbarItemsForStyles:styles];
 }
 
-- (void)editorView:(WPEditorView*)editorView subscribedKeyPressed:(int)keyCode
+- (void)editorView:(WPEditorView*)editorView termStarted:(int)keyCode
 {
-    if ([self.delegate respondsToSelector:@selector(editorDidStartMention:)]) {
-        [self.delegate editorDidStartMention:self];
+    if ([self.delegate respondsToSelector: @selector(editorDidStartTerm:keyCode:)]) {
+        [self.delegate editorDidStartTerm:self keyCode:keyCode];
     }
 }
 

@@ -236,12 +236,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 		}
 
 		handled = YES;
-    } else if ([self isSubscribedKeyPressedScheme:scheme]) {
+    } else if ([self isTermStartedScheme:scheme]) {
 
-        if ([self.delegate respondsToSelector:@selector(editorView:subscribedKeyPressed:)]) {
+        NSLog( @"in handleWebViewCallbackURL, isTermStartedScheme" );
+        
+        if ([self.delegate respondsToSelector:@selector(editorView:termStarted:)]) {
 
             int keyCode = [[url resourceSpecifier] intValue];
-            [self.delegate editorView:self subscribedKeyPressed:keyCode];
+            [self.delegate editorView:self termStarted:keyCode];
         }
 
         handled = YES;
@@ -335,9 +337,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	return [scheme isEqualToString:kCallbackScheme];
 }
 
-- (BOOL)isSubscribedKeyPressedScheme:(NSString*)scheme
+- (BOOL)isTermStartedScheme:(NSString*)scheme
 {
-    static NSString* const kCallbackScheme = @"callback-subscribed-key-pressed";
+    static NSString* const kCallbackScheme = @"callback-term-started";
 
     return [scheme isEqualToString:kCallbackScheme];
 }
@@ -437,6 +439,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertLink(\"%@\");", url];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 	
+    if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
+        [self.delegate editorTextDidChange:self];
+    }
+}
+
+- (void)insertLinkWithText:(NSString *)url text:(NSString *)text
+{
+    NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertLink(\"%@\",\"%@\");", url, text];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+
     if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
         [self.delegate editorTextDidChange:self];
     }
