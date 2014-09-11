@@ -173,9 +173,9 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
  */
 - (void)refreshPlaceholder:(NSString*)placeholder
 {
-	BOOL shouldHidePlaceholer = self.isShowingPlaceholder && self.isEditing;
+	BOOL shouldHidePlacehodler = self.isShowingPlaceholder && self.isEditing;
 	
-	if (shouldHidePlaceholer) {
+	if (shouldHidePlacehodler) {
 		self.showingPlaceholder = NO;
         [self setHtml:@"" refreshPlaceholder:NO];
 	} else {
@@ -651,7 +651,7 @@ refreshPlaceholder:(BOOL)refreshPlaceholder
 		NSString *trigger = [NSString stringWithFormat:@"zss_editor.setHTML(\"%@\");", cleanedHTML];
 		[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 		
-		if (refreshPlaceholder && [html length] == 0) {
+		if (refreshPlaceholder) {
 			[self refreshPlaceholder];
 		}
 	}
