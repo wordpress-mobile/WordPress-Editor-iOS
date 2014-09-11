@@ -71,7 +71,6 @@ typedef enum
 @interface WPEditorViewController () <HRColorPickerViewControllerDelegate, UIAlertViewDelegate, UITextFieldDelegate, WPEditorViewDelegate>
 
 @property (nonatomic, strong) NSString *htmlString;
-@property (nonatomic, strong) NSString *editorPlaceholderText;
 @property (nonatomic, strong) NSArray *editorItemsEnabled;
 @property (nonatomic, strong) UIAlertView *alertView;
 @property (nonatomic, strong) NSString *selectedImageURL;
@@ -193,7 +192,6 @@ typedef enum
 		[self startEditing];
 	}
 	
-    [self refreshUI];
     [self.navigationController setToolbarHidden:YES animated:animated];
 }
 
@@ -1221,11 +1219,6 @@ typedef enum
 
 - (void)buildTextViews
 {
-    if (!self.editorPlaceholderText) {
-        NSString *placeholderText = NSLocalizedString(@"Write your story here ...", @"Placeholder for the main body text.");
-        self.editorPlaceholderText = [NSString stringWithFormat:@"<div style=\"color:#A1BCCD;\">%@<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div>", placeholderText];
-    }
-    
     CGFloat viewWidth = CGRectGetWidth(self.view.frame);
     UIViewAutoresizing mask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     CGRect frame = CGRectMake(0.0f, 0.0f, viewWidth, EPVCTextfieldHeight);
@@ -1314,7 +1307,6 @@ typedef enum
 - (void)setBodyText:(NSString*)bodyText
 {
     [self.editorView setHtml:bodyText];
-    [self refreshUI];
 }
 
 #pragma mark - Actions
@@ -1327,18 +1319,6 @@ typedef enum
     [WPAnalytics track:WPAnalyticsStatEditorTappedImage];
 }
 
-#pragma mark - UI Refreshing
-
-- (void)refreshUI
-{
-    if (self.didFinishLoadingEditor) {
-		
-		if (!self.isEditing && [self isBodyTextEmpty]) {
-			[self.editorView setHtml:self.editorPlaceholderText];
-		}
-    }
-}
-
 #pragma mark - Editor and Misc Methods
 
 - (BOOL)isBodyTextEmpty
@@ -1348,14 +1328,6 @@ typedef enum
        || [[self.bodyText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""]
        || [[self.bodyText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@"<br>"]
        || [[self.bodyText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@"<br />"]) {
-        return YES;
-    }
-    return NO;
-}
-
-- (BOOL)isEditorPlaceholderTextVisible
-{
-    if([[self.bodyText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:self.editorPlaceholderText]) {
         return YES;
     }
     return NO;
@@ -1929,8 +1901,6 @@ typedef enum
 		
 		[self enableToolbarItems:NO
 		  shouldShowSourceButton:YES];
-		
-		[self refreshUI];
 	}
 }
     
@@ -1942,13 +1912,6 @@ typedef enum
         }
     }
     return YES;
-}
-
-- (void)textFieldDidEndEditing:(UITextField *)textField
-{
-	if (textField == self.titleTextField) {
-		[self refreshUI];
-	}
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -1978,8 +1941,6 @@ typedef enum
 	} else {
 		[self.editorView disableEditing];
 	}
-	
-    [self refreshUI];
 }
 
 - (void)editorView:(WPEditorView*)editorView
