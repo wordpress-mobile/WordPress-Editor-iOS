@@ -70,16 +70,16 @@ zss_editor.init = function() {
 	});
 	
 	editor.bind('keypress', function(e) {
-        var isAtStartOfTerm = false;
-        var startOfTermKeyCodes = [ 64 /* @ */ ];
-        if ( -1 !== startOfTermKeyCodes.indexOf( e.keyCode ) ) {
-                isAtStartOfTerm = zss_editor.isAtStartOfWord();               
+        if ('undefined' === typeof zss_editor.trappedKeyCodes) {
+                zss_editor.trappedKeyCodes = [];
         }
-                
-        if (isAtStartOfTerm) {
-                e.preventDefault(); // consume the key
+
+        if ( -1 !== zss_editor.trappedKeyCodes.indexOf( e.keyCode ) ) {
+                var isAtStartOfWord = zss_editor.isAtStartOfWord();
+                e.preventDefault(); // trap (consume) the key before it is added to the editor
                 zss_editor.backuprange();
-                zss_editor.callback("callback-term-started", e.keyCode);
+                var callbackPath = "//data?keycode=" + e.keyCode + "&atstartofword=" + isAtStartOfWord;
+                zss_editor.callback("callback-trapped-key-pressed", callbackPath);
         } else {
                 zss_editor.sendEnabledStyles(e);
                 zss_editor.callback("callback-user-triggered-change");
@@ -304,6 +304,14 @@ zss_editor.setParagraph = function() {
 	}
 	
 	zss_editor.sendEnabledStyles();
+}
+
+zss_editor.addTrappedKeyCode = function(keyCode) {
+    if ('undefined' === typeof zss_editor.trappedKeyCodes) {
+        zss_editor.trappedKeyCodes = [];
+    }
+    
+    zss_editor.trappedKeyCodes.push(keyCode);
 }
 
 zss_editor.undo = function() {

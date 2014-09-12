@@ -1561,6 +1561,11 @@ typedef enum
     [self.editorView focus];
 }
 
+- (void)addTrappedKeyCode:(int)keyCode
+{
+    [self.editorView addTrappedKeyCode:keyCode];
+}
+
 - (void)updateLink:(NSString *)url
 {
 	[self.editorView updateLink:url];
@@ -1772,6 +1777,10 @@ typedef enum
 	}
 	
     [self refreshUI];
+    
+    if ([self.delegate respondsToSelector: @selector(editorDidFinishLoadingDOM:)]) {
+        [self.delegate editorDidFinishLoadingDOM:self];
+    }
 }
 
 - (void)editorView:(WPEditorView*)editorView
@@ -1802,10 +1811,10 @@ typedef enum
 	[self selectToolbarItemsForStyles:styles];
 }
 
-- (void)editorView:(WPEditorView*)editorView termStarted:(int)keyCode
+- (void)editorView:(WPEditorView*)editorView trappedKeyPressed:(int)keyCode atStartOfWord:(BOOL)atStartOfWord
 {
-    if ([self.delegate respondsToSelector: @selector(editorDidStartTerm:keyCode:)]) {
-        [self.delegate editorDidStartTerm:self keyCode:keyCode];
+    if ([self.delegate respondsToSelector: @selector(editorTrappedKeyPressed:keyCode:atStartOfWord:)]) {
+        [self.delegate editorTrappedKeyPressed:self keyCode:keyCode atStartOfWord:atStartOfWord];
     }
 }
 

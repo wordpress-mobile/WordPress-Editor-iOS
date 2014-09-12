@@ -236,11 +236,32 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 		}
 
 		handled = YES;
-    } else if ([self isTermStartedScheme:scheme]) {
-        if ([self.delegate respondsToSelector:@selector(editorView:termStarted:)]) {
+    } else if ([self isTrappedKeyPressedScheme:scheme]) {
+        if ([self.delegate respondsToSelector:@selector(editorView:trappedKeyPressed:atStartOfWord:)]) {
 
-            int keyCode = [[url resourceSpecifier] intValue];
-            [self.delegate editorView:self termStarted:keyCode];
+            // extract the keycode and the atstartofword from the URL
+            // URL is in the format callback-trapped-key-pressed://data?keycode=64&atstartofword=false
+            
+            NSString *queryString = [url query];
+            
+            // Split simple query
+            NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+            for (NSString *param in [[url query] componentsSeparatedByString:@"&"]) {
+                NSArray *paramPair = [param componentsSeparatedByString:@"="];
+                if ([paramPair count] < 2) continue;
+                [params setObject:[paramPair objectAtIndex:1] forKey:[paramPair objectAtIndex:0]];
+            }
+            
+            // Sanity check
+            id keyCode = [params objectForKey:@"keycode"];
+            id atStartOfWord = [params objectForKey:@"atstartofword"];
+            
+            if ( keyCode && atStartOfWord ) {
+                int keyCodeValue = [keyCode intValue];
+                BOOL atStartOfWordValue = ([atStartOfWord caseInsensitiveCompare:@"true"] == NSOrderedSame);
+                
+                [self.delegate editorView:self trappedKeyPressed:keyCodeValue atStartOfWord:atStartOfWordValue];                
+            }
         }
 
         handled = YES;
@@ -334,9 +355,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	return [scheme isEqualToString:kCallbackScheme];
 }
 
-- (BOOL)isTermStartedScheme:(NSString*)scheme
+- (BOOL)isTrappedKeyPressedScheme:(NSString*)scheme
 {
-    static NSString* const kCallbackScheme = @"callback-term-started";
+    static NSString* const kCallbackScheme = @"callback-trapped-key-pressed";
 
     return [scheme isEqualToString:kCallbackScheme];
 }
@@ -459,6 +480,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
         [self.delegate editorTextDidChange:self];
     }
+}
+
+- (void)addTrappedKeyCode:(int)keyCode
+{
+    NSString *trigger = [NSString stringWithFormat:@"zss_editor.addTrappedKeyCode(%d);", keyCode];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
 - (void)updateLink:(NSString *)url

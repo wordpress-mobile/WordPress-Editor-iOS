@@ -108,4 +108,9 @@ typedef NS_ENUM(NSInteger, ZSSRichTextEditorToolbar) {
  */
 - (void)addCustomToolbarItemWithButton:(UIButton*)button;
 
+/**
+ * Add a keycode to be trapped
+ */
+- (void)addTrappedKeyCode:(int)keyCode;
+
 @end

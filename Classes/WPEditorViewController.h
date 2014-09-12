@@ -22,7 +22,9 @@ WPEditorViewControllerMode;
 
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController;
 
-- (void)editorDidStartTerm:(WPEditorViewController *)editorController keyCode:(int)keyCode;
+- (void)editorDidFinishLoadingDOM:(WPEditorViewController *)editorController;
+
+- (void)editorTrappedKeyPressed:(WPEditorViewController *)editorController keyCode:(int)keyCode atStartOfWord:(BOOL)atStartOfWord;
 
 @end
 
