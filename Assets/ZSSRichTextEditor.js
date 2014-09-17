@@ -74,10 +74,19 @@ zss_editor.init = function() {
 		zss_editor.callback("callback-focus-out");
 	});
 	
-	editor.bind('keypress', function(e) {
-		zss_editor.sendEnabledStyles(e);
+    // IMPORTANT: please take a minute to read the notes below before attempting to change
+    //              the event we're listening to for iOS.
+    //
+    // - the keypress event is no good for us here, because it can't detect backspaces
+    // - the keyup event is no good here, as it doesn't seem to work with iOS's virtual keyboard
+    //
+    editor.bind('keydown', function(e) {
 		zss_editor.callback("callback-user-triggered-change");
 	});
+    
+    editor.bind('paste', function(e) {
+        zss_editor.callback("callback-user-triggered-change");
+    });
 
 }//end
 
@@ -91,7 +100,7 @@ zss_editor.domLoadedCallback = function() {
 }
 
 zss_editor.callback = function(callbackScheme, callbackPath) {
-	
+    
 	var url =  callbackScheme + ":";
  
 	if (callbackPath) {
