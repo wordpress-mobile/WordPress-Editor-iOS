@@ -81,17 +81,31 @@ zss_editor.init = function() {
     // - the keyup event is no good here, as it doesn't seem to work with iOS's virtual keyboard
     //
     editor.bind('keydown', function(e) {
-		zss_editor.callback("callback-user-triggered-change");
+        zss_editor.keyDownCallback();
 	});
     
     editor.bind('paste', function(e) {
-        zss_editor.callback("callback-user-triggered-change");
+        zss_editor.pasteCallback(e);
     });
 
 }//end
 
 zss_editor.log = function(msg) {
 	zss_editor.callback(callback-log, msg);
+}
+
+zss_editor.keyDownCallback = function() {
+    zss_editor.callback("callback-key-down");
+}
+
+zss_editor.pasteCallback = function(e) {
+    
+    // IMPORTANT: we've not wired this yet, but this variable contains the pasted text.
+    //
+    var text = e.originalEvent.clipboardData.getData('Text');
+    var encodedText = encodeURIComponent(text);
+    
+    zss_editor.callback("callback-paste", encodedText);
 }
 
 zss_editor.domLoadedCallback = function() {

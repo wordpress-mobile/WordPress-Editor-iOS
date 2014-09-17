@@ -234,55 +234,60 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	
 	NSLog(@"WebEditor callback received: %@", url);
 	
-	if ([self isUserTriggeredChangeScheme:scheme]) {
-		[self refreshPlaceholder];
+    if (scheme) {
+        if ([self isKeyDownScheme:scheme]) {
+            [self refreshPlaceholder];
 
-        [self callDelegateEditorTextDidChange];
+            [self callDelegateEditorTextDidChange];
 
-		handled = YES;
-	} else if ([self isFocusInScheme:scheme]){
-		self.editing = YES;
+            handled = YES;
+        } else if ([self isFocusInScheme:scheme]){
+            self.editing = YES;
 
-		[self refreshPlaceholder];
-		
-		if ([self.delegate respondsToSelector:@selector(editorView:focusChanged:)]) {
-			[self.delegate editorView:self focusChanged:YES];
-		}
-		
-		handled = YES;
-	} else if ([self isFocusOutScheme:scheme]){
-		
-		self.editing = NO;
-		
-		[self refreshPlaceholder];
-		
-		if ([self.delegate respondsToSelector:@selector(editorView:focusChanged:)]) {
-			[self.delegate editorView:self focusChanged:YES];
-		}
-		
-		handled = YES;
-	} else if ([self isLinkTappedScheme:scheme]) {
-		[self handleLinkTappedCallback:url];
-		handled = YES;
-	} else if ([self isSelectionStyleScheme:scheme]) {
-		NSString* styles = [[url resourceSpecifier] stringByReplacingOccurrencesOfString:@"//" withString:@""];
-		
-		[self processStyles:styles];
-		handled = YES;
-	} else if ([self isDOMLoadedScheme:scheme]) {
+            [self refreshPlaceholder];
+            
+            if ([self.delegate respondsToSelector:@selector(editorView:focusChanged:)]) {
+                [self.delegate editorView:self focusChanged:YES];
+            }
+            
+            handled = YES;
+        } else if ([self isFocusOutScheme:scheme]){
+            
+            self.editing = NO;
+            
+            [self refreshPlaceholder];
+            
+            if ([self.delegate respondsToSelector:@selector(editorView:focusChanged:)]) {
+                [self.delegate editorView:self focusChanged:YES];
+            }
+            
+            handled = YES;
+        } else if ([self isLinkTappedScheme:scheme]) {
+            [self handleLinkTappedCallback:url];
+            handled = YES;
+        } else if ([self isSelectionStyleScheme:scheme]) {
+            NSString* styles = [[url resourceSpecifier] stringByReplacingOccurrencesOfString:@"//" withString:@""];
+            
+            [self processStyles:styles];
+            handled = YES;
+        } else if ([self isDOMLoadedScheme:scheme]) {
 
-		self.resourcesLoaded = YES;
-		self.editorInteractionQueue = nil;
-		
-		// DRM: it's important to call this after resourcesLoaded has been set to YES.
-		[self setHtml:self.preloadedHTML];
-		
-		if ([self.delegate respondsToSelector:@selector(editorViewDidFinishLoadingDOM:)]) {
-			[self.delegate editorViewDidFinishLoadingDOM:self];
-		}
-		
-		handled = YES;
-	}
+            self.resourcesLoaded = YES;
+            self.editorInteractionQueue = nil;
+            
+            // DRM: it's important to call this after resourcesLoaded has been set to YES.
+            [self setHtml:self.preloadedHTML];
+            
+            if ([self.delegate respondsToSelector:@selector(editorViewDidFinishLoadingDOM:)]) {
+                [self.delegate editorViewDidFinishLoadingDOM:self];
+            }
+            
+            handled = YES;
+        } else if ([self isPasteCallbackScheme:scheme]) {
+            [self handlePasteCallback:url];
+            handled = YES;
+        }
+    }
 	
 	return handled;
 }
@@ -320,6 +325,19 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	}];
 }
 
+/**
+ *	@brief		Handles a paste callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handlePasteCallback:(NSURL*)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    // DRM: TODO: implement handling for this...
+}
+
+
 - (BOOL)isDOMLoadedScheme:(NSString*)scheme
 {
 	static NSString* const kCallbackScheme = @"callback-dom-loaded";
@@ -343,9 +361,22 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (BOOL)isLinkTappedScheme:(NSString*)scheme
 {
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
 	static NSString* const kCallbackScheme = @"callback-link-tap";
 	
 	return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isPasteCallbackScheme:(NSString*)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
+    static NSString* const kCallbackScheme = @"callback-paste";
+    
+    return [scheme isEqualToString:kCallbackScheme];
 }
 
 - (BOOL)isSelectionStyleScheme:(NSString*)scheme
@@ -355,9 +386,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	return [scheme isEqualToString:kCallbackScheme];
 }
 
-- (BOOL)isUserTriggeredChangeScheme:(NSString*)scheme
+- (BOOL)isKeyDownScheme:(NSString*)scheme
 {
-	static NSString* const kCallbackScheme = @"callback-user-triggered-change";
+	static NSString* const kCallbackScheme = @"callback-key-down";
 	
 	return [scheme isEqualToString:kCallbackScheme];
 }
