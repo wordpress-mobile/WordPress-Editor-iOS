@@ -240,46 +240,19 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             [self handleKeyPressCallback:url];
             handled = YES;
         } else if ([self isFocusInScheme:scheme]){
-            self.editing = YES;
-
-            [self refreshPlaceholder];
-            
-            if ([self.delegate respondsToSelector:@selector(editorView:focusChanged:)]) {
-                [self.delegate editorView:self focusChanged:YES];
-            }
-            
+            [self handleFocusInCallback:url];
             handled = YES;
         } else if ([self isFocusOutScheme:scheme]){
-            
-            self.editing = NO;
-            
-            [self refreshPlaceholder];
-            
-            if ([self.delegate respondsToSelector:@selector(editorView:focusChanged:)]) {
-                [self.delegate editorView:self focusChanged:YES];
-            }
-            
+            [self handleFocusOutCallback:url];
             handled = YES;
         } else if ([self isLinkTappedScheme:scheme]) {
             [self handleLinkTappedCallback:url];
             handled = YES;
         } else if ([self isSelectionStyleScheme:scheme]) {
-            NSString* styles = [[url resourceSpecifier] stringByReplacingOccurrencesOfString:@"//" withString:@""];
-            
-            [self processStyles:styles];
+            [self handleSelectionStyleCallback:url];
             handled = YES;
         } else if ([self isDOMLoadedScheme:scheme]) {
-
-            self.resourcesLoaded = YES;
-            self.editorInteractionQueue = nil;
-            
-            // DRM: it's important to call this after resourcesLoaded has been set to YES.
-            [self setHtml:self.preloadedHTML];
-            
-            if ([self.delegate respondsToSelector:@selector(editorViewDidFinishLoadingDOM:)]) {
-                [self.delegate editorViewDidFinishLoadingDOM:self];
-            }
-            
+            [self handleDOMLoadedCallback:url];
             handled = YES;
         } else if ([self isPasteCallbackScheme:scheme]) {
             [self handlePasteCallback:url];
@@ -291,12 +264,58 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 /**
+ *	@brief		Handles a DOM loaded callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleDOMLoadedCallback:(NSURL*)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    self.resourcesLoaded = YES;
+    self.editorInteractionQueue = nil;
+    
+    // DRM: it's important to call this after resourcesLoaded has been set to YES.
+    [self setHtml:self.preloadedHTML];
+    
+    if ([self.delegate respondsToSelector:@selector(editorViewDidFinishLoadingDOM:)]) {
+        [self.delegate editorViewDidFinishLoadingDOM:self];
+    }
+}
+
+- (void)handleFocusInCallback:(NSURL*)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    self.editing = YES;
+    [self refreshPlaceholder];
+    [self callDelegateFocusChanged:YES];
+}
+
+/**
+ *	@brief		Handles a focus out callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleFocusOutCallback:(NSURL*)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    self.editing = NO;
+    
+    [self refreshPlaceholder];
+    [self callDelegateFocusChanged:NO];
+}
+
+/**
  *	@brief		Handles a key pressed callback.
  *
  *	@param		url		The url with all the callback information.
  */
 - (void)handleKeyPressCallback:(NSURL*)url
 {
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
     [self callDelegateEditorTextDidChange];
 }
 
@@ -343,6 +362,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
     // DRM: TODO: implement handling for this...
+}
+
+- (void)handleSelectionStyleCallback:(NSURL*)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    NSString* styles = [[url resourceSpecifier] stringByReplacingOccurrencesOfString:@"//" withString:@""];
+    
+    [self processStyles:styles];
 }
 
 
@@ -1017,12 +1045,22 @@ refreshPlaceholder:(BOOL)refreshPlaceholder
 #pragma mark - Delegate calls
 
 /**
- *  @brief      Call's the delegate editorTextDidChange method.
+ *  @brief      Call's the delegate editorTextDidChange: method.
  */
 - (void)callDelegateEditorTextDidChange
 {
     if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
         [self.delegate editorTextDidChange:self];
+    }
+}
+
+/**
+ *  @brief      Call's the delegate editorView:focusChanged: method.
+ */
+- (void)callDelegateFocusChanged:(BOOL)focusGained
+{
+    if ([self.delegate respondsToSelector:@selector(editorView:focusChanged:)]) {
+        [self.delegate editorView:self focusChanged:focusGained];
     }
 }
 
