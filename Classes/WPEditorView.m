@@ -237,10 +237,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	
     if (scheme) {
         if ([self isKeyDownScheme:scheme]) {
-            [self refreshPlaceholder];
-
-            [self callDelegateEditorTextDidChange];
-
+            [self handleKeyPressCallback:url];
             handled = YES;
         } else if ([self isFocusInScheme:scheme]){
             self.editing = YES;
@@ -291,6 +288,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
 	
 	return handled;
+}
+
+/**
+ *	@brief		Handles a key pressed callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleKeyPressCallback:(NSURL*)url
+{
+    [self callDelegateEditorTextDidChange];
 }
 
 /**
