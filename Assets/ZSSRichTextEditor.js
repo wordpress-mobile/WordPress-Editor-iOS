@@ -770,10 +770,15 @@ zss_editor.blurEditor = function() {
 }
 
 zss_editor.enableEditing = function () {
-	$('#zss_editor_content').contentEditable = true;
+    $('#zss_editor_content').attr('contenteditable', true);
 }
 
 zss_editor.disableEditing = function () {
+    // IMPORTANT: we're blurring the editor before making it non-editable since that ensures
+    // that the iOS keyboard is dismissed through an animation, as opposed to being immediately
+    // removed from the screen.
+    //
     zss_editor.blurEditor();
-	$('#zss_editor_content').contentEditable = false;
+    
+    $('#zss_editor_content').attr('contenteditable', false);
 }
