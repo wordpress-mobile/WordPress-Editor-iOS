@@ -17,6 +17,7 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 
 #pragma mark - Editing state
 @property (nonatomic, assign, readwrite, getter = isEditing) BOOL editing;
+@property (nonatomic, assign, readwrite, getter = isEditingEnabled) BOOL editingEnabled;
 
 #pragma mark - Selection
 @property (nonatomic, strong, readwrite) NSString *selectedLinkURL;
@@ -151,7 +152,7 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 	}
 }
 
-#pragma mark - Placeholder
+#pragma mark - Placeholder refreshing
 
 /**
  *	@brief		Refreshes the placeholder text, by either showing it or hiding it according to
@@ -173,22 +174,63 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
  */
 - (void)refreshPlaceholder:(NSString*)placeholder
 {
-	BOOL shouldHidePlaceholder = self.isShowingPlaceholder && self.isEditing;
-	
-	if (shouldHidePlaceholder) {
-		self.showingPlaceholder = NO;
-        [self setHtml:@"" refreshPlaceholder:NO];
-    } else {
-        BOOL shouldShowPlaceholder = (!self.isShowingPlaceholder
-                                      && self.resourcesLoaded
-                                      && !self.isEditing
-                                      && [self isBodyEmpty]);
-		
-		if (shouldShowPlaceholder) {
-			self.showingPlaceholder = YES;
-			[self setHtml:self.placeholderHTMLString refreshPlaceholder:NO];
-		}
+	if ([self shouldHidePlaceholder]) {
+        [self hidePlaceholder];
+    } else if ([self shouldShowPlaceholder]) {
+        [self showPlaceholder];
 	}
+}
+
+#pragma mark - Placeholder refreshing: helper methods
+
+
+/**
+ *  @brief      Hides the placeholder text.
+ *  @details    This method is a little helper for refreshPlaceholder:.  You shouldn't call this
+ *              method directly.
+ */
+- (void)hidePlaceholder
+{
+    self.showingPlaceholder = NO;
+    [self setHtml:@"" refreshPlaceholder:NO];
+}
+
+/**
+ *  @brief      Shows the placeholder text.
+ *  @details    This method is a little helper for refreshPlaceholder:.  You shouldn't call this
+ *              method directly.
+ */
+- (void)showPlaceholder
+{
+    self.showingPlaceholder = YES;
+    [self setHtml:self.placeholderHTMLString refreshPlaceholder:NO];
+}
+
+/**
+ *  @brief          Evaluates if the placeholder should be hidden.
+ *  @details        Little helper method for refreshPlaceholder:.  You shouldn't call this method
+ *                  directly.
+ *
+ *  @return         YES if the placeholder should be hidden.  NO otherwise.
+ */
+- (BOOL)shouldHidePlaceholder
+{
+    return self.isShowingPlaceholder && (!self.isEditingEnabled || self.isEditing);
+}
+
+/**
+ *  @brief          Evaluates if the placeholder should be shown.
+ *  @details        Little helper method for refreshPlaceholder:.  You shouldn't call this method
+ *                  directly.
+ *
+ *  @return         YES if the placeholder should be shown.  NO otherwise.
+ */
+- (BOOL)shouldShowPlaceholder
+{
+    return (!self.isShowingPlaceholder
+            && self.resourcesLoaded
+            && !self.isEditing
+            && [self isBodyEmpty]);
 }
 
 #pragma mark - UIWebViewDelegate
@@ -757,12 +799,18 @@ refreshPlaceholder:(BOOL)refreshPlaceholder
 {
 	NSString *js = [NSString stringWithFormat:@"zss_editor.disableEditing();"];
 	[self.webView stringByEvaluatingJavaScriptFromString:js];
+    
+    self.editingEnabled = NO;
+    [self refreshPlaceholder];
 }
 
 - (void)enableEditing
-{	
+{
 	NSString *js = [NSString stringWithFormat:@"zss_editor.enableEditing();"];
 	[self.webView stringByEvaluatingJavaScriptFromString:js];
+    
+    self.editingEnabled = YES;
+    [self refreshPlaceholder];
 }
 
 #pragma mark - Customization
