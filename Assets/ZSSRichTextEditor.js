@@ -74,16 +74,22 @@ zss_editor.init = function() {
 		zss_editor.callback("callback-focus-out");
 	});
 	
-	editor.bind('keypress', function(e) {
-		zss_editor.sendEnabledStyles(e);
+    editor.bind('keydown', function(e) {
         zss_editor.formatNewLine(e);
-		zss_editor.callback("callback-user-triggered-change");
 	});
+    
+    editor.bind('input', function(e) {
+        zss_editor.inputCallback();
+    });
 
 }//end
 
 zss_editor.log = function(msg) {
 	zss_editor.callback(callback-log, msg);
+}
+
+zss_editor.inputCallback = function() {
+    zss_editor.callback("callback-input");
 }
 
 zss_editor.domLoadedCallback = function() {
@@ -92,7 +98,7 @@ zss_editor.domLoadedCallback = function() {
 }
 
 zss_editor.callback = function(callbackScheme, callbackPath) {
-	
+    
 	var url =  callbackScheme + ":";
  
 	if (callbackPath) {
@@ -100,10 +106,27 @@ zss_editor.callback = function(callbackScheme, callbackPath) {
 	}
 	
 	if (zss_editor.isUsingiOS) {
-		window.location = url;
+        zss_editor.callbackThroughIFrame(url);
 	} else {
 		console.log(url);
 	}
+}
+
+/**
+ *  @brief      Executes a callback by loading it into an IFrame.
+ *  @details    The reason why we're using this instead of window.location is that window.location
+ *              can sometimes fail silently when called multiple times in rapid succession.
+ *              Found here:
+ *              http://stackoverflow.com/questions/10010342/clicking-on-a-link-inside-a-webview-that-will-trigger-a-native-ios-screen-with/10080969#10080969
+ *
+ *  @param      url     The callback URL.
+ */
+zss_editor.callbackThroughIFrame = function(url) {
+    var iframe = document.createElement("IFRAME");
+    iframe.setAttribute("src", url);
+    document.documentElement.appendChild(iframe);
+    iframe.parentNode.removeChild(iframe);
+    iframe = null;
 }
 
 zss_editor.stylesCallback = function(stylesArray) {
