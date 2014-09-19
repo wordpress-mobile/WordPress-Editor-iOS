@@ -17,7 +17,6 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 
 #pragma mark - Editing state
 @property (nonatomic, assign, readwrite, getter = isEditing) BOOL editing;
-@property (nonatomic, assign, readwrite, getter = isEditingEnabled) BOOL editingEnabled;
 
 #pragma mark - Selection
 @property (nonatomic, strong, readwrite) NSString *selectedLinkURL;
@@ -152,87 +151,6 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 	}
 }
 
-#pragma mark - Placeholder refreshing
-
-/**
- *	@brief		Refreshes the placeholder text, by either showing it or hiding it according to
- *				several conditions.
- */
-- (void)refreshPlaceholder
-{
-	[self refreshPlaceholder:self.placeholderHTMLString];
-}
-
-/**
- *	@brief		Refreshes the specified placeholder text, by either showing it or hiding it
- *				according to several conditions.
- *	@details	Same as refreshPlaceholder, but uses the received parameter instead of the property.
- *				This is a convenience method in case the caller already has a reference to the
- *				placeholder text and is not intended as a way to bypass the placeholder property.
- *
- *	@param		placeholder		The placeholder text to show, if conditions are met.
- */
-- (void)refreshPlaceholder:(NSString*)placeholder
-{
-	if ([self shouldHidePlaceholder]) {
-        [self hidePlaceholder];
-    } else if ([self shouldShowPlaceholder]) {
-        [self showPlaceholder];
-	}
-}
-
-#pragma mark - Placeholder refreshing: helper methods
-
-
-/**
- *  @brief      Hides the placeholder text.
- *  @details    This method is a little helper for refreshPlaceholder:.  You shouldn't call this
- *              method directly.
- */
-- (void)hidePlaceholder
-{
-    self.showingPlaceholder = NO;
-    [self setHtml:@"" refreshPlaceholder:NO];
-}
-
-/**
- *  @brief      Shows the placeholder text.
- *  @details    This method is a little helper for refreshPlaceholder:.  You shouldn't call this
- *              method directly.
- */
-- (void)showPlaceholder
-{
-    self.showingPlaceholder = YES;
-    [self setHtml:self.placeholderHTMLString refreshPlaceholder:NO];
-}
-
-/**
- *  @brief          Evaluates if the placeholder should be hidden.
- *  @details        Little helper method for refreshPlaceholder:.  You shouldn't call this method
- *                  directly.
- *
- *  @return         YES if the placeholder should be hidden.  NO otherwise.
- */
-- (BOOL)shouldHidePlaceholder
-{
-    return self.isShowingPlaceholder && (!self.isEditingEnabled || self.isEditing);
-}
-
-/**
- *  @brief          Evaluates if the placeholder should be shown.
- *  @details        Little helper method for refreshPlaceholder:.  You shouldn't call this method
- *                  directly.
- *
- *  @return         YES if the placeholder should be shown.  NO otherwise.
- */
-- (BOOL)shouldShowPlaceholder
-{
-    return (!self.isShowingPlaceholder
-            && self.resourcesLoaded
-            && !self.isEditing
-            && [self isBodyEmpty]);
-}
-
 #pragma mark - UIWebViewDelegate
 
 -            (BOOL)webView:(UIWebView *)webView
@@ -316,6 +234,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     // DRM: it's important to call this after resourcesLoaded has been set to YES.
     [self setHtml:self.preloadedHTML];
+    [self setPlaceholderHTMLStringInJavascript];
     
     if ([self.delegate respondsToSelector:@selector(editorViewDidFinishLoadingDOM:)]) {
         [self.delegate editorViewDidFinishLoadingDOM:self];
@@ -326,8 +245,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
-    self.editing = YES;
-    [self refreshPlaceholder];
     [self callDelegateFocusChanged:YES];
 }
 
@@ -340,9 +257,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
-    self.editing = NO;
-    
-    [self refreshPlaceholder];
     [self callDelegateFocusChanged:NO];
 }
 
@@ -576,16 +490,26 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *result = [string stringByReplacingOccurrencesOfString:@"+" withString:@" "];
     result = [result stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     return result;
-}\
+}
 
 #pragma mark - Setters
 
-- (void)setPlaceholderHTMLString:(NSString *)placeholderHTMLString
+- (void)setPlaceholderHTMLStringInJavascript
 {
+    NSString* string = [self addSlashes:self.placeholderHTMLString];
+    
+    string = [NSString stringWithFormat:@"zss_editor.setBodyPlaceholder(\"%@\");", string];
+    [self.webView stringByEvaluatingJavaScriptFromString:string];
+}
+
+- (void)setPlaceholderHTMLString:(NSString *)placeholderHTMLString
+{    
 	if (_placeholderHTMLString != placeholderHTMLString) {
 		_placeholderHTMLString = placeholderHTMLString;
 		
-		[self refreshPlaceholder:placeholderHTMLString];
+        if (self.resourcesLoaded) {
+            [self setPlaceholderHTMLStringInJavascript];
+        }
 	}
 }
 
@@ -712,12 +636,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setHtml:(NSString *)html
 {
-    [self setHtml:html refreshPlaceholder:YES];
-}
-
--    (void)setHtml:(NSString *)html
-refreshPlaceholder:(BOOL)refreshPlaceholder
-{
 	if (!self.resourcesLoaded) {
 		self.preloadedHTML = html;
 	} else {
@@ -725,10 +643,6 @@ refreshPlaceholder:(BOOL)refreshPlaceholder
 		NSString *cleanedHTML = [self addSlashes:self.sourceView.text];
 		NSString *trigger = [NSString stringWithFormat:@"zss_editor.setHTML(\"%@\");", cleanedHTML];
 		[self.webView stringByEvaluatingJavaScriptFromString:trigger];
-		
-		if (refreshPlaceholder) {
-			[self refreshPlaceholder];
-		}
 	}
 }
 
@@ -799,18 +713,12 @@ refreshPlaceholder:(BOOL)refreshPlaceholder
 {
 	NSString *js = [NSString stringWithFormat:@"zss_editor.disableEditing();"];
 	[self.webView stringByEvaluatingJavaScriptFromString:js];
-    
-    self.editingEnabled = NO;
-    [self refreshPlaceholder];
 }
 
 - (void)enableEditing
 {
 	NSString *js = [NSString stringWithFormat:@"zss_editor.enableEditing();"];
 	[self.webView stringByEvaluatingJavaScriptFromString:js];
-    
-    self.editingEnabled = YES;
-    [self refreshPlaceholder];
 }
 
 #pragma mark - Customization

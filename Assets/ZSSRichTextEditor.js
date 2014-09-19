@@ -13,6 +13,9 @@ var zss_editor = {};
 
 zss_editor.defaultCallbackSeparator = ',';
 
+// Wether we're editing or not
+zss_editor.editingEnabled = false;
+
 // If we are using iOS or desktop
 zss_editor.isUsingiOS = true;
 
@@ -27,6 +30,12 @@ zss_editor.currentEditingLink;
 
 // The objects that are enabled
 zss_editor.enabledItems = {};
+
+// The placeholder text to show when editing if the body is empty.
+zss_editor.bodyPlaceholder = '';
+
+// Wether we're showing the placeholder or not.
+zss_editor.showingPlaceholder = false;
 
 /**
  * The initializer function that must be called onLoad
@@ -65,13 +74,17 @@ zss_editor.init = function() {
 			}
 		}, 400);
 	});
-	
+    
 	editor.bind('focus', function(e) {
+        zss_editor.editing = true;
+        zss_editor.refreshPlaceholder();
 		zss_editor.callback("callback-focus-in");
 	});
 	
-	editor.bind('blur', function(e) {
-		zss_editor.callback("callback-focus-out");
+    editor.bind('blur', function(e) {
+        zss_editor.editing = false;
+        zss_editor.refreshPlaceholder();
+        zss_editor.callback("callback-focus-out");
 	});
 	
     editor.bind('keydown', function(e) {
@@ -84,9 +97,13 @@ zss_editor.init = function() {
 
 }//end
 
+// MARK: - Logging
+
 zss_editor.log = function(msg) {
 	zss_editor.callback(callback-log, msg);
 }
+
+// MARK: - Callbacks
 
 zss_editor.inputCallback = function() {
     zss_editor.callback("callback-input");
@@ -140,6 +157,8 @@ zss_editor.stylesCallback = function(stylesArray) {
 	zss_editor.callback("callback-selection-style", stylesString);
 }
 
+// MARK: - Selection
+
 zss_editor.backuprange = function(){
 	var selection = window.getSelection();
     var range = selection.getRangeAt(0);
@@ -160,6 +179,8 @@ zss_editor.getSelectedText = function() {
 	
 	return selection.toString();
 }
+
+// MARK: - Styles
 
 zss_editor.setBold = function() {
 	document.execCommand('bold', false, null);
@@ -502,9 +523,24 @@ zss_editor.insertImage = function(url, alt) {
 	zss_editor.sendEnabledStyles();
 }
 
+zss_editor.isBodyEmpty = function() {
+    var html = zss_editor.getHTML();
+    var isEmpty = (html.length == 0 || html == "<br>");
+    
+    return isEmpty;
+}
+
 zss_editor.setHTML = function(html) {
-	var editor = $('#zss_editor_content');
-	editor.html(html);
+    zss_editor.setHTMLAndRefreshPlaceholder(html, true);
+}
+
+zss_editor.setHTMLAndRefreshPlaceholder = function(html, refreshPlaceholder) {
+    var editor = $('#zss_editor_content');
+    editor.html(html);
+    
+    if (refreshPlaceholder) {
+        zss_editor.refreshPlaceholder();
+    }
 }
 
 zss_editor.insertHTML = function(html) {
@@ -550,58 +586,6 @@ zss_editor.getHTML = function() {
 
 zss_editor.isCommandEnabled = function(commandName) {
 	return document.queryCommandState(commandName);
-}
-
-zss_editor.closerParentNode = function(nodeName) {
-	
-	nodeName = nodeName.toLowerCase();
-	
-	var parentNode = null;
-	var selection = window.getSelection();
-	var range = selection.getRangeAt(0).cloneRange();
-	
-	var currentNode = range.commonAncestorContainer;
-	
-	while (currentNode) {
-		
-		if (currentNode.nodeName == document.body.nodeName) {
-			break;
-		}
-		
-		if (currentNode.nodeName.toLowerCase() == nodeName
-			&& currentNode.nodeType == document.ELEMENT_NODE) {
-			parentNode = currentNode;
-			
-			break;
-		}
-		
-		currentNode = currentNode.parentElement;
-	}
-	
-	return parentNode;
-}
-
-zss_editor.parentTags = function() {
-	
-	var parentTags = [];
-	var selection = window.getSelection();
-	var range = selection.getRangeAt(0);
-	
-	var currentNode = range.commonAncestorContainer;
-	while (currentNode) {
-		
-		if (currentNode.nodeName == document.body.nodeName) {
-			break;
-		}
-		
-		if (currentNode.nodeType == document.ELEMENT_NODE) {
-			parentTags.push(currentNode);
-		}
-		
-		currentNode = currentNode.parentElement;
-	}
-	
-	return parentTags;
 }
 
 zss_editor.formatNewLine = function(e) {
@@ -751,6 +735,121 @@ zss_editor.sendEnabledStyles = function(e) {
 	zss_editor.stylesCallback(items);
 }
 
+// MARK: - Placeholder refresh
+
+zss_editor.refreshPlaceholder = function() {
+    if (zss_editor.shouldHidePlaceholder()) {
+        zss_editor.hidePlaceholder();
+    } else if (zss_editor.shouldShowPlaceholder()) {
+        zss_editor.showPlaceholder();
+    }
+}
+
+zss_editor.setBodyPlaceholder = function(placeholder) {
+    zss_editor.bodyPlaceholder = placeholder;
+    zss_editor.refreshPlaceholder();
+}
+
+// MARK: - Placeholder refresh helper methods
+
+zss_editor.hidePlaceholder = function() {
+    zss_editor.showingPlaceholder = false;
+    zss_editor.setHTMLAndRefreshPlaceholder("", false);
+}
+
+/**
+ *  @brief          Evaluates if the placeholder should be hidden.
+ *  @details        Little helper method for refreshPlaceholder.  You shouldn't call this method
+ *                  directly.
+ *
+ *  @return         YES if the placeholder should be hidden.  NO otherwise.
+ */
+zss_editor.shouldHidePlaceholder = function() {
+    
+    return (zss_editor.showingPlaceholder
+            && (!zss_editor.editingEnabled || zss_editor.editing));
+}
+
+/**
+ *  @brief          Evaluates if the placeholder should be shown.
+ *  @details        Little helper method for refreshPlaceholder:.  You shouldn't call this method
+ *                  directly.
+ *
+ *  @return         YES if the placeholder should be shown.  NO otherwise.
+ */
+zss_editor.shouldShowPlaceholder = function() {
+    
+    return (!zss_editor.showingPlaceholder
+            && !zss_editor.editing
+            && zss_editor.isBodyEmpty());
+}
+
+/**
+ *  @brief      Shows the placeholder text.
+ *  @details    This method is a little helper for refreshPlaceholder:.  You shouldn't call this
+ *              method directly.
+ */
+zss_editor.showPlaceholder = function() {
+    zss_editor.showingPlaceholder = true;
+    zss_editor.setHTMLAndRefreshPlaceholder(zss_editor.bodyPlaceholder, false);
+}
+
+// MARK: - Parent nodes & tags
+
+zss_editor.closerParentNode = function(nodeName) {
+    
+    nodeName = nodeName.toLowerCase();
+    
+    var parentNode = null;
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0).cloneRange();
+    
+    var currentNode = range.commonAncestorContainer;
+    
+    while (currentNode) {
+        
+        if (currentNode.nodeName == document.body.nodeName) {
+            break;
+        }
+        
+        if (currentNode.nodeName.toLowerCase() == nodeName
+            && currentNode.nodeType == document.ELEMENT_NODE) {
+            parentNode = currentNode;
+            
+            break;
+        }
+        
+        currentNode = currentNode.parentElement;
+    }
+    
+    return parentNode;
+}
+
+zss_editor.parentTags = function() {
+    
+    var parentTags = [];
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0);
+    
+    var currentNode = range.commonAncestorContainer;
+    while (currentNode) {
+        
+        if (currentNode.nodeName == document.body.nodeName) {
+            break;
+        }
+        
+        if (currentNode.nodeType == document.ELEMENT_NODE) {
+            parentTags.push(currentNode);
+        }
+        
+        currentNode = currentNode.parentElement;
+    }
+    
+    return parentTags;
+}
+
+// MARK: - Focus
+
 zss_editor.isFocused = function() {
 
 	return $('#zss_editor_content').is(":focus");
@@ -769,11 +868,19 @@ zss_editor.blurEditor = function() {
 	}
 }
 
+// MARK: - Editing
+
 zss_editor.enableEditing = function () {
+    zss_editor.editingEnabled = true;
+    zss_editor.refreshPlaceholder();
+    
     $('#zss_editor_content').attr('contenteditable', true);
 }
 
 zss_editor.disableEditing = function () {
+    zss_editor.editingEnabled = false;
+    zss_editor.refreshPlaceholder();
+    
     // IMPORTANT: we're blurring the editor before making it non-editable since that ensures
     // that the iOS keyboard is dismissed through an animation, as opposed to being immediately
     // removed from the screen.
