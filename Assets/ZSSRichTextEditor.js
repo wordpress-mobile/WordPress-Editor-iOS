@@ -74,19 +74,12 @@ zss_editor.init = function() {
 		zss_editor.callback("callback-focus-out");
 	});
 	
-    // IMPORTANT: please take a minute to read the notes below before attempting to change
-    //              the event we're listening to for iOS.
-    //
-    // - the keypress event is no good for us here, because it can't detect backspaces
-    // - the keyup event is no good here, as it doesn't seem to work with iOS's virtual keyboard
-    //
     editor.bind('keydown', function(e) {
-        zss_editor.keyDownCallback();
         zss_editor.formatNewLine(e);
 	});
     
-    editor.bind('paste', function(e) {
-        zss_editor.pasteCallback(e);
+    editor.bind('input', function(e) {
+        zss_editor.inputCallback();
     });
 
 }//end
@@ -95,18 +88,8 @@ zss_editor.log = function(msg) {
 	zss_editor.callback(callback-log, msg);
 }
 
-zss_editor.keyDownCallback = function() {
-    zss_editor.callback("callback-key-down");
-}
-
-zss_editor.pasteCallback = function(e) {
-    
-    // IMPORTANT: we've not wired this yet, but this variable contains the pasted text.
-    //
-    var text = e.originalEvent.clipboardData.getData('Text');
-    var encodedText = encodeURIComponent(text);
-    
-    zss_editor.callback("callback-paste", encodedText);
+zss_editor.inputCallback = function() {
+    zss_editor.callback("callback-input");
 }
 
 zss_editor.domLoadedCallback = function() {
@@ -123,10 +106,27 @@ zss_editor.callback = function(callbackScheme, callbackPath) {
 	}
 	
 	if (zss_editor.isUsingiOS) {
-		window.location = url;
+        zss_editor.callbackThroughIFrame(url);
 	} else {
 		console.log(url);
 	}
+}
+
+/**
+ *  @brief      Executes a callback by loading it into an IFrame.
+ *  @details    The reason why we're using this instead of window.location is that window.location
+ *              can sometimes fail silently when called multiple times in rapid succession.
+ *              Found here:
+ *              http://stackoverflow.com/questions/10010342/clicking-on-a-link-inside-a-webview-that-will-trigger-a-native-ios-screen-with/10080969#10080969
+ *
+ *  @param      url     The callback URL.
+ */
+zss_editor.callbackThroughIFrame = function(url) {
+    var iframe = document.createElement("IFRAME");
+    iframe.setAttribute("src", url);
+    document.documentElement.appendChild(iframe);
+    iframe.parentNode.removeChild(iframe);
+    iframe = null;
 }
 
 zss_editor.stylesCallback = function(stylesArray) {

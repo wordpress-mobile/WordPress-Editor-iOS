@@ -236,14 +236,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	NSLog(@"WebEditor callback received: %@", url);
 	
     if (scheme) {
-        if ([self isKeyDownScheme:scheme]) {
-            [self handleKeyPressCallback:url];
-            handled = YES;
-        } else if ([self isFocusInScheme:scheme]){
+        if ([self isFocusInScheme:scheme]){
             [self handleFocusInCallback:url];
             handled = YES;
         } else if ([self isFocusOutScheme:scheme]){
             [self handleFocusOutCallback:url];
+            handled = YES;
+        } else if ([self isInputCallbackScheme:scheme]) {
+            [self handleInputCallback:url];
             handled = YES;
         } else if ([self isLinkTappedScheme:scheme]) {
             [self handleLinkTappedCallback:url];
@@ -253,9 +253,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             handled = YES;
         } else if ([self isDOMLoadedScheme:scheme]) {
             [self handleDOMLoadedCallback:url];
-            handled = YES;
-        } else if ([self isPasteCallbackScheme:scheme]) {
-            [self handlePasteCallback:url];
             handled = YES;
         }
     }
@@ -312,7 +309,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
  *
  *	@param		url		The url with all the callback information.
  */
-- (void)handleKeyPressCallback:(NSURL*)url
+- (void)handleInputCallback:(NSURL*)url
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
@@ -350,18 +347,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 			[self.delegate editorView:self linkTapped:tappedUrl title:tappedUrlTitle];
 		}
 	}];
-}
-
-/**
- *	@brief		Handles a paste callback.
- *
- *	@param		url		The url with all the callback information.
- */
-- (void)handlePasteCallback:(NSURL*)url
-{
-    NSParameterAssert([url isKindOfClass:[NSURL class]]);
-    
-    // DRM: TODO: implement handling for this...
 }
 
 - (void)handleSelectionStyleCallback:(NSURL*)url
@@ -405,16 +390,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	return [scheme isEqualToString:kCallbackScheme];
 }
 
-- (BOOL)isPasteCallbackScheme:(NSString*)scheme
-{
-    NSAssert([scheme isKindOfClass:[NSString class]],
-             @"We're expecting a non-nil string object here.");
-    
-    static NSString* const kCallbackScheme = @"callback-paste";
-    
-    return [scheme isEqualToString:kCallbackScheme];
-}
-
 - (BOOL)isSelectionStyleScheme:(NSString*)scheme
 {
 	static NSString* const kCallbackScheme = @"callback-selection-style";
@@ -422,9 +397,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	return [scheme isEqualToString:kCallbackScheme];
 }
 
-- (BOOL)isKeyDownScheme:(NSString*)scheme
+- (BOOL)isInputCallbackScheme:(NSString*)scheme
 {
-	static NSString* const kCallbackScheme = @"callback-key-down";
+	static NSString* const kCallbackScheme = @"callback-input";
 	
 	return [scheme isEqualToString:kCallbackScheme];
 }
@@ -456,7 +431,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     }
 	
     styleStrings = [NSArray arrayWithArray:itemsModified];
-    NSLog(@"%@", styleStrings);
     
 	if ([self.delegate respondsToSelector:@selector(editorView:stylesForCurrentSelection:)])
 	{
