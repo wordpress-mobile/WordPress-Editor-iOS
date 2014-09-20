@@ -77,13 +77,21 @@ zss_editor.init = function() {
     
 	editor.bind('focus', function(e) {
         zss_editor.editing = true;
-        zss_editor.refreshPlaceholder();
+        //zss_editor.refreshPlaceholder();
 		zss_editor.callback("callback-focus-in");
 	});
 	
     editor.bind('blur', function(e) {
         zss_editor.editing = false;
-        zss_editor.refreshPlaceholder();
+        //zss_editor.refreshPlaceholder();
+                
+        // IMPORTANT: sometimes HTML leaves some <br> tags or &nbsp; when the user deletes all
+        // text from a contentEditable field.  This code makes sure no such 'garbage' survives.
+        //
+        if (editor.text().length == 0) {
+            editor.empty();
+        }
+                
         zss_editor.callback("callback-focus-out");
 	});
 	
@@ -746,52 +754,11 @@ zss_editor.refreshPlaceholder = function() {
 }
 
 zss_editor.setBodyPlaceholder = function(placeholder) {
-    zss_editor.bodyPlaceholder = placeholder;
-    zss_editor.refreshPlaceholder();
+    $('#zss_editor_content').attr('placeholderText', placeholder);
 }
 
-// MARK: - Placeholder refresh helper methods
-
-zss_editor.hidePlaceholder = function() {
-    zss_editor.showingPlaceholder = false;
-    zss_editor.setHTMLAndRefreshPlaceholder("", false);
-}
-
-/**
- *  @brief          Evaluates if the placeholder should be hidden.
- *  @details        Little helper method for refreshPlaceholder.  You shouldn't call this method
- *                  directly.
- *
- *  @return         YES if the placeholder should be hidden.  NO otherwise.
- */
-zss_editor.shouldHidePlaceholder = function() {
-    
-    return (zss_editor.showingPlaceholder
-            && (!zss_editor.editingEnabled || zss_editor.editing));
-}
-
-/**
- *  @brief          Evaluates if the placeholder should be shown.
- *  @details        Little helper method for refreshPlaceholder:.  You shouldn't call this method
- *                  directly.
- *
- *  @return         YES if the placeholder should be shown.  NO otherwise.
- */
-zss_editor.shouldShowPlaceholder = function() {
-    
-    return (!zss_editor.showingPlaceholder
-            && !zss_editor.editing
-            && zss_editor.isBodyEmpty());
-}
-
-/**
- *  @brief      Shows the placeholder text.
- *  @details    This method is a little helper for refreshPlaceholder:.  You shouldn't call this
- *              method directly.
- */
-zss_editor.showPlaceholder = function() {
-    zss_editor.showingPlaceholder = true;
-    zss_editor.setHTMLAndRefreshPlaceholder(zss_editor.bodyPlaceholder, false);
+zss_editor.setBodyPlaceholderColor = function(color) {
+   //$('#zss_editor_content').attr('color', color);
 }
 
 // MARK: - Parent nodes & tags
@@ -871,16 +838,10 @@ zss_editor.blurEditor = function() {
 // MARK: - Editing
 
 zss_editor.enableEditing = function () {
-    zss_editor.editingEnabled = true;
-    zss_editor.refreshPlaceholder();
-    
     $('#zss_editor_content').attr('contenteditable', true);
 }
 
 zss_editor.disableEditing = function () {
-    zss_editor.editingEnabled = false;
-    zss_editor.refreshPlaceholder();
-    
     // IMPORTANT: we're blurring the editor before making it non-editable since that ensures
     // that the iOS keyboard is dismissed through an animation, as opposed to being immediately
     // removed from the screen.

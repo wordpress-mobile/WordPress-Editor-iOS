@@ -235,6 +235,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     // DRM: it's important to call this after resourcesLoaded has been set to YES.
     [self setHtml:self.preloadedHTML];
     [self setPlaceholderHTMLStringInJavascript];
+    [self setPlaceholderHTMLStringColorInJavascript];
     
     if ([self.delegate respondsToSelector:@selector(editorViewDidFinishLoadingDOM:)]) {
         [self.delegate editorViewDidFinishLoadingDOM:self];
@@ -494,14 +495,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 #pragma mark - Setters
 
-- (void)setPlaceholderHTMLStringInJavascript
-{
-    NSString* string = [self addSlashes:self.placeholderHTMLString];
-    
-    string = [NSString stringWithFormat:@"zss_editor.setBodyPlaceholder(\"%@\");", string];
-    [self.webView stringByEvaluatingJavaScriptFromString:string];
-}
-
 - (void)setPlaceholderHTMLString:(NSString *)placeholderHTMLString
 {    
 	if (_placeholderHTMLString != placeholderHTMLString) {
@@ -511,6 +504,34 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             [self setPlaceholderHTMLStringInJavascript];
         }
 	}
+}
+
+- (void)setPlaceholderHTMLStringInJavascript
+{
+    NSString* string = [self addSlashes:self.placeholderHTMLString];
+    
+    string = [NSString stringWithFormat:@"zss_editor.setBodyPlaceholder(\"%@\");", string];
+    [self.webView stringByEvaluatingJavaScriptFromString:string];
+}
+
+- (void)setPlaceholderHTMLStringColor:(UIColor *)placeholderHTMLStringColor
+{
+    if (_placeholderHTMLStringColor != placeholderHTMLStringColor) {
+        _placeholderHTMLStringColor = placeholderHTMLStringColor;
+        
+        if (self.resourcesLoaded) {
+            [self setPlaceholderHTMLStringColorInJavascript];
+        }
+    }
+}
+
+- (void)setPlaceholderHTMLStringColorInJavascript
+{
+    int hexColor = HexColorFromUIColor(self.placeholderHTMLStringColor);
+    NSString* hexColorStr = [NSString stringWithFormat:@"#%06x", hexColor];
+    
+    NSString* string = [NSString stringWithFormat:@"zss_editor.setBodyPlaceholderColor(\"%@\");", hexColorStr];
+    [self.webView stringByEvaluatingJavaScriptFromString:string];
 }
 
 #pragma mark - Interaction
