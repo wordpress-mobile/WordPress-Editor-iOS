@@ -13,9 +13,6 @@ var zss_editor = {};
 
 zss_editor.defaultCallbackSeparator = ',';
 
-// Whether we're editing or not
-zss_editor.editingEnabled = false;
-
 // If we are using iOS or desktop
 zss_editor.isUsingiOS = true;
 
@@ -33,6 +30,9 @@ zss_editor.enabledItems = {};
 
 // The placeholder text to show when editing if the body is empty.
 zss_editor.bodyPlaceholder = '';
+
+// The placeholder text color
+zss_editor.bodyPlaceholderColor = '';
 
 // Whether we're showing the placeholder or not.
 zss_editor.showingPlaceholder = false;
@@ -75,21 +75,24 @@ zss_editor.init = function() {
 		}, 400);
 	});
     
-	editor.bind('focus', function(e) {
-        zss_editor.editing = true;
-        //zss_editor.refreshPlaceholder();
+    editor.bind('focus', function(e) {
+        editor.css('color', '');
+                
 		zss_editor.callback("callback-focus-in");
 	});
 	
     editor.bind('blur', function(e) {
-        zss_editor.editing = false;
-        //zss_editor.refreshPlaceholder();
                 
         // IMPORTANT: sometimes HTML leaves some <br> tags or &nbsp; when the user deletes all
         // text from a contentEditable field.  This code makes sure no such 'garbage' survives.
         //
         if (editor.text().length == 0) {
             editor.empty();
+        }
+                
+        if (zss_editor.bodyPlaceholderColor) {
+            var placeholderDiv = $('div[placeholderText][contenteditable=true]:empty:not(:focus)');
+            placeholderDiv.css('color', zss_editor.bodyPlaceholderColor);
         }
                 
         zss_editor.callback("callback-focus-out");
@@ -539,16 +542,8 @@ zss_editor.isBodyEmpty = function() {
 }
 
 zss_editor.setHTML = function(html) {
-    zss_editor.setHTMLAndRefreshPlaceholder(html, true);
-}
-
-zss_editor.setHTMLAndRefreshPlaceholder = function(html, refreshPlaceholder) {
     var editor = $('#zss_editor_content');
     editor.html(html);
-    
-    if (refreshPlaceholder) {
-        zss_editor.refreshPlaceholder();
-    }
 }
 
 zss_editor.insertHTML = function(html) {
@@ -743,22 +738,14 @@ zss_editor.sendEnabledStyles = function(e) {
 	zss_editor.stylesCallback(items);
 }
 
-// MARK: - Placeholder refresh
-
-zss_editor.refreshPlaceholder = function() {
-    if (zss_editor.shouldHidePlaceholder()) {
-        zss_editor.hidePlaceholder();
-    } else if (zss_editor.shouldShowPlaceholder()) {
-        zss_editor.showPlaceholder();
-    }
-}
+// MARK: - Placeholder
 
 zss_editor.setBodyPlaceholder = function(placeholder) {
     $('#zss_editor_content').attr('placeholderText', placeholder);
 }
 
 zss_editor.setBodyPlaceholderColor = function(color) {
-   //$('#zss_editor_content').attr('color', color);
+    zss_editor.bodyPlaceholderColor = color;
 }
 
 // MARK: - Parent nodes & tags
