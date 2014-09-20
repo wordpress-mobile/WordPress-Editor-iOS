@@ -13,7 +13,7 @@ var zss_editor = {};
 
 zss_editor.defaultCallbackSeparator = ',';
 
-// Wether we're editing or not
+// Whether we're editing or not
 zss_editor.editingEnabled = false;
 
 // If we are using iOS or desktop
@@ -34,7 +34,7 @@ zss_editor.enabledItems = {};
 // The placeholder text to show when editing if the body is empty.
 zss_editor.bodyPlaceholder = '';
 
-// Wether we're showing the placeholder or not.
+// Whether we're showing the placeholder or not.
 zss_editor.showingPlaceholder = false;
 
 /**
