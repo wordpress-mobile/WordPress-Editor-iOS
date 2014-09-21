@@ -34,9 +34,6 @@ zss_editor.bodyPlaceholder = '';
 // The placeholder text color
 zss_editor.bodyPlaceholderColor = '';
 
-// Whether we're showing the placeholder or not.
-zss_editor.showingPlaceholder = false;
-
 /**
  * The initializer function that must be called onLoad
  */
@@ -91,8 +88,7 @@ zss_editor.init = function() {
         }
                 
         if (zss_editor.bodyPlaceholderColor) {
-            var placeholderDiv = $('div[placeholderText][contenteditable=true]:empty:not(:focus)');
-            placeholderDiv.css('color', zss_editor.bodyPlaceholderColor);
+            zss_editor.refreshPlaceholderColor();
         }
                 
         zss_editor.callback("callback-focus-out");
@@ -166,6 +162,13 @@ zss_editor.stylesCallback = function(stylesArray) {
 	}
 
 	zss_editor.callback("callback-selection-style", stylesString);
+}
+
+// MARK: - Placeholder
+
+zss_editor.refreshPlaceholderColor = function() {
+    var placeholderDiv = $('div[placeholderText][contenteditable=true]:empty:not(:focus)');
+    placeholderDiv.css('color', zss_editor.bodyPlaceholderColor);
 }
 
 // MARK: - Selection
@@ -700,6 +703,7 @@ zss_editor.setBodyPlaceholder = function(placeholder) {
 
 zss_editor.setBodyPlaceholderColor = function(color) {
     zss_editor.bodyPlaceholderColor = color;
+    zss_editor.refreshPlaceholderColor()
 }
 
 // MARK: - Parent nodes & tags
