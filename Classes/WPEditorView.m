@@ -151,46 +151,6 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 	}
 }
 
-#pragma mark - Placeholder
-
-/**
- *	@brief		Refreshes the placeholder text, by either showing it or hiding it according to
- *				several conditions.
- */
-- (void)refreshPlaceholder
-{
-	[self refreshPlaceholder:self.placeholderHTMLString];
-}
-
-/**
- *	@brief		Refreshes the specified placeholder text, by either showing it or hiding it
- *				according to several conditions.
- *	@details	Same as refreshPlaceholder, but uses the received parameter instead of the property.
- *				This is a convenience method in case the caller already has a reference to the
- *				placeholder text and is not intended as a way to bypass the placeholder property.
- *
- *	@param		placeholder		The placeholder text to show, if conditions are met.
- */
-- (void)refreshPlaceholder:(NSString*)placeholder
-{
-	BOOL shouldHidePlaceholder = self.isShowingPlaceholder && self.isEditing;
-	
-	if (shouldHidePlaceholder) {
-		self.showingPlaceholder = NO;
-        [self setHtml:@"" refreshPlaceholder:NO];
-    } else {
-        BOOL shouldShowPlaceholder = (!self.isShowingPlaceholder
-                                      && self.resourcesLoaded
-                                      && !self.isEditing
-                                      && [self isBodyEmpty]);
-		
-		if (shouldShowPlaceholder) {
-			self.showingPlaceholder = YES;
-			[self setHtml:self.placeholderHTMLString refreshPlaceholder:NO];
-		}
-	}
-}
-
 #pragma mark - UIWebViewDelegate
 
 -            (BOOL)webView:(UIWebView *)webView
@@ -274,6 +234,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     // DRM: it's important to call this after resourcesLoaded has been set to YES.
     [self setHtml:self.preloadedHTML];
+    [self setPlaceholderHTMLStringInJavascript];
+    [self setPlaceholderHTMLStringColorInJavascript];
     
     if ([self.delegate respondsToSelector:@selector(editorViewDidFinishLoadingDOM:)]) {
         [self.delegate editorViewDidFinishLoadingDOM:self];
@@ -284,8 +246,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
-    self.editing = YES;
-    [self refreshPlaceholder];
     [self callDelegateFocusChanged:YES];
 }
 
@@ -298,9 +258,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
-    self.editing = NO;
-    
-    [self refreshPlaceholder];
     [self callDelegateFocusChanged:NO];
 }
 
@@ -534,17 +491,47 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *result = [string stringByReplacingOccurrencesOfString:@"+" withString:@" "];
     result = [result stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     return result;
-}\
+}
 
 #pragma mark - Setters
 
 - (void)setPlaceholderHTMLString:(NSString *)placeholderHTMLString
-{
+{    
 	if (_placeholderHTMLString != placeholderHTMLString) {
 		_placeholderHTMLString = placeholderHTMLString;
 		
-		[self refreshPlaceholder:placeholderHTMLString];
+        if (self.resourcesLoaded) {
+            [self setPlaceholderHTMLStringInJavascript];
+        }
 	}
+}
+
+- (void)setPlaceholderHTMLStringInJavascript
+{
+    NSString* string = [self addSlashes:self.placeholderHTMLString];
+    
+    string = [NSString stringWithFormat:@"zss_editor.setBodyPlaceholder(\"%@\");", string];
+    [self.webView stringByEvaluatingJavaScriptFromString:string];
+}
+
+- (void)setPlaceholderHTMLStringColor:(UIColor *)placeholderHTMLStringColor
+{
+    if (_placeholderHTMLStringColor != placeholderHTMLStringColor) {
+        _placeholderHTMLStringColor = placeholderHTMLStringColor;
+        
+        if (self.resourcesLoaded) {
+            [self setPlaceholderHTMLStringColorInJavascript];
+        }
+    }
+}
+
+- (void)setPlaceholderHTMLStringColorInJavascript
+{
+    int hexColor = HexColorFromUIColor(self.placeholderHTMLStringColor);
+    NSString* hexColorStr = [NSString stringWithFormat:@"#%06x", hexColor];
+    
+    NSString* string = [NSString stringWithFormat:@"zss_editor.setBodyPlaceholderColor(\"%@\");", hexColorStr];
+    [self.webView stringByEvaluatingJavaScriptFromString:string];
 }
 
 #pragma mark - Interaction
@@ -670,12 +657,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setHtml:(NSString *)html
 {
-    [self setHtml:html refreshPlaceholder:YES];
-}
-
--    (void)setHtml:(NSString *)html
-refreshPlaceholder:(BOOL)refreshPlaceholder
-{
 	if (!self.resourcesLoaded) {
 		self.preloadedHTML = html;
 	} else {
@@ -683,10 +664,6 @@ refreshPlaceholder:(BOOL)refreshPlaceholder
 		NSString *cleanedHTML = [self addSlashes:self.sourceView.text];
 		NSString *trigger = [NSString stringWithFormat:@"zss_editor.setHTML(\"%@\");", cleanedHTML];
 		[self.webView stringByEvaluatingJavaScriptFromString:trigger];
-		
-		if (refreshPlaceholder) {
-			[self refreshPlaceholder];
-		}
 	}
 }
 
@@ -760,7 +737,7 @@ refreshPlaceholder:(BOOL)refreshPlaceholder
 }
 
 - (void)enableEditing
-{	
+{
 	NSString *js = [NSString stringWithFormat:@"zss_editor.enableEditing();"];
 	[self.webView stringByEvaluatingJavaScriptFromString:js];
 }
