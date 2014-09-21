@@ -1924,7 +1924,7 @@ typedef enum
 }
 
 
-#pragma mark - UITextField Delegate
+#pragma mark - UITextFieldDelegate
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
@@ -1948,12 +1948,16 @@ typedef enum
 }
     
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{
+{    
     if (textField == self.titleTextField) {
-        if ([self.delegate respondsToSelector: @selector(editorTitleDidChange:)]) {
-            [self.delegate editorTitleDidChange:self];
+        
+        NSString* newTitle = [textField.text stringByReplacingCharactersInRange:range withString:string];
+        
+        if ([self.delegate respondsToSelector: @selector(editorViewController:titleWillChange:)]) {
+            [self.delegate editorViewController:self titleWillChange:newTitle];
         }
     }
+    
     return YES;
 }
 

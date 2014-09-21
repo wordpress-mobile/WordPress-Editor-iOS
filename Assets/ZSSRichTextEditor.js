@@ -277,52 +277,6 @@ zss_editor.setBlockquote = function() {
 	}
 
 	 zss_editor.sendEnabledStyles();
-
-	/* DRM: the following code has been disabled for the time being, but it's a good starting point
-	 for being able to apply blockquote to your selection only.
-	 
-	var formatBlock = document.queryCommandValue('formatBlock');
-	
-	if (formatBlock.length > 0 && formatBlock.toLowerCase() == "blockquote") {
-
-		var selection = document.getSelection();
-		alert(selection);
-		var range = selection.getRangeAt(0).cloneRange();
-		alert(range);
-		var container = range.commonAncestorContainer;
-		
-		alert(container.nodeName);
-		
-		while (container && container.elementName != "blockquote")
-		{
-			container = container.parentElement();
-		}
-		
-		if (container) {
-			container.contents().unwrap();
-		}
-	} else {
-		var selection = document.getSelection();
-		
-		if (selection) {
-			if (selection.rangeCount) {
-				
-				var elementName = "blockquote";
-				var el = document.createElement(elementName);
-				
-				var range = selection.getRangeAt(0).cloneRange();
-				range.surroundContents(el);
-				
-				range.selectNodeContents(el)
-				
-				selection.removeAllRanges();
-				selection.addRange(range);
-			}
-		}
-	}
-	
-	zss_editor.sendEnabledStyles();
-	 */
 }
 
 zss_editor.removeFormating = function() {
