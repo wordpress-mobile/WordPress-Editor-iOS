@@ -8,13 +8,14 @@
  */
 
 
+// If we are using iOS or desktop
+var isUsingiOS = true;
+
+// THe default callback parameter separator
+var defaultCallbackSeparator = ',';
+
 // The editor object
 var zss_editor = {};
-
-zss_editor.defaultCallbackSeparator = ',';
-
-// If we are using iOS or desktop
-zss_editor.isUsingiOS = true;
 
 // The current selection
 zss_editor.currentSelection;
@@ -31,8 +32,7 @@ zss_editor.enabledItems = {};
 // The placeholder text to show when editing if the body is empty.
 zss_editor.bodyPlaceholder = '';
 
-// The placeholder text color
-zss_editor.bodyPlaceholderColor = '';
+zss_editor.editableFields = [];
 
 /**
  * The initializer function that must be called onLoad
@@ -40,7 +40,14 @@ zss_editor.bodyPlaceholderColor = '';
 zss_editor.init = function() {
 
 	// Main editor div
-	var editor = $('#zss_editor_content');
+    //var editor = $('[contenteditable]'); // $('#zss_editor_content');
+    //alert(editor.id);
+    
+    var editor = $('[contenteditable]').each(function() {
+        var editableField = new ZSSField($(this));
+                                             
+        zss_editor.editableFields.push(editableField);
+    });
 
 	document.addEventListener("selectionchange", function(e) {
 		zss_editor.currentEditingLink = null;
@@ -58,50 +65,6 @@ zss_editor.init = function() {
 		}
 	}, false);
 
-	editor.bind('tap', function(e) {
-				
-		setTimeout(function() {
-			var targetNode = e.target;
-			var arguments = ['url=' + encodeURIComponent(targetNode.href),
-							 'title=' + encodeURIComponent(targetNode.innerHTML)];
-				   
-			if (targetNode.nodeName.toLowerCase() == 'a') {
-				zss_editor.callback('callback-link-tap',
-									arguments.join(zss_editor.defaultCallbackSeparator));
-			}
-		}, 400);
-	});
-    
-    editor.bind('focus', function(e) {
-        editor.css('color', '');
-                
-		zss_editor.callback("callback-focus-in");
-	});
-	
-    editor.bind('blur', function(e) {
-                
-        // IMPORTANT: sometimes HTML leaves some <br> tags or &nbsp; when the user deletes all
-        // text from a contentEditable field.  This code makes sure no such 'garbage' survives.
-        //
-        if (editor.text().length == 0) {
-            editor.empty();
-        }
-                
-        if (zss_editor.bodyPlaceholderColor) {
-            zss_editor.refreshPlaceholderColor();
-        }
-                
-        zss_editor.callback("callback-focus-out");
-	});
-	
-    editor.bind('keydown', function(e) {
-        zss_editor.formatNewLine(e);
-	});
-    
-    editor.bind('input', function(e) {
-        zss_editor.inputCallback();
-    });
-
 }//end
 
 // MARK: - Logging
@@ -111,10 +74,6 @@ zss_editor.log = function(msg) {
 }
 
 // MARK: - Callbacks
-
-zss_editor.inputCallback = function() {
-    zss_editor.callback("callback-input");
-}
 
 zss_editor.domLoadedCallback = function() {
 	
@@ -129,7 +88,7 @@ zss_editor.callback = function(callbackScheme, callbackPath) {
 		url = url + callbackPath;
 	}
 	
-	if (zss_editor.isUsingiOS) {
+	if (isUsingiOS) {
         zss_editor.callbackThroughIFrame(url);
 	} else {
 		console.log(url);
@@ -158,17 +117,10 @@ zss_editor.stylesCallback = function(stylesArray) {
 	var stylesString = '';
 	
 	if (stylesArray.length > 0) {
-		stylesString = stylesArray.join(zss_editor.defaultCallbackSeparator);
+		stylesString = stylesArray.join(defaultCallbackSeparator);
 	}
 
 	zss_editor.callback("callback-selection-style", stylesString);
-}
-
-// MARK: - Placeholder
-
-zss_editor.refreshPlaceholderColor = function() {
-    var placeholderDiv = $('div[placeholderText][contenteditable=true]:empty:not(:focus)');
-    placeholderDiv.css('color', zss_editor.bodyPlaceholderColor);
 }
 
 // MARK: - Selection
@@ -795,3 +747,165 @@ zss_editor.disableEditing = function () {
     
     $('#zss_editor_content').attr('contenteditable', false);
 }
+
+// MARK: - ZSSField Constructor
+
+function ZSSField(wrappedObject) {
+    this.wrappedObject = wrappedObject;
+    this.bodyPlaceholderColor = '';
+    
+    this.bindListeners();
+}
+
+ZSSField.prototype.bindListeners = function() {
+    
+    var thisObj = this;
+    
+    this.wrappedObject.bind('tap', function(e) { thisObj.handleTapEvent(e); });
+    this.wrappedObject.bind('focus', function(e) { thisObj.handleFocusEvent(e); });
+    this.wrappedObject.bind('blur', function(e) { thisObj.handleBlurEvent(e); });
+    this.wrappedObject.bind('keydown', function(e) { thisObj.handleKeyDownEvent(e); });
+    this.wrappedObject.bind('input', function(e) { thisObj.handleInputEvent(e); });
+};
+
+// MARK: - Handle event listeners
+
+ZSSField.prototype.handleBlurEvent = function(e) {
+    // IMPORTANT: sometimes HTML leaves some <br> tags or &nbsp; when the user deletes all
+    // text from a contentEditable field.  This code makes sure no such 'garbage' survives.
+    //
+    if (this.wrappedObject.text().length == 0) {
+        this.wrappedObject.empty();
+    }
+    
+    if (this.bodyPlaceholderColor) {
+        this.refreshPlaceholderColor();
+    }
+    
+    this.callback("callback-focus-out");
+};
+
+ZSSField.prototype.handleFocusEvent = function(e) {
+    this.wrappedObject.css('color', '');
+    this.callback("callback-focus-in");
+};
+
+ZSSField.prototype.handleKeyDownEvent = function(e) {
+    this.formatNewLine(e);
+};
+
+ZSSField.prototype.handleInputEvent = function(e) {
+     this.inputCallback();
+}
+
+ZSSField.prototype.handleTapEvent = function(e) {
+    
+    var targetNode = e.target;
+    var arguments = ['url=' + encodeURIComponent(targetNode.href),
+                     'title=' + encodeURIComponent(targetNode.innerHTML)];
+    
+    if (targetNode.nodeName.toLowerCase() == 'a') {
+        var joinedArguments = arguments.join(defaultCallbackSeparator);
+        
+        this.callback('callback-link-tap',
+                      joinedArguments);
+    }
+}
+
+
+// MARK: - Callback Wrappers
+
+ZSSField.prototype.inputCallback = function() {
+    this.callback("callback-input");
+}
+
+// MARK: - Callback Execution
+
+ZSSField.prototype.callback = function(callbackScheme, callbackPath) {
+    
+    var url = callbackScheme + ":";
+    
+    url = url + "id=" + this.wrappedObject.attr('id');
+
+    if (callbackPath) {
+        url = url + defaultCallbackSeparator + callbackPath;
+    }
+    
+    if (isUsingiOS) {
+        this.callbackThroughIFrame(url);
+    } else {
+        console.log(url);
+    }
+};
+
+/**
+ *  @brief      Executes a callback by loading it into an IFrame.
+ *  @details    The reason why we're using this instead of window.location is that window.location
+ *              can sometimes fail silently when called multiple times in rapid succession.
+ *              Found here:
+ *              http://stackoverflow.com/questions/10010342/clicking-on-a-link-inside-a-webview-that-will-trigger-a-native-ios-screen-with/10080969#10080969
+ *
+ *  @param      url     The callback URL.
+ */
+ZSSField.prototype.callbackThroughIFrame = function(url) {
+    var iframe = document.createElement("IFRAME");
+    iframe.setAttribute("src", url);
+    document.documentElement.appendChild(iframe);
+    iframe.parentNode.removeChild(iframe);
+    iframe = null;
+};
+
+// MARK: - Placeholder Color
+
+ZSSField.prototype.refreshPlaceholderColor = function() {
+    var placeholderDiv = $('div[placeholderText][contenteditable=true]:empty:not(:focus)');
+    placeholderDiv.css('color', this.bodyPlaceholderColor);
+};
+
+// MARK: - New line formatting
+
+ZSSField.prototype.formatNewLine = function(e) {
+    // Check to see if the enter key is pressed
+    if(e.keyCode == 13) {
+        var currentNode = this.closerParentNode('blockquote');
+        if (!currentNode
+            && !document.queryCommandState('insertOrderedList')
+            && !document.queryCommandState('insertUnorderedList')) {
+            document.execCommand('formatBlock', false, 'p');
+            e.PreventDefault();
+        }
+    }
+};
+
+
+// MARK: - Parent nodes & tags
+
+ZSSField.prototype.closerParentNode = function(nodeName) {
+    
+    nodeName = nodeName.toLowerCase();
+    
+    var parentNode = null;
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0).cloneRange();
+    
+    var currentNode = range.commonAncestorContainer;
+    
+    while (currentNode) {
+        
+        if (currentNode.nodeName == document.body.nodeName) {
+            break;
+        }
+        
+        if (currentNode.nodeName.toLowerCase() == nodeName
+            && currentNode.nodeType == document.ELEMENT_NODE) {
+            parentNode = currentNode;
+            
+            break;
+        }
+        
+        currentNode = currentNode.parentElement;
+    }
+    
+    return parentNode;
+};
+

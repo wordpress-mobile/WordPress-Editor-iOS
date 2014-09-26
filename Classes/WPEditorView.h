@@ -2,6 +2,16 @@
 
 @class WPEditorView;
 
+typedef enum
+{
+    kWPEditorViewFieldNone = 0,
+    kWPEditorViewFieldTitle,
+    kWPEditorViewFieldContent,
+}
+WPEditorViewField;
+
+@class WPEditorField;
+
 @protocol WPEditorViewDelegate <UIWebViewDelegate>
 @optional
 
@@ -34,10 +44,10 @@
  *	@brief		Received when the editor focus changes.
  *
  *	@param		editorView		The editor view.
- *	@param		gained			YES means the focus was gained by the editor.  NO means it was lost.
+ *	@param		field			The focused field.
  */
 - (void)editorView:(WPEditorView*)editorView
-	  focusChanged:(BOOL)gained;
+	  fieldFocused:(WPEditorViewField)field;
 
 /**
  *	@brief		Received when the user taps on a link in the editor.
@@ -98,9 +108,13 @@ stylesForCurrentSelection:(NSArray*)styles;
  */
 @property (nonatomic, copy, readwrite) UIColor* placeholderHTMLStringColor;
 
-#pragma mark - Selection
+#pragma mark - Properties: Selection
 @property (nonatomic, strong, readonly) NSString *selectedLinkTitle;
 @property (nonatomic, strong, readonly) NSString *selectedLinkURL;
+
+#pragma mark - Properties: Fields
+@property (nonatomic, strong, readonly) WPEditorField* contentField;
+@property (nonatomic, strong, readonly) WPEditorField* titleField;
 
 #pragma mark - Interaction
 

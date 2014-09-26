@@ -10,6 +10,9 @@ typedef void(^WPEditorViewNoParamsCompletionBlock)();
 static NSString* const kDefaultCallbackParameterSeparator = @",";
 static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 
+static NSString* const kWPEditorViewFieldTitleId = @"zss_editor_title";
+static NSString* const kWPEditorViewFieldContentId = @"zss_editor_content";
+
 @interface WPEditorView () <UITextViewDelegate, UIWebViewDelegate>
 
 #pragma mark - Misc state
@@ -246,7 +249,23 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
-    [self callDelegateFocusChanged:YES];
+    static NSString* const kFieldIdParameterName = @"id";
+    
+    __block WPEditorViewField field = kWPEditorViewFieldNone;
+    
+    [self parseParametersFromCallbackURL:url
+         andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+     {
+         if ([parameterName isEqualToString:kFieldIdParameterName]) {
+             if ([parameterValue isEqualToString:kWPEditorViewFieldTitleId]) {
+                 field = kWPEditorViewFieldTitle;
+             } else if ([parameterValue isEqualToString:kWPEditorViewFieldContentId]) {
+                 field = kWPEditorViewFieldContent;
+             }
+         }
+     } onComplete:^{
+         [self callDelegateFieldFocused:field];
+     }];
 }
 
 /**
@@ -258,7 +277,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
-    [self callDelegateFocusChanged:NO];
+    [self callDelegateFieldFocused:kWPEditorViewFieldNone];
 }
 
 /**
@@ -433,14 +452,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	NSParameterAssert(block);
 	
 	NSArray* parameters = [self parametersFromCallbackURL:url];
-	NSAssert([parameters count] == 2,
-			 @"We're expecting exactly two parameters here.");
 	
 	for (NSString* parameter in parameters) {
 		NSAssert([parameter isKindOfClass:[NSString class]],
 				 @"We're expecting to have a non-nil NSString object here.");
 		
-		NSArray* components = [self componentsFromParameter:parameter];
+        NSArray* components = [self componentsFromParameter:parameter];
+        NSAssert([components count] == 2,
+                 @"We're expecting exactly two components here.");
 		
 		block([components objectAtIndex:0], [components objectAtIndex:1]);
 	}
@@ -1006,12 +1025,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 /**
- *  @brief      Call's the delegate editorView:focusChanged: method.
+ *  @brief      Call's the delegate editorView:fieldFocused: method.
  */
-- (void)callDelegateFocusChanged:(BOOL)focusGained
+- (void)callDelegateFieldFocused:(WPEditorViewField)field
 {
-    if ([self.delegate respondsToSelector:@selector(editorView:focusChanged:)]) {
-        [self.delegate editorView:self focusChanged:focusGained];
+    if ([self.delegate respondsToSelector:@selector(editorView:fieldFocused:)]) {
+        [self.delegate editorView:self fieldFocused:field];
     }
 }
 

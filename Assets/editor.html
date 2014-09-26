@@ -798,7 +798,6 @@ function style_html(html_source, options) {
         
         html {
             box-sizing: border-box;
-            min-height: 100vh !important;
         }
         
         html, body {
@@ -813,7 +812,8 @@ function style_html(html_source, options) {
             overflow-y: scroll;
             -webkit-overflow-scrolling: touch;
             height: auto;
-            min-height: initial;
+            min-height: 100vh;
+            background-color:blue;
         }
     
 		img {max-width: 100%; width: auto; height: auto;}
@@ -822,18 +822,18 @@ function style_html(html_source, options) {
         div[contenteditable] {
             padding: 10px 10px 0px 10px;
             box-sizing: border-box;
-            min-height: 100vh;
         }
-        
+    
         div[placeholderText][contenteditable=true]:empty:not(:focus):before {
             content: attr(placeholderText);
             float: left;
-            margin-left: 2px;
         }
     </style>
   </head>
   <body>
-      <div contenteditable="true" id="zss_editor_content" style="">
+      <div contenteditable="true" id="zss_editor_title" style="background-color:red;">
+      </div>
+      <div contenteditable="true" id="zss_editor_content" style="background-color:yellow;">
         <!--content-->
       </div>
   </body>

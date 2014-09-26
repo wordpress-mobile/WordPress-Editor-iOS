@@ -1446,13 +1446,12 @@ typedef enum
 		[self.editorView showHTMLSource];
 		
         barButtonItem.tintColor = [self barButtonItemSelectedDefaultColor];
-        [self enableToolbarItems:NO shouldShowSourceButton:YES];
     } else {
 		[self.editorView showVisualEditor];
 		
         barButtonItem.tintColor = [self toolbarItemTintColor];
-        [self enableToolbarItems:YES shouldShowSourceButton:YES];
     }
+    
     [WPAnalytics track:WPAnalyticsStatEditorTappedHTML];
 }
 
@@ -1991,15 +1990,12 @@ typedef enum
 }
 
 - (void)editorView:(WPEditorView*)editorView
-	  focusChanged:(BOOL)focusGained
+	  fieldFocused:(WPEditorViewField)field
 {
-	if (focusGained && editorView.isInVisualMode) {
-		[self enableToolbarItems:YES
-		  shouldShowSourceButton:YES];
-    } else if (focusGained && !editorView.isInVisualMode) {
-        [self enableToolbarItems:NO
-          shouldShowSourceButton:YES];
-    }
+    BOOL shouldEnableToolbarItems = (field == kWPEditorViewFieldContent);
+    
+    [self enableToolbarItems:shouldEnableToolbarItems
+      shouldShowSourceButton:YES];
 }
 
 - (BOOL)editorView:(WPEditorView*)editorView
