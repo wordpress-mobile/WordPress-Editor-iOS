@@ -8,12 +8,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"content" ofType:@"html"];
-    NSString *htmlParam = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-    [self setTitleText:@"I'm editing a post!"];
-    [self setBodyText:htmlParam];
-	self.delegate = self;
     
+    self.delegate = self;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Edit"
                                                                              style:UIBarButtonItemStyleBordered
                                                                             target:self
@@ -47,6 +43,14 @@
 - (void)editorDidEndEditing:(WPEditorViewController *)editorController
 {
     NSLog(@"Editor did end editing.");
+}
+
+- (void)editorDidFinishLoadingDOM:(WPEditorViewController *)editorController
+{
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"content" ofType:@"html"];
+    NSString *htmlParam = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    [self setTitleText:@"I'm editing a post!"];
+    [self setBodyText:htmlParam];
 }
 
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController

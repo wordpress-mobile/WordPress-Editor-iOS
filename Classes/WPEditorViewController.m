@@ -1981,6 +1981,8 @@ typedef enum
 	} else {
 		[self.editorView disableEditing];
 	}
+    
+    [self tellOurDelegateEditorDidFinishLoadingDOM];
 }
 
 - (void)editorView:(WPEditorView*)editorView
@@ -2104,5 +2106,11 @@ didFailLoadWithError:(NSError *)error
 	}
 }
 
+- (void)tellOurDelegateEditorDidFinishLoadingDOM
+{
+    if ([self.delegate respondsToSelector:@selector(editorDidFinishLoadingDOM:)]) {
+        [self.delegate editorDidFinishLoadingDOM:self];
+    }
+}
 
 @end
