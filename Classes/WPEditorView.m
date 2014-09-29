@@ -43,13 +43,6 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 
 @implementation WPEditorView
 
-#pragma mark - NSObject
-
-- (void)dealloc
-{
-	[self stopObservingKeyboardNotifications];
-}
-
 #pragma mark - UIView
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -145,15 +138,6 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 	htmlString = [htmlString stringByReplacingOccurrencesOfString:@"<!--editor-->" withString:jsString];
 	
 	return htmlString;
-}
-
-- (void)willMoveToSuperview:(UIView *)newSuperview
-{
-	if (!newSuperview) {
-		[self stopObservingKeyboardNotifications];
-	} else {
-		[self startObservingKeyboardNotifications];
-	}
 }
 
 #pragma mark - UIWebViewDelegate
@@ -962,61 +946,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
-}
-
-#pragma mark - Keyboard notifications
-
-- (void)startObservingKeyboardNotifications
-{
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(keyboardWillShow:)
-												 name:UIKeyboardWillShowNotification
-											   object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(keyboardWillHide:)
-												 name:UIKeyboardWillHideNotification
-											   object:nil];
-}
-
-- (void)stopObservingKeyboardNotifications
-{
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-}
-
-
-#pragma mark - Keyboard status
-
-- (void)keyboardWillShow:(NSNotification *)notification
-{
-	NSDictionary *info = notification.userInfo;
-	CGRect keyboardEnd = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-	
-	CGRect localizedKeyboardEnd = [self convertRect:keyboardEnd fromView:nil];
-	CGPoint keyboardOrigin = localizedKeyboardEnd.origin;
-	
-	if (keyboardOrigin.y > 0) {
-		
-		CGFloat vOffset = self.frame.size.height - keyboardOrigin.y;
-		
-		UIEdgeInsets webViewInsets = self.webView.scrollView.contentInset;
-		webViewInsets.bottom = vOffset;
-		self.webView.scrollView.contentInset = webViewInsets;
-		self.webView.scrollView.scrollIndicatorInsets = webViewInsets;
-		
-		UIEdgeInsets sourceViewInsets = self.webView.scrollView.contentInset;
-		sourceViewInsets.bottom = vOffset;
-		self.sourceView.contentInset = sourceViewInsets;
-		self.sourceView.scrollIndicatorInsets = sourceViewInsets;
-	}
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification
-{
-	self.webView.scrollView.contentInset = UIEdgeInsetsZero;
-	self.webView.scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
-	self.sourceView.contentInset = UIEdgeInsetsZero;
-	self.sourceView.scrollIndicatorInsets = UIEdgeInsetsZero;
 }
 
 #pragma mark - Delegate calls
