@@ -32,7 +32,7 @@ ZSSEditor.enabledItems = {};
 // The placeholder text to show when editing if the body is empty.
 ZSSEditor.bodyPlaceholder = '';
 
-ZSSEditor.editableFields = [];
+ZSSEditor.editableFields = {};
 
 /**
  * The initializer function that must be called onLoad
@@ -41,9 +41,10 @@ ZSSEditor.init = function() {
     
     var editor = $('[contenteditable]').each(function() {
         var editableField = new ZSSField($(this));
-
-        ZSSEditor.editableFields.push(editableField);
-        ZSSEditor.callback("callback-new-field", "id=" + editableField.getNodeId());
+        var editableFieldId = editableField.getNodeId();
+                                             
+        ZSSEditor.editableFields[editableFieldId] = editableField;
+        ZSSEditor.callback("callback-new-field", "id=" + editableFieldId);
     });
 
 	document.addEventListener("selectionchange", function(e) {
@@ -68,15 +69,8 @@ ZSSEditor.init = function() {
 
 ZSSEditor.getField = function(fieldId) {
     
-    var field = null;
-    
-    for (var i = 0; i < this.editableField.length; i++) {
-        if (this.editableField[i].getNodeId() == fieldId) {
-            field = this.editableField[i];
-            break;
-        }
-    }
-    
+    var field = this.editableFields[fieldId];
+
     return field;
 }
 
