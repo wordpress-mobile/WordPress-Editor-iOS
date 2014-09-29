@@ -144,7 +144,13 @@
     if (!self.domLoaded) {
         self.preloadedHTML = html;
     } else {
-        html = [self addSlashes:html];
+        
+        if (html) {
+            html = [self addSlashes:html];
+        } else {
+            html = @"";
+        }
+        
         NSString* javascript = [NSString stringWithFormat:@"%@.setHTML(\"%@\");", [self wrappedNodeJavascriptAccessor], html];
         
         [self.webView stringByEvaluatingJavaScriptFromString:javascript];
