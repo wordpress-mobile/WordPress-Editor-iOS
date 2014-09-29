@@ -14,7 +14,6 @@
 #import "WPEditorField.h"
 #import "WPEditorToolbarButton.h"
 #import "WPEditorView.h"
-#import "WPInsetTextField.h"
 #import "ZSSBarButtonItem.h"
 
 // Keep an eye on this constant on different iOS versions

@@ -73,7 +73,6 @@
 		2D9CE849BAF141D590885473 /* NSString+DTUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = A1D5481370E14304A558E14E /* NSString+DTUtilities.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -DOS_OBJECT_USE_OBJC=0"; }; };
 		2E697F964F104FA385A96479 /* WPEditorViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 745FE71F602E404389BCD8BB /* WPEditorViewController.h */; };
 		2EB56AADA8D94693AB4A882F /* DTCustomColoredAccessory.h in Headers */ = {isa = PBXBuildFile; fileRef = 9A73B6718294401FA95B84CC /* DTCustomColoredAccessory.h */; };
-		324344ED214E47DC8DD7769B /* WPInsetTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = E2DB3FB8D6AC45A39D27B1E1 /* WPInsetTextField.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		3338727E20154273A46674F0 /* UIView+DTFoundation.h in Headers */ = {isa = PBXBuildFile; fileRef = B56F72E53EB34148B7129A57 /* UIView+DTFoundation.h */; };
 		33854609381B4E48B902D028 /* DTHTMLWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 0E74A31D2E294A19BC2F27EC /* DTHTMLWriter.h */; };
 		33BC06D3362447EF97395147 /* Pods-EditorDemoTests-CocoaLumberjack-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D4A2E0756AAD4BF283C85CF1 /* Pods-EditorDemoTests-CocoaLumberjack-dummy.m */; };
@@ -134,7 +133,6 @@
 		55339BF7F14D4ECCB7DEEF2E /* DTCustomColoredAccessory.m in Sources */ = {isa = PBXBuildFile; fileRef = B2D4AA27A0A34796BE3962C1 /* DTCustomColoredAccessory.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -DOS_OBJECT_USE_OBJC=0"; }; };
 		55416F16688645B5ABB371E2 /* DDMultiFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = BD158776A1904ED68518311B /* DDMultiFormatter.h */; };
 		56F2625896F44F2C87DA0809 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12479CE2F7674A9780B2FBF1 /* Foundation.framework */; };
-		5722B3617693433499FFE459 /* WPInsetTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 100B7046EDF04A4A930D4B09 /* WPInsetTextField.h */; };
 		58934FA616244A48BC9E303F /* HRColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A833CB33BAE4FAFAFDDEB97 /* HRColorUtil.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		58C05E1B0ED943BA96DAC880 /* DTIframeTextAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = 529F8181CCBE487AA066B896 /* DTIframeTextAttachment.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -DOS_OBJECT_USE_OBJC=0"; }; };
 		58EC1FCAADCF4178A956BBD0 /* HRCgUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 46EEC9C43DA143DEB3986BF7 /* HRCgUtil.h */; };
@@ -565,7 +563,6 @@
 		0F40B376FA434C8083B11896 /* Pods-EditorDemo-AFNetworking-Private.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-EditorDemo-AFNetworking-Private.xcconfig"; sourceTree = "<group>"; };
 		0F57268304D9419E8E893DE3 /* UIAlertView+Blocks.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "UIAlertView+Blocks.m"; sourceTree = "<group>"; };
 		0FB076E669924229A94405D7 /* UIRefreshControl+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIRefreshControl+AFNetworking.m"; path = "UIKit+AFNetworking/UIRefreshControl+AFNetworking.m"; sourceTree = "<group>"; };
-		100B7046EDF04A4A930D4B09 /* WPInsetTextField.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = WPInsetTextField.h; path = Classes/WPInsetTextField.h; sourceTree = "<group>"; };
 		106A2875694942C29BC214D8 /* NSString+DTUtilities.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSString+DTUtilities.h"; path = "Core/Source/NSString+DTUtilities.h"; sourceTree = "<group>"; };
 		10FFD26E1C5641E3A1402412 /* DTImageTextAttachment.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DTImageTextAttachment.h; path = Core/Source/DTImageTextAttachment.h; sourceTree = "<group>"; };
 		11FF6C6A458E4670A2597B55 /* UIAlertView+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIAlertView+AFNetworking.m"; path = "UIKit+AFNetworking/UIAlertView+AFNetworking.m"; sourceTree = "<group>"; };
@@ -974,7 +971,6 @@
 		E0CB68E27A294317BAC3A5F4 /* OpenSans-Light.ttf */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = file; name = "OpenSans-Light.ttf"; path = "WordPress-iOS-Shared/Assets/OpenSans-Light.ttf"; sourceTree = "<group>"; };
 		E21A25CED8A54535877F4385 /* DTFolderMonitor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DTFolderMonitor.m; path = Core/Source/DTFolderMonitor.m; sourceTree = "<group>"; };
 		E2D6C761EE8B4B99AC6DAD43 /* Pods-EditorDemo-environment.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-EditorDemo-environment.h"; sourceTree = "<group>"; };
-		E2DB3FB8D6AC45A39D27B1E1 /* WPInsetTextField.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = WPInsetTextField.m; path = Classes/WPInsetTextField.m; sourceTree = "<group>"; };
 		E3EB56276DA741619FAEC1BB /* DTTextBlock.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DTTextBlock.h; path = Core/Source/DTTextBlock.h; sourceTree = "<group>"; };
 		E3F77808BEBC405486C736D5 /* DTLazyImageView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DTLazyImageView.h; path = Core/Source/DTLazyImageView.h; sourceTree = "<group>"; };
 		E3FFC5295AE848B18AC32D16 /* DTBlockFunctions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DTBlockFunctions.m; path = Core/Source/DTBlockFunctions.m; sourceTree = "<group>"; };
@@ -1868,8 +1864,6 @@
 				745FE71F602E404389BCD8BB /* WPEditorViewController.h */,
 				249660BC80B848579217F5FB /* WPEditorViewController.m */,
 				60E02B0EE17D404BA89AA589 /* WPEditorViewController_Internal.h */,
-				100B7046EDF04A4A930D4B09 /* WPInsetTextField.h */,
-				E2DB3FB8D6AC45A39D27B1E1 /* WPInsetTextField.m */,
 				1C800057CFAD4E4EA1713E82 /* WPLegacyEditorViewController.h */,
 				767A7DD57EA747A2BEAD7D5C /* WPLegacyEditorViewController.m */,
 				9E4080631C5145469A8AB44C /* WPLegacyKeyboardToolbarBase.h */,
@@ -2055,7 +2049,6 @@
 				37EC4E479C7B40EAAAED959F /* WPEditorView.h in Headers */,
 				2E697F964F104FA385A96479 /* WPEditorViewController.h in Headers */,
 				B2DCC9FB1F014F97B3841494 /* WPEditorViewController_Internal.h in Headers */,
-				5722B3617693433499FFE459 /* WPInsetTextField.h in Headers */,
 				8FDCCCCF684E4084810EEC26 /* WPLegacyEditorViewController.h in Headers */,
 				2538D544A4934D558D645EF5 /* WPLegacyKeyboardToolbarBase.h in Headers */,
 				A65F8B788DA44E11B95C83B5 /* WPLegacyKeyboardToolbarButtonItem.h in Headers */,
@@ -2639,7 +2632,6 @@
 				EEE829850D7F45ACB1BAA45D /* WPEditorToolbarButton.m in Sources */,
 				59661F697F2C4659B561E39C /* WPEditorView.m in Sources */,
 				DCD950C4638642268456796F /* WPEditorViewController.m in Sources */,
-				324344ED214E47DC8DD7769B /* WPInsetTextField.m in Sources */,
 				F6DF936002E84554BD288845 /* WPLegacyEditorViewController.m in Sources */,
 				8D906148338A4677932946C3 /* WPLegacyKeyboardToolbarBase.m in Sources */,
 				FF6CA951F01845F3BC662E49 /* WPLegacyKeyboardToolbarButtonItem.m in Sources */,
