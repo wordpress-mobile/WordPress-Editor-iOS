@@ -122,6 +122,20 @@
     return wrappedNode;
 }
 
+#pragma mark - Editing lock
+
+- (void)disableEditing
+{
+    NSString* javascript = [NSString stringWithFormat:@"%@.disableEditing();", [self wrappedNodeJavascriptAccessor]];
+    [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+}
+
+- (void)enableEditing
+{
+    NSString* javascript = [NSString stringWithFormat:@"%@.enableEditing();", [self wrappedNodeJavascriptAccessor]];
+    [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+}
+
 #pragma mark - HTML
 
 - (NSString*)html
@@ -203,6 +217,20 @@
     html = [html stringByReplacingOccurrencesOfString:@"\n"  withString:@"\\n"];
     
     return html;
+}
+
+#pragma mark - Focus
+
+- (void)focus
+{
+    NSString* javascript = [NSString stringWithFormat:@"%@.focus();", [self wrappedNodeJavascriptAccessor]];
+    [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+}
+
+- (void)blur
+{
+    NSString* javascript = [NSString stringWithFormat:@"%@.blur();", [self wrappedNodeJavascriptAccessor]];
+    [self.webView stringByEvaluatingJavaScriptFromString:javascript];
 }
 
 @end

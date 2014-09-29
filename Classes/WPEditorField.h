@@ -40,6 +40,18 @@
  */
 - (void)handleDOMLoaded;
 
+#pragma mark - Editing lock
+
+/**
+ *	@brief		Disables editing.
+ */
+- (void)disableEditing;
+
+/**
+ *	@brief		Enables editing.
+ */
+- (void)enableEditing;
+
 #pragma mark - HTML
 
 /**
@@ -71,5 +83,19 @@
  *  @param      placeholderText     The new placeholder color.
  */
 - (void)setPlaceholderColor:(UIColor *)placeholderColor;
+
+#pragma mark - Focus
+
+/**
+ *	@brief		Assigns focus to the field.
+ *	@todo		DRM: Replace this with becomeFirstResponder????
+ */
+- (void)focus;
+
+/**
+ *	@brief		Resigns focus from the field.
+ *	@todo		DRM: Replace this with resignFirstResponder????
+ */
+- (void)blur;
 
 @end

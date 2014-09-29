@@ -14,6 +14,13 @@
 - (void)editorTextDidChange:(WPEditorView*)editorView;
 
 /**
+ *	@brief		Received when the editor title is changed.
+ *
+ *	@param		editorView		The editor view.
+ */
+- (void)editorTitleDidChange:(WPEditorView*)editorView;
+
+/**
  *	@brief		Received when the underlying web content's DOM is ready.
  *	@details	The content never completely loads while offline under some circumstances.
  *				This event offers an alternative to start working on the page's contents.
@@ -181,19 +188,7 @@ stylesForCurrentSelection:(NSArray*)styles;
 - (void)quickLink;
 - (void)removeLink;
 
-#pragma mark - Editor focus
-
-/**
- *	@brief		Assigns focus to the editor.
- *	@todo		DRM: Replace this with becomeFirstResponder????
- */
-- (void)focus;
-
-/**
- *	@brief		Resigns focus from the editor.
- *	@todo		DRM: Replace this with resignFirstResponder????
- */
-- (void)blur;
+#pragma mark - Editing
 
 /**
  *	@brief		Ends editing and forces any subview to resign first responder.

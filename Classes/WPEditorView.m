@@ -297,7 +297,26 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
-    [self callDelegateEditorTextDidChange];
+    static NSString* const kFieldIdParameterName = @"id";
+    
+    __weak typeof(self) weakSelf = self;
+    
+    [self parseParametersFromCallbackURL:url
+         andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+     {
+         if ([parameterName isEqualToString:kFieldIdParameterName]) {
+             __strong typeof(weakSelf) strongSelf = weakSelf;
+             
+             if ([parameterValue isEqualToString:kWPEditorViewFieldTitleId]) {
+                 [self callDelegateEditorTitleDidChange];
+             } else if ([parameterValue isEqualToString:kWPEditorViewFieldContentId]) {
+                 [self callDelegateEditorTextDidChange];
+             }
+             
+             strongSelf.webView.customInputAccessoryView = strongSelf.focusedField.inputAccessoryView;
+         }
+     } onComplete:nil];
+    
 }
 
 /**
@@ -604,14 +623,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)undo
 {
-    [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.undo();"];
+    [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.undo();"];
 	
     [self callDelegateEditorTextDidChange];
 }
 
 - (void)redo
 {
-    [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.redo();"];
+    [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.redo();"];
 	
     [self callDelegateEditorTextDidChange];
 }
@@ -620,17 +639,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)restoreSelection
 {
-	[self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.restoreRange();"];
+	[self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.restoreRange();"];
 }
 
 - (void)saveSelection
 {
-    [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.prepareInsert();"];
+    [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.prepareInsert();"];
 }
 
 - (NSString*)selectedText
 {
-	NSString* selectedText = [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.getSelectedText();"];
+	NSString* selectedText = [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.getSelectedText();"];
 	
 	return selectedText;
 }
@@ -640,9 +659,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *hex = [NSString stringWithFormat:@"#%06x",HexColorFromUIColor(color)];
     NSString *trigger;
     if (tag == 1) {
-        trigger = [NSString stringWithFormat:@"zss_editor.setTextColor(\"%@\");", hex];
+        trigger = [NSString stringWithFormat:@"ZSSEditor.setTextColor(\"%@\");", hex];
     } else if (tag == 2) {
-        trigger = [NSString stringWithFormat:@"zss_editor.setBackgroundColor(\"%@\");", hex];
+        trigger = [NSString stringWithFormat:@"ZSSEditor.setBackgroundColor(\"%@\");", hex];
     }
 	
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
@@ -654,13 +673,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)insertImage:(NSString *)url alt:(NSString *)alt
 {
-    NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertImage(\"%@\", \"%@\");", url, alt];
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertImage(\"%@\", \"%@\");", url, alt];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
 - (void)updateImage:(NSString *)url alt:(NSString *)alt
 {
-    NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateImage(\"%@\", \"%@\");", url, alt];
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.updateImage(\"%@\", \"%@\");", url, alt];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
@@ -672,7 +691,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	NSParameterAssert([url isKindOfClass:[NSString class]]);
 	NSParameterAssert([title isKindOfClass:[NSString class]]);
 	
-	NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertLink(\"%@\",\"%@\");", url, title];
+	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertLink(\"%@\",\"%@\");", url, title];
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 	
     [self callDelegateEditorTextDidChange];
@@ -689,7 +708,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	NSParameterAssert([url isKindOfClass:[NSString class]]);
 	NSParameterAssert([title isKindOfClass:[NSString class]]);
 	
-	NSString *trigger = [NSString stringWithFormat:@"zss_editor.updateLink(\"%@\",\"%@\");", url, title];
+	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.updateLink(\"%@\",\"%@\");", url, title];
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 	
     [self callDelegateEditorTextDidChange];
@@ -697,12 +716,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)removeLink
 {
-	[self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.unlink();"];
+	[self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.unlink();"];
 }
 
 - (void)quickLink
 {
-	[self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.quickLink();"];
+	[self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.quickLink();"];
 }
 
 #pragma mark - Editor: HTML interaction
@@ -711,24 +730,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)insertHTML:(NSString *)html
 {
     NSString *cleanedHTML = [self addSlashes:html];
-    NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertHTML(\"%@\");", cleanedHTML];
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertHTML(\"%@\");", cleanedHTML];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-#pragma mark - Editor focus
-
-- (void)focus
-{
-    self.webView.keyboardDisplayRequiresUserAction = NO;
-    NSString *js = [NSString stringWithFormat:@"zss_editor.focusEditor();"];
-    [self.webView stringByEvaluatingJavaScriptFromString:js];
-}
-
-- (void)blur
-{
-    NSString *js = [NSString stringWithFormat:@"zss_editor.blurEditor();"];
-    [self.webView stringByEvaluatingJavaScriptFromString:js];
-}
+#pragma mark - Editing
 
 - (void)endEditing;
 {
@@ -761,21 +767,21 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)disableEditing
 {
-	NSString *js = [NSString stringWithFormat:@"zss_editor.disableEditing();"];
-	[self.webView stringByEvaluatingJavaScriptFromString:js];
+    [self.titleField disableEditing];
+    [self.contentField disableEditing];
 }
 
 - (void)enableEditing
 {
-	NSString *js = [NSString stringWithFormat:@"zss_editor.enableEditing();"];
-	[self.webView stringByEvaluatingJavaScriptFromString:js];
+    [self.titleField enableEditing];
+    [self.contentField enableEditing];
 }
 
 #pragma mark - Styles
 
 - (void)alignLeft
 {
-    NSString *trigger = @"zss_editor.setJustifyLeft();";
+    NSString *trigger = @"ZSSEditor.setJustifyLeft();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
     
     [self callDelegateEditorTextDidChange];
@@ -783,7 +789,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)alignCenter
 {
-    NSString *trigger = @"zss_editor.setJustifyCenter();";
+    NSString *trigger = @"ZSSEditor.setJustifyCenter();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -791,7 +797,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)alignRight
 {
-    NSString *trigger = @"zss_editor.setJustifyRight();";
+    NSString *trigger = @"ZSSEditor.setJustifyRight();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -799,7 +805,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)alignFull
 {
-    NSString *trigger = @"zss_editor.setJustifyFull();";
+    NSString *trigger = @"ZSSEditor.setJustifyFull();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -807,7 +813,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setBold
 {
-    NSString *trigger = @"zss_editor.setBold();";
+    NSString *trigger = @"ZSSEditor.setBold();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -815,7 +821,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setBlockQuote
 {
-    NSString *trigger = @"zss_editor.setBlockquote();";
+    NSString *trigger = @"ZSSEditor.setBlockquote();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -823,7 +829,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setItalic
 {
-    NSString *trigger = @"zss_editor.setItalic();";
+    NSString *trigger = @"ZSSEditor.setItalic();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -831,7 +837,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setSubscript
 {
-    NSString *trigger = @"zss_editor.setSubscript();";
+    NSString *trigger = @"ZSSEditor.setSubscript();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -839,7 +845,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setUnderline
 {
-    NSString *trigger = @"zss_editor.setUnderline();";
+    NSString *trigger = @"ZSSEditor.setUnderline();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -847,7 +853,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setSuperscript
 {
-    NSString *trigger = @"zss_editor.setSuperscript();";
+    NSString *trigger = @"ZSSEditor.setSuperscript();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -855,7 +861,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setStrikethrough
 {
-    NSString *trigger = @"zss_editor.setStrikeThrough();";
+    NSString *trigger = @"ZSSEditor.setStrikeThrough();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -863,7 +869,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setUnorderedList
 {
-    NSString *trigger = @"zss_editor.setUnorderedList();";
+    NSString *trigger = @"ZSSEditor.setUnorderedList();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -871,7 +877,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setOrderedList
 {
-    NSString *trigger = @"zss_editor.setOrderedList();";
+    NSString *trigger = @"ZSSEditor.setOrderedList();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -879,7 +885,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setHR
 {
-    NSString *trigger = @"zss_editor.setHorizontalRule();";
+    NSString *trigger = @"ZSSEditor.setHorizontalRule();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -887,7 +893,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setIndent
 {
-    NSString *trigger = @"zss_editor.setIndent();";
+    NSString *trigger = @"ZSSEditor.setIndent();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -895,7 +901,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setOutdent
 {
-    NSString *trigger = @"zss_editor.setOutdent();";
+    NSString *trigger = @"ZSSEditor.setOutdent();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -903,7 +909,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)heading1
 {
-    NSString *trigger = @"zss_editor.setHeading('h1');";
+    NSString *trigger = @"ZSSEditor.setHeading('h1');";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -911,7 +917,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)heading2
 {
-    NSString *trigger = @"zss_editor.setHeading('h2');";
+    NSString *trigger = @"ZSSEditor.setHeading('h2');";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -919,7 +925,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)heading3
 {
-    NSString *trigger = @"zss_editor.setHeading('h3');";
+    NSString *trigger = @"ZSSEditor.setHeading('h3');";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -927,7 +933,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)heading4
 {
-    NSString *trigger = @"zss_editor.setHeading('h4');";
+    NSString *trigger = @"ZSSEditor.setHeading('h4');";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -935,7 +941,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)heading5
 {
-    NSString *trigger = @"zss_editor.setHeading('h5');";
+    NSString *trigger = @"ZSSEditor.setHeading('h5');";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -943,7 +949,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)heading6
 {
-    NSString *trigger = @"zss_editor.setHeading('h6');";
+    NSString *trigger = @"ZSSEditor.setHeading('h6');";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -952,7 +958,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)removeFormat
 {
-    NSString *trigger = @"zss_editor.removeFormating();";
+    NSString *trigger = @"ZSSEditor.removeFormating();";
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
@@ -1022,6 +1028,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     if ([self.delegate respondsToSelector: @selector(editorTextDidChange:)]) {
         [self.delegate editorTextDidChange:self];
+    }
+}
+
+/**
+ *  @brief      Call's the delegate editorTitleDidChange: method.
+ */
+- (void)callDelegateEditorTitleDidChange
+{
+    if ([self.delegate respondsToSelector: @selector(editorTitleDidChange:)]) {
+        [self.delegate editorTitleDidChange:self];
     }
 }
 

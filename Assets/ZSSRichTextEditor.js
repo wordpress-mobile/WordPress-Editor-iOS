@@ -29,9 +29,6 @@ ZSSEditor.currentEditingLink;
 // The objects that are enabled
 ZSSEditor.enabledItems = {};
 
-// The placeholder text to show when editing if the body is empty.
-ZSSEditor.bodyPlaceholder = '';
-
 ZSSEditor.editableFields = {};
 
 /**
@@ -450,13 +447,6 @@ ZSSEditor.insertImage = function(url, alt) {
 	ZSSEditor.sendEnabledStyles();
 }
 
-ZSSEditor.isBodyEmpty = function() {
-    var html = ZSSEditor.getHTML();
-    var isEmpty = (html.length == 0 || html == "<br>");
-    
-    return isEmpty;
-}
-
 ZSSEditor.setHTML = function(html) {
     var editor = $('#zss_field_content');
     editor.html(html);
@@ -654,17 +644,6 @@ ZSSEditor.sendEnabledStyles = function(e) {
 	ZSSEditor.stylesCallback(items);
 }
 
-// MARK: - Placeholder
-
-ZSSEditor.setBodyPlaceholder = function(placeholder) {
-    $('#zss_field_content').attr('placeholderText', placeholder);
-}
-
-ZSSEditor.setBodyPlaceholderColor = function(color) {
-    ZSSEditor.bodyPlaceholderColor = color;
-    ZSSEditor.refreshPlaceholderColor()
-}
-
 // MARK: - Parent nodes & tags
 
 ZSSEditor.closerParentNode = function(nodeName) {
@@ -748,20 +727,6 @@ ZSSEditor.blurEditor = function() {
 	}
 }
 
-// MARK: - Editing
-
-ZSSEditor.enableEditing = function () {
-    this.editableFields.forEach(function(element) {
-        element.enableEditing();
-    });
-}
-
-ZSSEditor.disableEditing = function () {
-    this.editableFields.forEach(function(element) {
-        element.disableEditing();
-    });
-}
-
 // MARK: - ZSSField Constructor
 
 function ZSSField(wrappedObject) {
@@ -792,15 +757,14 @@ ZSSField.prototype.handleBlurEvent = function(e) {
         this.wrappedObject.empty();
     }
     
-    if (this.bodyPlaceholderColor) {
-        this.refreshPlaceholderColor();
-    }
-    
+    this.refreshPlaceholderColor();
     this.callback("callback-focus-out");
 };
 
 ZSSField.prototype.handleFocusEvent = function(e) {
-    this.wrappedObject.css('color', '');
+    // IMPORTANT: this is the only case where checking the current focus will not work.
+    // We sidestep this issue by indicating that the field is about to gain focus.
+    this.refreshPlaceholderColorAboutToGainFocus(true);
     this.callback("callback-focus-in");
 };
 
@@ -825,7 +789,6 @@ ZSSField.prototype.handleTapEvent = function(e) {
                       joinedArguments);
     }
 }
-
 
 // MARK: - Callback Wrappers
 
@@ -872,8 +835,8 @@ ZSSField.prototype.callbackThroughIFrame = function(url) {
 // MARK: - Focus
 
 ZSSField.prototype.isFocused = function() {
-    
-    return this.wrappedObject.is(":focus");
+
+    return this.wrappedObject.is(':focus');
 }
 
 ZSSField.prototype.focus = function() {
@@ -902,29 +865,38 @@ ZSSField.prototype.enableEditing = function () {
 };
 
 ZSSField.prototype.disableEditing = function () {
-    // IMPORTANT: we're blurring the editor before making it non-editable since that ensures
+    // IMPORTANT: we're blurring the field before making it non-editable since that ensures
     // that the iOS keyboard is dismissed through an animation, as opposed to being immediately
     // removed from the screen.
     //
-    ZSSEditor.blur();
+    this.blur();
     
     this.wrappedObject.attr('contenteditable', false);
 };
 
 // MARK: - HTML contents
 
-ZSSField.prototype.getHTML = function() {
+ZSSField.prototype.isEmpty = function() {
+    var html = this.getHTML();
+    var isEmpty = (html.length == 0 || html == "<br>");
     
-    // Get the contents
-    var h = this.wrappedObject.innerHTML;
-    return h;
+    return isEmpty;
+}
+
+ZSSField.prototype.getHTML = function() {
+    return this.wrappedObject.html();
 }
 
 ZSSField.prototype.setHTML = function(html) {
     this.wrappedObject.html(html);
+    this.refreshPlaceholderColor();
 }
 
 // MARK: - Placeholder
+
+ZSSField.prototype.hasPlaceholderText = function() {
+    return this.wrappedObject.attr('placeholderText') != null;
+};
 
 ZSSField.prototype.setPlaceholderText = function(placeholder) {
     
@@ -932,12 +904,30 @@ ZSSField.prototype.setPlaceholderText = function(placeholder) {
 }
 
 ZSSField.prototype.setPlaceholderColor = function(color) {
-    
     this.bodyPlaceholderColor = color;
-    this.refreshPlaceholderColor()
-}
+    this.refreshPlaceholderColor();
+};
 
 ZSSField.prototype.refreshPlaceholderColor = function() {
-    var placeholderDiv = $('div[id^=\'' + this.getNodeId() + '\'][placeholderText][contenteditable=true]:empty:not(:focus)');
-    placeholderDiv.css('color', this.bodyPlaceholderColor);
+     this.refreshPlaceholderColorForAttributes(this.hasPlaceholderText(),
+                                               this.isFocused(),
+                                               this.isEmpty());
+}
+
+ZSSField.prototype.refreshPlaceholderColorAboutToGainFocus = function(willGainFocus) {
+    this.refreshPlaceholderColorForAttributes(this.hasPlaceholderText(),
+                                              willGainFocus,
+                                              this.isEmpty());
+}
+
+ZSSField.prototype.refreshPlaceholderColorForAttributes = function(hasPlaceholderText, isFocused, isEmpty) {
+    
+    var shouldColorText = hasPlaceholderText && !isFocused && isEmpty;
+    
+    if (shouldColorText) {
+        this.wrappedObject.css('color', this.bodyPlaceholderColor);
+    } else {
+        this.wrappedObject.css('color', '');
+    }
+    
 };

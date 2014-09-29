@@ -58,9 +58,9 @@
     NSLog(@"Pressed Media!");
 }
 
-- (void)editorViewController:(WPEditorViewController *)editorController titleWillChange:(NSString *)title
+- (void)editorTitleDidChange:(WPEditorViewController *)editorController
 {
-    NSLog(@"Editor title will change: %@", title);
+    NSLog(@"Editor title did change: %@", self.titleText);
 }
 
 - (void)editorTextDidChange:(WPEditorViewController *)editorController
