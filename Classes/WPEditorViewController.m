@@ -11,6 +11,7 @@
 
 #import "HRColorUtil.h"
 #import "UIWebView+GUIFixes.h"
+#import "WPEditorField.h"
 #import "WPEditorToolbarButton.h"
 #import "WPEditorView.h"
 #import "WPInsetTextField.h"
@@ -1155,8 +1156,6 @@ typedef enum
     if (!IS_IPAD) {
         [self.mainToolbarHolderContent addSubview:[self rightToolbarHolder]];
     }
-	
-	[self.editorView setInputAccessoryView:self.mainToolbarHolder];
     
     // Check to see if we have any toolbar items, if not, add them all
     NSMutableArray *items = [self itemsForToolbar];
@@ -1990,12 +1989,11 @@ typedef enum
 }
 
 - (void)editorView:(WPEditorView*)editorView
-	  fieldFocused:(WPEditorViewField)field
+      fieldCreated:(WPEditorField*)field
 {
-    BOOL shouldEnableToolbarItems = (field == kWPEditorViewFieldContent);
-    
-    [self enableToolbarItems:shouldEnableToolbarItems
-      shouldShowSourceButton:YES];
+    if (field == self.editorView.contentField) {
+        field.inputAccessoryView = self.mainToolbarHolder;
+    }
 }
 
 - (BOOL)editorView:(WPEditorView*)editorView

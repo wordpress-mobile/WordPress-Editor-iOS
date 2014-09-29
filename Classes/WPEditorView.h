@@ -1,15 +1,6 @@
 #import <UIKit/UIKit.h>
 
 @class WPEditorView;
-
-typedef enum
-{
-    kWPEditorViewFieldNone = 0,
-    kWPEditorViewFieldTitle,
-    kWPEditorViewFieldContent,
-}
-WPEditorViewField;
-
 @class WPEditorField;
 
 @protocol WPEditorViewDelegate <UIWebViewDelegate>
@@ -41,13 +32,24 @@ WPEditorViewField;
 - (void)editorViewDidFinishLoading:(WPEditorView*)editorView;
 
 /**
+ *	@brief		Received when the editor creates one of it's fields.
+ *  @details    The editor fields will be nil before this method is called.  This is because editor
+ *              fields are created as part of the process of loading the HTML.
+ *
+ *	@param		editorView		The editor view.
+ *	@param		field			The new field.
+ */
+- (void)editorView:(WPEditorView*)editorView
+      fieldCreated:(WPEditorField*)field;
+
+/**
  *	@brief		Received when the editor focus changes.
  *
  *	@param		editorView		The editor view.
  *	@param		field			The focused field.
  */
 - (void)editorView:(WPEditorView*)editorView
-	  fieldFocused:(WPEditorViewField)field;
+	  fieldFocused:(WPEditorField*)field;
 
 /**
  *	@brief		Received when the user taps on a link in the editor.
@@ -114,6 +116,7 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 #pragma mark - Properties: Fields
 @property (nonatomic, strong, readonly) WPEditorField* contentField;
+@property (nonatomic, weak, readonly) WPEditorField* focusedField;
 @property (nonatomic, strong, readonly) WPEditorField* titleField;
 
 #pragma mark - Interaction
@@ -226,13 +229,6 @@ stylesForCurrentSelection:(NSArray*)styles;
  *	@brief		Enables editing.
  */
 - (void)enableEditing;
-
-#pragma mark - Customization
-
-/**
- *	@brief		Sets the input accessory view for the editor.
- */
-- (void)setInputAccessoryView:(UIView*)inputAccessoryView;
 
 #pragma mark - Styles
 

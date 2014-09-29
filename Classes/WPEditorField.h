@@ -11,9 +11,24 @@
 @interface WPEditorField : NSObject
 
 /**
- *  @brief      htmlNodeId      The ID of the HTML node this editor field is represented by.
+ *  @brief      inputAccessoryView      The input accessory view for the field.
  */
-@property (nonatomic, copy, readwrite) NSString* htmlNodeId;
+@property (nonatomic, strong, readwrite) UIView* inputAccessoryView;
 
+/**
+ *  @brief      nodeId      The ID of the HTML node this editor field wraps.
+ */
+@property (nonatomic, copy, readonly) NSString* nodeId;
+
+#pragma mark - Initializers
+
+/**
+ *  @brief      Initializes the field with the specified HTML node id.
+ *
+ *  @param      nodeId      The id of the html node this object will wrap.  Cannot be nil.
+ *
+ *  @returns    The initialized object.
+ */
+- (instancetype)initWithId:(NSString*)nodeId;
 
 @end

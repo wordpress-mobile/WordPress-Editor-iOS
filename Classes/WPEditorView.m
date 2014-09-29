@@ -2,6 +2,7 @@
 
 #import "UIWebView+GUIFixes.h"
 #import "HRColorUtil.h"
+#import "WPEditorField.h"
 #import "ZSSTextView.h"
 
 typedef void(^WPEditorViewCallbackParameterProcessingBlock)(NSString* parameterName, NSString* parameterValue);
@@ -10,8 +11,8 @@ typedef void(^WPEditorViewNoParamsCompletionBlock)();
 static NSString* const kDefaultCallbackParameterSeparator = @",";
 static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 
-static NSString* const kWPEditorViewFieldTitleId = @"zss_editor_title";
-static NSString* const kWPEditorViewFieldContentId = @"zss_editor_content";
+static NSString* const kWPEditorViewFieldTitleId = @"zss_field_title";
+static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 
 @interface WPEditorView () <UITextViewDelegate, UIWebViewDelegate>
 
@@ -37,6 +38,9 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_editor_content";
 #pragma mark - Editor loading support
 @property (nonatomic, copy, readwrite) NSString* preloadedHTML;
 @property (atomic, assign, readwrite) BOOL resourcesLoaded;
+
+#pragma mark - Fields
+@property (nonatomic, weak, readwrite) WPEditorField* focusedField;
 
 @end
 
@@ -93,7 +97,8 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_editor_content";
 	_webView.delegate = self;
 	_webView.scalesPageToFit = YES;
 	_webView.dataDetectorTypes = UIDataDetectorTypeNone;
-	_webView.scrollView.bounces = NO;
+    _webView.scrollView.bounces = NO;
+    _webView.usesGUIFixes = YES;
 	
 	[self addSubview:_webView];
 }
@@ -211,6 +216,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([self isLinkTappedScheme:scheme]) {
             [self handleLinkTappedCallback:url];
             handled = YES;
+        } else if ([self isNewFieldCallbackScheme:scheme]) {
+            [self handleNewFieldCallback:url];
+            handled = YES;
         } else if ([self isSelectionStyleScheme:scheme]) {
             [self handleSelectionStyleCallback:url];
             handled = YES;
@@ -251,20 +259,24 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     static NSString* const kFieldIdParameterName = @"id";
     
-    __block WPEditorViewField field = kWPEditorViewFieldNone;
+    __weak typeof(self) weakSelf = self;
     
     [self parseParametersFromCallbackURL:url
          andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
      {
          if ([parameterName isEqualToString:kFieldIdParameterName]) {
+             __strong typeof(weakSelf) strongSelf = weakSelf;
+             
              if ([parameterValue isEqualToString:kWPEditorViewFieldTitleId]) {
-                 field = kWPEditorViewFieldTitle;
+                 strongSelf.focusedField = strongSelf.titleField;
              } else if ([parameterValue isEqualToString:kWPEditorViewFieldContentId]) {
-                 field = kWPEditorViewFieldContent;
+                 strongSelf.focusedField = strongSelf.contentField;
              }
+             
+             strongSelf.webView.customInputAccessoryView = strongSelf.focusedField.inputAccessoryView;
          }
      } onComplete:^{
-         [self callDelegateFieldFocused:field];
+         [self callDelegateFieldFocused:weakSelf.focusedField];
      }];
 }
 
@@ -277,7 +289,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
-    [self callDelegateFieldFocused:kWPEditorViewFieldNone];
+    self.focusedField = nil;
+    [self callDelegateFieldFocused:self.focusedField];
 }
 
 /**
@@ -325,6 +338,36 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	}];
 }
 
+/**
+ *	@brief		Handles a new field callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleNewFieldCallback:(NSURL*)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    static NSString* const kFieldIdParameterName = @"id";
+    
+    __block NSString* fieldId = nil;
+    
+    [self parseParametersFromCallbackURL:url
+         andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+     {
+         if ([parameterName isEqualToString:kFieldIdParameterName]) {
+             NSAssert([parameterValue isKindOfClass:[NSString class]],
+                      @"We're expecting a non-nil NSString object here.");
+             
+             fieldId = parameterValue;
+         }
+     } onComplete:^{
+         
+         WPEditorField* newField = [self createFieldWithId:fieldId];
+         
+         [self callDelegateFieldCreated:newField];
+     }];
+}
+
 - (void)handleSelectionStyleCallback:(NSURL*)url
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
@@ -334,6 +377,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self processStyles:styles];
 }
 
+#pragma mark - Handling callbacks: identifying schemes
 
 - (BOOL)isDOMLoadedScheme:(NSString*)scheme
 {
@@ -364,6 +408,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	static NSString* const kCallbackScheme = @"callback-link-tap";
 	
 	return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isNewFieldCallbackScheme:(NSString*)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
+    static NSString* const kCallbackScheme = @"callback-new-field";
+    
+    return [scheme isEqualToString:kCallbackScheme];
 }
 
 - (BOOL)isSelectionStyleScheme:(NSString*)scheme
@@ -483,6 +537,45 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	NSArray* parameters = [[url resourceSpecifier] componentsSeparatedByString:kDefaultCallbackParameterSeparator];
 	
 	return parameters;
+}
+
+#pragma mark - Fields
+
+/**
+ *  @brief      Creates a field for the specified id.
+ *  @todo       At some point it would be nice to have WPEditorView be able to handle a custom list
+ *              of fields, instead of expecting the HTML page to only have a title and a content
+ *              field.
+ *
+ *  @param      fieldId     The id of the field to create.  This is the id of the html node that
+ *                          our new field will wrap.  Cannot be nil.
+ *
+ *  @returns    The newly created field.
+ */
+- (WPEditorField*)createFieldWithId:(NSString*)fieldId
+{
+    NSAssert([fieldId isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil NSString object here.");
+    
+    WPEditorField* newField = nil;
+    
+    if ([fieldId isEqualToString:kWPEditorViewFieldTitleId]) {
+        NSAssert(!_titleField,
+                 @"We should never have to set this twice.");
+        
+        _titleField = [[WPEditorField alloc] initWithId:fieldId];
+        newField = self.titleField;
+    } else if ([fieldId isEqualToString:kWPEditorViewFieldContentId]) {
+        NSAssert(!_contentField,
+                 @"We should never have to set this twice.");
+        
+        _contentField = [[WPEditorField alloc] initWithId:fieldId];
+        newField = self.contentField;
+    }
+    NSAssert([newField isKindOfClass:[WPEditorField class]],
+             @"A new field should've been created here.");
+    
+    return newField;
 }
 
 #pragma mark - URL & HTML utilities
@@ -761,15 +854,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	[self.webView stringByEvaluatingJavaScriptFromString:js];
 }
 
-#pragma mark - Customization
-
-- (void)setInputAccessoryView:(UIView*)inputAccessoryView
-{
-	self.webView.usesGUIFixes = YES;
-	self.webView.customInputAccessoryView = inputAccessoryView;
-	self.sourceView.inputAccessoryView = inputAccessoryView;
-}
-
 #pragma mark - Styles
 
 - (void)alignLeft
@@ -1025,9 +1109,21 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 /**
+ *  @brief      Call's the delegate editorView:fieldCreated: method.
+ */
+- (void)callDelegateFieldCreated:(WPEditorField*)field
+{
+    NSParameterAssert([field isKindOfClass:[WPEditorField class]]);
+    
+    if ([self.delegate respondsToSelector:@selector(editorView:fieldCreated:)]) {
+        [self.delegate editorView:self fieldCreated:field];
+    }
+}
+
+/**
  *  @brief      Call's the delegate editorView:fieldFocused: method.
  */
-- (void)callDelegateFieldFocused:(WPEditorViewField)field
+- (void)callDelegateFieldFocused:(WPEditorField*)field
 {
     if ([self.delegate respondsToSelector:@selector(editorView:fieldFocused:)]) {
         [self.delegate editorView:self fieldFocused:field];
