@@ -9,8 +9,6 @@
 #import <WordPress-iOS-Shared/UIImage+Util.h>
 #import <WordPress-iOS-Shared/UIColor+Helpers.h>
 
-#import "HRColorUtil.h"
-#import "UIWebView+GUIFixes.h"
 #import "WPEditorField.h"
 #import "WPEditorToolbarButton.h"
 #import "WPEditorView.h"
