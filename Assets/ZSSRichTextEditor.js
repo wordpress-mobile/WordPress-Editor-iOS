@@ -43,7 +43,7 @@ ZSSEditor.init = function() {
         var editableField = new ZSSField($(this));
 
         ZSSEditor.editableFields.push(editableField);
-        ZSSEditor.callback("callback-new-field", "id=" + $(this).attr('id'));
+        ZSSEditor.callback("callback-new-field", "id=" + editableField.getNodeId());
     });
 
 	document.addEventListener("selectionchange", function(e) {
@@ -63,6 +63,22 @@ ZSSEditor.init = function() {
 	}, false);
 
 }//end
+
+// MARK: - Fields
+
+ZSSEditor.getField = function(fieldId) {
+    
+    var field = null;
+    
+    for (var i = 0; i < this.editableField.length; i++) {
+        if (this.editableField[i].getNodeId() == fieldId) {
+            field = this.editableField[i];
+            break;
+        }
+    }
+    
+    return field;
+}
 
 // MARK: - Logging
 
@@ -829,7 +845,7 @@ ZSSField.prototype.callback = function(callbackScheme, callbackPath) {
     
     var url = callbackScheme + ":";
     
-    url = url + "id=" + this.wrappedObject.attr('id');
+    url = url + "id=" + this.getNodeId();
 
     if (callbackPath) {
         url = url + defaultCallbackSeparator + callbackPath;
@@ -868,31 +884,37 @@ ZSSField.prototype.refreshPlaceholderColor = function() {
 
 // MARK: - Focus
 
-ZSSField.isFocused = function() {
+ZSSField.prototype.isFocused = function() {
     
     return this.wrappedObject.is(":focus");
 }
 
-ZSSField.focus = function() {
+ZSSField.prototype.focus = function() {
     
     if (!this.isFocused()) {
         this.wrappedObject.focus();
     }
 }
 
-ZSSField.blur = function() {
+ZSSField.prototype.blur = function() {
     if (this.isFocused()) {
         this.wrappedObject.blur();
     }
-}
+};
+
+// MARK: - NodeId
+
+ZSSField.prototype.getNodeId = function() {
+    return this.wrappedObject.attr('id');
+};
 
 // MARK: - Editing
 
-ZSSField.enableEditing = function () {
+ZSSField.prototype.enableEditing = function () {
     this.wrappedObject.attr('contenteditable', true);
 };
 
-ZSSField.disableEditing = function () {
+ZSSField.prototype.disableEditing = function () {
     // IMPORTANT: we're blurring the editor before making it non-editable since that ensures
     // that the iOS keyboard is dismissed through an animation, as opposed to being immediately
     // removed from the screen.
@@ -901,4 +923,29 @@ ZSSField.disableEditing = function () {
     
     this.wrappedObject.attr('contenteditable', false);
 };
+
+// MARK: - HTML contents
+
+ZSSField.prototype.getHTML = function() {
+    
+    // Get the contents
+    var h = this.wrappedObject.innerHTML;
+    return h;
+}
+
+ZSSField.prototype.setHTML = function(html) {
+    this.wrappedObject.html(html);
+}
+
+// MARK: - Placeholder
+
+ZSSField.prototype.setPlaceholderText = function(placeholder) {
+    
+    this.wrappedObject.attr('placeholderText', placeholder);
+}
+
+ZSSField.prototype.setPlaceholderColor = function(color) {
+    ZSSEditor.bodyPlaceholderColor = color;
+    ZSSEditor.refreshPlaceholderColor()
+}
 

@@ -100,16 +100,6 @@ stylesForCurrentSelection:(NSArray*)styles;
  */
 @property (nonatomic, assign, readonly, getter = isEditing) BOOL editing;
 
-/**
- *	@brief		The placeholder HTML string to show when the editor view is empty in visual mode.
- */
-@property (nonatomic, copy, readwrite) NSString* placeholderHTMLString;
-
-/**
- *	@brief		The placeholder HTML string color.
- */
-@property (nonatomic, copy, readwrite) UIColor* placeholderHTMLStringColor;
-
 #pragma mark - Properties: Selection
 @property (nonatomic, strong, readonly) NSString *selectedLinkTitle;
 @property (nonatomic, strong, readonly) NSString *selectedLinkURL;

@@ -1273,11 +1273,6 @@ typedef enum
         self.editorView.autoresizesSubviews = YES;
         self.editorView.autoresizingMask = mask;
         self.editorView.backgroundColor = [UIColor whiteColor];
-		
-		NSString* placeholderHTMLString = @"Share your story here...";
-		
-		self.editorView.placeholderHTMLString = placeholderHTMLString;
-        self.editorView.placeholderHTMLStringColor = [WPStyleGuide textFieldPlaceholderGrey];
     }
 	
     [self.view addSubview:self.editorView];
@@ -1991,8 +1986,18 @@ typedef enum
 - (void)editorView:(WPEditorView*)editorView
       fieldCreated:(WPEditorField*)field
 {
-    if (field == self.editorView.contentField) {
+    if (field == self.editorView.titleField) {        
+        NSString* placeholderHTMLString = @"Share your story here 2...";
+        
+        [field setPlaceholderText:placeholderHTMLString];
+        [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
+    } else if (field == self.editorView.contentField) {
         field.inputAccessoryView = self.mainToolbarHolder;
+        
+        NSString* placeholderHTMLString = @"Share your story here...";
+        
+        [field setPlaceholderText:placeholderHTMLString];
+        [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
     }
 }
 

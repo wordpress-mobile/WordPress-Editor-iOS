@@ -140,7 +140,7 @@
 		58EC1FCAADCF4178A956BBD0 /* HRCgUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 46EEC9C43DA143DEB3986BF7 /* HRCgUtil.h */; };
 		590239B031B94B76936F0B94 /* NSURL+DTComparing.m in Sources */ = {isa = PBXBuildFile; fileRef = 71F2384F04C5438AA5B89664 /* NSURL+DTComparing.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -DOS_OBJECT_USE_OBJC=0"; }; };
 		59661F697F2C4659B561E39C /* WPEditorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 01DEE37B921749179B9D31F7 /* WPEditorView.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		598E1C6B19D61B1800458B74 /* WPEditorField.m in Sources */ = {isa = PBXBuildFile; fileRef = 598E1C6919D61B0B00458B74 /* WPEditorField.m */; };
+		598E1C6B19D61B1800458B74 /* WPEditorField.m in Sources */ = {isa = PBXBuildFile; fileRef = 598E1C6919D61B0B00458B74 /* WPEditorField.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		59CC878FAAB5410CA574B76C /* UIActivityIndicatorView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 574E66BD06B54A6CB3B0F098 /* UIActivityIndicatorView+AFNetworking.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		5A0017170A9241768B25B5F4 /* DTObjectTextAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = 394672BA1D8C43F98DE65D0C /* DTObjectTextAttachment.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -DOS_OBJECT_USE_OBJC=0"; }; };
 		5A35F069D81346B39005B5A7 /* UIWebView+DTFoundation.m in Sources */ = {isa = PBXBuildFile; fileRef = 09CFEB38504D4627A88D1D54 /* UIWebView+DTFoundation.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -DOS_OBJECT_USE_OBJC=0"; }; };

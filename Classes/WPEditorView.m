@@ -16,9 +16,6 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 
 @interface WPEditorView () <UITextViewDelegate, UIWebViewDelegate>
 
-#pragma mark - Misc state
-@property (nonatomic, assign, readwrite, getter = isShowingPlaceholder) BOOL showingPlaceholder;
-
 #pragma mark - Editing state
 @property (nonatomic, assign, readwrite, getter = isEditing) BOOL editing;
 
@@ -243,10 +240,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     self.resourcesLoaded = YES;
     self.editorInteractionQueue = nil;
     
-    // DRM: it's important to call this after resourcesLoaded has been set to YES.
-    [self setHtml:self.preloadedHTML];
-    [self setPlaceholderHTMLStringInJavascript];
-    [self setPlaceholderHTMLStringColorInJavascript];
+    [self.titleField handleDOMLoaded];
+    [self.contentField handleDOMLoaded];
     
     if ([self.delegate respondsToSelector:@selector(editorViewDidFinishLoadingDOM:)]) {
         [self.delegate editorViewDidFinishLoadingDOM:self];
@@ -563,13 +558,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         NSAssert(!_titleField,
                  @"We should never have to set this twice.");
         
-        _titleField = [[WPEditorField alloc] initWithId:fieldId];
+        _titleField = [[WPEditorField alloc] initWithId:fieldId webView:self.webView];
         newField = self.titleField;
     } else if ([fieldId isEqualToString:kWPEditorViewFieldContentId]) {
         NSAssert(!_contentField,
                  @"We should never have to set this twice.");
         
-        _contentField = [[WPEditorField alloc] initWithId:fieldId];
+        _contentField = [[WPEditorField alloc] initWithId:fieldId webView:self.webView];
         newField = self.contentField;
     }
     NSAssert([newField isKindOfClass:[WPEditorField class]],
@@ -603,47 +598,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *result = [string stringByReplacingOccurrencesOfString:@"+" withString:@" "];
     result = [result stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     return result;
-}
-
-#pragma mark - Setters
-
-- (void)setPlaceholderHTMLString:(NSString *)placeholderHTMLString
-{    
-	if (_placeholderHTMLString != placeholderHTMLString) {
-		_placeholderHTMLString = placeholderHTMLString;
-		
-        if (self.resourcesLoaded) {
-            [self setPlaceholderHTMLStringInJavascript];
-        }
-	}
-}
-
-- (void)setPlaceholderHTMLStringInJavascript
-{
-    NSString* string = [self addSlashes:self.placeholderHTMLString];
-    
-    string = [NSString stringWithFormat:@"zss_editor.setBodyPlaceholder(\"%@\");", string];
-    [self.webView stringByEvaluatingJavaScriptFromString:string];
-}
-
-- (void)setPlaceholderHTMLStringColor:(UIColor *)placeholderHTMLStringColor
-{
-    if (_placeholderHTMLStringColor != placeholderHTMLStringColor) {
-        _placeholderHTMLStringColor = placeholderHTMLStringColor;
-        
-        if (self.resourcesLoaded) {
-            [self setPlaceholderHTMLStringColorInJavascript];
-        }
-    }
-}
-
-- (void)setPlaceholderHTMLStringColorInJavascript
-{
-    int hexColor = HexColorFromUIColor(self.placeholderHTMLStringColor);
-    NSString* hexColorStr = [NSString stringWithFormat:@"#%06x", hexColor];
-    
-    NSString* string = [NSString stringWithFormat:@"zss_editor.setBodyPlaceholderColor(\"%@\");", hexColorStr];
-    [self.webView stringByEvaluatingJavaScriptFromString:string];
 }
 
 #pragma mark - Interaction
@@ -789,11 +743,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (NSString *)getHTML
 {
-    NSString *html = nil;
-    
-    if (!self.isShowingPlaceholder) {
-        html = [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.getHTML();"];
-    }
+    NSString *html = [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.getHTML();"];
     
 	return html;
 }
