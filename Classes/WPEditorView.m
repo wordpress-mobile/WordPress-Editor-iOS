@@ -91,6 +91,7 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 	_webView.scalesPageToFit = YES;
 	_webView.dataDetectorTypes = UIDataDetectorTypeNone;
 	_webView.scrollView.bounces = NO;
+    _webView.backgroundColor = [UIColor whiteColor];
 	
 	[self addSubview:_webView];
 }
