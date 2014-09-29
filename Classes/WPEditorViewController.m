@@ -1305,22 +1305,22 @@ typedef enum
 
 - (NSString*)titleText
 {
-    return self.titleTextField.text;
+    return [self.editorView.titleField html];
 }
 
-- (void) setTitleText:(NSString*)titleText
+- (void)setTitleText:(NSString*)titleText
 {
-    [self.titleTextField setText:titleText];
+    [self.editorView.titleField setHtml:titleText];
 }
 
 - (NSString*)bodyText
 {
-    return [self.editorView getHTML];
+    return [self.editorView.contentField html];
 }
 
 - (void)setBodyText:(NSString*)bodyText
 {
-    [self.editorView setHtml:bodyText];
+    [self.editorView.contentField setHtml:bodyText];
 }
 
 #pragma mark - Actions
@@ -1987,7 +1987,7 @@ typedef enum
       fieldCreated:(WPEditorField*)field
 {
     if (field == self.editorView.titleField) {        
-        NSString* placeholderHTMLString = @"Share your story here 2...";
+        NSString* placeholderHTMLString = @"Post title";
         
         [field setPlaceholderText:placeholderHTMLString];
         [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];

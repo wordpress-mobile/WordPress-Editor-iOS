@@ -111,9 +111,7 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 #pragma mark - Interaction
 
-- (void)setHtml:(NSString *)html;
 - (void)insertHTML:(NSString *)html;
-- (NSString *)getHTML;
 
 /**
  *	@brief		Undo the last operation.

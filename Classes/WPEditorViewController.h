@@ -32,17 +32,6 @@ WPEditorViewControllerMode;
 @property (nonatomic, copy) NSString *titleText;
 @property (nonatomic, copy) NSString *bodyText;
 
-#pragma mark - Initializers
-
-/**
- *	@brief		Initializes the VC with the specified mode.
- *
- *	@param		mode	The mode to initialize the VC in.
- *
- *	@returns	The initialized object.
- */
-- (instancetype)initWithMode:(WPEditorViewControllerMode)mode;
-
 #pragma mark - Coloring
 
 /**
@@ -64,6 +53,17 @@ WPEditorViewControllerMode;
  *  Color to tint selected items
  */
 @property (nonatomic, strong) UIColor *toolbarItemSelectedTintColor;
+
+#pragma mark - Initializers
+
+/**
+ *	@brief		Initializes the VC with the specified mode.
+ *
+ *	@param		mode	The mode to initialize the VC in.
+ *
+ *	@returns	The initialized object.
+ */
+- (instancetype)initWithMode:(WPEditorViewControllerMode)mode;
 
 #pragma mark - Editing
 

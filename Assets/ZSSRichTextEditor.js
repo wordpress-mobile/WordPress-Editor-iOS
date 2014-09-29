@@ -766,7 +766,7 @@ ZSSEditor.disableEditing = function () {
 
 function ZSSField(wrappedObject) {
     this.wrappedObject = wrappedObject;
-    this.bodyPlaceholderColor = '';
+    this.bodyPlaceholderColor = '#000000';
     
     this.bindListeners();
 }
@@ -869,13 +869,6 @@ ZSSField.prototype.callbackThroughIFrame = function(url) {
     iframe = null;
 };
 
-// MARK: - Placeholder Color
-
-ZSSField.prototype.refreshPlaceholderColor = function() {
-    var placeholderDiv = $('div[placeholderText][contenteditable=true]:empty:not(:focus)');
-    placeholderDiv.css('color', this.bodyPlaceholderColor);
-};
-
 // MARK: - Focus
 
 ZSSField.prototype.isFocused = function() {
@@ -939,7 +932,12 @@ ZSSField.prototype.setPlaceholderText = function(placeholder) {
 }
 
 ZSSField.prototype.setPlaceholderColor = function(color) {
-    ZSSEditor.bodyPlaceholderColor = color;
-    ZSSEditor.refreshPlaceholderColor()
+    
+    this.bodyPlaceholderColor = color;
+    this.refreshPlaceholderColor()
 }
 
+ZSSField.prototype.refreshPlaceholderColor = function() {
+    var placeholderDiv = $('div[id^=\'' + this.getNodeId() + '\'][placeholderText][contenteditable=true]:empty:not(:focus)');
+    placeholderDiv.css('color', this.bodyPlaceholderColor);
+};

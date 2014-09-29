@@ -707,45 +707,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 #pragma mark - Editor: HTML interaction
 
-/**
- *	@brief		Call this method to know if the editor has no content.
- *
- *	@returns	YES if the editor has no content.
- */
-- (BOOL)isBodyEmpty
-{
-    NSString* html = [self getHTML];
-    
-    BOOL isEmpty = [html length] == 0 || [html isEqualToString:@"<br>"];
-    
-    return isEmpty;
-}
-
-- (void)setHtml:(NSString *)html
-{
-	if (!self.resourcesLoaded) {
-		self.preloadedHTML = html;
-	} else {
-		self.sourceView.text = html;
-		NSString *cleanedHTML = [self addSlashes:self.sourceView.text];
-		NSString *trigger = [NSString stringWithFormat:@"zss_editor.setHTML(\"%@\");", cleanedHTML];
-		[self.webView stringByEvaluatingJavaScriptFromString:trigger];
-	}
-}
-
 // Inserts HTML at the caret position
 - (void)insertHTML:(NSString *)html
 {
     NSString *cleanedHTML = [self addSlashes:html];
     NSString *trigger = [NSString stringWithFormat:@"zss_editor.insertHTML(\"%@\");", cleanedHTML];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
-}
-
-- (NSString *)getHTML
-{
-    NSString *html = [self.webView stringByEvaluatingJavaScriptFromString:@"zss_editor.getHTML();"];
-    
-	return html;
 }
 
 #pragma mark - Editor focus
@@ -778,14 +745,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)showHTMLSource
 {
-	self.sourceView.text = [self getHTML];
+	self.sourceView.text = [self.contentField html];
 	self.sourceView.hidden = NO;
 	self.webView.hidden = YES;
 }
 
 - (void)showVisualEditor
 {
-	[self setHtml:self.sourceView.text];
+	[self.contentField setHtml:self.sourceView.text];
 	self.sourceView.hidden = YES;
 	self.webView.hidden = NO;
 }

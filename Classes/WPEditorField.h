@@ -54,7 +54,7 @@
  *
  *  @param      html     The new field's html contents.
  */
-- (void)setHTML:(NSString*)html;
+- (void)setHtml:(NSString*)html;
 
 #pragma mark - Placeholder
 

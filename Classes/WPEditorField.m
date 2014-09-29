@@ -92,7 +92,7 @@
 
 - (void)setupInitialHTML
 {
-    [self setHTML:self.preloadedHTML];
+    [self setHtml:self.preloadedHTML];
     self.preloadedHTML = nil;
 }
 
@@ -139,7 +139,7 @@
     return html;
 }
 
-- (void)setHTML:(NSString*)html
+- (void)setHtml:(NSString*)html
 {
     if (!self.domLoaded) {
         self.preloadedHTML = html;
