@@ -8,7 +8,7 @@
 typedef void(^WPEditorViewCallbackParameterProcessingBlock)(NSString* parameterName, NSString* parameterValue);
 typedef void(^WPEditorViewNoParamsCompletionBlock)();
 
-static NSString* const kDefaultCallbackParameterSeparator = @",";
+static NSString* const kDefaultCallbackParameterSeparator = @"~";
 static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 
 static NSString* const kWPEditorViewFieldTitleId = @"zss_field_title";
@@ -42,6 +42,13 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 
 @implementation WPEditorView
 
+#pragma mark - NSObject
+
+- (void)dealloc
+{
+    [self stopObservingKeyboardNotifications];
+}
+
 #pragma mark - UIView
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -58,6 +65,15 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 	}
 	
 	return self;
+}
+
+- (void)willMoveToSuperview:(UIView *)newSuperview
+{
+    if (!newSuperview) {
+        [self stopObservingKeyboardNotifications];
+    } else {
+        [self startObservingKeyboardNotifications];
+    }
 }
 
 #pragma mark - Init helpers
@@ -89,6 +105,7 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
     _webView.scrollView.bounces = NO;
     _webView.usesGUIFixes = YES;
     _webView.keyboardDisplayRequiresUserAction = NO;
+    _webView.scrollView.delegate = self;
 	
 	[self addSubview:_webView];
 }
@@ -137,6 +154,60 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 	return htmlString;
 }
 
+#pragma mark - Keyboard notifications
+
+- (void)startObservingKeyboardNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillHide:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
+}
+
+- (void)stopObservingKeyboardNotifications
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+}
+
+#pragma mark - Keyboard status
+
+- (void)keyboardWillShow:(NSNotification *)notification
+{
+    NSDictionary *info = notification.userInfo;
+    CGRect keyboardEnd = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    
+    CGRect localizedKeyboardEnd = [self convertRect:keyboardEnd fromView:nil];
+    CGPoint keyboardOrigin = localizedKeyboardEnd.origin;
+    
+    if (keyboardOrigin.y > 0) {
+        [self refreshVisibleViewportAndContentSize];
+    }
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification
+{
+    [self refreshVisibleViewportAndContentSize];
+}
+
+- (void)refreshVisibleViewportAndContentSize
+{
+    [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.refreshVisibleViewportSize();"];
+    [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.logMainElementSizes();"];
+    
+    NSString* newHeightString = [self.webView stringByEvaluatingJavaScriptFromString:@"$(document.body).height();"];
+    NSInteger newHeight = [newHeightString integerValue];
+    
+    NSLog(@"setting height to: %@, %ld", newHeightString, newHeight);
+    self.webView.scrollView.contentSize = CGSizeMake(320, newHeight);
+    
+    NSLog(@"New viewport size: %lf", self.webView.scrollView.contentSize.height);
+}
+
 #pragma mark - UIWebViewDelegate
 
 -            (BOOL)webView:(UIWebView *)webView
@@ -162,6 +233,22 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	}
 }
 
+#pragma mark - UIScrollView delegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    // NOTE AUTHOR: Diego Rey Mendez
+    //
+    // PROBLEM: setting self.webView.scrollView.contentSize is mostly unreliable.  We tried setting
+    // it when the body is resized but it wasn't working properly.  Sometimes it just failed to set
+    // the proper viewport height.
+    //
+    // WORKAROUND: by calling this method here we make sure that the viewport size is always right
+    // when editing text.
+    //
+    [self refreshVisibleViewportAndContentSize];
+}
+
 #pragma mark - Handling callbacks
 
 /**
@@ -179,13 +266,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 	NSString *scheme = [url scheme];
 	
-	NSLog(@"WebEditor callback received: %@", url);
+//	NSLog(@"WebEditor callback received: %@", url);
 	
     if (scheme) {
-        if ([self isFocusInScheme:scheme]){
+        if ([self isFocusInScheme:scheme]) {
             [self handleFocusInCallback:url];
             handled = YES;
-        } else if ([self isFocusOutScheme:scheme]){
+        } else if ([self isFocusOutScheme:scheme]) {
             [self handleFocusOutCallback:url];
             handled = YES;
         } else if ([self isInputCallbackScheme:scheme]) {
@@ -193,6 +280,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             handled = YES;
         } else if ([self isLinkTappedScheme:scheme]) {
             [self handleLinkTappedCallback:url];
+            handled = YES;
+        } else if ([self isLogCallbackScheme:scheme]){
+            [self handleLogCallbackScheme:url];
             handled = YES;
         } else if ([self isNewFieldCallbackScheme:scheme]) {
             [self handleNewFieldCallback:url];
@@ -277,6 +367,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
+    [self refreshVisibleViewportAndContentSize];
+    
     static NSString* const kFieldIdParameterName = @"id";
     
     __weak typeof(self) weakSelf = self;
@@ -288,15 +380,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              __strong typeof(weakSelf) strongSelf = weakSelf;
              
              if ([parameterValue isEqualToString:kWPEditorViewFieldTitleId]) {
-                 [self callDelegateEditorTitleDidChange];
+                 [strongSelf callDelegateEditorTitleDidChange];
              } else if ([parameterValue isEqualToString:kWPEditorViewFieldContentId]) {
-                 [self callDelegateEditorTextDidChange];
+                 [strongSelf callDelegateEditorTextDidChange];
              }
              
              strongSelf.webView.customInputAccessoryView = strongSelf.focusedField.inputAccessoryView;
          }
      } onComplete:nil];
-    
 }
 
 /**
@@ -330,6 +421,26 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 			[self.delegate editorView:self linkTapped:tappedUrl title:tappedUrlTitle];
 		}
 	}];
+}
+
+/**
+ *	@brief		Handles a log callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleLogCallbackScheme:(NSURL*)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    static NSString* const kMessageParameterName = @"msg";
+    
+    [self parseParametersFromCallbackURL:url
+         andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+     {
+         if ([parameterName isEqualToString:kMessageParameterName]) {
+             NSLog(@"WebEditor log:%@", [self stringByDecodingURLFormat:parameterValue]);
+         }
+     } onComplete:nil];
 }
 
 /**
@@ -404,6 +515,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	return [scheme isEqualToString:kCallbackScheme];
 }
 
+- (BOOL)isLogCallbackScheme:(NSString*)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
+    static NSString* const kCallbackScheme = @"callback-log";
+    
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
 - (BOOL)isNewFieldCallbackScheme:(NSString*)scheme
 {
     NSAssert([scheme isKindOfClass:[NSString class]],
@@ -475,8 +596,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (NSArray*)componentsFromParameter:(NSString*)parameter
 {
 	NSParameterAssert([parameter isKindOfClass:[NSString class]]);
-	
-	NSArray* components = [parameter componentsSeparatedByString:kDefaultCallbackParameterComponentSeparator];
+    
+    NSRange range = [parameter rangeOfString:kDefaultCallbackParameterComponentSeparator];
+    
+    NSString* parameterName = [parameter substringToIndex:range.location];
+    NSString* parameterValue = [parameter substringFromIndex:range.location + range.length];
+    
+    NSArray* components = @[parameterName, parameterValue];
 	NSAssert([components count] == 2,
 			 @"We're expecting exactly two components here.");
 	

@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>ZSSRichTextEditor</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <script>
     /*! jQuery v2.0.3 | (c) 2005, 2013 jQuery Foundation, Inc. | jquery.org/license
     //@ sourceMappingURL=jquery-2.0.3.min.map
@@ -778,12 +778,10 @@ function style_html(html_source, options) {
     }
     return multi_parser.output.join('');
 }
-
     </script>
 	<script><!--jquery-mobile-events--></script>
     <script><!--editor--></script>
 	<script>
-		
 		// DRM: onLoad does not get called when offline, if there's remote content in the editor
 		// (such as remote images).  We use the 'ready' event for this reason.
 		//
@@ -809,11 +807,10 @@ function style_html(html_source, options) {
         }
 
         body {
-            overflow-y: scroll;
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            height: auto;
-            min-height: 100vh;
             background-color:blue;
+            min-height: 100vh;
         }
     
 		img {max-width: 100%; width: auto; height: auto;}

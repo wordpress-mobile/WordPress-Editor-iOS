@@ -12,7 +12,7 @@
 var isUsingiOS = true;
 
 // THe default callback parameter separator
-var defaultCallbackSeparator = ',';
+var defaultCallbackSeparator = '~';
 
 // The editor object
 var ZSSEditor = {};
@@ -45,10 +45,10 @@ ZSSEditor.init = function() {
         ZSSEditor.editableFields[editableFieldId] = editableField;
         ZSSEditor.callback("callback-new-field", "id=" + editableFieldId);
     });
-
+    
 	document.addEventListener("selectionchange", function(e) {
 		ZSSEditor.currentEditingLink = null;
-							  
+
 		// DRM: only do something here if the editor has focus.  The reason is that when the
 		// selection changes due to the editor loosing focus, the focusout event will not be
 		// sent if we try to load a callback here.
@@ -63,6 +63,32 @@ ZSSEditor.init = function() {
 	}, false);
 
 }//end
+
+// MARK: - Debugging logs
+
+ZSSEditor.logMainElementSizes = function() {
+    msg = 'Window [w:' + $(window).width() + '|h:' + $(window).height() + ']';
+    this.log(msg);
+    
+    var msg = encodeURIComponent('Viewport [w:' + window.innerWidth + '|h:' + window.innerHeight + ']');
+    this.log(msg);
+    
+    msg = encodeURIComponent('Body [w:' + $(document.body).width() + '|h:' + $(document.body).height() + ']');
+    this.log(msg);
+    
+    msg = encodeURIComponent('HTML [w:' + $('html').width() + '|h:' + $('html').height() + ']');
+    this.log(msg);
+    
+    msg = encodeURIComponent('Document [w:' + $(document).width() + '|h:' + $(document).height() + ']');
+    this.log(msg);
+};
+
+// MARK: - Viewport Refreshing
+
+ZSSEditor.refreshVisibleViewportSize = function() {
+    $(document.body).css('min-height', window.innerHeight + 'px');
+    $('#zss_field_content').css('min-height', (window.innerHeight - $('#zss_field_content').position().top) + 'px');
+}
 
 // MARK: - Fields
 
@@ -80,7 +106,7 @@ ZSSEditor.getField = function(fieldId) {
 // MARK: - Logging
 
 ZSSEditor.log = function(msg) {
-	ZSSEditor.callback(callback-log, msg);
+	ZSSEditor.callback('callback-log', 'msg=' + msg);
 }
 
 // MARK: - Callbacks
@@ -714,7 +740,7 @@ ZSSField.prototype.handleKeyDownEvent = function(e) {
 };
 
 ZSSField.prototype.handleInputEvent = function(e) {
-     this.inputCallback();
+    this.inputCallback();
 }
 
 ZSSField.prototype.handleTapEvent = function(e) {
