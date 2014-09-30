@@ -1216,10 +1216,12 @@ typedef enum
 	subviewFrame.origin = CGPointZero;
 	
 	UIView* mainToolbarHolderContent = [[UIView alloc] initWithFrame:subviewFrame];
+    mainToolbarHolderContent.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	
-	subviewFrame.size.height = 1.0f;
+    subviewFrame.size.height = 1.0f;
 	
-	UIView* mainToolbarHolderTopBorder = [[UIView alloc] initWithFrame:subviewFrame];
+    UIView* mainToolbarHolderTopBorder = [[UIView alloc] initWithFrame:subviewFrame];
+    mainToolbarHolderTopBorder.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	mainToolbarHolderTopBorder.backgroundColor = self.toolbarBorderColor;
 	
 	[mainToolbarHolder addSubview:mainToolbarHolderContent];
