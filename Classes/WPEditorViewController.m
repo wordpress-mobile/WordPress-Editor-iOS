@@ -1584,6 +1584,7 @@ typedef enum
 - (void)showInsertLinkDialogWithLink:(NSString*)url
 							   title:(NSString*)title
 {
+    
 	BOOL isInsertingNewLink = (url == nil);
 	
 	if (!url) {
@@ -1631,13 +1632,13 @@ typedef enum
 	
     __weak __typeof(self) weakSelf = self;
 
-	self.alertView.willPresentBlock = ^(UIAlertView* alertView) {
-		
-		[weakSelf.editorView endEditing];
-	};
+    self.alertView.didPresentBlock = ^(UIAlertView* alertView) {
+        
+        [weakSelf.editorView saveSelection];
+        [weakSelf.editorView endEditing];
+    };
 	
 	self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
-        [weakSelf.editorView.contentField focus];
 		[weakSelf.editorView restoreSelection];
 		
 		if (alertView.tag == WPLinkAlertViewTag) {
@@ -1913,8 +1914,8 @@ typedef enum
 			 title:(NSString*)title
 {
 	if (self.isEditing) {
-		[self showInsertLinkDialogWithLink:url.absoluteString
-									 title:title];
+        [self showInsertLinkDialogWithLink:url.absoluteString
+                                     title:title];
 	}
 	
 	return YES;

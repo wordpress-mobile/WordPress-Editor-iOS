@@ -197,15 +197,14 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 - (void)refreshVisibleViewportAndContentSize
 {
     [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.refreshVisibleViewportSize();"];
-    [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.logMainElementSizes();"];
+    
+    // DRM: enable this to debug
+    //[self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.logMainElementSizes();"];
     
     NSString* newHeightString = [self.webView stringByEvaluatingJavaScriptFromString:@"$(document.body).height();"];
     NSInteger newHeight = [newHeightString integerValue];
     
-    NSLog(@"setting height to: %@, %ld", newHeightString, newHeight);
     self.webView.scrollView.contentSize = CGSizeMake(320, newHeight);
-    
-    NSLog(@"New viewport size: %lf", self.webView.scrollView.contentSize.height);
 }
 
 #pragma mark - UIWebViewDelegate
@@ -266,7 +265,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 	NSString *scheme = [url scheme];
 	
-//	NSLog(@"WebEditor callback received: %@", url);
+	NSLog(@"WebEditor callback received: %@", url);
 	
     if (scheme) {
         if ([self isFocusInScheme:scheme]) {
@@ -413,10 +412,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 		} else if ([parameterName isEqualToString:kTappedUrlTitleParameterName]) {
 			tappedUrlTitle = [self stringByDecodingURLFormat:parameterValue];
 		}
-	} onComplete:^{
-		
-		[self saveSelection];
-		
+	} onComplete:^{		
 		if ([self.delegate respondsToSelector:@selector(editorView:linkTapped:title:)]) {
 			[self.delegate editorView:self linkTapped:tappedUrl title:tappedUrlTitle];
 		}
@@ -750,7 +746,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)saveSelection
 {
-    [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.prepareInsert();"];
+    [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.backupRange();"];
 }
 
 - (NSString*)selectedText

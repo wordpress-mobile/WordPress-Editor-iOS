@@ -161,7 +161,7 @@ ZSSEditor.stylesCallback = function(stylesArray) {
 
 // MARK: - Selection
 
-ZSSEditor.backuprange = function(){
+ZSSEditor.backupRange = function(){
 	var selection = window.getSelection();
     var range = selection.getRangeAt(0);
     ZSSEditor.currentSelection = {"startContainer": range.startContainer, "startOffset":range.startOffset,"endContainer":range.endContainer, "endOffset":range.endOffset};
@@ -468,10 +468,6 @@ ZSSEditor.quickLink = function() {
 	
 }
 
-ZSSEditor.prepareInsert = function() {
-	ZSSEditor.backuprange();	
-}
-
 ZSSEditor.insertImage = function(url, alt) {
 	ZSSEditor.restoreRange();
 	var html = '<img src="'+url+'" alt="'+alt+'" />';
@@ -741,10 +737,9 @@ ZSSField.prototype.handleKeyDownEvent = function(e) {
 
 ZSSField.prototype.handleInputEvent = function(e) {
     this.inputCallback();
-}
+};
 
 ZSSField.prototype.handleTapEvent = function(e) {
-    
     var targetNode = e.target;
     var arguments = ['url=' + encodeURIComponent(targetNode.href),
                      'title=' + encodeURIComponent(targetNode.innerHTML)];
