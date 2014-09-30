@@ -747,8 +747,11 @@ ZSSField.prototype.handleTapEvent = function(e) {
     if (targetNode.nodeName.toLowerCase() == 'a') {
         var joinedArguments = arguments.join(defaultCallbackSeparator);
         
-        this.callback('callback-link-tap',
-                      joinedArguments);
+        var thisObj = this;
+        
+        // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
+        //
+        setTimeout(function() { thisObj.callback('callback-link-tap', joinedArguments);}, 500);
     }
 }
 

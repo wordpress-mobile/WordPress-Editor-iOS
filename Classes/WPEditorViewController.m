@@ -1634,13 +1634,13 @@ typedef enum
 	
     __weak __typeof(self) weakSelf = self;
 
-    self.alertView.didPresentBlock = ^(UIAlertView* alertView) {
+    self.alertView.willPresentBlock = ^(UIAlertView* alertView) {
         
         [weakSelf.editorView saveSelection];
         [weakSelf.editorView endEditing];
     };
 	
-	self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
+	self.alertView.didDismissBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
 		[weakSelf.editorView restoreSelection];
 		
 		if (alertView.tag == WPLinkAlertViewTag) {
