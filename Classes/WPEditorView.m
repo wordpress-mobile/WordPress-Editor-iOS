@@ -34,7 +34,6 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 
 #pragma mark - Editor loading support
 @property (nonatomic, copy, readwrite) NSString* preloadedHTML;
-@property (atomic, assign, readwrite) BOOL resourcesLoaded;
 
 #pragma mark - Fields
 @property (nonatomic, weak, readwrite) WPEditorField* focusedField;
@@ -89,15 +88,13 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 	_webView.dataDetectorTypes = UIDataDetectorTypeNone;
     _webView.scrollView.bounces = NO;
     _webView.usesGUIFixes = YES;
+    _webView.keyboardDisplayRequiresUserAction = NO;
 	
 	[self addSubview:_webView];
 }
 
 - (void)setupHTMLEditor
 {
-	NSAssert(!_resourcesLoaded,
-			 @"This method is meant to be called only once, to load resources.");
-	
 	_editorInteractionQueue = [[NSOperationQueue alloc] init];
 	
 	__block NSString* htmlEditor = nil;
@@ -221,7 +218,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
-    self.resourcesLoaded = YES;
     self.editorInteractionQueue = nil;
     
     [self.titleField handleDOMLoaded];

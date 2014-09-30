@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "HRColorPickerViewController.h"
 
+@class WPEditorView;
 @class WPEditorViewController;
 
 typedef enum
@@ -31,6 +32,9 @@ WPEditorViewControllerMode;
 @property (nonatomic, weak) id<WPEditorViewControllerDelegate> delegate;
 @property (nonatomic, copy) NSString *titleText;
 @property (nonatomic, copy) NSString *bodyText;
+
+#pragma mark - Properties: Editor View
+@property (nonatomic, strong, readonly) WPEditorView *editorView;
 
 #pragma mark - Coloring
 

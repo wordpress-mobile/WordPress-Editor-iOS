@@ -26,6 +26,8 @@ ZSSEditor.currentEditingImage;
 // The current editing link
 ZSSEditor.currentEditingLink;
 
+ZSSEditor.focusedField = null;
+
 // The objects that are enabled
 ZSSEditor.enabledItems = {};
 
@@ -63,6 +65,10 @@ ZSSEditor.init = function() {
 }//end
 
 // MARK: - Fields
+
+ZSSEditor.focusFirstEditableField = function() {
+    $('div[contenteditable=true]:first').focus();
+}
 
 ZSSEditor.getField = function(fieldId) {
     
@@ -447,50 +453,9 @@ ZSSEditor.insertImage = function(url, alt) {
 	ZSSEditor.sendEnabledStyles();
 }
 
-ZSSEditor.setHTML = function(html) {
-    var editor = $('#zss_field_content');
-    editor.html(html);
-}
-
 ZSSEditor.insertHTML = function(html) {
 	document.execCommand('insertHTML', false, html);
 	ZSSEditor.sendEnabledStyles();
-}
-
-ZSSEditor.getHTML = function() {
-	
-	// Images
-	var img = $('img');
-	if (img.length != 0) {
-		$('img').removeClass('zs_active');
-		$('img').each(function(index, e) {
-			var image = $(this);
-			var zs_class = image.attr('class');
-			if (typeof(zs_class) != "undefined") {
-				if (zs_class == '') {
-					image.removeAttr('class');
-				}
-			}
-		});
-	}
-    
-    // Blockquote
-    var bq = $('blockquote');
-    if (bq.length != 0) {
-        bq.each(function() {
-            var b = $(this);
-			if (b.css('border').indexOf('none') != -1) {
-				b.css({'border': ''});
-			}
-			if (b.css('padding').indexOf('0px') != -1) {
-				b.css({'padding': ''});
-			}
-        });
-    }
-
-	// Get the contents
-	var h = document.getElementById("zss_field_content").innerHTML;    
-	return h;
 }
 
 ZSSEditor.isCommandEnabled = function(commandName) {
@@ -510,7 +475,7 @@ ZSSEditor.formatNewLine = function(e) {
 }
 
 ZSSEditor.sendEnabledStyles = function(e) {
-	
+
 	var items = [];
 	
 	// Find all relevant parent tags
@@ -698,35 +663,6 @@ ZSSEditor.parentTags = function() {
     return parentTags;
 }
 
-// MARK: - Focus
-
-ZSSEditor.isFocused = function() {
-
-    var focused = false;
-    
-    for (var i = 0; i < this.editableFields.length; i++) {
-        if (this.editableFields[i].isFocused()) {
-            focused = true;
-            break;
-        }
-    }
-    
-    return focused;
-}
-
-ZSSEditor.focusEditor = function() {
-
-	if (!this.isFocused()) {
-		this.editableFields[i].focus();
-	}
-}
-
-ZSSEditor.blurEditor = function() {
-	if (this.isFocused()) {
-		this.editableFields[i].blur();
-	}
-}
-
 // MARK: - ZSSField Constructor
 
 function ZSSField(wrappedObject) {
@@ -750,6 +686,8 @@ ZSSField.prototype.bindListeners = function() {
 // MARK: - Handle event listeners
 
 ZSSField.prototype.handleBlurEvent = function(e) {
+    ZSSEditor.focusedField = null;
+    
     // IMPORTANT: sometimes HTML leaves some <br> tags or &nbsp; when the user deletes all
     // text from a contentEditable field.  This code makes sure no such 'garbage' survives.
     //
@@ -762,8 +700,11 @@ ZSSField.prototype.handleBlurEvent = function(e) {
 };
 
 ZSSField.prototype.handleFocusEvent = function(e) {
+    ZSSEditor.focusedField = this;
+    
     // IMPORTANT: this is the only case where checking the current focus will not work.
     // We sidestep this issue by indicating that the field is about to gain focus.
+    //
     this.refreshPlaceholderColorAboutToGainFocus(true);
     this.callback("callback-focus-in");
 };
@@ -861,7 +802,12 @@ ZSSField.prototype.getNodeId = function() {
 // MARK: - Editing
 
 ZSSField.prototype.enableEditing = function () {
+    
     this.wrappedObject.attr('contenteditable', true);
+    
+    if (!ZSSEditor.focusedField) {
+        ZSSEditor.focusFirstEditableField();
+    }
 };
 
 ZSSField.prototype.disableEditing = function () {

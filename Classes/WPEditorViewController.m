@@ -1375,8 +1375,7 @@ typedef enum
 	//
 	if (self.didFinishLoadingEditor)
 	{
-		[self enableEditing];
-		[self.editorView.titleField focus];
+        [self enableEditing];
 		[self tellOurDelegateEditingDidBegin];
 	}
 }
@@ -1881,7 +1880,7 @@ typedef enum
 	// offline and the content has remote subcontent (such as pictures).
 	//
     self.didFinishLoadingEditor = YES;
-	
+    
 	if (self.editing) {
 		[self startEditing];
 	} else {

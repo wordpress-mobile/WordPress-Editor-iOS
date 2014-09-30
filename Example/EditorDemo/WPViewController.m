@@ -1,5 +1,8 @@
 #import "WPViewController.h"
 
+#import "WPEditorField.h"
+#import "WPEditorView.h"
+
 @interface WPViewController ()
 @end
 
