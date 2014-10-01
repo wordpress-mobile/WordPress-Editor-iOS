@@ -83,18 +83,6 @@
  */
 -        (void)editorView:(WPEditorView*)editorView
 stylesForCurrentSelection:(NSArray*)styles;
-
-/**
- *	@brief		Received when the underlying HTML needs us to log a debug message.
- *
- *	@param		editorView		The editor view.
- *	@param		message			The message to log.
- *	@param		isError			YES means the message is an error.  NO means it's just a log
- *								message.
- */
-- (void)editorView:(WPEditorView*)editorView
-			   log:(NSString*)message
-		   isError:(BOOL)isError;
 @end
 
 @interface WPEditorView : UIView
