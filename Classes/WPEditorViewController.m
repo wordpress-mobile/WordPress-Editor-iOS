@@ -1900,14 +1900,16 @@ typedef enum
     if (field == self.editorView.titleField) {
         field.inputAccessoryView = self.mainToolbarHolder;
         
-        NSString* placeholderHTMLString = @"Post title";
+        NSString* placeholderHTMLString = NSLocalizedString(@"Post title",
+                                                            @"Placeholder for the post title.");
         
         [field setPlaceholderText:placeholderHTMLString];
         [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
     } else if (field == self.editorView.contentField) {
         field.inputAccessoryView = self.mainToolbarHolder;
         
-        NSString* placeholderHTMLString = @"Share your story here...";
+        NSString* placeholderHTMLString = NSLocalizedString(@"Share your story here...",
+                                                            @"Placeholder for the post body.");
         
         [field setPlaceholderText:placeholderHTMLString];
         [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
