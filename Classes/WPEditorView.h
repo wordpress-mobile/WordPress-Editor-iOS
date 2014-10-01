@@ -1,5 +1,7 @@
 #import <UIKit/UIKit.h>
 
+#import "ZSSTextView.h"
+
 @class WPEditorView;
 @class WPEditorField;
 
@@ -115,6 +117,9 @@ stylesForCurrentSelection:(NSArray*)styles;
 @property (nonatomic, strong, readonly) WPEditorField* contentField;
 @property (nonatomic, weak, readonly) WPEditorField* focusedField;
 @property (nonatomic, strong, readonly) WPEditorField* titleField;
+
+#pragma mark - Properties: Subviews
+@property (nonatomic, strong, readonly) ZSSTextView *sourceView;
 
 #pragma mark - Interaction
 

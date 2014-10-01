@@ -1245,6 +1245,7 @@ typedef enum
         self.editorView.autoresizesSubviews = YES;
         self.editorView.autoresizingMask = mask;
         self.editorView.backgroundColor = [UIColor whiteColor];
+        self.editorView.sourceView.inputAccessoryView = self.mainToolbarHolder;
     }
 	
     [self.view addSubview:self.editorView];
@@ -1896,7 +1897,9 @@ typedef enum
 - (void)editorView:(WPEditorView*)editorView
       fieldCreated:(WPEditorField*)field
 {
-    if (field == self.editorView.titleField) {        
+    if (field == self.editorView.titleField) {
+        field.inputAccessoryView = self.mainToolbarHolder;
+        
         NSString* placeholderHTMLString = @"Post title";
         
         [field setPlaceholderText:placeholderHTMLString];
@@ -1908,6 +1911,16 @@ typedef enum
         
         [field setPlaceholderText:placeholderHTMLString];
         [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
+    }
+}
+
+- (void)editorView:(WPEditorView*)editorView
+      fieldFocused:(WPEditorField*)field
+{
+    if (!field || field == self.editorView.titleField) {
+        [self enableToolbarItems:NO shouldShowSourceButton:YES];
+    } else if (field == self.editorView.contentField) {
+        [self enableToolbarItems:YES shouldShowSourceButton:YES];
     }
 }
 

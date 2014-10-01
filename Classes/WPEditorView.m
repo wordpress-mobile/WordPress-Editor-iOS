@@ -185,12 +185,31 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
     CGPoint keyboardOrigin = localizedKeyboardEnd.origin;
     
     if (keyboardOrigin.y > 0) {
+        
+        CGFloat vOffset = self.frame.size.height - keyboardOrigin.y;
+        
+        UIEdgeInsets insets = UIEdgeInsetsMake(0.0f, 0.0f, vOffset, 0.0f);
+        
+        self.sourceView.contentInset = insets;
+        self.sourceView.scrollIndicatorInsets = insets;
+        
         [self refreshVisibleViewportAndContentSize];
     }
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
+    // WORKAROUND: sometimes the input accessory view is not taken into account and a
+    // keyboardWillHide: call is triggered instead.  Since there's no way for the source view now
+    // to have focus, we'll just make sure the inputAccessoryView is taken into account when
+    // hiding the keyboard.
+    //
+    CGFloat vOffset = self.sourceView.inputAccessoryView.frame.size.height;
+    UIEdgeInsets insets = UIEdgeInsetsMake(0.0f, 0.0f, vOffset, 0.0f);
+    
+    self.sourceView.contentInset = insets;
+    self.sourceView.scrollIndicatorInsets = insets;
+    
     [self refreshVisibleViewportAndContentSize];
 }
 
@@ -856,6 +875,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	self.sourceView.text = [self.contentField html];
 	self.sourceView.hidden = NO;
 	self.webView.hidden = YES;
+    
+    [self.sourceView becomeFirstResponder];
+    UITextPosition* position = [self.sourceView positionFromPosition:[self.sourceView beginningOfDocument]
+                                                              offset:0];
+    
+    [self.sourceView setSelectedTextRange:[self.sourceView textRangeFromPosition:position toPosition:position]];
 }
 
 - (void)showVisualEditor
@@ -863,6 +888,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	[self.contentField setHtml:self.sourceView.text];
 	self.sourceView.hidden = YES;
 	self.webView.hidden = NO;
+    
+    [self.titleField focus];
 }
 
 #pragma mark - Editing lock
