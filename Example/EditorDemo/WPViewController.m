@@ -1,5 +1,8 @@
 #import "WPViewController.h"
 
+#import "WPEditorField.h"
+#import "WPEditorView.h"
+
 @interface WPViewController ()
 @end
 
@@ -8,12 +11,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"content" ofType:@"html"];
-    NSString *htmlParam = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
-    [self setTitleText:@"I'm editing a post!"];
-    [self setBodyText:htmlParam];
-	self.delegate = self;
     
+    self.delegate = self;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Edit"
                                                                              style:UIBarButtonItemStyleBordered
                                                                             target:self
@@ -49,14 +48,22 @@
     NSLog(@"Editor did end editing.");
 }
 
+- (void)editorDidFinishLoadingDOM:(WPEditorViewController *)editorController
+{
+    NSString *path = [[NSBundle mainBundle] pathForResource:@"content" ofType:@"html"];
+    NSString *htmlParam = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    [self setTitleText:@"I'm editing a post!"];
+    [self setBodyText:htmlParam];
+}
+
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController
 {
     NSLog(@"Pressed Media!");
 }
 
-- (void)editorViewController:(WPEditorViewController *)editorController titleWillChange:(NSString *)title
+- (void)editorTitleDidChange:(WPEditorViewController *)editorController
 {
-    NSLog(@"Editor title will change: %@", title);
+    NSLog(@"Editor title did change: %@", self.titleText);
 }
 
 - (void)editorTextDidChange:(WPEditorViewController *)editorController

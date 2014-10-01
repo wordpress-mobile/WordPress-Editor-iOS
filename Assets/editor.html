@@ -778,18 +778,16 @@ function style_html(html_source, options) {
     }
     return multi_parser.output.join('');
 }
-
     </script>
 	<script><!--jquery-mobile-events--></script>
     <script><!--editor--></script>
 	<script>
-		
 		// DRM: onLoad does not get called when offline, if there's remote content in the editor
 		// (such as remote images).  We use the 'ready' event for this reason.
 		//
 		$(document).ready(function() {
-			zss_editor.init();
-			zss_editor.domLoadedCallback();
+            ZSSEditor.init();
+            ZSSEditor.domLoadedCallback();
 		});
 	</script>
 
@@ -798,7 +796,6 @@ function style_html(html_source, options) {
         
         html {
             box-sizing: border-box;
-            min-height: 100vh !important;
         }
         
         html, body {
@@ -810,10 +807,9 @@ function style_html(html_source, options) {
         }
 
         body {
-            overflow-y: scroll;
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            height: auto;
-            min-height: initial;
+            min-height: 100vh;
         }
     
 		img {max-width: 100%; width: auto; height: auto;}
@@ -822,18 +818,18 @@ function style_html(html_source, options) {
         div[contenteditable] {
             padding: 10px 10px 0px 10px;
             box-sizing: border-box;
-            min-height: 100vh;
         }
-        
+    
         div[placeholderText][contenteditable=true]:empty:not(:focus):before {
             content: attr(placeholderText);
             float: left;
-            margin-left: 2px;
         }
     </style>
   </head>
   <body>
-      <div contenteditable="true" id="zss_editor_content" style="">
+      <div contenteditable="true" id="zss_field_title">
+      </div>
+      <div contenteditable="true" id="zss_field_content">
         <!--content-->
       </div>
   </body>

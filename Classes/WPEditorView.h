@@ -1,6 +1,9 @@
 #import <UIKit/UIKit.h>
 
+#import "ZSSTextView.h"
+
 @class WPEditorView;
+@class WPEditorField;
 
 @protocol WPEditorViewDelegate <UIWebViewDelegate>
 @optional
@@ -11,6 +14,13 @@
  *	@param		editorView		The editor view.
  */
 - (void)editorTextDidChange:(WPEditorView*)editorView;
+
+/**
+ *	@brief		Received when the editor title is changed.
+ *
+ *	@param		editorView		The editor view.
+ */
+- (void)editorTitleDidChange:(WPEditorView*)editorView;
 
 /**
  *	@brief		Received when the underlying web content's DOM is ready.
@@ -31,13 +41,24 @@
 - (void)editorViewDidFinishLoading:(WPEditorView*)editorView;
 
 /**
+ *	@brief		Received when the editor creates one of it's fields.
+ *  @details    The editor fields will be nil before this method is called.  This is because editor
+ *              fields are created as part of the process of loading the HTML.
+ *
+ *	@param		editorView		The editor view.
+ *	@param		field			The new field.
+ */
+- (void)editorView:(WPEditorView*)editorView
+      fieldCreated:(WPEditorField*)field;
+
+/**
  *	@brief		Received when the editor focus changes.
  *
  *	@param		editorView		The editor view.
- *	@param		gained			YES means the focus was gained by the editor.  NO means it was lost.
+ *	@param		field			The focused field.
  */
 - (void)editorView:(WPEditorView*)editorView
-	  focusChanged:(BOOL)gained;
+	  fieldFocused:(WPEditorField*)field;
 
 /**
  *	@brief		Received when the user taps on a link in the editor.
@@ -88,25 +109,21 @@ stylesForCurrentSelection:(NSArray*)styles;
  */
 @property (nonatomic, assign, readonly, getter = isEditing) BOOL editing;
 
-/**
- *	@brief		The placeholder HTML string to show when the editor view is empty in visual mode.
- */
-@property (nonatomic, copy, readwrite) NSString* placeholderHTMLString;
-
-/**
- *	@brief		The placeholder HTML string color.
- */
-@property (nonatomic, copy, readwrite) UIColor* placeholderHTMLStringColor;
-
-#pragma mark - Selection
+#pragma mark - Properties: Selection
 @property (nonatomic, strong, readonly) NSString *selectedLinkTitle;
 @property (nonatomic, strong, readonly) NSString *selectedLinkURL;
 
+#pragma mark - Properties: Fields
+@property (nonatomic, strong, readonly) WPEditorField* contentField;
+@property (nonatomic, weak, readonly) WPEditorField* focusedField;
+@property (nonatomic, strong, readonly) WPEditorField* titleField;
+
+#pragma mark - Properties: Subviews
+@property (nonatomic, strong, readonly) ZSSTextView *sourceView;
+
 #pragma mark - Interaction
 
-- (void)setHtml:(NSString *)html;
 - (void)insertHTML:(NSString *)html;
-- (NSString *)getHTML;
 
 /**
  *	@brief		Undo the last operation.
@@ -176,19 +193,7 @@ stylesForCurrentSelection:(NSArray*)styles;
 - (void)quickLink;
 - (void)removeLink;
 
-#pragma mark - Editor focus
-
-/**
- *	@brief		Assigns focus to the editor.
- *	@todo		DRM: Replace this with becomeFirstResponder????
- */
-- (void)focus;
-
-/**
- *	@brief		Resigns focus from the editor.
- *	@todo		DRM: Replace this with resignFirstResponder????
- */
-- (void)blur;
+#pragma mark - Editing
 
 /**
  *	@brief		Ends editing and forces any subview to resign first responder.
@@ -212,13 +217,6 @@ stylesForCurrentSelection:(NSArray*)styles;
  *	@brief		Enables editing.
  */
 - (void)enableEditing;
-
-#pragma mark - Customization
-
-/**
- *	@brief		Sets the input accessory view for the editor.
- */
-- (void)setInputAccessoryView:(UIView*)inputAccessoryView;
 
 #pragma mark - Styles
 

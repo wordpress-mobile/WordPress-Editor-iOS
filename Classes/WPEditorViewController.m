@@ -9,11 +9,9 @@
 #import <WordPress-iOS-Shared/UIImage+Util.h>
 #import <WordPress-iOS-Shared/UIColor+Helpers.h>
 
-#import "HRColorUtil.h"
-#import "UIWebView+GUIFixes.h"
+#import "WPEditorField.h"
 #import "WPEditorToolbarButton.h"
 #import "WPEditorView.h"
-#import "WPInsetTextField.h"
 #import "ZSSBarButtonItem.h"
 
 // Keep an eye on this constant on different iOS versions
@@ -21,7 +19,6 @@ static int kToolbarFirstItemExtraPadding = 6;
 static int kToolbarItemPadding = 10;
 static int kiPodToolbarMarginWidth = 16;
 
-CGFloat const EPVCTextfieldHeight = 44.0f;
 CGFloat const EPVCStandardOffset = 10.0;
 NSInteger const WPImageAlertViewTag = 91;
 NSInteger const WPLinkAlertViewTag = 92;
@@ -68,7 +65,7 @@ typedef enum
 	
 } WPEditorViewControllerElementTag;
 
-@interface WPEditorViewController () <HRColorPickerViewControllerDelegate, UIAlertViewDelegate, UITextFieldDelegate, WPEditorViewDelegate>
+@interface WPEditorViewController () <HRColorPickerViewControllerDelegate, UIAlertViewDelegate, WPEditorViewDelegate>
 
 @property (nonatomic, strong) NSString *htmlString;
 @property (nonatomic, strong) NSArray *editorItemsEnabled;
@@ -85,13 +82,9 @@ typedef enum
 @property (nonatomic, assign, readwrite, getter=isEditingEnabled) BOOL editingEnabled;
 @property (nonatomic, assign, readwrite, getter=isEditing) BOOL editing;
 @property (nonatomic, assign, readwrite) BOOL wasEditing;
-@property (nonatomic, assign, readwrite) BOOL wasFocusOnEditorView;
 
 #pragma mark - Properties: Editor View
 @property (nonatomic, strong, readwrite) WPEditorView *editorView;
-
-#pragma mark - Properties: Title Text View
-@property (nonatomic, strong) WPInsetTextField *titleTextField;
 
 #pragma mark - Properties: Toolbar
 @property (nonatomic, strong) UIView *mainToolbarHolder;
@@ -1155,8 +1148,6 @@ typedef enum
     if (!IS_IPAD) {
         [self.mainToolbarHolderContent addSubview:[self rightToolbarHolder]];
     }
-	
-	[self.editorView setInputAccessoryView:self.mainToolbarHolder];
     
     // Check to see if we have any toolbar items, if not, add them all
     NSMutableArray *items = [self itemsForToolbar];
@@ -1225,10 +1216,12 @@ typedef enum
 	subviewFrame.origin = CGPointZero;
 	
 	UIView* mainToolbarHolderContent = [[UIView alloc] initWithFrame:subviewFrame];
+    mainToolbarHolderContent.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	
-	subviewFrame.size.height = 1.0f;
+    subviewFrame.size.height = 1.0f;
 	
-	UIView* mainToolbarHolderTopBorder = [[UIView alloc] initWithFrame:subviewFrame];
+    UIView* mainToolbarHolderTopBorder = [[UIView alloc] initWithFrame:subviewFrame];
+    mainToolbarHolderTopBorder.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	mainToolbarHolderTopBorder.backgroundColor = self.toolbarBorderColor;
 	
 	[mainToolbarHolder addSubview:mainToolbarHolderContent];
@@ -1241,44 +1234,18 @@ typedef enum
 
 - (void)buildTextViews
 {
-    CGFloat viewWidth = CGRectGetWidth(self.view.frame);
-    UIViewAutoresizing mask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    CGRect frame = CGRectMake(0.0f, 0.0f, viewWidth, EPVCTextfieldHeight);
-    
-    // Title TextField.
-    if (!self.titleTextField) {
-		NSString* placeholder = (NSLocalizedString(@"Post title",
-												   @"Label for the title of the post field."));
-		NSDictionary* placeholderAttributes = @{NSForegroundColorAttributeName: [WPStyleGuide textFieldPlaceholderGrey]};
-		
-        self.titleTextField = [[WPInsetTextField alloc] initWithFrame:frame];
-        self.titleTextField.returnKeyType = UIReturnKeyDone;
-        self.titleTextField.delegate = self;
-        self.titleTextField.font = [WPStyleGuide postTitleFont];
-        self.titleTextField.backgroundColor = [UIColor whiteColor];
-        self.titleTextField.textColor = [WPStyleGuide bigEddieGrey];
-        self.titleTextField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        self.titleTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:placeholder
-																					attributes:placeholderAttributes];
-        self.titleTextField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
-        self.titleTextField.keyboardType = UIKeyboardTypeAlphabet;
-        self.titleTextField.returnKeyType = UIReturnKeyNext;
-    }
-    [self.view addSubview:self.titleTextField];
-    
-    // Editor View
-    frame = CGRectMake(0.0f, frame.size.height, viewWidth, CGRectGetHeight(self.view.frame) - EPVCTextfieldHeight);
     if (!self.editorView) {
+        CGFloat viewWidth = CGRectGetWidth(self.view.frame);
+        UIViewAutoresizing mask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        
+        CGRect frame = CGRectMake(0.0f, 0.0f, viewWidth, CGRectGetHeight(self.view.frame));
+        
         self.editorView = [[WPEditorView alloc] initWithFrame:frame];
         self.editorView.delegate = self;
         self.editorView.autoresizesSubviews = YES;
         self.editorView.autoresizingMask = mask;
         self.editorView.backgroundColor = [UIColor whiteColor];
-		
-		NSString* placeholderHTMLString = @"Share your story here...";
-		
-		self.editorView.placeholderHTMLString = placeholderHTMLString;
-        self.editorView.placeholderHTMLStringColor = [WPStyleGuide textFieldPlaceholderGrey];
+        self.editorView.sourceView.inputAccessoryView = self.mainToolbarHolder;
     }
 	
     [self.view addSubview:self.editorView];
@@ -1311,22 +1278,22 @@ typedef enum
 
 - (NSString*)titleText
 {
-    return self.titleTextField.text;
+    return [self.editorView.titleField html];
 }
 
-- (void) setTitleText:(NSString*)titleText
+- (void)setTitleText:(NSString*)titleText
 {
-    [self.titleTextField setText:titleText];
+    [self.editorView.titleField setHtml:titleText];
 }
 
 - (NSString*)bodyText
 {
-    return [self.editorView getHTML];
+    return [self.editorView.contentField html];
 }
 
 - (void)setBodyText:(NSString*)bodyText
 {
-    [self.editorView setHtml:bodyText];
+    [self.editorView.contentField setHtml:bodyText];
 }
 
 #pragma mark - Actions
@@ -1379,8 +1346,6 @@ typedef enum
 	{
 		[self.editorView disableEditing];
 	}
-    
-    [self.titleTextField endEditing:YES];
 }
 
 /**
@@ -1390,11 +1355,7 @@ typedef enum
 - (void)restoreEditSelection
 {
     if (self.isEditing) {
-        if (self.wasFocusOnEditorView) {
-            [self.editorView restoreSelection];
-        } else {
-            [self.titleTextField becomeFirstResponder];
-        }
+        [self.editorView restoreSelection];
     }
 }
 
@@ -1404,14 +1365,7 @@ typedef enum
 - (void)saveEditSelection
 {
     if (self.isEditing) {
-        if ([self.titleTextField isFirstResponder]) {
-            self.wasFocusOnEditorView = NO;
-        } else {
-            self.wasFocusOnEditorView = YES;
-            [self.editorView saveSelection];
-        }
-    } else {
-        self.wasFocusOnEditorView = NO;
+        [self.editorView saveSelection];
     }
 }
 
@@ -1424,8 +1378,7 @@ typedef enum
 	//
 	if (self.didFinishLoadingEditor)
 	{
-		[self enableEditing];
-		[self.titleTextField becomeFirstResponder];
+        [self enableEditing];
 		[self tellOurDelegateEditingDidBegin];
 	}
 }
@@ -1446,13 +1399,12 @@ typedef enum
 		[self.editorView showHTMLSource];
 		
         barButtonItem.tintColor = [self barButtonItemSelectedDefaultColor];
-        [self enableToolbarItems:NO shouldShowSourceButton:YES];
     } else {
 		[self.editorView showVisualEditor];
 		
         barButtonItem.tintColor = [self toolbarItemTintColor];
-        [self enableToolbarItems:YES shouldShowSourceButton:YES];
     }
+    
     [WPAnalytics track:WPAnalyticsStatEditorTappedHTML];
 }
 
@@ -1635,6 +1587,7 @@ typedef enum
 - (void)showInsertLinkDialogWithLink:(NSString*)url
 							   title:(NSString*)title
 {
+    
 	BOOL isInsertingNewLink = (url == nil);
 	
 	if (!url) {
@@ -1682,13 +1635,13 @@ typedef enum
 	
     __weak __typeof(self) weakSelf = self;
 
-	self.alertView.willPresentBlock = ^(UIAlertView* alertView) {
-		
-		[weakSelf.editorView endEditing];
-	};
+    self.alertView.willPresentBlock = ^(UIAlertView* alertView) {
+        
+        [weakSelf.editorView saveSelection];
+        [weakSelf.editorView endEditing];
+    };
 	
-	self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
-		[weakSelf.editorView focus];
+	self.alertView.didDismissBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
 		[weakSelf.editorView restoreSelection];
 		
 		if (alertView.tag == WPLinkAlertViewTag) {
@@ -1823,14 +1776,6 @@ typedef enum
                 }
             }
         }
-        
-        // Don't dismiss the keyboard
-        // Hack from http://stackoverflow.com/a/7601631
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if([weakSelf.editorView resignFirstResponder] || [weakSelf.titleTextField resignFirstResponder]){
-                [weakSelf.editorView becomeFirstResponder];
-            }
-        });
     };
     
     self.alertView.shouldEnableFirstOtherButtonBlock = ^BOOL(UIAlertView *alertView) {
@@ -1923,49 +1868,6 @@ typedef enum
 	return url && url.scheme && url.host;
 }
 
-
-#pragma mark - UITextFieldDelegate
-
-- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
-{
-	BOOL result = NO;
-	
-	if (self.editingEnabled)
-	{
-		result = YES;
-	}
-	
-    return result;
-}
-
-- (void)textFieldDidBeginEditing:(UITextField *)textField
-{
-	if (textField == self.titleTextField) {
-		
-		[self enableToolbarItems:NO
-		  shouldShowSourceButton:YES];
-	}
-}
-    
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{    
-    if (textField == self.titleTextField) {
-        
-        NSString* newTitle = [textField.text stringByReplacingCharactersInRange:range withString:string];
-        
-        if ([self.delegate respondsToSelector: @selector(editorViewController:titleWillChange:)]) {
-            [self.delegate editorViewController:self titleWillChange:newTitle];
-        }
-    }
-    
-    return YES;
-}
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
-{
-    return YES;
-}
-
 #pragma mark - WPEditorViewDelegate
 
 - (void)editorTextDidChange:(WPEditorView*)editorView
@@ -1982,23 +1884,45 @@ typedef enum
 	// offline and the content has remote subcontent (such as pictures).
 	//
     self.didFinishLoadingEditor = YES;
-	
+    
 	if (self.editing) {
 		[self startEditing];
 	} else {
 		[self.editorView disableEditing];
 	}
+    
+    [self tellOurDelegateEditorDidFinishLoadingDOM];
 }
 
 - (void)editorView:(WPEditorView*)editorView
-	  focusChanged:(BOOL)focusGained
+      fieldCreated:(WPEditorField*)field
 {
-	if (focusGained && editorView.isInVisualMode) {
-		[self enableToolbarItems:YES
-		  shouldShowSourceButton:YES];
-    } else if (focusGained && !editorView.isInVisualMode) {
-        [self enableToolbarItems:NO
-          shouldShowSourceButton:YES];
+    if (field == self.editorView.titleField) {
+        field.inputAccessoryView = self.mainToolbarHolder;
+        
+        NSString* placeholderHTMLString = NSLocalizedString(@"Post title",
+                                                            @"Placeholder for the post title.");
+        
+        [field setPlaceholderText:placeholderHTMLString];
+        [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
+    } else if (field == self.editorView.contentField) {
+        field.inputAccessoryView = self.mainToolbarHolder;
+        
+        NSString* placeholderHTMLString = NSLocalizedString(@"Share your story here...",
+                                                            @"Placeholder for the post body.");
+        
+        [field setPlaceholderText:placeholderHTMLString];
+        [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
+    }
+}
+
+- (void)editorView:(WPEditorView*)editorView
+      fieldFocused:(WPEditorField*)field
+{
+    if (!field || field == self.editorView.titleField) {
+        [self enableToolbarItems:NO shouldShowSourceButton:YES];
+    } else if (field == self.editorView.contentField) {
+        [self enableToolbarItems:YES shouldShowSourceButton:YES];
     }
 }
 
@@ -2007,8 +1931,8 @@ typedef enum
 			 title:(NSString*)title
 {
 	if (self.isEditing) {
-		[self showInsertLinkDialogWithLink:url.absoluteString
-									 title:title];
+        [self showInsertLinkDialogWithLink:url.absoluteString
+                                     title:title];
 	}
 	
 	return YES;
@@ -2105,5 +2029,11 @@ didFailLoadWithError:(NSError *)error
 	}
 }
 
+- (void)tellOurDelegateEditorDidFinishLoadingDOM
+{
+    if ([self.delegate respondsToSelector:@selector(editorDidFinishLoadingDOM:)]) {
+        [self.delegate editorDidFinishLoadingDOM:self];
+    }
+}
 
 @end
