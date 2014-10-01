@@ -1914,6 +1914,10 @@ typedef enum
         [field setPlaceholderText:placeholderHTMLString];
         [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
     }
+    
+    if ([self.delegate respondsToSelector:@selector(editorViewController:fieldCreated:)]) {
+        [self.delegate editorViewController:self fieldCreated:field];
+    }
 }
 
 - (void)editorView:(WPEditorView*)editorView

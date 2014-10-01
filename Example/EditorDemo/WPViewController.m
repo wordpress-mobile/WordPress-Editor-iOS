@@ -71,4 +71,9 @@
     NSLog(@"Editor body text changed: %@", self.bodyText);
 }
 
+- (void)editorViewController:(WPEditorViewController *)editorViewController fieldCreated:(WPEditorField*)field
+{
+    NSLog(@"Editor field created: %@", field.nodeId);
+}
+
 @end
