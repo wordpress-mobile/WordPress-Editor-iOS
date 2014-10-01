@@ -223,7 +223,7 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
     NSString* newHeightString = [self.webView stringByEvaluatingJavaScriptFromString:@"$(document.body).height();"];
     NSInteger newHeight = [newHeightString integerValue];
     
-    self.webView.scrollView.contentSize = CGSizeMake(320, newHeight);
+    self.webView.scrollView.contentSize = CGSizeMake(self.frame.size.width, newHeight);
 }
 
 #pragma mark - UIWebViewDelegate
