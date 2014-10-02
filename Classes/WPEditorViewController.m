@@ -1877,6 +1877,13 @@ typedef enum
 	}
 }
 
+- (void)editorTitleDidChange:(WPEditorView *)editorView
+{
+    if ([self.delegate respondsToSelector: @selector(editorTitleDidChange:)]) {
+        [self.delegate editorTitleDidChange:self];
+    }
+}
+
 - (void)editorViewDidFinishLoadingDOM:(WPEditorView*)editorView
 {
 	// DRM: the reason why we're doing is when the DOM finishes loading, instead of when the full
