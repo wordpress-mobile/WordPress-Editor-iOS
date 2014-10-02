@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "HRColorPickerViewController.h"
 
+@class WPEditorField;
 @class WPEditorView;
 @class WPEditorViewController;
 
@@ -21,6 +22,17 @@ WPEditorViewControllerMode;
 - (void)editorTextDidChange:(WPEditorViewController *)editorController;
 
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController;
+
+/**
+ *	@brief		Received when the field is created and can be used.
+ *  @details    The editor fields will be nil before this method is called.  This is because editor
+ *              fields are created as part of the process of loading the HTML.
+ *
+ *	@param		editorView		The editor view.
+ *	@param		field			The new field.
+ */
+- (void)editorViewController:(WPEditorViewController*)editorViewController
+                fieldCreated:(WPEditorField*)field;
 
 @end
 
