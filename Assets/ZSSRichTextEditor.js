@@ -735,8 +735,35 @@ ZSSField.prototype.handleKeyDownEvent = function(e) {
     ZSSEditor.formatNewLine(e);
 };
 
+ZSSField.prototype.getYCaretInfo = function() {
+    var y = 0, height = 0;
+    var sel = window.getSelection();
+    if (sel.rangeCount) {
+        
+        var range = sel.getRangeAt(0);
+        var needsToWorkAroundNewlineBug = (range.startContainer.nodeName.toLowerCase() == 'p'
+                                           && range.startOffset == 0);
+        
+        if (needsToWorkAroundNewlineBug) {
+            y = range.startContainer.offsetTop;
+            height = (range.endContainer.offsetTop + range.endContainer.offsetHeight) - y;
+        } else {
+            if (range.getClientRects) {
+                var rects = range.getClientRects();
+                if (rects.length > 0) {
+                    y = rects[0].top;
+                    height = rects[0].height;
+                }
+            }
+        }
+    }
+    return { y: y, height: height };
+}
+
 ZSSField.prototype.handleInputEvent = function(e) {
-    this.inputCallback();
+    var yCaretInfo = this.getYCaretInfo();
+    
+    this.inputCallback(yCaretInfo);
 };
 
 ZSSField.prototype.handleTapEvent = function(e) {
@@ -757,8 +784,14 @@ ZSSField.prototype.handleTapEvent = function(e) {
 
 // MARK: - Callback Wrappers
 
-ZSSField.prototype.inputCallback = function() {
-    this.callback("callback-input");
+ZSSField.prototype.inputCallback = function(yCaretInfo) {
+    
+    var arguments = ['yOffset=' + yCaretInfo.y,
+                     'height=' + yCaretInfo.height];
+    
+    var joinedArguments = arguments.join(defaultCallbackSeparator);
+    
+    this.callback("callback-input", joinedArguments);
 }
 
 // MARK: - Callback Execution

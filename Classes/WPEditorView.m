@@ -29,6 +29,13 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 @property (nonatomic, strong, readwrite) ZSSTextView *sourceView;
 @property (nonatomic, strong, readonly) UIWebView* webView;
 
+#pragma mark - Scrolling support
+/**
+ *  @brief      Used by the automatic scrolling engine triggered by keyboard input.
+ *  @details    Makes sure the engine doesn't try to animate the scrolling twice.
+ */
+@property (nonatomic, assign, readwrite) BOOL scrollViewIsScrollingDueToKeypress;
+
 #pragma mark - Operation queues
 @property (nonatomic, strong, readwrite) NSOperationQueue* editorInteractionQueue;
 
@@ -107,7 +114,8 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
     _webView.usesGUIFixes = YES;
     _webView.keyboardDisplayRequiresUserAction = NO;
     _webView.scrollView.delegate = self;
-	
+    _webView.scrollView.bounces = YES;
+    
 	[self addSubview:_webView];
 }
 
@@ -268,6 +276,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self refreshVisibleViewportAndContentSize];
 }
 
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    self.scrollViewIsScrollingDueToKeypress = NO;
+}
+
 #pragma mark - Handling callbacks
 
 /**
@@ -389,15 +402,20 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self refreshVisibleViewportAndContentSize];
     
     static NSString* const kFieldIdParameterName = @"id";
+    static NSString* const kYOffsetParameterName = @"yOffset";
+    static NSString* const kLineHeightParameterName = @"height";
+    
+    __block CGFloat yOffset = 0.0f;
+    __block CGFloat lineHeight = 0.0f;
     
     __weak typeof(self) weakSelf = self;
     
     [self parseParametersFromCallbackURL:url
          andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
      {
+         __strong typeof(weakSelf) strongSelf = weakSelf;
+         
          if ([parameterName isEqualToString:kFieldIdParameterName]) {
-             __strong typeof(weakSelf) strongSelf = weakSelf;
-             
              if ([parameterValue isEqualToString:kWPEditorViewFieldTitleId]) {
                  [strongSelf callDelegateEditorTitleDidChange];
              } else if ([parameterValue isEqualToString:kWPEditorViewFieldContentId]) {
@@ -405,8 +423,52 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              }
              
              strongSelf.webView.customInputAccessoryView = strongSelf.focusedField.inputAccessoryView;
+         } else if ([parameterName isEqualToString:kYOffsetParameterName]) {
+             
+             yOffset = [parameterValue floatValue];
+         } else if ([parameterName isEqualToString:kLineHeightParameterName]) {
+             
+             lineHeight = [parameterValue floatValue];
          }
-     } onComplete:nil];
+     } onComplete:^() {
+         
+         if (!self.scrollViewIsScrollingDueToKeypress) {
+             __strong typeof(weakSelf) strongSelf = weakSelf;
+             
+             CGRect viewport = [self viewport];
+             
+             CGFloat yOffsetBottom = yOffset + lineHeight;
+             
+             BOOL mustScroll = (yOffset < viewport.origin.y
+                                || yOffsetBottom > viewport.origin.y + viewport.size.height);
+             
+             if (mustScroll) {
+                 self.scrollViewIsScrollingDueToKeypress = YES;
+                 
+                 // DRM: by reducing the necessary height we avoid an issue that moves the caret out
+                 // of view.
+                 //
+                 CGFloat necessaryHeight = viewport.size.height / 2;
+                 
+                 // DRM: just make sure we don't go out of bounds with the desired yOffset.
+                 //
+                 yOffset = MIN(yOffset,
+                               self.webView.scrollView.contentSize.height - necessaryHeight);
+                 
+                 CGRect rect = CGRectMake(0.0f,
+                                          yOffset,
+                                          viewport.size.width,
+                                          necessaryHeight);
+                 
+                 NSLog(@"rect.x: %lf", rect.origin.x);
+                 NSLog(@"rect.y: %lf", rect.origin.y);
+                 NSLog(@"rect.height: %lf", rect.size.height);
+                 NSLog(@"rect.width: %lf", rect.size.width);
+                 
+                 [strongSelf.webView.scrollView scrollRectToVisible:rect animated:YES];
+             }
+         }
+     }];
 }
 
 /**
@@ -597,6 +659,28 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	{
 		[self.delegate editorView:self stylesForCurrentSelection:styleStrings];
 	}
+}
+
+#pragma mark - Viewport rect
+
+/**
+ *  @brief      Obtain the current viewport.
+ *
+ *  @returns    The current viewport.
+ */
+- (CGRect)viewport
+{
+    UIScrollView* scrollView = self.webView.scrollView;
+    
+    CGRect viewport;
+    
+    viewport.origin = scrollView.contentOffset;
+    viewport.size = scrollView.bounds.size;
+    
+    viewport.size.height -= (scrollView.contentInset.top + scrollView.contentInset.bottom);
+    viewport.size.width -= (scrollView.contentInset.left + scrollView.contentInset.right);
+    
+    return viewport;
 }
 
 #pragma mark - Callback parsing
