@@ -392,6 +392,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
     static NSString* const kFieldIdParameterName = @"id";
+    static NSString* const kYOffsetParameterName = @"yOffset";
+    static NSString* const kLineHeightParameterName = @"height";
     
     [self parseParametersFromCallbackURL:url
          andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
@@ -404,8 +406,25 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              }
              
              self.webView.customInputAccessoryView = self.focusedField.inputAccessoryView;
+         } else if ([parameterName isEqualToString:kYOffsetParameterName]) {
+             
+             self.caretYOffset = [parameterValue floatValue];
+         } else if ([parameterName isEqualToString:kLineHeightParameterName]) {
+             
+             self.lineHeight = [parameterValue floatValue];
          }
-     } onComplete:nil];
+     } onComplete:^() {
+         
+         // WORKAOROUND: if we don't add a small delay here, the method
+         // refreshVisibleViewportAndContentSize fails to calculate the appropriate content size
+         // because our javascript is a bit delayed.
+         //
+         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+             
+             [self refreshVisibleViewportAndContentSize];
+             [self scrollToCaretAnimated:NO];
+         });
+     }];
 }
 
 /**

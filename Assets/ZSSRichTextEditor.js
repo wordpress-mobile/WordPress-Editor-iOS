@@ -820,8 +820,18 @@ ZSSField.prototype.handleKeyDownEvent = function(e) {
     ZSSEditor.formatNewLine(e);
 };
 
-ZSSField.prototype.handleInputEvent = function(e) {
-    this.inputCallback();
+ZSSField.prototype.handleInputEvent = function(e) {    
+    var caretInfo = ZSSEditor
+    .getYCaretInfo();
+    
+    var arguments = ['yOffset=' + caretInfo.y,
+                     'height=' + caretInfo.height];
+    
+    var joinedArguments = arguments.join(defaultCallbackSeparator);
+    
+    ZSSEditor.callback('callback-selection-changed', joinedArguments);
+    
+    this.callback("callback-input", joinedArguments);
 };
 
 ZSSField.prototype.handleTapEvent = function(e) {
@@ -838,12 +848,6 @@ ZSSField.prototype.handleTapEvent = function(e) {
         //
         setTimeout(function() { thisObj.callback('callback-link-tap', joinedArguments);}, 500);
     }
-}
-
-// MARK: - Callback Wrappers
-
-ZSSField.prototype.inputCallback = function() {    
-    this.callback("callback-input");
 }
 
 // MARK: - Callback Execution
