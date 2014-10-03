@@ -54,6 +54,7 @@ ZSSEditor.init = function() {
 		// sent if we try to load a callback here.
 		//
 		if (editor.is(":focus")) {
+            ZSSEditor.selectionChangedCallback();
 			ZSSEditor.sendEnabledStyles(e);
 			var clicked = $(e.target);
 			if (!clicked.hasClass('zs_active')) {
@@ -114,6 +115,18 @@ ZSSEditor.log = function(msg) {
 ZSSEditor.domLoadedCallback = function() {
 	
 	ZSSEditor.callback("callback-dom-loaded");
+}
+
+ZSSEditor.selectionChangedCallback = function () {
+    
+    var caretInfo = this.getYCaretInfo();
+    
+    var arguments = ['yOffset=' + caretInfo.y,
+                     'height=' + caretInfo.height];
+    
+    var joinedArguments = arguments.join(defaultCallbackSeparator);
+    
+    ZSSEditor.callback('callback-selection-changed', joinedArguments);
 }
 
 ZSSEditor.callback = function(callbackScheme, callbackPath) {
@@ -180,6 +193,36 @@ ZSSEditor.getSelectedText = function() {
 	var selection = window.getSelection();
 	
 	return selection.toString();
+}
+
+ZSSEditor.getYCaretInfo = function() {
+    var y = 0, height = 0;
+    var sel = window.getSelection();
+    if (sel.rangeCount) {
+        
+        var range = sel.getRangeAt(0);
+        var needsToWorkAroundNewlineBug = (range.startOffset == 0);
+        
+        if (needsToWorkAroundNewlineBug) {
+            var closerParentNode = ZSSEditor.closerParentNode();
+            var closerDiv = ZSSEditor.closerParentNodeWithName('div');
+            
+            var fontSize = $(closerParentNode).css('font-size');
+            var lineHeight = Math.floor(parseInt(fontSize.replace('px','')) * 1.5);
+            
+            y = closerParentNode.offsetTop;
+            height = lineHeight;
+        } else {
+            if (range.getClientRects) {
+                var rects = range.getClientRects();
+                if (rects.length > 0) {
+                    y = rects[0].top;
+                    height = rects[0].height;
+                }
+            }
+        }
+    }
+    return { y: y, height: height };
 }
 
 // MARK: - Styles
@@ -399,7 +442,7 @@ ZSSEditor.updateLink = function(url, title) {
 	
     ZSSEditor.restoreRange();
 	
-	var currentLinkNode = ZSSEditor.closerParentNode('a');
+	var currentLinkNode = ZSSEditor.closerParentNodeWithName('a');
 	
     if (currentLinkNode) {
 		currentLinkNode.setAttribute("href", url);
@@ -410,7 +453,7 @@ ZSSEditor.updateLink = function(url, title) {
 
 ZSSEditor.unlink = function() {
 	
-	var currentLinkNode = ZSSEditor.closerParentNode('a');
+	var currentLinkNode = ZSSEditor.closerParentNodeWithName('a');
 	
 	if (currentLinkNode) {
 		ZSSEditor.unwrapNode(currentLinkNode);
@@ -487,7 +530,7 @@ ZSSEditor.isCommandEnabled = function(commandName) {
 ZSSEditor.formatNewLine = function(e) {
     // Check to see if the enter key is pressed
     if(e.keyCode == '13') {
-        var currentNode = ZSSEditor.closerParentNode('blockquote');
+        var currentNode = ZSSEditor.closerParentNodeWithName('blockquote');
         if (!currentNode && !ZSSEditor.isCommandEnabled('insertOrderedList') &&
             !ZSSEditor.isCommandEnabled('insertUnorderedList')) {
             document.execCommand('formatBlock', false, 'p');
@@ -633,7 +676,28 @@ ZSSEditor.sendEnabledStyles = function(e) {
 
 // MARK: - Parent nodes & tags
 
-ZSSEditor.closerParentNode = function(nodeName) {
+ZSSEditor.closerParentNode = function() {
+    
+    var parentNode = null;
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0).cloneRange();
+    
+    var currentNode = range.commonAncestorContainer;
+    
+    while (currentNode) {
+        if (currentNode.nodeType == document.ELEMENT_NODE) {
+            parentNode = currentNode;
+            
+            break;
+        }
+        
+        currentNode = currentNode.parentElement;
+    }
+    
+    return parentNode;
+}
+
+ZSSEditor.closerParentNodeWithName = function(nodeName) {
     
     nodeName = nodeName.toLowerCase();
     
@@ -735,35 +799,8 @@ ZSSField.prototype.handleKeyDownEvent = function(e) {
     ZSSEditor.formatNewLine(e);
 };
 
-ZSSField.prototype.getYCaretInfo = function() {
-    var y = 0, height = 0;
-    var sel = window.getSelection();
-    if (sel.rangeCount) {
-        
-        var range = sel.getRangeAt(0);
-        var needsToWorkAroundNewlineBug = (range.startContainer.nodeName.toLowerCase() == 'p'
-                                           && range.startOffset == 0);
-        
-        if (needsToWorkAroundNewlineBug) {
-            y = range.startContainer.offsetTop;
-            height = (range.endContainer.offsetTop + range.endContainer.offsetHeight) - y;
-        } else {
-            if (range.getClientRects) {
-                var rects = range.getClientRects();
-                if (rects.length > 0) {
-                    y = rects[0].top;
-                    height = rects[0].height;
-                }
-            }
-        }
-    }
-    return { y: y, height: height };
-}
-
 ZSSField.prototype.handleInputEvent = function(e) {
-    var yCaretInfo = this.getYCaretInfo();
-    
-    this.inputCallback(yCaretInfo);
+    this.inputCallback();
 };
 
 ZSSField.prototype.handleTapEvent = function(e) {
@@ -784,14 +821,8 @@ ZSSField.prototype.handleTapEvent = function(e) {
 
 // MARK: - Callback Wrappers
 
-ZSSField.prototype.inputCallback = function(yCaretInfo) {
-    
-    var arguments = ['yOffset=' + yCaretInfo.y,
-                     'height=' + yCaretInfo.height];
-    
-    var joinedArguments = arguments.join(defaultCallbackSeparator);
-    
-    this.callback("callback-input", joinedArguments);
+ZSSField.prototype.inputCallback = function() {    
+    this.callback("callback-input");
 }
 
 // MARK: - Callback Execution

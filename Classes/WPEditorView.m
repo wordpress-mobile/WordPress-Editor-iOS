@@ -16,6 +16,10 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 
 @interface WPEditorView () <UITextViewDelegate, UIWebViewDelegate>
 
+#pragma mark - Cached caret & line data
+@property (nonatomic, assign, readwrite) CGFloat caretYOffset;
+@property (nonatomic, assign, readwrite) CGFloat lineHeight;
+
 #pragma mark - Editing state
 @property (nonatomic, assign, readwrite, getter = isEditing) BOOL editing;
 
@@ -28,13 +32,6 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 #pragma mark - Subviews
 @property (nonatomic, strong, readwrite) ZSSTextView *sourceView;
 @property (nonatomic, strong, readonly) UIWebView* webView;
-
-#pragma mark - Scrolling support
-/**
- *  @brief      Used by the automatic scrolling engine triggered by keyboard input.
- *  @details    Makes sure the engine doesn't try to animate the scrolling twice.
- */
-@property (nonatomic, assign, readwrite) BOOL scrollViewIsScrollingDueToKeypress;
 
 #pragma mark - Operation queues
 @property (nonatomic, strong, readwrite) NSOperationQueue* editorInteractionQueue;
@@ -203,6 +200,7 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
         self.sourceView.scrollIndicatorInsets = insets;
         
         [self refreshVisibleViewportAndContentSize];
+        [self scrollToCaretAnimated:NO];
     }
 }
 
@@ -260,7 +258,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	}
 }
 
-#pragma mark - UIScrollView delegate
+#pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
@@ -274,11 +272,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     // when editing text.
     //
     [self refreshVisibleViewportAndContentSize];
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
-    self.scrollViewIsScrollingDueToKeypress = NO;
 }
 
 #pragma mark - Handling callbacks
@@ -318,6 +311,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             handled = YES;
         } else if ([self isNewFieldCallbackScheme:scheme]) {
             [self handleNewFieldCallback:url];
+            handled = YES;
+        } else if ([self isSelectionChangedCallbackScheme:scheme]){
+            [self handleSelectionChangedCallback:url];
             handled = YES;
         } else if ([self isSelectionStyleScheme:scheme]) {
             [self handleSelectionStyleCallback:url];
@@ -395,14 +391,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
-    [self refreshVisibleViewportAndContentSize];
-    
     static NSString* const kFieldIdParameterName = @"id";
-    static NSString* const kYOffsetParameterName = @"yOffset";
-    static NSString* const kLineHeightParameterName = @"height";
-    
-    __block CGFloat yOffset = 0.0f;
-    __block CGFloat lineHeight = 0.0f;
     
     [self parseParametersFromCallbackURL:url
          andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
@@ -415,50 +404,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              }
              
              self.webView.customInputAccessoryView = self.focusedField.inputAccessoryView;
-         } else if ([parameterName isEqualToString:kYOffsetParameterName]) {
-             
-             yOffset = [parameterValue floatValue];
-         } else if ([parameterName isEqualToString:kLineHeightParameterName]) {
-             
-             lineHeight = [parameterValue floatValue];
          }
-     } onComplete:^() {
-         if (!self.scrollViewIsScrollingDueToKeypress) {
-             
-             CGRect viewport = [self viewport];
-             
-             CGFloat yOffsetBottom = yOffset + lineHeight;
-             
-             BOOL mustScroll = (yOffset < viewport.origin.y
-                                || yOffsetBottom > viewport.origin.y + viewport.size.height);
-             
-             if (mustScroll) {
-                 self.scrollViewIsScrollingDueToKeypress = YES;
-                 
-                 // DRM: by reducing the necessary height we avoid an issue that moves the caret out
-                 // of view.
-                 //
-                 CGFloat necessaryHeight = viewport.size.height / 2;
-                 
-                 // DRM: just make sure we don't go out of bounds with the desired yOffset.
-                 //
-                 yOffset = MIN(yOffset,
-                               self.webView.scrollView.contentSize.height - necessaryHeight);
-                 
-                 CGRect rect = CGRectMake(0.0f,
-                                          yOffset,
-                                          viewport.size.width,
-                                          necessaryHeight);
-                 
-                 NSLog(@"rect.x: %lf", rect.origin.x);
-                 NSLog(@"rect.y: %lf", rect.origin.y);
-                 NSLog(@"rect.height: %lf", rect.size.height);
-                 NSLog(@"rect.width: %lf", rect.size.width);
-                 
-                 [self.webView.scrollView scrollRectToVisible:rect animated:YES];
-             }
-         }
-     }];
+     } onComplete:nil];
 }
 
 /**
@@ -541,6 +488,42 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
      }];
 }
 
+/**
+ *	@brief		Handles a selection changed callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleSelectionChangedCallback:(NSURL*)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    static NSString* const kYOffsetParameterName = @"yOffset";
+    static NSString* const kLineHeightParameterName = @"height";
+    
+    [self parseParametersFromCallbackURL:url
+         andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+     {
+         if ([parameterName isEqualToString:kYOffsetParameterName]) {
+             
+             self.caretYOffset = [parameterValue floatValue];
+         } else if ([parameterName isEqualToString:kLineHeightParameterName]) {
+             
+             self.lineHeight = [parameterValue floatValue];
+         }
+     } onComplete:^() {
+         
+         // WORKAOROUND: if we don't add a small delay here, the method
+         // refreshVisibleViewportAndContentSize fails to calculate the appropriate content size
+         // because our javascript is a bit delayed.
+         //
+         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+             
+             [self refreshVisibleViewportAndContentSize];
+             [self scrollToCaretAnimated:NO];
+         });
+     }];
+}
+
 - (void)handleSelectionStyleCallback:(NSURL*)url
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
@@ -599,6 +582,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              @"We're expecting a non-nil string object here.");
     
     static NSString* const kCallbackScheme = @"callback-new-field";
+    
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isSelectionChangedCallbackScheme:(NSString*)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
+    static NSString* const kCallbackScheme = @"callback-selection-changed";
     
     return [scheme isEqualToString:kCallbackScheme];
 }
@@ -829,6 +822,46 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.redo();"];
 	
     [self callDelegateEditorTextDidChange];
+}
+
+#pragma mark - Scrolling support
+
+/**
+ *  @brief      Scrolls to a position where the caret is visible.
+ *
+ *  @param      offset      The offset to show.
+ *  @param      height      The height to show below the specified offset.  If this exceeds the
+ *                          scroll content size, a smaller height will be automatically used.
+ */
+- (void)scrollToCaretAnimated:(BOOL)animated
+{
+    CGRect viewport = [self viewport];
+    
+    CGFloat caretYOffset = self.caretYOffset;
+    CGFloat lineHeight = self.lineHeight;
+    CGFloat offsetBottom = caretYOffset + lineHeight;
+    
+    BOOL mustScroll = (caretYOffset < viewport.origin.y
+                       || offsetBottom > viewport.origin.y + viewport.size.height);
+    
+    if (mustScroll) {
+        // DRM: by reducing the necessary height we avoid an issue that moves the caret out
+        // of view.
+        //
+        CGFloat necessaryHeight = viewport.size.height / 2;
+        
+        // DRM: just make sure we don't go out of bounds with the desired yOffset.
+        //
+        caretYOffset = MIN(caretYOffset,
+                           self.webView.scrollView.contentSize.height - necessaryHeight);
+        
+        CGRect targetRect = CGRectMake(0.0f,
+                                       caretYOffset,
+                                       viewport.size.width,
+                                       necessaryHeight);
+        
+        [self.webView.scrollView scrollRectToVisible:targetRect animated:animated];
+    }
 }
 
 #pragma mark - Selection
