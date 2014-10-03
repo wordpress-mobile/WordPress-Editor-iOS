@@ -356,24 +356,20 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     static NSString* const kFieldIdParameterName = @"id";
     
-    __weak typeof(self) weakSelf = self;
-    
     [self parseParametersFromCallbackURL:url
          andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
      {
          if ([parameterName isEqualToString:kFieldIdParameterName]) {
-             __strong typeof(weakSelf) strongSelf = weakSelf;
-             
              if ([parameterValue isEqualToString:kWPEditorViewFieldTitleId]) {
-                 strongSelf.focusedField = strongSelf.titleField;
+                 self.focusedField = self.titleField;
              } else if ([parameterValue isEqualToString:kWPEditorViewFieldContentId]) {
-                 strongSelf.focusedField = strongSelf.contentField;
+                 self.focusedField = self.contentField;
              }
              
-             strongSelf.webView.customInputAccessoryView = strongSelf.focusedField.inputAccessoryView;
+             self.webView.customInputAccessoryView = self.focusedField.inputAccessoryView;
          }
      } onComplete:^{
-         [self callDelegateFieldFocused:weakSelf.focusedField];
+         [self callDelegateFieldFocused:self.focusedField];
      }];
 }
 
@@ -408,21 +404,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     __block CGFloat yOffset = 0.0f;
     __block CGFloat lineHeight = 0.0f;
     
-    __weak typeof(self) weakSelf = self;
-    
     [self parseParametersFromCallbackURL:url
          andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
      {
-         __strong typeof(weakSelf) strongSelf = weakSelf;
-         
          if ([parameterName isEqualToString:kFieldIdParameterName]) {
              if ([parameterValue isEqualToString:kWPEditorViewFieldTitleId]) {
-                 [strongSelf callDelegateEditorTitleDidChange];
+                 [self callDelegateEditorTitleDidChange];
              } else if ([parameterValue isEqualToString:kWPEditorViewFieldContentId]) {
-                 [strongSelf callDelegateEditorTextDidChange];
+                 [self callDelegateEditorTextDidChange];
              }
              
-             strongSelf.webView.customInputAccessoryView = strongSelf.focusedField.inputAccessoryView;
+             self.webView.customInputAccessoryView = self.focusedField.inputAccessoryView;
          } else if ([parameterName isEqualToString:kYOffsetParameterName]) {
              
              yOffset = [parameterValue floatValue];
@@ -431,9 +423,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              lineHeight = [parameterValue floatValue];
          }
      } onComplete:^() {
-         
          if (!self.scrollViewIsScrollingDueToKeypress) {
-             __strong typeof(weakSelf) strongSelf = weakSelf;
              
              CGRect viewport = [self viewport];
              
@@ -465,7 +455,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                  NSLog(@"rect.height: %lf", rect.size.height);
                  NSLog(@"rect.width: %lf", rect.size.width);
                  
-                 [strongSelf.webView.scrollView scrollRectToVisible:rect animated:YES];
+                 [self.webView.scrollView scrollRectToVisible:rect animated:YES];
              }
          }
      }];
