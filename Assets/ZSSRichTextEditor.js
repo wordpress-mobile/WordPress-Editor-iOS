@@ -203,6 +203,11 @@ ZSSEditor.getYCaretInfo = function() {
         var range = sel.getRangeAt(0);
         var needsToWorkAroundNewlineBug = (range.startOffset == 0);
         
+        // PROBLEM: iOS seems to have problems getting the offset for some empty nodes and return
+        // 0 (zero) as the selection range top offset.
+        //
+        // WORKAROUND: To fix this problem we just get the node's offset instead.
+        //
         if (needsToWorkAroundNewlineBug) {
             var closerParentNode = ZSSEditor.closerParentNode();
             var closerDiv = ZSSEditor.closerParentNodeWithName('div');
@@ -216,7 +221,23 @@ ZSSEditor.getYCaretInfo = function() {
             if (range.getClientRects) {
                 var rects = range.getClientRects();
                 if (rects.length > 0) {
-                    y = rects[0].top;
+                    // PROBLEM: some iOS versions differ in what is returned by getClientRects()
+                    // Some versions return the offset from the page's top, some other return the
+                    // offset from the visible viewport's top.
+                    //
+                    // WORKAROUND: see if the offset of the body's top is ever negative.  If it is
+                    // then it means that the offset we have is relative to the body's top, and we
+                    // should add the scroll offset.
+                    //
+                    var addsScrollOffset = document.body.getClientRects()[0].top < 0;
+                    
+                    this.log();
+                    
+                    if (addsScrollOffset) {
+                        y = document.body.scrollTop;
+                    }
+                    
+                    y += rects[0].top;
                     height = rects[0].height;
                 }
             }
