@@ -792,7 +792,10 @@ function style_html(html_source, options) {
 	</script>
 
     <style type="text/css">
-        * {outline: 0px solid transparent; -webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-touch-callout: none;}
+        * {outline: 0px solid transparent;
+            -webkit-tap-highlight-color: rgba(0,0,0,0);
+            -webkit-touch-callout: none;
+        }
         
         html {
             box-sizing: border-box;
@@ -810,6 +813,14 @@ function style_html(html_source, options) {
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             min-height: 100vh;
+        }
+    
+        p, div {
+            font-size: 16px;
+            font-family:OpenSans, sans-serif;
+            line-height: 24px;
+            margin-top: 0px;
+            margin-bottom: 24px;
         }
     
 		img {max-width: 100%; width: auto; height: auto;}
