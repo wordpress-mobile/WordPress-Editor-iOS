@@ -90,4 +90,20 @@
  */
 - (void)blur;
 
+#pragma mark - Settings
+
+/**
+ *  @brief      Wether the field is single line or multiline.
+ *
+ *  @returns    YES if the field is multiline, NO otherwise.
+ */
+- (BOOL)isMultiline;
+
+/**
+ *  @brief      Sets the field's multiline configuration.
+ *
+ *  @param      multiline   Use YES if the field is multiline, NO otherwise.
+ */
+- (void)setMultiline:(BOOL)multiline;
+
 @end
