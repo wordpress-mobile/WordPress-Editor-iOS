@@ -105,7 +105,7 @@ ZSSEditor.getField = function(fieldId) {
 }
 
 ZSSEditor.getFocusedField = function() {
-    var currentField = $(this.closerParentNode('div'));
+    var currentField = $(this.closerParentNodeWithName('div'));
     var currentFieldId = currentField.attr('id');
     
     while (currentField
@@ -716,7 +716,6 @@ ZSSEditor.sendEnabledStyles = function(e) {
 
 // MARK: - Parent nodes & tags
 
-<<<<<<< HEAD
 ZSSEditor.closerParentNode = function() {
     
     var parentNode = null;
@@ -727,7 +726,17 @@ ZSSEditor.closerParentNode = function() {
     
     while (currentNode) {
         if (currentNode.nodeType == document.ELEMENT_NODE) {
-=======
+            parentNode = currentNode;
+            
+            break;
+        }
+        
+        currentNode = currentNode.parentElement;
+    }
+    
+    return parentNode;
+}
+
 ZSSEditor.closerParentNodeStartingAtNode = function(nodeName, startingNode) {
     
     nodeName = nodeName.toLowerCase();
@@ -743,7 +752,6 @@ ZSSEditor.closerParentNodeStartingAtNode = function(nodeName, startingNode) {
         
         if (currentNode.nodeName.toLowerCase() == nodeName
             && currentNode.nodeType == document.ELEMENT_NODE) {
->>>>>>> release/0.2.2
             parentNode = currentNode;
             
             break;
@@ -755,11 +763,7 @@ ZSSEditor.closerParentNodeStartingAtNode = function(nodeName, startingNode) {
     return parentNode;
 }
 
-<<<<<<< HEAD
 ZSSEditor.closerParentNodeWithName = function(nodeName) {
-=======
-ZSSEditor.closerParentNode = function(nodeName) {
->>>>>>> release/0.2.2
     
     nodeName = nodeName.toLowerCase();
     
