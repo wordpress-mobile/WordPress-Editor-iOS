@@ -110,7 +110,6 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
     _webView.scrollView.bounces = NO;
     _webView.usesGUIFixes = YES;
     _webView.keyboardDisplayRequiresUserAction = NO;
-    _webView.scrollView.delegate = self;
     _webView.scrollView.bounces = YES;
     
 	[self addSubview:_webView];
@@ -256,22 +255,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	if ([self.delegate respondsToSelector:@selector(editorViewDidFinishLoading:)]) {
 		[self.delegate editorViewDidFinishLoading:self];
 	}
-}
-
-#pragma mark - UIScrollViewDelegate
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    // NOTE AUTHOR: Diego Rey Mendez
-    //
-    // PROBLEM: setting self.webView.scrollView.contentSize is mostly unreliable.  We tried setting
-    // it when the body is resized but it wasn't working properly.  Sometimes it just failed to set
-    // the proper viewport height.
-    //
-    // WORKAROUND: by calling this method here we make sure that the viewport size is always right
-    // when editing text.
-    //
-    [self refreshVisibleViewportAndContentSize];
 }
 
 #pragma mark - Handling callbacks
