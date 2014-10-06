@@ -1910,6 +1910,7 @@ typedef enum
         NSString* placeholderHTMLString = NSLocalizedString(@"Post title",
                                                             @"Placeholder for the post title.");
         
+        [field setMultiline:NO];
         [field setPlaceholderText:placeholderHTMLString];
         [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
     } else if (field == self.editorView.contentField) {
@@ -1918,6 +1919,7 @@ typedef enum
         NSString* placeholderHTMLString = NSLocalizedString(@"Share your story here...",
                                                             @"Placeholder for the post body.");
         
+        [field setMultiline:YES];
         [field setPlaceholderText:placeholderHTMLString];
         [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
     }

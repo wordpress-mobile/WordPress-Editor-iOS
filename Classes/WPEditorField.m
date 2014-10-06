@@ -2,6 +2,9 @@
 
 #import "HRColorUtil.h"
 
+static NSString* const kWPEditorFieldJavascriptFalse = @"false";
+static NSString* const kWPEditorFieldJavascriptTrue = @"true";
+
 @interface WPEditorField ()
 
 /**
@@ -222,6 +225,33 @@
 - (void)blur
 {
     NSString* javascript = [NSString stringWithFormat:@"%@.blur();", [self wrappedNodeJavascriptAccessor]];
+    [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+}
+
+#pragma mark - Settings
+
+- (BOOL)isMultiline
+{
+    NSString* javascript = [NSString stringWithFormat:@"%@.isMultiline();", [self wrappedNodeJavascriptAccessor]];
+    NSString* result = [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+    
+    return [result boolValue];
+}
+
+- (void)setMultiline:(BOOL)multiline
+{
+    NSString* multilineString = nil;
+    
+    if (multiline) {
+        multilineString = kWPEditorFieldJavascriptTrue;
+    } else {
+        multilineString = kWPEditorFieldJavascriptFalse;
+    }
+    
+    NSAssert([multilineString isKindOfClass:[NSString class]],
+             @"Expected a non-nil NSString object here.");
+    
+    NSString* javascript = [NSString stringWithFormat:@"%@.setMultiline(%@);", [self wrappedNodeJavascriptAccessor], multilineString];
     [self.webView stringByEvaluatingJavaScriptFromString:javascript];
 }
 

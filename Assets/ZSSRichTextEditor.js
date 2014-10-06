@@ -103,6 +103,20 @@ ZSSEditor.getField = function(fieldId) {
     return field;
 }
 
+ZSSEditor.getFocusedField = function() {
+    var currentField = $(this.closerParentNode('div'));
+    var currentFieldId = currentField.attr('id');
+    
+    while (currentField
+           && (!currentFieldId || this.editableFields[currentFieldId] == null)) {
+        currentField = this.closerParentNodeStartingAtNode('div', currentField);
+        currentFieldId = currentField.attr('id');
+        
+    }
+    
+    return this.editableFields[currentFieldId];
+};
+
 // MARK: - Logging
 
 ZSSEditor.log = function(msg) {
@@ -487,11 +501,17 @@ ZSSEditor.isCommandEnabled = function(commandName) {
 ZSSEditor.formatNewLine = function(e) {
     // Check to see if the enter key is pressed
     if(e.keyCode == '13') {
-        var currentNode = ZSSEditor.closerParentNode('blockquote');
-        if (!currentNode && !ZSSEditor.isCommandEnabled('insertOrderedList') &&
-            !ZSSEditor.isCommandEnabled('insertUnorderedList')) {
-            document.execCommand('formatBlock', false, 'p');
-            e.PreventDefault();
+        
+        var currentField = this.getFocusedField();
+        
+        if (currentField.isMultiline()) {
+            var currentNode = ZSSEditor.closerParentNode('blockquote');
+            if (!currentNode && !ZSSEditor.isCommandEnabled('insertOrderedList') &&
+                !ZSSEditor.isCommandEnabled('insertUnorderedList')) {
+                document.execCommand('formatBlock', false, 'p');
+            }
+        } else {
+            e.preventDefault();
         }
     }
 }
@@ -633,6 +653,32 @@ ZSSEditor.sendEnabledStyles = function(e) {
 
 // MARK: - Parent nodes & tags
 
+ZSSEditor.closerParentNodeStartingAtNode = function(nodeName, startingNode) {
+    
+    nodeName = nodeName.toLowerCase();
+    
+    var parentNode = null;
+    var currentNode = startingNode,parentElement;
+    
+    while (currentNode) {
+        
+        if (currentNode.nodeName == document.body.nodeName) {
+            break;
+        }
+        
+        if (currentNode.nodeName.toLowerCase() == nodeName
+            && currentNode.nodeType == document.ELEMENT_NODE) {
+            parentNode = currentNode;
+            
+            break;
+        }
+        
+        currentNode = currentNode.parentElement;
+    }
+    
+    return parentNode;
+}
+
 ZSSEditor.closerParentNode = function(nodeName) {
     
     nodeName = nodeName.toLowerCase();
@@ -688,6 +734,7 @@ ZSSEditor.parentTags = function() {
 // MARK: - ZSSField Constructor
 
 function ZSSField(wrappedObject) {
+    this.multiline = false;
     this.wrappedObject = wrappedObject;
     this.bodyPlaceholderColor = '#000000';
     
@@ -816,6 +863,16 @@ ZSSField.prototype.blur = function() {
         this.wrappedObject.blur();
     }
 };
+
+// MARK: - Multiline support
+
+ZSSField.prototype.isMultiline = function() {
+    return this.multiline;
+}
+
+ZSSField.prototype.setMultiline = function(multiline) {
+    this.multiline = multiline;
+}
 
 // MARK: - NodeId
 
