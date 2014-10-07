@@ -223,8 +223,9 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 {
     [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.refreshVisibleViewportSize();"];
     
-    // DRM: enable this to debug
-    //[self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.logMainElementSizes();"];
+#ifdef DEBUG
+    [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.logMainElementSizes();"];
+#endif
     
     NSString* newHeightString = [self.webView stringByEvaluatingJavaScriptFromString:@"$(document.body).height();"];
     NSInteger newHeight = [newHeightString integerValue];
