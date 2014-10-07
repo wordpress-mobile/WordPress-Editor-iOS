@@ -245,8 +245,6 @@ ZSSEditor.getYCaretInfo = function() {
                     //
                     var addsScrollOffset = document.body.getClientRects()[0].top < 0;
                     
-                    this.log();
-                    
                     if (addsScrollOffset) {
                         y = document.body.scrollTop;
                     }
@@ -664,7 +662,6 @@ ZSSEditor.sendEnabledStyles = function(e) {
 		// The target element
 		var t = $(e.target);
 		var nodeName = e.target.nodeName.toLowerCase();
-        console.log(nodeName);
 		
 		// Background Color
 		try

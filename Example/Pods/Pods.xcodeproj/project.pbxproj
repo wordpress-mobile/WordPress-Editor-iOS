@@ -139,6 +139,8 @@
 		582EF3CC449C4800B2BA3275 /* DTCoreTextFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = 613EB725C0FD49458F75D880 /* DTCoreTextFunctions.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -DOS_OBJECT_USE_OBJC=0"; }; };
 		586B56BD6C7740BA84676EDF /* HRColorUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 28F405D5AE56466BA2D2F2D5 /* HRColorUtil.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		59A3A1F2F480450B8604F905 /* NSDictionary+DTError.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EAB8232883344009357F77B /* NSDictionary+DTError.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -DOS_OBJECT_USE_OBJC=0"; }; };
+		59F15ACE19E45A8F00CD8E33 /* WPEditorLoggingConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 59F15ACC19E45A7A00CD8E33 /* WPEditorLoggingConfiguration.m */; };
+		59F15ACF19E45A9A00CD8E33 /* WPEditorLoggingConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 59F15ACB19E45A7A00CD8E33 /* WPEditorLoggingConfiguration.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		5B63A8A6F140475EA11E3C7E /* UITableViewTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EC31F8E647344313BE8E9351 /* UITableViewTextFieldCell.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -w -Xanalyzer -analyzer-disable-checker"; }; };
 		5CFF23FE1F5641A6A1A27EE9 /* DTVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E50C8517BF24140990E1C1C /* DTVersion.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -DOS_OBJECT_USE_OBJC=0"; }; };
 		5D09879CEC42488D9EAC1299 /* DTColorFunctions.h in Headers */ = {isa = PBXBuildFile; fileRef = 9E5DEB36F0044BC782E1523F /* DTColorFunctions.h */; };
@@ -705,6 +707,8 @@
 		58B0D36E2D804509AF1B6B4E /* NSAttributedString+DTDebug.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSAttributedString+DTDebug.m"; path = "Core/Source/NSAttributedString+DTDebug.m"; sourceTree = "<group>"; };
 		5948DBBC402742199B195759 /* icon_format_more_highlighted.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = icon_format_more_highlighted.png; path = Assets/icon_format_more_highlighted.png; sourceTree = "<group>"; };
 		59C1B35B1D264AD090BC4DF4 /* DTHTMLWriter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DTHTMLWriter.m; path = Core/Source/DTHTMLWriter.m; sourceTree = "<group>"; };
+		59F15ACB19E45A7A00CD8E33 /* WPEditorLoggingConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WPEditorLoggingConfiguration.h; path = Classes/WPEditorLoggingConfiguration.h; sourceTree = "<group>"; };
+		59F15ACC19E45A7A00CD8E33 /* WPEditorLoggingConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WPEditorLoggingConfiguration.m; path = Classes/WPEditorLoggingConfiguration.m; sourceTree = "<group>"; };
 		5A44FBFE41A343BC96179C1A /* UIKit+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIKit+AFNetworking.h"; path = "UIKit+AFNetworking/UIKit+AFNetworking.h"; sourceTree = "<group>"; };
 		5A8D2C5463D14A52BB32FD84 /* DTVersion.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DTVersion.h; path = Core/Source/DTVersion.h; sourceTree = "<group>"; };
 		5AC0049F41BD4A8D9FAF74C0 /* DTHTMLParser.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DTHTMLParser.h; path = Core/Source/DTHTMLParser/DTHTMLParser.h; sourceTree = "<group>"; };
@@ -1606,6 +1610,8 @@
 				EC36C9D5504E486ABEBDAD45 /* UIWebView+GUIFixes.m */,
 				BAE1D270A8D744A8B9AEDE34 /* WPEditorField.h */,
 				C3C85696723B4A718D2C9520 /* WPEditorField.m */,
+				59F15ACB19E45A7A00CD8E33 /* WPEditorLoggingConfiguration.h */,
+				59F15ACC19E45A7A00CD8E33 /* WPEditorLoggingConfiguration.m */,
 				179A932279C84377A8B96C53 /* WPEditorToolbarButton.h */,
 				0C636320BC454EFA833F2F61 /* WPEditorToolbarButton.m */,
 				9C58AA671C444E10B25CEB7B /* WPEditorView.h */,
@@ -1974,6 +1980,7 @@
 				74BAA505D8694FFF81E83196 /* HRColorCursor.h in Headers */,
 				79A438AFB26D46A09D94E97D /* HRColorPickerMacros.h in Headers */,
 				9C5EF52BC3C6435480EA1656 /* HRColorPickerView.h in Headers */,
+				59F15ACF19E45A9A00CD8E33 /* WPEditorLoggingConfiguration.h in Headers */,
 				FEE2CBCEB17E46DEBDD88834 /* HRColorPickerViewController.h in Headers */,
 				F15DD085EF184E96A4D4A2FA /* HRColorUtil.h in Headers */,
 				D1AFBF00721E453A9F4F565C /* UIWebView+GUIFixes.h in Headers */,
@@ -2493,6 +2500,7 @@
 				F04BCC2EB1AF44C58421077B /* WPEditorView.m in Sources */,
 				ED388CC3E1784843B14D8079 /* WPEditorViewController.m in Sources */,
 				E01C5F4F8B52408DA2F08FD3 /* WPLegacyEditorViewController.m in Sources */,
+				59F15ACE19E45A8F00CD8E33 /* WPEditorLoggingConfiguration.m in Sources */,
 				7DFED513940B4CBF8E1E1318 /* WPLegacyKeyboardToolbarBase.m in Sources */,
 				D460C8FB63CD48979D52AC2C /* WPLegacyKeyboardToolbarButtonItem.m in Sources */,
 				6BBC34A48C1A431E859C4C9A /* WPLegacyKeyboardToolbarDone.m in Sources */,

@@ -1963,7 +1963,7 @@ typedef enum
 -      (void)webView:(UIWebView *)webView
 didFailLoadWithError:(NSError *)error
 {
-	NSLog(@"Loading error: %@", error);
+	DDLogError(@"Loading error: %@", error);
 	NSAssert(NO,
 			 @"This should never happen since the editor is a local HTML page of our own making.");
 }

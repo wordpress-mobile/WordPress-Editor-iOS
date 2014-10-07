@@ -274,7 +274,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 	NSString *scheme = [url scheme];
 	
-	NSLog(@"WebEditor callback received: %@", url);
+	DDLogDebug(@"WebEditor callback received: %@", url);
 	
     if (scheme) {
         if ([self isFocusInScheme:scheme]) {
@@ -455,7 +455,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
          andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
      {
          if ([parameterName isEqualToString:kMessageParameterName]) {
-             NSLog(@"WebEditor log:%@", [self stringByDecodingURLFormat:parameterValue]);
+             DDLogInfo(@"WebEditor log:%@", [self stringByDecodingURLFormat:parameterValue]);
          }
      } onComplete:nil];
 }

@@ -1,4 +1,8 @@
 #import "WPAppDelegate.h"
+
+#import <CocoaLumberjack/DDLog.h>
+#import <CocoaLumberjack/DDASLLogger.h>
+#import <CocoaLumberjack/DDTTYLogger.h>
 #import <WordPress-iOS-Editor/WPEditorViewController.h>
 
 @implementation WPAppDelegate
@@ -7,6 +11,10 @@
 {
     //Default to white
     [[UIToolbar appearanceWhenContainedIn:[WPEditorViewController class], nil] setBarTintColor:[UIColor whiteColor]];
+    
+    [DDLog addLogger:[DDASLLogger sharedInstance]];
+    [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    
     return YES;
 }
 							
