@@ -33,6 +33,8 @@ ZSSEditor.enabledItems = {};
 
 ZSSEditor.editableFields = {};
 
+ZSSEditor.lastTappedNode = null;
+
 /**
  * The initializer function that must be called onLoad
  */
@@ -477,7 +479,7 @@ ZSSEditor.updateLink = function(url, title) {
 	
     ZSSEditor.restoreRange();
 	
-	var currentLinkNode = ZSSEditor.closerParentNodeWithName('a');
+    var currentLinkNode = ZSSEditor.lastTappedNode;
 	
     if (currentLinkNode) {
 		currentLinkNode.setAttribute("href", url);
@@ -882,17 +884,23 @@ ZSSField.prototype.handleInputEvent = function(e) {
 
 ZSSField.prototype.handleTapEvent = function(e) {
     var targetNode = e.target;
-    var arguments = ['url=' + encodeURIComponent(targetNode.href),
-                     'title=' + encodeURIComponent(targetNode.innerHTML)];
     
-    if (targetNode.nodeName.toLowerCase() == 'a') {
-        var joinedArguments = arguments.join(defaultCallbackSeparator);
+    if (targetNode) {
         
-        var thisObj = this;
+        ZSSEditor.lastTappedNode = targetNode;
         
-        // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
-        //
-        setTimeout(function() { thisObj.callback('callback-link-tap', joinedArguments);}, 500);
+        if (targetNode.nodeName.toLowerCase() == 'a') {
+            var arguments = ['url=' + encodeURIComponent(targetNode.href),
+                             'title=' + encodeURIComponent(targetNode.innerHTML)];
+            
+            var joinedArguments = arguments.join(defaultCallbackSeparator);
+            
+            var thisObj = this;
+            
+            // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
+            //
+            setTimeout(function() { thisObj.callback('callback-link-tap', joinedArguments);}, 500);
+        }
     }
 }
 
