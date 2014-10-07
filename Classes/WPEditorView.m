@@ -999,7 +999,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	self.sourceView.hidden = YES;
 	self.webView.hidden = NO;
     
-    [self.titleField focus];
+    [self.contentField focus];
 }
 
 #pragma mark - Editing lock
