@@ -1,5 +1,6 @@
 #import "WPViewController.h"
 
+#import <CocoaLumberjack/DDLog.h>
 #import "WPEditorField.h"
 #import "WPEditorView.h"
 
@@ -40,12 +41,12 @@
 
 - (void)editorDidBeginEditing:(WPEditorViewController *)editorController
 {
-    NSLog(@"Editor did begin editing.");
+    DDLogInfo(@"Editor did begin editing.");
 }
 
 - (void)editorDidEndEditing:(WPEditorViewController *)editorController
 {
-    NSLog(@"Editor did end editing.");
+    DDLogInfo(@"Editor did end editing.");
 }
 
 - (void)editorDidFinishLoadingDOM:(WPEditorViewController *)editorController
@@ -58,22 +59,22 @@
 
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController
 {
-    NSLog(@"Pressed Media!");
+    DDLogInfo(@"Pressed Media!");
 }
 
 - (void)editorTitleDidChange:(WPEditorViewController *)editorController
 {
-    NSLog(@"Editor title did change: %@", self.titleText);
+    DDLogInfo(@"Editor title did change: %@", self.titleText);
 }
 
 - (void)editorTextDidChange:(WPEditorViewController *)editorController
 {
-    NSLog(@"Editor body text changed: %@", self.bodyText);
+    DDLogInfo(@"Editor body text changed: %@", self.bodyText);
 }
 
 - (void)editorViewController:(WPEditorViewController *)editorViewController fieldCreated:(WPEditorField*)field
 {
-    NSLog(@"Editor field created: %@", field.nodeId);
+    DDLogInfo(@"Editor field created: %@", field.nodeId);
 }
 
 @end

@@ -223,8 +223,9 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 {
     [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.refreshVisibleViewportSize();"];
     
-    // DRM: enable this to debug
-    //[self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.logMainElementSizes();"];
+#ifdef DEBUG
+    [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.logMainElementSizes();"];
+#endif
     
     NSString* newHeightString = [self.webView stringByEvaluatingJavaScriptFromString:@"$(document.body).height();"];
     NSInteger newHeight = [newHeightString integerValue];
@@ -274,7 +275,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 	NSString *scheme = [url scheme];
 	
-	NSLog(@"WebEditor callback received: %@", url);
+	DDLogDebug(@"WebEditor callback received: %@", url);
 	
     if (scheme) {
         if ([self isFocusInScheme:scheme]) {
@@ -455,7 +456,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
          andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
      {
          if ([parameterName isEqualToString:kMessageParameterName]) {
-             NSLog(@"WebEditor log:%@", [self stringByDecodingURLFormat:parameterValue]);
+             DDLogInfo(@"WebEditor log:%@", [self stringByDecodingURLFormat:parameterValue]);
          }
      } onComplete:nil];
 }
