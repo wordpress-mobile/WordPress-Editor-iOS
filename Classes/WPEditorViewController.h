@@ -20,7 +20,6 @@ WPEditorViewControllerMode;
 - (void)editorDidFinishLoadingDOM:(WPEditorViewController*)editorController;
 - (void)editorTitleDidChange:(WPEditorViewController *)editorController;
 - (void)editorTextDidChange:(WPEditorViewController *)editorController;
-
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController;
 
 /**

@@ -547,7 +547,6 @@ ZSSEditor.quickLink = function() {
 }
 
 ZSSEditor.insertImage = function(url, alt) {
-	ZSSEditor.restoreRange();
 	var html = '<img src="'+url+'" alt="'+alt+'" />';
 	ZSSEditor.insertHTML(html);
 	ZSSEditor.sendEnabledStyles();

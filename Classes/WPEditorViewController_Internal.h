@@ -56,14 +56,6 @@ typedef NS_ENUM(NSInteger, ZSSRichTextEditorToolbar) {
 @property (nonatomic) ZSSRichTextEditorToolbar enabledToolbarItems;
 
 /**
- *  Shows the insert image dialog with optinal inputs
- *
- *  @param url The URL for the image
- *  @param alt The alt for the image
- */
-- (void)showInsertImageDialogWithLink:(NSString *)url alt:(NSString *)alt;
-
-/**
  *  Inserts an image
  *
  *  @param url The URL for the image
