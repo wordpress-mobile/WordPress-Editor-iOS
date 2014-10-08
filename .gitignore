@@ -19,10 +19,6 @@ DerivedData
 *.hmap
 *.ipa
 
-# This little fellow over here should be ignored by default, to prevent commits from changing this setting for other users.
-# If we want to apply a change to this file, it cann be done through the command: git add -f <path>/WPEditorLoggingConfiguration.m
-**/WPEditorLoggingConfiguration.m
-
 # We recommend against adding the Pods directory to your .gitignore. However
 # you should judge for yourself, the pros and cons are mentioned at:
 # http://guides.cocoapods.org/using/using-cocoapods.html#should-i-ignore-the-pods-directory-in-source-control?
