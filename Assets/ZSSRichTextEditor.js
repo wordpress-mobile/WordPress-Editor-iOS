@@ -847,7 +847,7 @@ ZSSField.prototype.emptyFieldIfNoContents = function() {
     var nbsp = '\xa0';
     var text = this.wrappedObject.text().replace(nbsp, '');
     
-    if (text.length == 0)
+    if (text.length == 0) {
         
         var hasChildImages = (this.wrappedObject.find('img').length > 0);
         
