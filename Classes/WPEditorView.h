@@ -148,7 +148,36 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 #pragma mark - Images
 
+/**
+ *  @brief      Inserts a local image URL.  Useful for images that need to be uploaded.
+ *  @details    By inserting a local image URL, we can make sure the image is shown to the user
+ *              as soon as it's selected for uploading.  Once the image is successfully uploaded
+ *              the application should call replaceLocalImageWithRemoteImage().
+ *
+ *  @param      url         The URL of the local image to display.  Please keep in mind that a
+ *                          remote URL can be used here too, since this method does not check for
+ *                          that.  It would be a mistake.
+ *  @param      uniqueId    This is a unique ID provided by the caller.  It exists as a mechanism
+ *                          to update the image node with the remote URL when
+ *                          replaceLocalImageWithRemoteImage() is called.
+ */
+- (void)insertLocalImage:(NSString*)url uniqueId:(NSString*)uniqueId;
+
 - (void)insertImage:(NSString *)url alt:(NSString *)alt;
+
+/**
+ *  @brief      Replaces a local image URL with a remote image URL.  Useful for images that have
+ *              just finished uploading.
+ *  @details    The remote image can be available after a while, when uploading images.  This method
+ *              allows for the remote URL to be loaded once the upload completes.
+ *
+ *  @param      url         The URL of the remote image to display.
+ *  @param      uniqueId    This is a unique ID provided by the caller.  It exists as a mechanism
+ *                          to update the image node with the remote URL
+ *                          when replaceLocalImageWithRemoteImage() is called.
+ */
+- (void)replaceLocalImageWithRemoteImage:(NSString*)url uniqueId:(NSString*)uniqueId;
+
 - (void)updateImage:(NSString *)url alt:(NSString *)alt;
 
 #pragma mark - Links

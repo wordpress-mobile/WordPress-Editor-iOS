@@ -144,19 +144,53 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 	[_editorInteractionQueue addOperation:loadEditorOperation];
 }
 
+- (NSString*)editorRawHTML
+{
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"editor" ofType:@"html"];
+    NSData *fileContentData = [NSData dataWithContentsOfFile:filePath];
+    NSString *fileContentString = [[NSString alloc] initWithData:fileContentData encoding:NSUTF8StringEncoding];
+    
+    return fileContentString;
+}
+
+- (NSString*)editorScript
+{
+    NSString *editorJavascriptPath = [[NSBundle mainBundle] pathForResource:@"ZSSRichTextEditor" ofType:@"js"];
+    NSData* editorJavascriptContentsData = [NSData dataWithContentsOfFile:editorJavascriptPath];
+    NSString *editorJavascriptContentsString = [[NSString alloc] initWithData:editorJavascriptContentsData encoding:NSUTF8StringEncoding];
+    
+    return editorJavascriptContentsString;
+}
+
+- (NSString*)jQueryMobileScript
+{
+    NSString *jQueryMobileEventsPath = [[NSBundle mainBundle] pathForResource:@"jquery.mobile-events.min" ofType:@"js"];
+    NSData* jQueryMobileEventsContentsData = [NSData dataWithContentsOfFile:jQueryMobileEventsPath];
+    NSString *jQueryMobileEventsContentsString = [[NSString alloc] initWithData:jQueryMobileEventsContentsData encoding:NSUTF8StringEncoding];
+    
+    return jQueryMobileEventsContentsString;
+}
+
+- (NSURL*)localPlaceholderImageURL
+{
+    NSString *placeholderImagePath = [[NSBundle mainBundle] pathForResource:@"ZSSquicklink" ofType:@"png"];
+    NSURL *placeholderImageURL = [[NSURL alloc] initFileURLWithPath:placeholderImagePath];
+    
+    return placeholderImageURL;
+}
+
 - (NSString*)editorHTML
 {
-	NSString *filePath = [[NSBundle mainBundle] pathForResource:@"editor" ofType:@"html"];
-	NSData *htmlData = [NSData dataWithContentsOfFile:filePath];
-	NSString *htmlString = [[NSString alloc] initWithData:htmlData encoding:NSUTF8StringEncoding];
-	NSString *jQueryMobileEventsPath = [[NSBundle mainBundle] pathForResource:@"jquery.mobile-events.min" ofType:@"js"];
-	NSString *jQueryMobileEvents = [[NSString alloc] initWithData:[NSData dataWithContentsOfFile:jQueryMobileEventsPath] encoding:NSUTF8StringEncoding];
-	NSString *source = [[NSBundle mainBundle] pathForResource:@"ZSSRichTextEditor" ofType:@"js"];
-	NSString *jsString = [[NSString alloc] initWithData:[NSData dataWithContentsOfFile:source] encoding:NSUTF8StringEncoding];
-	htmlString = [htmlString stringByReplacingOccurrencesOfString:@"<!--jquery-mobile-events-->" withString:jQueryMobileEvents];
-	htmlString = [htmlString stringByReplacingOccurrencesOfString:@"<!--editor-->" withString:jsString];
+    NSString *fileContentString = [self editorRawHTML];
+    NSString *jQueryMobileEventsContentsString = [self jQueryMobileScript];
+    NSString *editorJavascriptContentsString = [self editorScript];
+    NSString *placeholderImageURL = [[self localPlaceholderImageURL] absoluteString];
+    
+	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--jquery-mobile-events-->" withString:jQueryMobileEventsContentsString];
+	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--editor-->" withString:editorJavascriptContentsString];
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--placeholder_image-->" withString:placeholderImageURL];
 	
-	return htmlString;
+	return fileContentString;
 }
 
 #pragma mark - Keyboard notifications
@@ -903,9 +937,21 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 #pragma mark - Images
 
+- (void)insertLocalImage:(NSString*)url uniqueId:(NSString*)uniqueId
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertLocalImage(\"%@\", \"%@\");", uniqueId, url];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
 - (void)insertImage:(NSString *)url alt:(NSString *)alt
 {
     NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertImage(\"%@\", \"%@\");", url, alt];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)replaceLocalImageWithRemoteImage:(NSString*)url uniqueId:(NSString*)uniqueId
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.replaceLocalImageWithRemoteImage(\"%@\", \"%@\");", uniqueId, url];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 

@@ -821,9 +821,26 @@ function style_html(html_source, options) {
             margin-top: 0px;
             margin-bottom: 24px;
         }
+
+        img {
+            width: auto;
+            height: auto;
+            min-width: 30px;
+            min-height: 30px;
+            max-width: 100%;
+        }
+
+        img.zs_downloading_image {
+            min-width: 50px;
+            min-height: 50px;
+            max-width: 100%;
+            background-image: url('https://www.google.com.ar/images/icons/product/chrome-48.png');
+            background-size: 50px 50px;
+        }
     
-		img {max-width: 100%; width: auto; height: auto;}
-        img.zs_active {border: 2px dashed #000;}
+        img.zs_active {
+            border: 2px dashed #000;
+        }
         
         div[contenteditable] {
             padding: 10px 10px 0px 10px;
@@ -840,7 +857,6 @@ function style_html(html_source, options) {
       <div contenteditable="true" id="zss_field_title">
       </div>
       <div contenteditable="true" id="zss_field_content">
-        <!--content-->
       </div>
   </body>
 </html>
