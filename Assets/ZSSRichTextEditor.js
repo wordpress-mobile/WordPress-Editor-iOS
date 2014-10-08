@@ -835,17 +835,34 @@ ZSSField.prototype.bindListeners = function() {
     this.wrappedObject.bind('input', function(e) { thisObj.handleInputEvent(e); });
 };
 
+// MARK: - Emptying the field when it should be, well... empty (HTML madness)
+
+/**
+ *  @brief      Sometimes HTML leaves some <br> tags or &nbsp; when the user deletes all
+ *              text from a contentEditable field.  This code makes sure no such 'garbage' survives.
+ *  @details    If the node contains child image nodes, then the content is left untouched.
+ */
+ZSSField.prototype.emptyFieldIfNoContents = function() {
+
+    var nbsp = '\xa0';
+    var text = this.wrappedObject.text().replace(nbsp, '');
+    
+    if (text.length == 0) {
+        
+        var hasChildImages = (this.wrappedObject.find('img').length > 0);
+        
+        if (!hasChildImages) {
+            this.wrappedObject.empty();
+        }
+    }
+};
+
 // MARK: - Handle event listeners
 
 ZSSField.prototype.handleBlurEvent = function(e) {
     ZSSEditor.focusedField = null;
     
-    // IMPORTANT: sometimes HTML leaves some <br> tags or &nbsp; when the user deletes all
-    // text from a contentEditable field.  This code makes sure no such 'garbage' survives.
-    //
-    if (this.wrappedObject.text().length == 0) {
-        this.wrappedObject.empty();
-    }
+    this.emptyFieldIfNoContents();
     
     this.refreshPlaceholderColor();
     this.callback("callback-focus-out");
