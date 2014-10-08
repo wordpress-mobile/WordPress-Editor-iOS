@@ -561,7 +561,7 @@ ZSSEditor.quickLink = function() {
  *                                      does not check for that.  It would be a mistake.
  */
 ZSSEditor.insertLocalImage = function(imageNodeIndentifier, localImageUrl) {
-    var html = '<img id="' + identifier + '" src="' + url + '" alt="" />';
+    var html = '<img id="' + imageNodeIndentifier + '" src="' + localImageUrl + '" alt="" />';
     
     this.insertHTML(html);
     this.sendEnabledStyles();
