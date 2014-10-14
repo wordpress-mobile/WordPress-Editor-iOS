@@ -193,16 +193,26 @@ ZSSEditor.stylesCallback = function(stylesArray) {
 ZSSEditor.backupRange = function(){
 	var selection = window.getSelection();
     var range = selection.getRangeAt(0);
-    ZSSEditor.currentSelection = {"startContainer": range.startContainer, "startOffset":range.startOffset,"endContainer":range.endContainer, "endOffset":range.endOffset};
+    
+    ZSSEditor.currentSelection =
+    {
+        "startContainer": range.startContainer,
+        "startOffset": range.startOffset,
+        "endContainer": range.endContainer,
+        "endOffset": range.endOffset
+    };
 }
 
 ZSSEditor.restoreRange = function(){
-	var selection = window.getSelection();
-    selection.removeAllRanges();
-    var range = document.createRange();
-    range.setStart(ZSSEditor.currentSelection.startContainer, ZSSEditor.currentSelection.startOffset);
-    range.setEnd(ZSSEditor.currentSelection.endContainer, ZSSEditor.currentSelection.endOffset);
-    selection.addRange(range);
+    if (this.currentSelection) {
+        var selection = window.getSelection();
+        selection.removeAllRanges();
+        
+        var range = document.createRange();
+        range.setStart(this.currentSelection.startContainer, this.currentSelection.startOffset);
+        range.setEnd(this.currentSelection.endContainer, this.currentSelection.endOffset);
+        selection.addRange(range);
+    }
 }
 
 ZSSEditor.getSelectedText = function() {
