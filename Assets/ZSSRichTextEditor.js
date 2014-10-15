@@ -1022,6 +1022,7 @@ ZSSField.prototype.isRightToLeftTextEnabled = function() {
 ZSSField.prototype.enableRightToLeftText = function(isRTL) {
     var textDirectionString = isRTL ? "rtl" : "ltr";
     this.wrappedObject.attr('dir', textDirectionString);
+    this.wrappedObject.css('direction', textDirectionString);
 };
 
 // MARK: - HTML contents
