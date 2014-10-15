@@ -90,10 +90,26 @@
  */
 - (void)blur;
 
+#pragma mark - i18n
+
+/**
+ *  @brief      Whether the field has RTL text direction enabled
+ *
+ *  @returns    YES if the field is RTL, NO otherwise.
+ */
+- (BOOL)isRightToLeftTextEnabled;
+
+/**
+ *  @brief      Sets the field's right to left text direction.
+ *
+ *  @param      isRTL   Use YES if the field is RTL, NO otherwise.
+ */
+- (void)setRightToLeftTextEnabled:(BOOL)isRTL;
+
 #pragma mark - Settings
 
 /**
- *  @brief      Wether the field is single line or multiline.
+ *  @brief      Whether the field is single line or multiline.
  *
  *  @returns    YES if the field is multiline, NO otherwise.
  */

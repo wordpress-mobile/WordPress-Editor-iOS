@@ -1011,6 +1011,19 @@ ZSSField.prototype.disableEditing = function () {
     this.wrappedObject.attr('contenteditable', false);
 };
 
+// MARK: - i18n
+
+ZSSField.prototype.isRightToLeftTextEnabled = function() {
+    var textDir = this.wrappedObject.attr('dir');
+    var isRTL = (textDir != "undefined" && textDir == 'rtl');
+    return isRTL;
+};
+
+ZSSField.prototype.enableRightToLeftText = function(isRTL) {
+    var textDirectionString = isRTL ? "rtl" : "ltr";
+    this.wrappedObject.attr('dir', textDirectionString);
+};
+
 // MARK: - HTML contents
 
 ZSSField.prototype.isEmpty = function() {
