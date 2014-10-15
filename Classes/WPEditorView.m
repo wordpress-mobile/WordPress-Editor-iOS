@@ -130,9 +130,7 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
         __strong typeof(weakSelf) strongSelf = weakSelf;
 
         if (strongSelf) {
-            NSURL* const kBaseURL = [NSURL URLWithString:@"http://"];
-            
-            [strongSelf.webView loadHTMLString:htmlEditor baseURL:kBaseURL];
+            [strongSelf.webView loadHTMLString:htmlEditor baseURL:nil];
         }
     }];
 	
