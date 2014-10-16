@@ -1910,6 +1910,7 @@ typedef enum
         NSString* placeholderHTMLString = NSLocalizedString(@"Post title",
                                                             @"Placeholder for the post title.");
         
+        [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:NO];
         [field setPlaceholderText:placeholderHTMLString];
         [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
@@ -1919,6 +1920,7 @@ typedef enum
         NSString* placeholderHTMLString = NSLocalizedString(@"Share your story here...",
                                                             @"Placeholder for the post body.");
         
+        [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:YES];
         [field setPlaceholderText:placeholderHTMLString];
         [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
@@ -2018,6 +2020,11 @@ didFailLoadWithError:(NSError *)error
 			}
         }
     }
+}
+
+- (BOOL)isCurrentLanguageDirectionRTL
+{
+    return ([UIApplication sharedApplication].userInterfaceLayoutDirection == UIUserInterfaceLayoutDirectionRightToLeft);
 }
 
 #pragma mark - Delegate calls

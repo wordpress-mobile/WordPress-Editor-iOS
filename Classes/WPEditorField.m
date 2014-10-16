@@ -228,6 +228,32 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
     [self.webView stringByEvaluatingJavaScriptFromString:javascript];
 }
 
+#pragma mark - i18n
+
+- (BOOL)isRightToLeftTextEnabled
+{
+    NSString* javascript = [NSString stringWithFormat:@"%@.isRightToLeftTextEnabled();", [self wrappedNodeJavascriptAccessor]];
+    NSString* result = [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+    
+    return [result boolValue];
+}
+
+- (void)setRightToLeftTextEnabled:(BOOL)isRTL
+{
+    NSString* rtlString = nil;
+    
+    if (isRTL) {
+        rtlString = kWPEditorFieldJavascriptTrue;
+    } else {
+        rtlString = kWPEditorFieldJavascriptFalse;
+    }
+    
+    NSAssert([rtlString isKindOfClass:[NSString class]], @"Expected a non-nil NSString object here.");
+    
+    NSString* javascript = [NSString stringWithFormat:@"%@.enableRightToLeftText(%@);", [self wrappedNodeJavascriptAccessor], rtlString];
+    [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+}
+
 #pragma mark - Settings
 
 - (BOOL)isMultiline
