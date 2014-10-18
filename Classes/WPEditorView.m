@@ -272,14 +272,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 			navigationType:(UIWebViewNavigationType)navigationType
 {
 	NSURL *url = [request URL];
-	
+    
 	BOOL shouldLoad = NO;
 	
 	if (navigationType != UIWebViewNavigationTypeLinkClicked) {
 		BOOL handled = [self handleWebViewCallbackURL:url];
 		shouldLoad = !handled;
 	}
-
+    
 	return shouldLoad;
 }
 

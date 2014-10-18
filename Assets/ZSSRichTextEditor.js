@@ -600,7 +600,13 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remo
     var imageNode = $('#' + imageNodeIndentifier);
     
     if (imageNode) {
-        imageNode.attr('src', remoteImageUrl);
+        var image = new Image;
+        
+        image.onLoad = function () {
+            imageNode.src = this.src;
+        }
+        
+        image.src = remoteImageUrl;
     }
 }
 
