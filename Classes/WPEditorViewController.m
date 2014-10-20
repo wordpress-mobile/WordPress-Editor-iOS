@@ -301,7 +301,7 @@ typedef enum
 																						   action:nil];
         
         // Negative separator needs to be different on 6+
-        if (IS_IPHONE && ([[UIScreen mainScreen] respondsToSelector:@selector(nativeScale)] && [[UIScreen mainScreen] nativeScale] > 2.5f) ) {
+        if ([self isIPhoneSixPlus]) {
             negativeSeparator.width = -kiPhoneSixPlusToolbarMarginWidth;
         } else {
             negativeSeparator.width = -kiPodToolbarMarginWidth;
@@ -1993,6 +1993,11 @@ didFailLoadWithError:(NSError *)error
 }
 
 #pragma mark - Utilities
+
+- (BOOL)isIPhoneSixPlus
+{
+    return IS_IPHONE && ([[UIScreen mainScreen] respondsToSelector:@selector(nativeScale)] && [[UIScreen mainScreen] nativeScale] > 2.5f);
+}
 
 - (UIColor *)barButtonItemDefaultColor
 {
