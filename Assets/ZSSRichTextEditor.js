@@ -193,16 +193,26 @@ ZSSEditor.stylesCallback = function(stylesArray) {
 ZSSEditor.backupRange = function(){
 	var selection = window.getSelection();
     var range = selection.getRangeAt(0);
-    ZSSEditor.currentSelection = {"startContainer": range.startContainer, "startOffset":range.startOffset,"endContainer":range.endContainer, "endOffset":range.endOffset};
+    
+    ZSSEditor.currentSelection =
+    {
+        "startContainer": range.startContainer,
+        "startOffset": range.startOffset,
+        "endContainer": range.endContainer,
+        "endOffset": range.endOffset
+    };
 }
 
 ZSSEditor.restoreRange = function(){
-	var selection = window.getSelection();
-    selection.removeAllRanges();
-    var range = document.createRange();
-    range.setStart(ZSSEditor.currentSelection.startContainer, ZSSEditor.currentSelection.startOffset);
-    range.setEnd(ZSSEditor.currentSelection.endContainer, ZSSEditor.currentSelection.endOffset);
-    selection.addRange(range);
+    if (this.currentSelection) {
+        var selection = window.getSelection();
+        selection.removeAllRanges();
+        
+        var range = document.createRange();
+        range.setStart(this.currentSelection.startContainer, this.currentSelection.startOffset);
+        range.setEnd(this.currentSelection.endContainer, this.currentSelection.endOffset);
+        selection.addRange(range);
+    }
 }
 
 ZSSEditor.getSelectedText = function() {
@@ -543,19 +553,68 @@ ZSSEditor.quickLink = function() {
 
 	var html_code = '<a href="' + link_url + '">' + sel + '</a>';
 	ZSSEditor.insertHTML(html_code);
-	
 }
 
+// MARK: - Images
+
+/**
+ *  @brief      Inserts a local image URL.  Useful for images that need to be uploaded.
+ *  @details    By inserting a local image URL, we can make sure the image is shown to the user
+ *              as soon as it's selected for uploading.  Once the image is successfully uploaded
+ *              the application should call replaceLocalImageWithRemoteImage().
+ *
+ *  @param      imageNodeIndetifier     This is a unique ID provided by the caller.  It exists as
+ *                                      a mechanism to update the image node with the remote URL
+ *                                      when replaceLocalImageWithRemoteImage() is called.
+ *  @param      localImageUrl           The URL of the local image to display.  Please keep in mind
+ *                                      that a remote URL can be used here too, since this method
+ *                                      does not check for that.  It would be a mistake.
+ */
+ZSSEditor.insertLocalImage = function(imageNodeIndentifier, localImageUrl) {
+    var html = '<img id="' + imageNodeIndentifier + '" src="' + localImageUrl + '" alt="" />';
+    
+    this.insertHTML(html);
+    this.sendEnabledStyles();
+};
+
 ZSSEditor.insertImage = function(url, alt) {
-	ZSSEditor.restoreRange();
-	var html = '<img src="'+url+'" alt="'+alt+'" />';
-	ZSSEditor.insertHTML(html);
-	ZSSEditor.sendEnabledStyles();
+    var html = '<img src="'+url+'" alt="'+alt+'" />';
+    
+    this.insertHTML(html);
+    this.sendEnabledStyles();
 }
+
+/**
+ *  @brief      Replaces a local image URL with a remote image URL.  Useful for images that have
+ *              just finished uploading.
+ *  @details    The remote image can be available after a while, when uploading images.  This method
+ *              allows for the remote URL to be loaded once the upload completes.
+ *
+ *  @param      imageNodeIndetifier     This is a unique ID provided by the caller.  It exists as
+ *                                      a mechanism to update the image node with the remote URL
+ *                                      when replaceLocalImageWithRemoteImage() is called.
+ *  @param      remoteImageUrl          The URL of the remote image to display.
+ */
+ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remoteImageUrl) {
+    
+    var imageNode = $('#' + imageNodeIndentifier);
+    
+    if (imageNode) {
+        var image = new Image;
+        
+        image.onLoad = function () {
+            imageNode.src = this.src;
+        }
+        
+        image.src = remoteImageUrl;
+    }
+}
+
+// MARK: - Commands
 
 ZSSEditor.insertHTML = function(html) {
 	document.execCommand('insertHTML', false, html);
-	ZSSEditor.sendEnabledStyles();
+	this.sendEnabledStyles();
 }
 
 ZSSEditor.isCommandEnabled = function(commandName) {
