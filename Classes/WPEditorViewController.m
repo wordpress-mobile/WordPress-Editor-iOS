@@ -301,7 +301,7 @@ typedef enum
 																						   action:nil];
         
         // Negative separator needs to be different on 6+
-        if (IS_IPHONE && ([[UIScreen mainScreen] respondsToSelector:@selector(nativeScale)] && [[UIScreen mainScreen] nativeScale] == 3.0f) ) {
+        if (IS_IPHONE && ([[UIScreen mainScreen] respondsToSelector:@selector(nativeScale)] && [[UIScreen mainScreen] nativeScale] > 2.5f) ) {
             negativeSeparator.width = -kiPhoneSixPlusToolbarMarginWidth;
         } else {
             negativeSeparator.width = -kiPodToolbarMarginWidth;
