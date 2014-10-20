@@ -169,14 +169,6 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
     return jQueryMobileEventsContentsString;
 }
 
-- (NSURL*)localPlaceholderImageURL
-{
-    NSString *placeholderImagePath = [[NSBundle mainBundle] pathForResource:@"ZSSquicklink" ofType:@"png"];
-    NSURL *placeholderImageURL = [[NSURL alloc] initFileURLWithPath:placeholderImagePath];
-    
-    return placeholderImageURL;
-}
-
 - (NSString*)editorHTML
 {
     NSString *fileContentString = [self editorRawHTML];
