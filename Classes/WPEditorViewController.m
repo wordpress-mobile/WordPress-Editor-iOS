@@ -17,7 +17,8 @@
 // Keep an eye on this constant on different iOS versions
 static int kToolbarFirstItemExtraPadding = 6;
 static int kToolbarItemPadding = 10;
-static int kiPodToolbarMarginWidth = 16;
+static int kiPodToolbarMarginWidth = 15;
+static int kiPhoneSixPlusToolbarMarginWidth = 18;
 
 CGFloat const EPVCStandardOffset = 10.0;
 NSInteger const WPImageAlertViewTag = 91;
@@ -298,7 +299,13 @@ typedef enum
 		UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
 																						   target:nil
 																						   action:nil];
-		negativeSeparator.width = -kiPodToolbarMarginWidth;
+        
+        // Negative separator needs to be different on 6+
+        if (IS_IPHONE && ([[UIScreen mainScreen] respondsToSelector:@selector(nativeScale)] && [[UIScreen mainScreen] nativeScale] == 3.0f) ) {
+            negativeSeparator.width = -kiPhoneSixPlusToolbarMarginWidth;
+        } else {
+            negativeSeparator.width = -kiPodToolbarMarginWidth;
+        }
 		
 		toolbar.items = @[negativeSeparator, [self htmlBarButtonItem]];
 		toolbar.barTintColor = self.toolbarBackgroundColor;
