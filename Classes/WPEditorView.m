@@ -182,11 +182,9 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
     NSString *fileContentString = [self editorRawHTML];
     NSString *jQueryMobileEventsContentsString = [self jQueryMobileScript];
     NSString *editorJavascriptContentsString = [self editorScript];
-    NSString *placeholderImageURL = [[self localPlaceholderImageURL] absoluteString];
     
 	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--jquery-mobile-events-->" withString:jQueryMobileEventsContentsString];
 	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--editor-->" withString:editorJavascriptContentsString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--placeholder_image-->" withString:placeholderImageURL];
 	
 	return fileContentString;
 }
