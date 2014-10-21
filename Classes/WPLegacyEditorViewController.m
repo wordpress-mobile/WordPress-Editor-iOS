@@ -384,6 +384,8 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 - (void)showLinkView
 {
     NSRange range = self.textView.selectedRange;
+    [self.textView resignFirstResponder];
+    
     NSString *infoText = nil;
     if (range.length > 0) {
         infoText = [self.textView.text substringWithRange:range];
@@ -422,7 +424,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     linkURL.keyboardType = UIKeyboardTypeURL;
     linkURL.autocorrectionType = UITextAutocorrectionTypeNo;
     __weak __typeof(self)weakSelf = self;
-    self.alertView.tapBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
+    self.alertView.didDismissBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
         if (alertView.tag == 99) {
             if (buttonIndex == 1) {
                 // Insert link
@@ -437,25 +439,14 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
                     infoText.text = urlField.text;
                 }
                 
-                NSString *urlString = [weakSelf validateNewLinkInfo:[urlField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
-                NSString *aTagText = [NSString stringWithFormat:@"<a href=\"%@\">%@</a>", urlString, infoText.text];
-                NSRange range = weakSelf.textView.selectedRange;
-                NSString *oldText = weakSelf.textView.text;
-                NSRange oldRange = weakSelf.textView.selectedRange;
-                weakSelf.textView.scrollEnabled = NO;
-                weakSelf.textView.text = [weakSelf.textView.text stringByReplacingCharactersInRange:range withString:aTagText];
-                weakSelf.textView.scrollEnabled = YES;
-                
-                //reset selection back to nothing
-                range.length = 0;
-                range.location += [aTagText length]; // Place selection after the tag
+                [weakSelf.textView becomeFirstResponder];
                 weakSelf.textView.selectedRange = range;
                 
-                [[weakSelf.textView.undoManager prepareWithInvocationTarget:weakSelf] restoreText:oldText withRange:oldRange];
-                [weakSelf.textView.undoManager setActionName:@"link"];
+                NSString *urlString = [weakSelf validateNewLinkInfo:[urlField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
+                NSString *aTagText = [NSString stringWithFormat:@"<a href=\"%@\">%@</a>", urlString, infoText.text];
+
+                [weakSelf.textView insertText:aTagText];
                 [weakSelf textViewDidChange:weakSelf.textView];
-                [weakSelf refreshTextView];
-                
             }
             
             // Don't dismiss the keyboard
@@ -499,22 +490,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 #pragma mark - Formatting
 
-- (void)restoreText:(NSString *)text withRange:(NSRange)range
-{
-    NSString *oldText = self.textView.text;
-    NSRange oldRange = self.textView.selectedRange;
-    self.textView.scrollEnabled = NO;
-    // iOS6 seems to have a bug where setting the text like so : textView.text = text;
-    // will cause an infinate loop of undos.  A work around is to perform the selector
-    // on the main thread.
-    // textView.text = text;
-    [self.textView performSelectorOnMainThread:@selector(setText:) withObject:text waitUntilDone:NO];
-    self.textView.scrollEnabled = YES;
-    self.textView.selectedRange = range;
-    [[self.textView.undoManager prepareWithInvocationTarget:self] restoreText:oldText withRange:oldRange];
-    [self textViewDidChange:self.textView];
-}
-
 - (void)wrapSelectionWithTag:(NSString *)tag
 {
     NSRange range = self.textView.selectedRange;
@@ -530,34 +505,10 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
         prefix = [NSString stringWithFormat:@"<%@>", tag];
         suffix = [NSString stringWithFormat:@"</%@>", tag];
     }
-    self.textView.scrollEnabled = NO;
-    NSString *replacement = [NSString stringWithFormat:@"%@%@%@",prefix,selection,suffix];
-    self.textView.text = [self.textView.text stringByReplacingCharactersInRange:range
-                                                             withString:replacement];
-    [self textViewDidChange:self.textView];
-    self.textView.scrollEnabled = YES;
-    if (range.length == 0) {                // If nothing was selected
-        range.location += [prefix length]; // Place selection between tags
-    } else {
-        range.location += range.length + [prefix length] + [suffix length]; // Place selection after tag
-        range.length = 0;
-    }
-    self.textView.selectedRange = range;
     
-    [self refreshTextView];
-}
-
-// In some situations on iOS7, inserting text while `scrollEnabled = NO` results in
-// the last line(s) of text on the text view not appearing. This is a workaround
-// to get the UITextView to redraw after inserting text but without affecting the
-// scrollOffset.
-- (void)refreshTextView
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.textView.scrollEnabled = NO;
-        [self.textView setNeedsDisplay];
-        self.textView.scrollEnabled = YES;
-    });
+    NSString *replacement = [NSString stringWithFormat:@"%@%@%@",prefix,selection,suffix];
+    [self.textView insertText:replacement];
+    [self textViewDidChange:self.textView];
 }
 
 #pragma mark - WPKeyboardToolbar Delegate
@@ -585,10 +536,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     } else if ([buttonItem.actionTag isEqualToString:@"done"]) {
         [self stopEditing];
     } else {
-        NSString *oldText = self.textView.text;
-        NSRange oldRange = self.textView.selectedRange;
         [self wrapSelectionWithTag:buttonItem.actionTag];
-        [[self.textView.undoManager prepareWithInvocationTarget:self] restoreText:oldText withRange:oldRange];
         [self.textView.undoManager setActionName:buttonItem.actionName];
     }
 }
