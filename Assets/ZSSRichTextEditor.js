@@ -627,10 +627,15 @@ ZSSEditor.formatNewLine = function(e) {
         var currentField = this.getFocusedField();
         
         if (currentField.isMultiline()) {
-            var currentNode = ZSSEditor.closerParentNodeWithName('blockquote');
-            if (!currentNode && !ZSSEditor.isCommandEnabled('insertOrderedList') &&
-                !ZSSEditor.isCommandEnabled('insertUnorderedList')) {
-                document.execCommand('formatBlock', false, 'p');
+            if (this.isCommandEnabled('insertUnorderedList')
+                || this.isCommandEnabled('insertOrderedList')) {
+                this.insertHTML('\r\n');
+            } else {
+                var currentNode = ZSSEditor.closerParentNodeWithName('blockquote');
+                
+                if (!currentNode) {
+                    document.execCommand('formatBlock', false, 'p');
+                }
             }
         } else {
             e.preventDefault();
