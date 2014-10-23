@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "WordPress-iOS-Editor"
-  s.version          = "0.2.1"
+  s.version          = "0.2.2"
   s.summary      = "Reusable component rich text editor for WordPress.com in an iOS application."
 
   s.description  = <<-DESC
@@ -20,6 +20,6 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.dependency 'CocoaLumberjack', '~>1.8.1'
   s.dependency 'UIAlertView+Blocks'
-  s.dependency 'WordPress-iOS-Shared', '~>0.1.0'
+  s.dependency 'WordPress-iOS-Shared', '~>0.1.3'
   s.dependency 'WordPressCom-Analytics-iOS', '~>0.0.4'
 end
