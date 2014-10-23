@@ -7,6 +7,10 @@
 + (UIFont *)openSansLightItalicFontOfSize:(CGFloat)size;
 + (UIFont *)openSansBoldFontOfSize:(CGFloat)size;
 + (UIFont *)openSansBoldItalicFontOfSize:(CGFloat)size;
++ (UIFont *)openSansSemiBoldFontOfSize:(CGFloat)size;
++ (UIFont *)openSansSemiBoldItalicFontOfSize:(CGFloat)size;
 + (UIFont *)openSansRegularFontOfSize:(CGFloat)size;
+
++ (UIFont *)merriweatherBoldFontOfSize:(CGFloat)size;
 
 @end

@@ -6,7 +6,7 @@ target 'EditorDemo' do
   pod 'WordPress-iOS-Editor', :path => '../'
   pod 'CocoaLumberjack', '~>1.8.1', :inhibit_warnings => true
   pod 'UIAlertView+Blocks', :inhibit_warnings => true
-  pod 'WordPress-iOS-Shared', '~>0.1.0', :inhibit_warnings => true
+  pod 'WordPress-iOS-Shared', :git => 'git://github.com/wordpress-mobile/WordPress-iOS-Shared', :branch => 'feature/add-merriweather-font'#'~>0.1.0', :inhibit_warnings => true
   pod 'WordPressCom-Analytics-iOS', '~>0.0.4', :inhibit_warnings => true
 end
 

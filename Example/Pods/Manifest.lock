@@ -42,7 +42,7 @@ PODS:
     - UIAlertView+Blocks
     - WordPress-iOS-Shared (~> 0.1.0)
     - WordPressCom-Analytics-iOS (~> 0.0.4)
-  - WordPress-iOS-Shared (0.1.1):
+  - WordPress-iOS-Shared (0.1.2):
     - AFNetworking (~> 2.3.1)
     - CocoaLumberjack (~> 1.8.1)
     - DTCoreText (= 1.6.13)
@@ -52,12 +52,15 @@ DEPENDENCIES:
   - CocoaLumberjack (~> 1.8.1)
   - UIAlertView+Blocks
   - WordPress-iOS-Editor (from `../`)
-  - WordPress-iOS-Shared (~> 0.1.0)
+  - WordPress-iOS-Shared (from `git://github.com/wordpress-mobile/WordPress-iOS-Shared`, branch `feature/add-merriweather-font`)
   - WordPressCom-Analytics-iOS (~> 0.0.4)
 
 EXTERNAL SOURCES:
   WordPress-iOS-Editor:
     :path: ../
+  WordPress-iOS-Shared:
+    :branch: feature/add-merriweather-font
+    :git: git://github.com/wordpress-mobile/WordPress-iOS-Shared
 
 SPEC CHECKSUMS:
   AFNetworking: 6d7b76aa5d04c8c37daad3eef4b7e3f2a7620da3
@@ -66,7 +69,7 @@ SPEC CHECKSUMS:
   DTFoundation: 360bc65ab44f588611f47324b8cfb0f18e04b263
   UIAlertView+Blocks: 0b749f1f7bd5131ff2233b30a406c1585a7171b2
   WordPress-iOS-Editor: 1f4410ffd766061cff8a1a5cf3c66926235e31bb
-  WordPress-iOS-Shared: 44463dbfdc0fa6bd40fa38eeff14d8e0fe9a7d9c
+  WordPress-iOS-Shared: d3654b3eae4376ade1ea18d5ac54713afea39a69
   WordPressCom-Analytics-iOS: 8a61cd361b7d27c23917e70d237af4d990b4f785
 
-COCOAPODS: 0.34.2
+COCOAPODS: 0.34.4
