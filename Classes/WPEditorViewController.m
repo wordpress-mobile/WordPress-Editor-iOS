@@ -1855,7 +1855,7 @@ typedef enum
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:NO];
         [field setPlaceholderText:placeholderHTMLString];
-        [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
+        [field setPlaceholderColor:[UIColor colorWithHexString:@"c6c6c6"]];
     } else if (field == self.editorView.contentField) {
         field.inputAccessoryView = self.mainToolbarHolder;
         
@@ -1865,7 +1865,7 @@ typedef enum
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:YES];
         [field setPlaceholderText:placeholderHTMLString];
-        [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
+        [field setPlaceholderColor:[UIColor colorWithHexString:@"c6c6c6"]];
     }
     
     if ([self.delegate respondsToSelector:@selector(editorViewController:fieldCreated:)]) {
