@@ -35,10 +35,16 @@ ZSSEditor.editableFields = {};
 
 ZSSEditor.lastTappedNode = null;
 
+// The default paragraph separator
+ZSSEditor.defaultParagraphSeparator = 'p';
+
 /**
  * The initializer function that must be called onLoad
  */
 ZSSEditor.init = function() {
+    
+    document.execCommand('insertBrOnReturn', false, false);
+    document.execCommand('defaultParagraphSeparator', false, this.defaultParagraphSeparator);
     
     var editor = $('[contenteditable]').each(function() {
         var editableField = new ZSSField($(this));
@@ -227,7 +233,7 @@ ZSSEditor.getYCaretInfo = function() {
     if (sel.rangeCount) {
         
         var range = sel.getRangeAt(0);
-        var needsToWorkAroundNewlineBug = (range.startOffset == 0);
+        var needsToWorkAroundNewlineBug = (range.startOffset == 0 || range.getClientRects().length == 0);
         
         // PROBLEM: iOS seems to have problems getting the offset for some empty nodes and return
         // 0 (zero) as the selection range top offset.
@@ -268,6 +274,12 @@ ZSSEditor.getYCaretInfo = function() {
         }
     }
     return { y: y, height: height };
+}
+
+// MARK: - Default paragraph separator
+
+ZSSEditor.defaultParagraphSeparatorTag = function() {
+    return '<' + this.defaultParagraphSeparator + '>';
 }
 
 // MARK: - Styles
@@ -350,7 +362,7 @@ ZSSEditor.setBlockquote = function() {
 	var formatBlock = document.queryCommandValue('formatBlock');
 	 
 	if (formatBlock.length > 0 && formatBlock.toLowerCase() == formatTag) {
-		document.execCommand('formatBlock', false, '<div>');
+        document.execCommand('formatBlock', false, this.defaultParagraphSeparatorTag());
 	} else {
 		document.execCommand('formatBlock', false, '<' + formatTag + '>');
 	}
@@ -373,7 +385,7 @@ ZSSEditor.setHeading = function(heading) {
 	var formatBlock = document.queryCommandValue('formatBlock');
 	
 	if (formatBlock.length > 0 && formatBlock.toLowerCase() == formatTag) {
-		document.execCommand('formatBlock', false, '<div>');
+		document.execCommand('formatBlock', false, this.defaultParagraphSeparatorTag());
 	} else {
 		document.execCommand('formatBlock', false, '<' + formatTag + '>');
 	}
@@ -386,7 +398,7 @@ ZSSEditor.setParagraph = function() {
 	var formatBlock = document.queryCommandValue('formatBlock');
 	
 	if (formatBlock.length > 0 && formatBlock.toLowerCase() == formatTag) {
-		document.execCommand('formatBlock', false, '<div>');
+		document.execCommand('formatBlock', false, this.defaultParagraphSeparatorTag());
 	} else {
 		document.execCommand('formatBlock', false, '<' + formatTag + '>');
 	}
@@ -405,8 +417,8 @@ ZSSEditor.redo = function() {
 }
 
 ZSSEditor.setOrderedList = function() {
-	document.execCommand('insertOrderedList', false, null);
-	ZSSEditor.sendEnabledStyles();
+    document.execCommand('insertOrderedList', false, null);
+    ZSSEditor.sendEnabledStyles();
 }
 
 ZSSEditor.setUnorderedList = function() {
@@ -619,23 +631,6 @@ ZSSEditor.insertHTML = function(html) {
 
 ZSSEditor.isCommandEnabled = function(commandName) {
 	return document.queryCommandState(commandName);
-}
-
-ZSSEditor.formatNewLine = function(e) {
-    // Check to see if the enter key is pressed
-    if(e.keyCode == '13') {
-        var currentField = this.getFocusedField();
-        
-        if (currentField.isMultiline()) {
-            var currentNode = ZSSEditor.closerParentNodeWithName('blockquote');
-            if (!currentNode && !ZSSEditor.isCommandEnabled('insertOrderedList') &&
-                !ZSSEditor.isCommandEnabled('insertUnorderedList')) {
-                document.execCommand('formatBlock', false, 'p');
-            }
-        } else {
-            e.preventDefault();
-        }
-    }
 }
 
 ZSSEditor.sendEnabledStyles = function(e) {
@@ -938,7 +933,12 @@ ZSSField.prototype.handleFocusEvent = function(e) {
 };
 
 ZSSField.prototype.handleKeyDownEvent = function(e) {
-    ZSSEditor.formatNewLine(e);
+    
+    // IMPORTANT: without this code, we can have text written outside of paragraphs...
+    //
+    if (ZSSEditor.closerParentNode() == this.wrappedDomNode()) {
+        document.execCommand('formatBlock', false, 'p');
+    }
 };
 
 ZSSField.prototype.handleInputEvent = function(e) {    
@@ -1141,3 +1141,9 @@ ZSSField.prototype.refreshPlaceholderColorForAttributes = function(hasPlaceholde
     }
     
 };
+
+// MARK: - Wrapped Object
+
+ZSSField.prototype.wrappedDomNode = function() {
+    return this.wrappedObject[0];
+}
