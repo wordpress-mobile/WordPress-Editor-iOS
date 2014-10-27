@@ -62,6 +62,7 @@ static const float kCursorVelocity = 1.0f/8.0f;
     CYRTextStorage *textStorage = [CYRTextStorage new];
     CYRLayoutManager *layoutManager = [CYRLayoutManager new];
     layoutManager.shouldCompletelyHideGutter = self.lineNumbersEnabled;
+    layoutManager.delegate = self;
     self.lineNumberLayoutManager = layoutManager;
     NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
     
@@ -283,6 +284,13 @@ static const float kCursorVelocity = 1.0f/8.0f;
     {
         self.selectedRange = NSMakeRange(cursorLocation, fabsf(startRange.location - cursorLocation));
     }
+}
+
+#pragma mark - NSLayoutManagerDelegate
+
+- (CGFloat)layoutManager:(NSLayoutManager *)layoutManager lineSpacingAfterGlyphAtIndex:(NSUInteger)glyphIndex withProposedLineFragmentRect:(CGRect)rect
+{
+    return 10.0f;
 }
 
 @end
