@@ -14,6 +14,8 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 static NSString* const kWPEditorViewFieldTitleId = @"zss_field_title";
 static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 
+static const CGFloat HTMLViewLeftRightInset = 10.0f;
+
 @interface WPEditorView () <UITextViewDelegate, UIWebViewDelegate>
 
 #pragma mark - Cached caret & line data
@@ -92,6 +94,7 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 	_sourceView.autocorrectionType = UITextAutocorrectionTypeNo;
 	_sourceView.autoresizingMask =  UIViewAutoresizingFlexibleHeight;
 	_sourceView.autoresizesSubviews = YES;
+    _sourceView.textContainerInset = UIEdgeInsetsMake(0.0f, HTMLViewLeftRightInset, 0.0f, HTMLViewLeftRightInset);
 	_sourceView.delegate = self;
 	
 	[self addSubview:_sourceView];
