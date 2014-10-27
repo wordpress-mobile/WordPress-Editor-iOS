@@ -92,9 +92,9 @@ static const CGFloat HTMLViewLeftRightInset = 10.0f;
 	_sourceView.hidden = YES;
 	_sourceView.autocapitalizationType = UITextAutocapitalizationTypeNone;
 	_sourceView.autocorrectionType = UITextAutocorrectionTypeNo;
-	_sourceView.autoresizingMask =  UIViewAutoresizingFlexibleHeight;
+	_sourceView.autoresizingMask =  UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	_sourceView.autoresizesSubviews = YES;
-    _sourceView.textContainerInset = UIEdgeInsetsMake(0.0f, HTMLViewLeftRightInset, 0.0f, HTMLViewLeftRightInset);
+    _sourceView.textContainerInset = UIEdgeInsetsMake(15.0f, HTMLViewLeftRightInset, 0.0f, HTMLViewLeftRightInset);
 	_sourceView.delegate = self;
 	
 	[self addSubview:_sourceView];
