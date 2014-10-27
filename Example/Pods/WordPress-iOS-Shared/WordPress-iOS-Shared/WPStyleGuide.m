@@ -107,6 +107,11 @@
     return [WPFontManager openSansRegularFontOfSize:16.0];
 }
 
++ (UIFont *)regularTextFontSemiBold
+{
+    return [WPFontManager openSansSemiBoldFontOfSize:16.0];
+}
+
 + (UIFont *)regularTextFontBold
 {
     return [WPFontManager openSansBoldFontOfSize:16.0];

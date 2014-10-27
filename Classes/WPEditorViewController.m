@@ -4,6 +4,7 @@
 #import <UIAlertView+Blocks/UIAlertView+Blocks.h>
 #import <UIKit/UIKit.h>
 #import <WordPressCom-Analytics-iOS/WPAnalytics.h>
+#import <WordPress-iOS-Shared/WPFontManager.h>
 #import <WordPress-iOS-Shared/WPStyleGuide.h>
 #import <WordPress-iOS-Shared/WPTableViewCell.h>
 #import <WordPress-iOS-Shared/UIImage+Util.h>
@@ -171,6 +172,10 @@ typedef enum
     self.didFinishLoadingEditor = NO;
     self.enabledToolbarItems = [self defaultToolbarItems];
     self.view.backgroundColor = [UIColor whiteColor];
+    
+    // Calling this here so the Merriweather font is
+    // loaded (if it has not been already).
+    [WPFontManager merriweatherBoldFontOfSize:30];
 	
     [self buildTextViews];
     [self buildToolbar];
@@ -1849,7 +1854,7 @@ typedef enum
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:NO];
         [field setPlaceholderText:placeholderHTMLString];
-        [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
+        [field setPlaceholderColor:[WPStyleGuide allTAllShadeGrey]];
     } else if (field == self.editorView.contentField) {
         field.inputAccessoryView = self.mainToolbarHolder;
         
@@ -1859,7 +1864,7 @@ typedef enum
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:YES];
         [field setPlaceholderText:placeholderHTMLString];
-        [field setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
+        [field setPlaceholderColor:[WPStyleGuide allTAllShadeGrey]];
     }
     
     if ([self.delegate respondsToSelector:@selector(editorViewController:fieldCreated:)]) {

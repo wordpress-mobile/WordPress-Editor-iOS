@@ -11,4 +11,6 @@
 + (UIColor *)UIColorFromHex:(NSUInteger)rgb;
 
 + (UIColor *)colorWithHexString:(NSString *)hex;
+
+- (NSString *)hexString;
 @end

@@ -20,6 +20,7 @@
 + (UIFont *)labelFontNormal;
 + (NSDictionary *)labelAttributes;
 + (UIFont *)regularTextFont;
++ (UIFont *)regularTextFontSemiBold;
 + (UIFont *)regularTextFontBold;
 + (NSDictionary *)regularTextAttributes;
 + (UIFont *)tableviewTextFont;

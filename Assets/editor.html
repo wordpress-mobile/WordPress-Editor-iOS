@@ -810,6 +810,8 @@ function style_html(html_source, options) {
         }
 
         body {
+            padding-left:5px;
+            padding-right:5px;
             overflow-y: auto;
             min-height: 100vh;
         }
@@ -830,6 +832,18 @@ function style_html(html_source, options) {
             max-width: 100%;
         }
     
+        a {
+            color: #0087be;
+            text-decoration: none;
+        }
+    
+        blockquote {
+            background: #e8f0f5;
+            padding: 10px 10px 10px 20px;
+            margin: 10px 0 0 0;
+            border-radius: 2px;
+        }
+    
         img.zs_active {
             border: 2px dashed #000;
         }
@@ -841,6 +855,12 @@ function style_html(html_source, options) {
     
         div[placeholderText][contenteditable=true]:empty:not(:focus):before {
             content: attr(placeholderText);
+        }
+    
+        #zss_field_title {
+            font-family:'Merriweather', serif;
+            font-weight: bold;
+            font-size: 18px;
         }
     </style>
   </head>
