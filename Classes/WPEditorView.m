@@ -186,6 +186,15 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 - (void)startObservingKeyboardNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidShow:)
+                                                 name:UIKeyboardDidShowNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidHide:)
+                                                 name:UIKeyboardDidHideNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
@@ -203,6 +212,25 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 
 #pragma mark - Keyboard status
 
+- (void)keyboardDidShow:(NSNotification *)notification
+{
+    // IMPORTANT: we could've put these lines in keyboardWillShow for iOS 8+.  Unfortunately, iOS 7
+    // takes a bit longer to resize the viewport, so it's very important that the content size is
+    // recalculated only after the keyboard is shown.
+    //
+    [self refreshVisibleViewportAndContentSize];
+    [self scrollToCaretAnimated:NO];
+}
+
+- (void)keyboardDidHide:(NSNotification *)notification
+{
+    // IMPORTANT: we could've put these lines in keyboardWillHide for iOS 8+. Unfortunately, iOS 7
+    // takes a bit longer to resize the viewport, so it's very important that the content size is
+    // recalculated only after the keyboard is hidden.
+    //
+    [self refreshVisibleViewportAndContentSize];
+}
+
 - (void)keyboardWillShow:(NSNotification *)notification
 {
     NSDictionary *info = notification.userInfo;
@@ -219,9 +247,6 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
         
         self.sourceView.contentInset = insets;
         self.sourceView.scrollIndicatorInsets = insets;
-        
-        [self refreshVisibleViewportAndContentSize];
-        [self scrollToCaretAnimated:NO];
     }
 }
 
@@ -237,8 +262,6 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
     
     self.sourceView.contentInset = insets;
     self.sourceView.scrollIndicatorInsets = insets;
-    
-    [self refreshVisibleViewportAndContentSize];
 }
 
 - (void)refreshVisibleViewportAndContentSize
