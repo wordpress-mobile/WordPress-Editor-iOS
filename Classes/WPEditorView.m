@@ -100,7 +100,6 @@ static const CGFloat UITextFieldFieldHeight = 44.0f;
     _sourceViewTitleField.autocapitalizationType = UITextAutocapitalizationTypeWords;
     _sourceViewTitleField.autocorrectionType = UITextAutocorrectionTypeYes;
     _sourceViewTitleField.autoresizingMask =  UIViewAutoresizingFlexibleWidth;
-    _sourceViewTitleField.layoutMargins = UIEdgeInsetsMake(15.0f, HTMLViewLeftRightInset, 0.0f, HTMLViewLeftRightInset);
     _sourceViewTitleField.delegate = self;
     _sourceViewTitleField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
     _sourceViewTitleField.returnKeyType = UIReturnKeyNext;
