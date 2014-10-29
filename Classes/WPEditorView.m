@@ -1082,6 +1082,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)disableEditing
 {
+    if (!self.sourceView.hidden) {
+        [self showVisualEditor];
+    }
+    
     [self.titleField disableEditing];
     [self.contentField disableEditing];
 }
