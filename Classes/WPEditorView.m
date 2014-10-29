@@ -189,6 +189,15 @@ static const CGFloat HTMLViewLeftRightInset = 10.0f;
 - (void)startObservingKeyboardNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidShow:)
+                                                 name:UIKeyboardDidShowNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardDidHide:)
+                                                 name:UIKeyboardDidHideNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
@@ -206,6 +215,25 @@ static const CGFloat HTMLViewLeftRightInset = 10.0f;
 
 #pragma mark - Keyboard status
 
+- (void)keyboardDidShow:(NSNotification *)notification
+{
+    // IMPORTANT: we could've put these lines in keyboardWillShow for iOS 8+.  Unfortunately, iOS 7
+    // takes a bit longer to resize the viewport, so it's very important that the content size is
+    // recalculated only after the keyboard is shown.
+    //
+    [self refreshVisibleViewportAndContentSize];
+    [self scrollToCaretAnimated:NO];
+}
+
+- (void)keyboardDidHide:(NSNotification *)notification
+{
+    // IMPORTANT: we could've put these lines in keyboardWillHide for iOS 8+. Unfortunately, iOS 7
+    // takes a bit longer to resize the viewport, so it's very important that the content size is
+    // recalculated only after the keyboard is hidden.
+    //
+    [self refreshVisibleViewportAndContentSize];
+}
+
 - (void)keyboardWillShow:(NSNotification *)notification
 {
     NSDictionary *info = notification.userInfo;
@@ -222,9 +250,6 @@ static const CGFloat HTMLViewLeftRightInset = 10.0f;
         
         self.sourceView.contentInset = insets;
         self.sourceView.scrollIndicatorInsets = insets;
-        
-        [self refreshVisibleViewportAndContentSize];
-        [self scrollToCaretAnimated:NO];
     }
 }
 
@@ -240,8 +265,6 @@ static const CGFloat HTMLViewLeftRightInset = 10.0f;
     
     self.sourceView.contentInset = insets;
     self.sourceView.scrollIndicatorInsets = insets;
-    
-    [self refreshVisibleViewportAndContentSize];
 }
 
 - (void)refreshVisibleViewportAndContentSize
@@ -926,12 +949,30 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self callDelegateEditorTextDidChange];
 }
 
+#pragma mark - Exceptional Workarounds
+
+/**
+ *  @brief      Fixes an issue in iOS 7 that prevents the editor view from properly recovering focus
+ *              after the owning VC comes back from hiding behind another VC.
+ */
+- (void)workaroundiOS7FocusIssueAfterHidingBehindAnotherVC
+{
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
+        [self saveSelection];
+        [self.contentField blur];
+        [self.contentField focus];
+        [self restoreSelection];
+    }
+}
+
 #pragma mark - Images
 
 - (void)insertLocalImage:(NSString*)url uniqueId:(NSString*)uniqueId
 {
     NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertLocalImage(\"%@\", \"%@\");", uniqueId, url];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    
+    [self workaroundiOS7FocusIssueAfterHidingBehindAnotherVC];
 }
 
 - (void)insertImage:(NSString *)url alt:(NSString *)alt
