@@ -1257,6 +1257,7 @@ typedef enum
         self.editorView.autoresizingMask = mask;
         self.editorView.backgroundColor = [UIColor whiteColor];
         self.editorView.sourceView.inputAccessoryView = self.mainToolbarHolder;
+        self.editorView.sourceViewTitleField.inputAccessoryView = self.mainToolbarHolder;
     }
 	
     [self.view addSubview:self.editorView];
@@ -1295,6 +1296,7 @@ typedef enum
 - (void)setTitleText:(NSString*)titleText
 {
     [self.editorView.titleField setHtml:titleText];
+    [self.editorView.sourceViewTitleField setText:titleText];
 }
 
 - (NSString*)bodyText
@@ -1855,6 +1857,8 @@ typedef enum
         [field setMultiline:NO];
         [field setPlaceholderText:placeholderHTMLString];
         [field setPlaceholderColor:[WPStyleGuide allTAllShadeGrey]];
+        self.editorView.sourceViewTitleField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:placeholderHTMLString
+                                                                                                     attributes:@{NSForegroundColorAttributeName: [WPStyleGuide allTAllShadeGrey]}];
     } else if (field == self.editorView.contentField) {
         field.inputAccessoryView = self.mainToolbarHolder;
         

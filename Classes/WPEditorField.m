@@ -148,6 +148,12 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
     return html;
 }
 
+- (NSString*)strippedHtml
+{
+    NSString* html = [self.html stringByReplacingOccurrencesOfString:@"<[^>]+>" withString:@"" options:NSRegularExpressionSearch range:NSMakeRange(0, self.html.length)];
+    return html;
+}
+
 - (void)setHtml:(NSString*)html
 {
     if (!self.domLoaded) {

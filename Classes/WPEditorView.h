@@ -105,6 +105,7 @@ stylesForCurrentSelection:(NSArray*)styles;
 @property (nonatomic, strong, readonly) WPEditorField* contentField;
 @property (nonatomic, weak, readonly) WPEditorField* focusedField;
 @property (nonatomic, strong, readonly) WPEditorField* titleField;
+@property (nonatomic, strong, readonly) UITextField *sourceViewTitleField;
 
 #pragma mark - Properties: Subviews
 @property (nonatomic, strong, readonly) ZSSTextView *sourceView;

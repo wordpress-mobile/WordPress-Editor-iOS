@@ -54,6 +54,13 @@
 - (NSString*)html;
 
 /**
+ *  @brief      Retrieves the field's html sans HTML tags.
+ *
+ *  @returns    The field's contents without HTML tags.
+ */
+- (NSString*)strippedHtml;
+
+/**
  *  @brief      Sets the field's html contents.
  *
  *  @param      html     The new field's html contents.
