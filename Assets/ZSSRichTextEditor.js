@@ -1091,16 +1091,20 @@ ZSSField.prototype.isEmpty = function() {
     var isEmpty = (html.length == 0 || html == "<br>");
     
     return isEmpty;
-}
+};
 
 ZSSField.prototype.getHTML = function() {
     return this.wrappedObject.html();
-}
+};
+
+ZSSField.prototype.strippedHTML = function() {
+    return this.wrappedObject.text();
+};
 
 ZSSField.prototype.setHTML = function(html) {
     this.wrappedObject.html(html);
     this.refreshPlaceholderColor();
-}
+};
 
 // MARK: - Placeholder
 
@@ -1128,7 +1132,7 @@ ZSSField.prototype.refreshPlaceholderColorAboutToGainFocus = function(willGainFo
     this.refreshPlaceholderColorForAttributes(this.hasPlaceholderText(),
                                               willGainFocus,
                                               this.isEmpty());
-}
+};
 
 ZSSField.prototype.refreshPlaceholderColorForAttributes = function(hasPlaceholderText, isFocused, isEmpty) {
     
@@ -1146,4 +1150,4 @@ ZSSField.prototype.refreshPlaceholderColorForAttributes = function(hasPlaceholde
 
 ZSSField.prototype.wrappedDomNode = function() {
     return this.wrappedObject[0];
-}
+};
