@@ -69,7 +69,12 @@ static const CGFloat UITextFieldFieldHeight = 44.0f;
 		CGRect childFrame = frame;
 		childFrame.origin = CGPointZero;
 		
-		[self createSourceViewWithFrame:childFrame];
+        [self createSourceTitleViewWithFrame: childFrame];
+        CGRect sourceViewFrame = CGRectMake(0.0f,
+                                            CGRectGetHeight(self.sourceViewTitleField.frame),
+                                            CGRectGetWidth(childFrame),
+                                            CGRectGetHeight(childFrame)-CGRectGetHeight(self.sourceViewTitleField.frame));
+        [self createSourceViewWithFrame:sourceViewFrame];
 		[self createWebViewWithFrame:childFrame];
 		[self setupHTMLEditor];
 	}
@@ -88,9 +93,8 @@ static const CGFloat UITextFieldFieldHeight = 44.0f;
 
 #pragma mark - Init helpers
 
-- (void)createSourceViewWithFrame:(CGRect)frame
+- (void)createSourceTitleViewWithFrame:(CGRect)frame
 {
-	NSAssert(!_sourceView, @"The source view must not exist when this method is called!");
     NSAssert(!_sourceViewTitleField, @"The source view title field must not exist when this method is called!");
 	
     CGFloat textWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset);
@@ -104,15 +108,20 @@ static const CGFloat UITextFieldFieldHeight = 44.0f;
     _sourceViewTitleField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
     _sourceViewTitleField.returnKeyType = UIReturnKeyNext;
     [self addSubview:_sourceViewTitleField];
+}
+
+- (void)createSourceViewWithFrame:(CGRect)frame
+{
+    NSAssert(!_sourceView, @"The source view must not exist when this method is called!");
     
-    _sourceView = [[ZSSTextView alloc] initWithFrame:CGRectMake(0.0f, CGRectGetHeight(_sourceViewTitleField.frame), CGRectGetWidth(frame), CGRectGetHeight(frame)-CGRectGetHeight(_sourceViewTitleField.frame) )];
-	_sourceView.autocapitalizationType = UITextAutocapitalizationTypeNone;
-	_sourceView.autocorrectionType = UITextAutocorrectionTypeNo;
-	_sourceView.autoresizingMask =  UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-	_sourceView.autoresizesSubviews = YES;
+    _sourceView = [[ZSSTextView alloc] initWithFrame:frame];
+    _sourceView.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    _sourceView.autocorrectionType = UITextAutocorrectionTypeNo;
+    _sourceView.autoresizingMask =  UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    _sourceView.autoresizesSubviews = YES;
     _sourceView.textContainerInset = UIEdgeInsetsMake(15.0f, HTMLViewLeftRightInset, 0.0f, HTMLViewLeftRightInset);
-	_sourceView.delegate = self;
-	[self addSubview:_sourceView];
+    _sourceView.delegate = self;
+    [self addSubview:_sourceView];
 }
 
 - (void)createWebViewWithFrame:(CGRect)frame
