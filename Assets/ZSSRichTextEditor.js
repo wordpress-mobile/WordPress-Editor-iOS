@@ -71,7 +71,7 @@ ZSSEditor.init = function() {
 		}
 	}, false);
 
-}//end
+}; //end
 
 // MARK: - Debugging logs
 
@@ -97,20 +97,20 @@ ZSSEditor.logMainElementSizes = function() {
 ZSSEditor.refreshVisibleViewportSize = function() {
     $(document.body).css('min-height', window.innerHeight + 'px');
     $('#zss_field_content').css('min-height', (window.innerHeight - $('#zss_field_content').position().top) + 'px');
-}
+};
 
 // MARK: - Fields
 
 ZSSEditor.focusFirstEditableField = function() {
     $('div[contenteditable=true]:first').focus();
-}
+};
 
 ZSSEditor.getField = function(fieldId) {
     
     var field = this.editableFields[fieldId];
 
     return field;
-}
+};
 
 ZSSEditor.getFocusedField = function() {
     var currentField = $(this.closerParentNodeWithName('div'));
@@ -130,14 +130,14 @@ ZSSEditor.getFocusedField = function() {
 
 ZSSEditor.log = function(msg) {
 	ZSSEditor.callback('callback-log', 'msg=' + msg);
-}
+};
 
 // MARK: - Callbacks
 
 ZSSEditor.domLoadedCallback = function() {
 	
 	ZSSEditor.callback("callback-dom-loaded");
-}
+};
 
 ZSSEditor.selectionChangedCallback = function () {
     
@@ -149,7 +149,7 @@ ZSSEditor.selectionChangedCallback = function () {
     var joinedArguments = arguments.join(defaultCallbackSeparator);
     
     ZSSEditor.callback('callback-selection-changed', joinedArguments);
-}
+};
 
 ZSSEditor.callback = function(callbackScheme, callbackPath) {
     
@@ -164,7 +164,7 @@ ZSSEditor.callback = function(callbackScheme, callbackPath) {
 	} else {
 		console.log(url);
 	}
-}
+};
 
 /**
  *  @brief      Executes a callback by loading it into an IFrame.
@@ -181,7 +181,7 @@ ZSSEditor.callbackThroughIFrame = function(url) {
     document.documentElement.appendChild(iframe);
     iframe.parentNode.removeChild(iframe);
     iframe = null;
-}
+};
 
 ZSSEditor.stylesCallback = function(stylesArray) {
 
@@ -192,7 +192,7 @@ ZSSEditor.stylesCallback = function(stylesArray) {
 	}
 
 	ZSSEditor.callback("callback-selection-style", stylesString);
-}
+};
 
 // MARK: - Selection
 
@@ -207,7 +207,7 @@ ZSSEditor.backupRange = function(){
         "endContainer": range.endContainer,
         "endOffset": range.endOffset
     };
-}
+};
 
 ZSSEditor.restoreRange = function(){
     if (this.currentSelection) {
@@ -219,13 +219,13 @@ ZSSEditor.restoreRange = function(){
         range.setEnd(this.currentSelection.endContainer, this.currentSelection.endOffset);
         selection.addRange(range);
     }
-}
+};
 
 ZSSEditor.getSelectedText = function() {
 	var selection = window.getSelection();
 	
 	return selection.toString();
-}
+};
 
 ZSSEditor.getYCaretInfo = function() {
     var y = 0, height = 0;
@@ -274,35 +274,35 @@ ZSSEditor.getYCaretInfo = function() {
         }
     }
     return { y: y, height: height };
-}
+};
 
 // MARK: - Default paragraph separator
 
 ZSSEditor.defaultParagraphSeparatorTag = function() {
     return '<' + this.defaultParagraphSeparator + '>';
-}
+};
 
 // MARK: - Styles
 
 ZSSEditor.setBold = function() {
 	document.execCommand('bold', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setItalic = function() {
 	document.execCommand('italic', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setSubscript = function() {
 	document.execCommand('subscript', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setSuperscript = function() {
 	document.execCommand('superscript', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setStrikeThrough = function() {
 	var commandName = 'strikeThrough';
@@ -350,12 +350,12 @@ ZSSEditor.setStrikeThrough = function() {
 	}
 	
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setUnderline = function() {
 	document.execCommand('underline', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setBlockquote = function() {
 	var formatTag = "blockquote";
@@ -368,17 +368,17 @@ ZSSEditor.setBlockquote = function() {
 	}
 
 	 ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.removeFormating = function() {
 	document.execCommand('removeFormat', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setHorizontalRule = function() {
 	document.execCommand('insertHorizontalRule', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setHeading = function(heading) {
 	var formatTag = heading;
@@ -391,7 +391,7 @@ ZSSEditor.setHeading = function(heading) {
 	}
 	
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setParagraph = function() {
 	var formatTag = "p";
@@ -404,57 +404,57 @@ ZSSEditor.setParagraph = function() {
 	}
 	
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.undo = function() {
 	document.execCommand('undo', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.redo = function() {
 	document.execCommand('redo', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setOrderedList = function() {
     document.execCommand('insertOrderedList', false, null);
     ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setUnorderedList = function() {
 	document.execCommand('insertUnorderedList', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setJustifyCenter = function() {
 	document.execCommand('justifyCenter', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setJustifyFull = function() {
 	document.execCommand('justifyFull', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setJustifyLeft = function() {
 	document.execCommand('justifyLeft', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setJustifyRight = function() {
 	document.execCommand('justifyRight', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setIndent = function() {
 	document.execCommand('indent', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setOutdent = function() {
 	document.execCommand('outdent', false, null);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.setTextColor = function(color) {
     ZSSEditor.restoreRange();
@@ -463,7 +463,7 @@ ZSSEditor.setTextColor = function(color) {
 	document.execCommand("styleWithCSS", null, false);
 	ZSSEditor.sendEnabledStyles();
     // document.execCommand("removeFormat", false, "foreColor"); // Removes just foreColor
-}
+};
 
 ZSSEditor.setBackgroundColor = function(color) {
 	ZSSEditor.restoreRange();
@@ -471,7 +471,7 @@ ZSSEditor.setBackgroundColor = function(color) {
 	document.execCommand('hiliteColor', false, color);
 	document.execCommand("styleWithCSS", null, false);
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 // Needs addClass method
 
@@ -493,7 +493,7 @@ ZSSEditor.insertLink = function(url, title) {
 	}
 
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.updateLink = function(url, title) {
 	
@@ -506,7 +506,7 @@ ZSSEditor.updateLink = function(url, title) {
 		currentLinkNode.innerHTML = title;
     }
     ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.unlink = function() {
 	
@@ -517,7 +517,7 @@ ZSSEditor.unlink = function() {
 	}
 	
 	ZSSEditor.sendEnabledStyles();
-}
+};
 
 ZSSEditor.updateImage = function(url, alt) {
 
@@ -530,11 +530,11 @@ ZSSEditor.updateImage = function(url, alt) {
     }
     ZSSEditor.sendEnabledStyles();
 
-}//end
+}; //end
 
 ZSSEditor.unwrapNode = function(node) {
 	var newObject = $(node).replaceWith(node.innerHTML);
-}
+};
 
 ZSSEditor.quickLink = function() {
 	
@@ -565,7 +565,7 @@ ZSSEditor.quickLink = function() {
 
 	var html_code = '<a href="' + link_url + '">' + sel + '</a>';
 	ZSSEditor.insertHTML(html_code);
-}
+};
 
 // MARK: - Images
 
@@ -594,7 +594,7 @@ ZSSEditor.insertImage = function(url, alt) {
     
     this.insertHTML(html);
     this.sendEnabledStyles();
-}
+};
 
 /**
  *  @brief      Replaces a local image URL with a remote image URL.  Useful for images that have
@@ -620,18 +620,18 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remo
         
         image.src = remoteImageUrl;
     }
-}
+};
 
 // MARK: - Commands
 
 ZSSEditor.insertHTML = function(html) {
 	document.execCommand('insertHTML', false, html);
 	this.sendEnabledStyles();
-}
+};
 
 ZSSEditor.isCommandEnabled = function(commandName) {
 	return document.queryCommandState(commandName);
-}
+};
 
 ZSSEditor.sendEnabledStyles = function(e) {
 
@@ -765,7 +765,7 @@ ZSSEditor.sendEnabledStyles = function(e) {
 	}
 	
 	ZSSEditor.stylesCallback(items);
-}
+};
 
 // MARK: - Parent nodes & tags
 
@@ -788,7 +788,7 @@ ZSSEditor.closerParentNode = function() {
     }
     
     return parentNode;
-}
+};
 
 ZSSEditor.closerParentNodeStartingAtNode = function(nodeName, startingNode) {
     
@@ -814,7 +814,7 @@ ZSSEditor.closerParentNodeStartingAtNode = function(nodeName, startingNode) {
     }
     
     return parentNode;
-}
+};
 
 ZSSEditor.closerParentNodeWithName = function(nodeName) {
     
@@ -843,7 +843,7 @@ ZSSEditor.closerParentNodeWithName = function(nodeName) {
     }
     
     return parentNode;
-}
+};
 
 ZSSEditor.parentTags = function() {
     
@@ -866,7 +866,7 @@ ZSSEditor.parentTags = function() {
     }
     
     return parentTags;
-}
+};
 
 // MARK: - ZSSField Constructor
 
@@ -876,7 +876,7 @@ function ZSSField(wrappedObject) {
     this.bodyPlaceholderColor = '#000000';
     
     this.bindListeners();
-}
+};
 
 ZSSField.prototype.bindListeners = function() {
     
@@ -975,7 +975,7 @@ ZSSField.prototype.handleTapEvent = function(e) {
             setTimeout(function() { thisObj.callback('callback-link-tap', joinedArguments);}, 500);
         }
     }
-}
+};
 
 // MARK: - Callback Execution
 
@@ -1018,14 +1018,14 @@ ZSSField.prototype.callbackThroughIFrame = function(url) {
 ZSSField.prototype.isFocused = function() {
 
     return this.wrappedObject.is(':focus');
-}
+};
 
 ZSSField.prototype.focus = function() {
     
     if (!this.isFocused()) {
         this.wrappedObject.focus();
     }
-}
+};
 
 ZSSField.prototype.blur = function() {
     if (this.isFocused()) {
@@ -1037,11 +1037,11 @@ ZSSField.prototype.blur = function() {
 
 ZSSField.prototype.isMultiline = function() {
     return this.multiline;
-}
+};
 
 ZSSField.prototype.setMultiline = function(multiline) {
     this.multiline = multiline;
-}
+};
 
 // MARK: - NodeId
 
@@ -1091,16 +1091,20 @@ ZSSField.prototype.isEmpty = function() {
     var isEmpty = (html.length == 0 || html == "<br>");
     
     return isEmpty;
-}
+};
 
 ZSSField.prototype.getHTML = function() {
     return this.wrappedObject.html();
-}
+};
+
+ZSSField.prototype.strippedHTML = function() {
+    return this.wrappedObject.text();
+};
 
 ZSSField.prototype.setHTML = function(html) {
     this.wrappedObject.html(html);
     this.refreshPlaceholderColor();
-}
+};
 
 // MARK: - Placeholder
 
@@ -1111,7 +1115,7 @@ ZSSField.prototype.hasPlaceholderText = function() {
 ZSSField.prototype.setPlaceholderText = function(placeholder) {
     
     this.wrappedObject.attr('placeholderText', placeholder);
-}
+};
 
 ZSSField.prototype.setPlaceholderColor = function(color) {
     this.bodyPlaceholderColor = color;
@@ -1122,13 +1126,13 @@ ZSSField.prototype.refreshPlaceholderColor = function() {
      this.refreshPlaceholderColorForAttributes(this.hasPlaceholderText(),
                                                this.isFocused(),
                                                this.isEmpty());
-}
+};
 
 ZSSField.prototype.refreshPlaceholderColorAboutToGainFocus = function(willGainFocus) {
     this.refreshPlaceholderColorForAttributes(this.hasPlaceholderText(),
                                               willGainFocus,
                                               this.isEmpty());
-}
+};
 
 ZSSField.prototype.refreshPlaceholderColorForAttributes = function(hasPlaceholderText, isFocused, isEmpty) {
     
@@ -1146,4 +1150,4 @@ ZSSField.prototype.refreshPlaceholderColorForAttributes = function(hasPlaceholde
 
 ZSSField.prototype.wrappedDomNode = function() {
     return this.wrappedObject[0];
-}
+};

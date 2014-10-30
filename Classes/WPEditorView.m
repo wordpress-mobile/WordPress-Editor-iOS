@@ -4,6 +4,7 @@
 #import "HRColorUtil.h"
 #import "WPEditorField.h"
 #import "ZSSTextView.h"
+#import <WordPress-iOS-Shared/WPFontManager.h>
 
 typedef void(^WPEditorViewCallbackParameterProcessingBlock)(NSString* parameterName, NSString* parameterValue);
 typedef void(^WPEditorViewNoParamsCompletionBlock)();
@@ -14,7 +15,11 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 static NSString* const kWPEditorViewFieldTitleId = @"zss_field_title";
 static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 
-@interface WPEditorView () <UITextViewDelegate, UIWebViewDelegate>
+static const CGFloat HTMLViewLeftRightInset = 10.0f;
+static const CGFloat UITextFieldLeftRightInset = 15.5f;
+static const CGFloat UITextFieldFieldHeight = 44.0f;
+
+@interface WPEditorView () <UITextViewDelegate, UIWebViewDelegate, UITextFieldDelegate>
 
 #pragma mark - Cached caret & line data
 @property (nonatomic, assign, readwrite) CGFloat caretYOffset;
@@ -30,6 +35,7 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 @property (nonatomic, strong, readwrite) NSString *selectedImageAlt;
 
 #pragma mark - Subviews
+@property (nonatomic, strong, readwrite) UITextField *sourceViewTitleField;
 @property (nonatomic, strong, readwrite) ZSSTextView *sourceView;
 @property (nonatomic, strong, readonly) UIWebView* webView;
 
@@ -63,7 +69,12 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 		CGRect childFrame = frame;
 		childFrame.origin = CGPointZero;
 		
-		[self createSourceViewWithFrame:childFrame];
+        [self createSourceTitleViewWithFrame: childFrame];
+        CGRect sourceViewFrame = CGRectMake(0.0f,
+                                            CGRectGetHeight(self.sourceViewTitleField.frame),
+                                            CGRectGetWidth(childFrame),
+                                            CGRectGetHeight(childFrame)-CGRectGetHeight(self.sourceViewTitleField.frame));
+        [self createSourceViewWithFrame:sourceViewFrame];
 		[self createWebViewWithFrame:childFrame];
 		[self setupHTMLEditor];
 	}
@@ -82,19 +93,35 @@ static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 
 #pragma mark - Init helpers
 
+- (void)createSourceTitleViewWithFrame:(CGRect)frame
+{
+    NSAssert(!_sourceViewTitleField, @"The source view title field must not exist when this method is called!");
+	
+    CGFloat textWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset);
+    _sourceViewTitleField = [[UITextField alloc] initWithFrame:CGRectMake(UITextFieldLeftRightInset, 0.0f, textWidth, UITextFieldFieldHeight)];
+    _sourceViewTitleField.hidden = YES;
+    _sourceViewTitleField.font = [WPFontManager merriweatherBoldFontOfSize:18.0f];
+    _sourceViewTitleField.autocapitalizationType = UITextAutocapitalizationTypeWords;
+    _sourceViewTitleField.autocorrectionType = UITextAutocorrectionTypeYes;
+    _sourceViewTitleField.autoresizingMask =  UIViewAutoresizingFlexibleWidth;
+    _sourceViewTitleField.delegate = self;
+    _sourceViewTitleField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
+    _sourceViewTitleField.returnKeyType = UIReturnKeyNext;
+    [self addSubview:_sourceViewTitleField];
+}
+
 - (void)createSourceViewWithFrame:(CGRect)frame
 {
-	NSAssert(!_sourceView, @"The source view must not exist when this method is called!");
-	
-	_sourceView = [[ZSSTextView alloc] initWithFrame:frame];
-	_sourceView.hidden = YES;
-	_sourceView.autocapitalizationType = UITextAutocapitalizationTypeNone;
-	_sourceView.autocorrectionType = UITextAutocorrectionTypeNo;
-	_sourceView.autoresizingMask =  UIViewAutoresizingFlexibleHeight;
-	_sourceView.autoresizesSubviews = YES;
-	_sourceView.delegate = self;
-	
-	[self addSubview:_sourceView];
+    NSAssert(!_sourceView, @"The source view must not exist when this method is called!");
+    
+    _sourceView = [[ZSSTextView alloc] initWithFrame:frame];
+    _sourceView.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    _sourceView.autocorrectionType = UITextAutocorrectionTypeNo;
+    _sourceView.autoresizingMask =  UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    _sourceView.autoresizesSubviews = YES;
+    _sourceView.textContainerInset = UIEdgeInsetsMake(15.0f, HTMLViewLeftRightInset, 0.0f, HTMLViewLeftRightInset);
+    _sourceView.delegate = self;
+    [self addSubview:_sourceView];
 }
 
 - (void)createWebViewWithFrame:(CGRect)frame
@@ -1062,6 +1089,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
 	self.sourceView.text = [self.contentField html];
 	self.sourceView.hidden = NO;
+    self.sourceViewTitleField.text = [self.titleField strippedHtml];
+    self.sourceViewTitleField.hidden = NO;
 	self.webView.hidden = YES;
     
     [self.sourceView becomeFirstResponder];
@@ -1075,6 +1104,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
 	[self.contentField setHtml:self.sourceView.text];
 	self.sourceView.hidden = YES;
+    [self.titleField setHtml:self.sourceViewTitleField.text];
+    self.sourceViewTitleField.hidden = YES;
 	self.webView.hidden = NO;
     
     [self.contentField focus];
@@ -1090,12 +1121,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     [self.titleField disableEditing];
     [self.contentField disableEditing];
+    [self.sourceViewTitleField setEnabled:NO];
+    [self.sourceView setEditable:NO];
 }
 
 - (void)enableEditing
 {
     [self.titleField enableEditing];
     [self.contentField enableEditing];
+    [self.sourceViewTitleField setEnabled:YES];
+    [self.sourceView setEditable:YES];
 }
 
 #pragma mark - Styles
@@ -1283,6 +1318,25 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
     [self callDelegateEditorTextDidChange];
+}
+
+#pragma mark - UITextField delegate
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+{
+    return YES;
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    [self callDelegateEditorTitleDidChange];
+    return YES;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [self.sourceView becomeFirstResponder];
+    return NO;
 }
 
 #pragma mark - Delegate calls

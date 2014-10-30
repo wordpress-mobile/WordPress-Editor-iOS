@@ -148,6 +148,20 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
     return html;
 }
 
+- (NSString*)strippedHtml
+{
+    NSString* strippedHtml = nil;
+    
+    if (!self.domLoaded) {
+        strippedHtml = self.preloadedHTML;
+    } else {
+        NSString* javascript = [NSString stringWithFormat:@"%@.strippedHTML();", [self wrappedNodeJavascriptAccessor]];        
+        strippedHtml = [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+    }
+    
+    return strippedHtml;
+}
+
 - (void)setHtml:(NSString*)html
 {
     if (!self.domLoaded) {
