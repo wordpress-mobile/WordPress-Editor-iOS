@@ -224,6 +224,8 @@ static const CGFloat UITextFieldFieldHeight = 44.0f;
 
 - (void)stopObservingKeyboardNotifications
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
@@ -1104,6 +1106,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)disableEditing
 {
+    if (!self.sourceView.hidden) {
+        [self showVisualEditor];
+    }
+    
     [self.titleField disableEditing];
     [self.contentField disableEditing];
     [self.sourceViewTitleField setEnabled:NO];
