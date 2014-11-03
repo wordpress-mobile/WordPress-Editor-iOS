@@ -5,6 +5,7 @@
 #import "WPEditorField.h"
 #import "ZSSTextView.h"
 #import <WordPress-iOS-Shared/WPFontManager.h>
+#import <WordPress-iOS-Shared/WPStyleGuide.h>
 
 typedef void(^WPEditorViewCallbackParameterProcessingBlock)(NSString* parameterName, NSString* parameterValue);
 typedef void(^WPEditorViewNoParamsCompletionBlock)();
@@ -36,8 +37,10 @@ static const CGFloat UITextFieldFieldHeight = 44.0f;
 
 #pragma mark - Subviews
 @property (nonatomic, strong, readwrite) UITextField *sourceViewTitleField;
+@property (nonatomic, strong, readonly) UIView *sourceContentDividerView;
 @property (nonatomic, strong, readwrite) ZSSTextView *sourceView;
 @property (nonatomic, strong, readonly) UIWebView* webView;
+
 
 #pragma mark - Operation queues
 @property (nonatomic, strong, readwrite) NSOperationQueue* editorInteractionQueue;
@@ -70,10 +73,12 @@ static const CGFloat UITextFieldFieldHeight = 44.0f;
 		childFrame.origin = CGPointZero;
 		
         [self createSourceTitleViewWithFrame: childFrame];
+        [self createSourceDividerViewWithFrame:CGRectMake(0.0f, CGRectGetMaxY(self.sourceViewTitleField.frame), CGRectGetWidth(childFrame), 1.0f)];
         CGRect sourceViewFrame = CGRectMake(0.0f,
-                                            CGRectGetHeight(self.sourceViewTitleField.frame),
+                                            CGRectGetMaxY(self.sourceContentDividerView.frame),
                                             CGRectGetWidth(childFrame),
-                                            CGRectGetHeight(childFrame)-CGRectGetHeight(self.sourceViewTitleField.frame));
+                                            CGRectGetHeight(childFrame)-CGRectGetHeight(self.sourceViewTitleField.frame)-CGRectGetHeight(self.sourceContentDividerView.frame));
+        
         [self createSourceViewWithFrame:sourceViewFrame];
 		[self createWebViewWithFrame:childFrame];
 		[self setupHTMLEditor];
@@ -98,7 +103,7 @@ static const CGFloat UITextFieldFieldHeight = 44.0f;
     NSAssert(!_sourceViewTitleField, @"The source view title field must not exist when this method is called!");
 	
     CGFloat textWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset);
-    _sourceViewTitleField = [[UITextField alloc] initWithFrame:CGRectMake(UITextFieldLeftRightInset, 0.0f, textWidth, UITextFieldFieldHeight)];
+    _sourceViewTitleField = [[UITextField alloc] initWithFrame:CGRectMake(UITextFieldLeftRightInset, 5.0f, textWidth, UITextFieldFieldHeight)];
     _sourceViewTitleField.hidden = YES;
     _sourceViewTitleField.font = [WPFontManager merriweatherBoldFontOfSize:18.0f];
     _sourceViewTitleField.autocapitalizationType = UITextAutocapitalizationTypeWords;
@@ -108,6 +113,19 @@ static const CGFloat UITextFieldFieldHeight = 44.0f;
     _sourceViewTitleField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
     _sourceViewTitleField.returnKeyType = UIReturnKeyNext;
     [self addSubview:_sourceViewTitleField];
+}
+
+- (void)createSourceDividerViewWithFrame:(CGRect)frame
+{
+    NSAssert(!_sourceContentDividerView, @"The source divider view must not exist when this method is called!");
+    
+    CGFloat lineWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset);
+    _sourceContentDividerView = [[UIView alloc] initWithFrame:CGRectMake(UITextFieldLeftRightInset, CGRectGetMaxY(frame), lineWidth, CGRectGetHeight(frame))];
+    _sourceContentDividerView.backgroundColor = [WPStyleGuide readGrey];
+    _sourceContentDividerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    _sourceContentDividerView.hidden = YES;
+
+    [self addSubview:_sourceContentDividerView];
 }
 
 - (void)createSourceViewWithFrame:(CGRect)frame
@@ -1091,6 +1109,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	self.sourceView.hidden = NO;
     self.sourceViewTitleField.text = [self.titleField strippedHtml];
     self.sourceViewTitleField.hidden = NO;
+    self.sourceContentDividerView.hidden = NO;
 	self.webView.hidden = YES;
     
     [self.sourceView becomeFirstResponder];
@@ -1106,6 +1125,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	self.sourceView.hidden = YES;
     [self.titleField setHtml:self.sourceViewTitleField.text];
     self.sourceViewTitleField.hidden = YES;
+    self.sourceContentDividerView.hidden = YES;
 	self.webView.hidden = NO;
     
     [self.contentField focus];

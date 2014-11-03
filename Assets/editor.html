@@ -816,17 +816,24 @@ function style_html(html_source, options) {
             min-height: 100vh;
         }
     
-        p, div {
-            font-size: 16px;
-            font-family:OpenSans, sans-serif;
+        p {
             line-height: 24px;
             margin-top: 0px;
             margin-bottom: 24px;
+        }
+    
+        hr {
+            border: none;
+            height: 1px;
+            color: #e8f0f5;
+            background-color: #e8f0f5;
+            width: 95%;
         }
 
         img {
             width: auto;
             height: auto;
+            margin: 10px 0 10px 0;
             min-width: 30px;
             min-height: 30px;
             max-width: 100%;
@@ -840,7 +847,7 @@ function style_html(html_source, options) {
         blockquote {
             background: #e8f0f5;
             padding: 10px 10px 10px 20px;
-            margin: 10px 0 0 0;
+            margin: 10px 0 10px 0;
             border-radius: 2px;
         }
     
@@ -849,8 +856,9 @@ function style_html(html_source, options) {
         }
         
         div[contenteditable] {
-            padding: 10px 10px 0px 10px;
+            padding: 15px 10px 5px 10px;
             box-sizing: border-box;
+            font-size: 16px;
         }
     
         div[placeholderText][contenteditable=true]:empty:not(:focus):before {
@@ -861,6 +869,11 @@ function style_html(html_source, options) {
             font-family:'Merriweather', serif;
             font-weight: bold;
             font-size: 18px;
+            margin-bottom: 0px;
+        }
+    
+        #zss_field_content {
+            margin-bottom: 10px;
         }
     
     </style>
@@ -868,6 +881,7 @@ function style_html(html_source, options) {
   <body>
       <div contenteditable="true" id="zss_field_title">
       </div>
+      <hr/>
       <div contenteditable="true" id="zss_field_content">
       </div>
   </body>
