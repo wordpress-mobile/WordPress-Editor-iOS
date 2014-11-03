@@ -28,6 +28,9 @@ ZSSEditor.currentEditingLink;
 
 ZSSEditor.focusedField = null;
 
+ZSSEditor.getYCaretInfoCallCount = 0;
+ZSSEditor.getYCaretInfoCallCountForGC = 10;
+
 // The objects that are enabled
 ZSSEditor.enabledItems = {};
 
@@ -63,7 +66,7 @@ ZSSEditor.init = function() {
 		//
 		if (editor.is(":focus")) {
             ZSSEditor.selectionChangedCallback();
-			ZSSEditor.sendEnabledStyles(e);
+            ZSSEditor.sendEnabledStyles(e);
 			var clicked = $(e.target);
 			if (!clicked.hasClass('zs_active')) {
 				$('img').removeClass('zs_active');
@@ -273,6 +276,18 @@ ZSSEditor.getYCaretInfo = function() {
             }
         }
     }
+    
+    // PROBLEM: this method seems to increase memory consumption considerably each time it's called
+    // and the GC doesn't seem to be keeping up with it.  In fact under iOS 7, if you type really
+    // fast you get a malloc issue.
+    //
+    // WORKAROUND: force the garbage collector to run every few calls of this method.
+    getYCaretInfoCallCount++;
+    
+    if (getYCaretInfoCallCount >= getYCaretInfoCallCountForGC) {
+        _system.gc();
+    }
+    
     return { y: y, height: height };
 };
 
@@ -941,9 +956,8 @@ ZSSField.prototype.handleKeyDownEvent = function(e) {
     }
 };
 
-ZSSField.prototype.handleInputEvent = function(e) {    
-    var caretInfo = ZSSEditor
-    .getYCaretInfo();
+ZSSField.prototype.handleInputEvent = function(e) {
+    var caretInfo = ZSSEditor.getYCaretInfo();
     
     var arguments = ['yOffset=' + caretInfo.y,
                      'height=' + caretInfo.height];
@@ -951,8 +965,9 @@ ZSSField.prototype.handleInputEvent = function(e) {
     var joinedArguments = arguments.join(defaultCallbackSeparator);
     
     ZSSEditor.callback('callback-selection-changed', joinedArguments);
-    
+     
     this.callback("callback-input", joinedArguments);
+
 };
 
 ZSSField.prototype.handleTapEvent = function(e) {
