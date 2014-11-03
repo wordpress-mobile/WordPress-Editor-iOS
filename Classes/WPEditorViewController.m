@@ -16,10 +16,11 @@
 #import "ZSSBarButtonItem.h"
 
 // Keep an eye on this constant on different iOS versions
-static int kToolbarFirstItemExtraPadding = 0;
-static int kToolbarItemPadding = 10;
-static int kiPodToolbarMarginWidth = 20;
-static int kiPhoneSixPlusToolbarMarginWidth = 24;
+static int kNegativeToolbarItemPadding = 12;
+static int kNegativeSixPlusToolbarItemPadding = 2;
+static int kNegativeLeftToolbarLeftPadding = 3;
+static int kNegativeRightToolbarPadding = 20;
+static int kNegativeSixPlusRightToolbarPadding = 24;
 
 CGFloat const EPVCStandardOffset = 10.0;
 NSInteger const WPImageAlertViewTag = 91;
@@ -296,7 +297,7 @@ typedef enum
         
         CGRect rightSpacerFrame = CGRectMake(CGRectGetMaxX(dividerLine.frame),
                                              0.0f,
-                                             kiPodToolbarMarginWidth / 2,
+                                             kNegativeRightToolbarPadding / 2,
                                              kWPEditorViewControllerToolbarHeight);
         UIView *rightSpacer = [[UIView alloc] initWithFrame:rightSpacerFrame];
 
@@ -326,9 +327,9 @@ typedef enum
 																						   action:nil];
         // Negative separator needs to be different on 6+
         if ([self isIPhoneSixPlus]) {
-            negativeSeparator.width = -kiPhoneSixPlusToolbarMarginWidth;
+            negativeSeparator.width = -kNegativeSixPlusRightToolbarPadding;
         } else {
-            negativeSeparator.width = -kiPodToolbarMarginWidth;
+            negativeSeparator.width = -kNegativeRightToolbarPadding;
         }
 		
 		toolbar.items = @[negativeSeparator, [self htmlBarButtonItem]];
@@ -1174,7 +1175,7 @@ typedef enum
         items = [self itemsForToolbar];
 	}
 	
-	CGFloat toolbarWidth = items.count == 0 ? 0.0f : kToolbarFirstItemExtraPadding + (CGFloat)(items.count * kWPEditorViewControllerToolbarButtonWidth);
+	CGFloat toolbarWidth = items.count == 0 ? 0.0f : (CGFloat)(items.count * kWPEditorViewControllerToolbarButtonWidth);
 	
     if (self.customBarButtonItems != nil)
     {
@@ -1189,13 +1190,23 @@ typedef enum
 	UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
 																					   target:nil
 																					   action:nil];
-	negativeSeparator.width = -kToolbarItemPadding;
-	
-	// This code adds a negative separator between all the toolbar buttons
-	//
-	for (NSInteger i = [items count]; i >= 0; i--) {
-		[items insertObject:negativeSeparator atIndex:i];
-	}
+    if ([self isIPhoneSixPlus]) {
+        negativeSeparator.width = -kNegativeSixPlusToolbarItemPadding;
+    } else {
+        negativeSeparator.width = -kNegativeToolbarItemPadding;
+    }
+    
+    // This code adds a negative separator between all the toolbar buttons
+    for (NSInteger i = [items count]; i >= 0; i--) {
+        [items insertObject:negativeSeparator atIndex:i];
+    }
+    
+    UIBarButtonItem *negativeSeparator2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                                                                       target:nil
+                                                                                       action:nil];
+
+    negativeSeparator2.width = -kNegativeLeftToolbarLeftPadding;
+    [items insertObject:negativeSeparator2 atIndex:0];
 	
     self.leftToolbar.items = items;
     self.leftToolbar.frame = CGRectMake(0,
