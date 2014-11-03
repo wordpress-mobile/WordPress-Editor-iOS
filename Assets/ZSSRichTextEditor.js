@@ -900,7 +900,8 @@ ZSSField.prototype.bindListeners = function() {
     this.wrappedObject.bind('tap', function(e) { thisObj.handleTapEvent(e); });
     this.wrappedObject.bind('focus', function(e) { thisObj.handleFocusEvent(e); });
     this.wrappedObject.bind('blur', function(e) { thisObj.handleBlurEvent(e); });
-    this.wrappedObject.bind('keydown', function(e) { thisObj.handleKeyDownEvent(e); });
+    this.wrappedObject.bind('keyDown', function(e) { thisObj.handleKeyDownEvent(e); });
+    this.wrappedObject.bind('keyUp', function(e) { thisObj.handleKeyUpEvent(e); });
     this.wrappedObject.bind('input', function(e) { thisObj.handleInputEvent(e); });
 };
 
@@ -953,6 +954,12 @@ ZSSField.prototype.handleKeyDownEvent = function(e) {
     //
     if (ZSSEditor.closerParentNode() == this.wrappedDomNode()) {
         document.execCommand('formatBlock', false, 'p');
+    }
+};
+
+ZSSField.prototype.handleKeyUpEvent = function(e) {
+    if (e.keyCode == 8) { // DELETE key
+        this.emptyFieldIfNoContents();
     }
 };
 
@@ -1151,10 +1158,14 @@ ZSSField.prototype.refreshPlaceholderColorAboutToGainFocus = function(willGainFo
 
 ZSSField.prototype.refreshPlaceholderColorForAttributes = function(hasPlaceholderText, isFocused, isEmpty) {
     
-    var shouldColorText = hasPlaceholderText && !isFocused && isEmpty;
+    var shouldColorText = hasPlaceholderText && isEmpty;
     
     if (shouldColorText) {
-        this.wrappedObject.css('color', this.bodyPlaceholderColor);
+        if (isFocused) {
+            this.wrappedObject.css('color', this.bodyPlaceholderColor);
+        } else {
+            this.wrappedObject.css('color', this.bodyPlaceholderColor);
+        }
     } else {
         this.wrappedObject.css('color', '');
     }

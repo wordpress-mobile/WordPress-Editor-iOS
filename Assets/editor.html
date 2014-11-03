@@ -865,6 +865,10 @@ function style_html(html_source, options) {
             content: attr(placeholderText);
         }
     
+        div[placeholderText][contenteditable=true]:empty:before {
+            content: attr(placeholderText);
+        }
+    
         #zss_field_title, #zss_field_title p {
             font-family:'Merriweather', serif;
             font-weight: bold;
