@@ -16,15 +16,18 @@
 #import "ZSSBarButtonItem.h"
 
 // Keep an eye on this constant on different iOS versions
-static int kToolbarFirstItemExtraPadding = 6;
-static int kToolbarItemPadding = 10;
-static int kiPodToolbarMarginWidth = 15;
-static int kiPhoneSixPlusToolbarMarginWidth = 18;
+static int kNegativeToolbarItemPadding = 12;
+static int kNegativeSixPlusToolbarItemPadding = 2;
+static int kNegativeLeftToolbarLeftPadding = 3;
+static int kNegativeRightToolbarPadding = 20;
+static int kNegativeSixPlusRightToolbarPadding = 24;
 
 CGFloat const EPVCStandardOffset = 10.0;
 NSInteger const WPImageAlertViewTag = 91;
 NSInteger const WPLinkAlertViewTag = 92;
 
+static const CGFloat kHTMLDividerLineWidth = 0.6;
+static const CGFloat kHTMLDividerLineHeight = 28;
 static const CGFloat kWPEditorViewControllerToolbarButtonWidth = 40.0f;
 static const CGFloat kWPEditorViewControllerToolbarButtonHeight = 40.0f;
 static const CGFloat kWPEditorViewControllerToolbarHeight = 40.0f;
@@ -282,50 +285,55 @@ typedef enum
 	UIView* rightToolbarHolder = _rightToolbarHolder;
 	
 	if (!rightToolbarHolder) {
-		
-		rightToolbarHolder = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetWidth(self.view.frame) - kWPEditorViewControllerToolbarButtonWidth,
-																	  0,
-																	  kWPEditorViewControllerToolbarButtonWidth,
-																	  kWPEditorViewControllerToolbarHeight)];
+        
+        CGRect dividerLineFrame = CGRectMake(0.0f,
+                                             floorf((kWPEditorViewControllerToolbarHeight - kHTMLDividerLineHeight) / 2),
+                                             kHTMLDividerLineWidth,
+                                             kHTMLDividerLineHeight);
+        
+        UIView *dividerLine = [[UIView alloc] initWithFrame:dividerLineFrame];
+        dividerLine.backgroundColor = self.toolbarBorderColor;
+        dividerLine.alpha = 0.7f;
+        
+        CGRect rightSpacerFrame = CGRectMake(CGRectGetMaxX(dividerLine.frame),
+                                             0.0f,
+                                             kNegativeRightToolbarPadding / 2,
+                                             kWPEditorViewControllerToolbarHeight);
+        UIView *rightSpacer = [[UIView alloc] initWithFrame:rightSpacerFrame];
+
+        
+        CGRect rightToolbarHolderFrame = CGRectMake(CGRectGetWidth(self.view.frame) - (kWPEditorViewControllerToolbarButtonWidth + CGRectGetWidth(dividerLine.frame) + CGRectGetWidth(rightSpacer.frame)),
+                                                   0.0f,
+                                                   kWPEditorViewControllerToolbarButtonWidth + CGRectGetWidth(dividerLine.frame) + CGRectGetWidth(rightSpacer.frame),
+                                                   kWPEditorViewControllerToolbarHeight);
+		rightToolbarHolder = [[UIView alloc] initWithFrame:rightToolbarHolderFrame];
 		rightToolbarHolder.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
 		rightToolbarHolder.clipsToBounds = YES;
 		
-		CGRect toolbarFrame = CGRectMake(0,
-										 0,
+		CGRect toolbarFrame = CGRectMake(CGRectGetMaxX(rightSpacer.frame),
+										 0.0f,
 										 CGRectGetWidth(rightToolbarHolder.frame),
 										 CGRectGetHeight(rightToolbarHolder.frame));
 		
 		UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:toolbarFrame];
 		self.rightToolbar = toolbar;
-		
+        
+        [rightToolbarHolder addSubview:dividerLine];
+        [rightToolbarHolder addSubview:rightSpacer];
 		[rightToolbarHolder addSubview:toolbar];
 		
 		UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
 																						   target:nil
 																						   action:nil];
-        
         // Negative separator needs to be different on 6+
         if ([self isIPhoneSixPlus]) {
-            negativeSeparator.width = -kiPhoneSixPlusToolbarMarginWidth;
+            negativeSeparator.width = -kNegativeSixPlusRightToolbarPadding;
         } else {
-            negativeSeparator.width = -kiPodToolbarMarginWidth;
+            negativeSeparator.width = -kNegativeRightToolbarPadding;
         }
 		
 		toolbar.items = @[negativeSeparator, [self htmlBarButtonItem]];
 		toolbar.barTintColor = self.toolbarBackgroundColor;
-		
-		static const CGFloat kDividerLineWidth = 0.6;
-		static const CGFloat kDividerLineHeight = 28;
-		
-		CGRect dividerLineFrame = CGRectMake(0,
-											 floorf((kWPEditorViewControllerToolbarHeight - kDividerLineHeight) / 2),
-											 kDividerLineWidth,
-											 kDividerLineHeight);
-		
-		UIView *dividerLine = [[UIView alloc] initWithFrame:dividerLineFrame];
-		dividerLine.backgroundColor = self.toolbarBorderColor;
-		dividerLine.alpha = 0.7f;
-		[rightToolbarHolder addSubview:dividerLine];
 	}
 	
 	return rightToolbarHolder;
@@ -1167,7 +1175,7 @@ typedef enum
         items = [self itemsForToolbar];
 	}
 	
-	CGFloat toolbarWidth = items.count == 0 ? 0.0f : kToolbarFirstItemExtraPadding + (CGFloat)(items.count * kWPEditorViewControllerToolbarButtonWidth);
+	CGFloat toolbarWidth = items.count == 0 ? 0.0f : (CGFloat)(items.count * kWPEditorViewControllerToolbarButtonWidth);
 	
     if (self.customBarButtonItems != nil)
     {
@@ -1182,13 +1190,23 @@ typedef enum
 	UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
 																					   target:nil
 																					   action:nil];
-	negativeSeparator.width = -kToolbarItemPadding;
-	
-	// This code adds a negative separator between all the toolbar buttons
-	//
-	for (NSInteger i = [items count]; i >= 0; i--) {
-		[items insertObject:negativeSeparator atIndex:i];
-	}
+    if ([self isIPhoneSixPlus]) {
+        negativeSeparator.width = -kNegativeSixPlusToolbarItemPadding;
+    } else {
+        negativeSeparator.width = -kNegativeToolbarItemPadding;
+    }
+    
+    // This code adds a negative separator between all the toolbar buttons
+    for (NSInteger i = [items count]; i >= 0; i--) {
+        [items insertObject:negativeSeparator atIndex:i];
+    }
+    
+    UIBarButtonItem *negativeSeparatorForToolbar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                                                                       target:nil
+                                                                                       action:nil];
+
+    negativeSeparatorForToolbar.width = -kNegativeLeftToolbarLeftPadding;
+    [items insertObject:negativeSeparatorForToolbar atIndex:0];
 	
     self.leftToolbar.items = items;
     self.leftToolbar.frame = CGRectMake(0,
