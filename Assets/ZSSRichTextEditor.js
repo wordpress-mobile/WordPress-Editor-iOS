@@ -17,6 +17,12 @@ var defaultCallbackSeparator = '~';
 // The editor object
 var ZSSEditor = {};
 
+// These variables exist to reduce garbage (as in memory garbage) generation when typing real fast
+// in the editor.
+//
+ZSSEditor.caretArguments = ['yOffset=' + 0, 'height=' + 0];
+ZSSEditor.caretInfo = { y: 0, height: 0 };
+
 // The current selection
 ZSSEditor.currentSelection;
 
@@ -27,9 +33,6 @@ ZSSEditor.currentEditingImage;
 ZSSEditor.currentEditingLink;
 
 ZSSEditor.focusedField = null;
-
-ZSSEditor.getYCaretInfoCallCount = 0;
-ZSSEditor.getYCaretInfoCallCountForGC = 10;
 
 // The objects that are enabled
 ZSSEditor.enabledItems = {};
@@ -59,7 +62,6 @@ ZSSEditor.init = function() {
     
 	document.addEventListener("selectionchange", function(e) {
 		ZSSEditor.currentEditingLink = null;
-
 		// DRM: only do something here if the editor has focus.  The reason is that when the
 		// selection changes due to the editor loosing focus, the focusout event will not be
 		// sent if we try to load a callback here.
@@ -144,14 +146,10 @@ ZSSEditor.domLoadedCallback = function() {
 
 ZSSEditor.selectionChangedCallback = function () {
     
-    var caretInfo = this.getYCaretInfo();
-    
-    var arguments = ['yOffset=' + caretInfo.y,
-                     'height=' + caretInfo.height];
-    
-    var joinedArguments = arguments.join(defaultCallbackSeparator);
+    var joinedArguments = ZSSEditor.getJoinedCaretArguments();
     
     ZSSEditor.callback('callback-selection-changed', joinedArguments);
+    this.callback("callback-input", joinedArguments);
 };
 
 ZSSEditor.callback = function(callbackScheme, callbackPath) {
@@ -230,6 +228,23 @@ ZSSEditor.getSelectedText = function() {
 	return selection.toString();
 };
 
+ZSSEditor.getCaretArguments = function() {
+    var caretInfo = this.getYCaretInfo();
+    
+    this.caretArguments[0] = 'yOffset=' + caretInfo.y;
+    this.caretArguments[1] = 'height=' + caretInfo.height;
+    
+    return this.caretArguments;
+};
+
+ZSSEditor.getJoinedCaretArguments = function() {
+    
+    var caretArguments = this.getCaretArguments();
+    var joinedArguments = this.caretArguments.join(defaultCallbackSeparator);
+    
+    return joinedArguments;
+};
+
 ZSSEditor.getYCaretInfo = function() {
     var y = 0, height = 0;
     var sel = window.getSelection();
@@ -277,18 +292,10 @@ ZSSEditor.getYCaretInfo = function() {
         }
     }
     
-    // PROBLEM: this method seems to increase memory consumption considerably each time it's called
-    // and the GC doesn't seem to be keeping up with it.  In fact under iOS 7, if you type really
-    // fast you get a malloc issue.
-    //
-    // WORKAROUND: force the garbage collector to run every few calls of this method.
-    getYCaretInfoCallCount++;
+    this.caretInfo.y = y;
+    this.caretInfo.height = height;
     
-    if (getYCaretInfoCallCount >= getYCaretInfoCallCountForGC) {
-        _system.gc();
-    }
-    
-    return { y: y, height: height };
+    return this.caretInfo;
 };
 
 // MARK: - Default paragraph separator
@@ -957,17 +964,10 @@ ZSSField.prototype.handleKeyDownEvent = function(e) {
 };
 
 ZSSField.prototype.handleInputEvent = function(e) {
-    var caretInfo = ZSSEditor.getYCaretInfo();
-    
-    var arguments = ['yOffset=' + caretInfo.y,
-                     'height=' + caretInfo.height];
-    
-    var joinedArguments = arguments.join(defaultCallbackSeparator);
-    
-    ZSSEditor.callback('callback-selection-changed', joinedArguments);
-     
-    this.callback("callback-input", joinedArguments);
+    var joinedArguments = ZSSEditor.getJoinedCaretArguments();
 
+    ZSSEditor.callback('callback-selection-changed', joinedArguments);
+    this.callback("callback-input", joinedArguments);
 };
 
 ZSSField.prototype.handleTapEvent = function(e) {
