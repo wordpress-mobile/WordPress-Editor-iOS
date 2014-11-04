@@ -1201,12 +1201,12 @@ typedef enum
         [items insertObject:negativeSeparator atIndex:i];
     }
     
-    UIBarButtonItem *negativeSeparator2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+    UIBarButtonItem *negativeSeparatorForToolbar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                                                                                        target:nil
                                                                                        action:nil];
 
-    negativeSeparator2.width = -kNegativeLeftToolbarLeftPadding;
-    [items insertObject:negativeSeparator2 atIndex:0];
+    negativeSeparatorForToolbar.width = -kNegativeLeftToolbarLeftPadding;
+    [items insertObject:negativeSeparatorForToolbar atIndex:0];
 	
     self.leftToolbar.items = items;
     self.leftToolbar.frame = CGRectMake(0,
