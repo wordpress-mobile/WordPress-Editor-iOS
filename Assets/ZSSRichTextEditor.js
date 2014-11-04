@@ -907,8 +907,7 @@ ZSSField.prototype.bindListeners = function() {
     this.wrappedObject.bind('tap', function(e) { thisObj.handleTapEvent(e); });
     this.wrappedObject.bind('focus', function(e) { thisObj.handleFocusEvent(e); });
     this.wrappedObject.bind('blur', function(e) { thisObj.handleBlurEvent(e); });
-    this.wrappedObject.bind('keyDown', function(e) { thisObj.handleKeyDownEvent(e); });
-    this.wrappedObject.bind('keyUp', function(e) { thisObj.handleKeyUpEvent(e); });
+    this.wrappedObject.bind('keydown', function(e) { thisObj.handleKeyDownEvent(e); });
     this.wrappedObject.bind('input', function(e) { thisObj.handleInputEvent(e); });
 };
 
@@ -964,13 +963,15 @@ ZSSField.prototype.handleKeyDownEvent = function(e) {
     }
 };
 
-ZSSField.prototype.handleKeyUpEvent = function(e) {
-    if (e.keyCode == 8) { // DELETE key
-        this.emptyFieldIfNoContents();
-    }
-};
-
 ZSSField.prototype.handleInputEvent = function(e) {
+    
+    // IMPORTANT: we want the placeholder to come up if there's no text, so we clear the field if
+    // there's no real content in it.  It's important to do this here and not on keyDown or keyUp
+    // as the field could become empty because of a cut or paste operation as well as a key press.
+    // This event takes care of all cases.
+    //
+    this.emptyFieldIfNoContents();
+    
     var joinedArguments = ZSSEditor.getJoinedCaretArguments();
 
     ZSSEditor.callback('callback-selection-changed', joinedArguments);
