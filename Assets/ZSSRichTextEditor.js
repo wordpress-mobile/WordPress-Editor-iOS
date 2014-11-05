@@ -933,14 +933,18 @@ ZSSField.prototype.emptyFieldIfNoContents = function() {
     }
 };
 
+ZSSField.prototype.emptyFieldIfNoContentsAndRefreshPlaceholderColor = function() {
+    this.emptyFieldIfNoContents();
+    this.refreshPlaceholderColor();
+};
+
 // MARK: - Handle event listeners
 
 ZSSField.prototype.handleBlurEvent = function(e) {
     ZSSEditor.focusedField = null;
     
-    this.emptyFieldIfNoContents();
+    this.emptyFieldIfNoContentsAndRefreshPlaceholderColor();
     
-    this.refreshPlaceholderColor();
     this.callback("callback-focus-out");
 };
 
@@ -970,7 +974,7 @@ ZSSField.prototype.handleInputEvent = function(e) {
     // as the field could become empty because of a cut or paste operation as well as a key press.
     // This event takes care of all cases.
     //
-    this.emptyFieldIfNoContents();
+    this.emptyFieldIfNoContentsAndRefreshPlaceholderColor();
     
     var joinedArguments = ZSSEditor.getJoinedCaretArguments();
 
