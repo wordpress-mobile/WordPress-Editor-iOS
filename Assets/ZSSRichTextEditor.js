@@ -933,14 +933,18 @@ ZSSField.prototype.emptyFieldIfNoContents = function() {
     }
 };
 
+ZSSField.prototype.emptyFieldIfNoContentsAndRefreshPlaceholderColor = function() {
+    this.emptyFieldIfNoContents();
+    this.refreshPlaceholderColor();
+};
+
 // MARK: - Handle event listeners
 
 ZSSField.prototype.handleBlurEvent = function(e) {
     ZSSEditor.focusedField = null;
     
-    this.emptyFieldIfNoContents();
+    this.emptyFieldIfNoContentsAndRefreshPlaceholderColor();
     
-    this.refreshPlaceholderColor();
     this.callback("callback-focus-out");
 };
 
@@ -964,6 +968,14 @@ ZSSField.prototype.handleKeyDownEvent = function(e) {
 };
 
 ZSSField.prototype.handleInputEvent = function(e) {
+    
+    // IMPORTANT: we want the placeholder to come up if there's no text, so we clear the field if
+    // there's no real content in it.  It's important to do this here and not on keyDown or keyUp
+    // as the field could become empty because of a cut or paste operation as well as a key press.
+    // This event takes care of all cases.
+    //
+    this.emptyFieldIfNoContentsAndRefreshPlaceholderColor();
+    
     var joinedArguments = ZSSEditor.getJoinedCaretArguments();
 
     ZSSEditor.callback('callback-selection-changed', joinedArguments);
@@ -1151,10 +1163,14 @@ ZSSField.prototype.refreshPlaceholderColorAboutToGainFocus = function(willGainFo
 
 ZSSField.prototype.refreshPlaceholderColorForAttributes = function(hasPlaceholderText, isFocused, isEmpty) {
     
-    var shouldColorText = hasPlaceholderText && !isFocused && isEmpty;
+    var shouldColorText = hasPlaceholderText && isEmpty;
     
     if (shouldColorText) {
-        this.wrappedObject.css('color', this.bodyPlaceholderColor);
+        if (isFocused) {
+            this.wrappedObject.css('color', this.bodyPlaceholderColor);
+        } else {
+            this.wrappedObject.css('color', this.bodyPlaceholderColor);
+        }
     } else {
         this.wrappedObject.css('color', '');
     }
