@@ -863,6 +863,11 @@ function style_html(html_source, options) {
     
         div[placeholderText][contenteditable=true]:empty:before {
             content: attr(placeholderText);
+            transition: 0.2s ease opacity;
+        }
+    
+        div[placeholderText][contenteditable=true]:empty:focus:before {
+            opacity: 0.6;
         }
     
         #zss_field_title, #zss_field_title p {
