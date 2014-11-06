@@ -146,7 +146,7 @@ ZSSEditor.domLoadedCallback = function() {
 
 ZSSEditor.selectionChangedCallback = function () {
     
-    var joinedArguments = ZSSEditor.getJoinedCaretArguments();
+    var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
     
     ZSSEditor.callback('callback-selection-changed', joinedArguments);
     this.callback("callback-input", joinedArguments);
@@ -235,6 +235,16 @@ ZSSEditor.getCaretArguments = function() {
     this.caretArguments[1] = 'height=' + caretInfo.height;
     
     return this.caretArguments;
+};
+
+ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments = function() {
+    
+    var joinedArguments = ZSSEditor.getJoinedCaretArguments();
+    var idArgument = "id=" + ZSSEditor.getFocusedField().getNodeId();
+    
+    joinedArguments = idArgument + defaultCallbackSeparator + joinedArguments;
+    
+    return joinedArguments;
 };
 
 ZSSEditor.getJoinedCaretArguments = function() {
@@ -638,6 +648,9 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remo
         
         image.onload = function () {
             imageNode.attr('src', image.src);
+            
+            var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
+            ZSSEditor.callback("callback-input", joinedArguments);
         }
         
         image.src = remoteImageUrl;
@@ -976,7 +989,7 @@ ZSSField.prototype.handleInputEvent = function(e) {
     //
     this.emptyFieldIfNoContentsAndRefreshPlaceholderColor();
     
-    var joinedArguments = ZSSEditor.getJoinedCaretArguments();
+    var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
 
     ZSSEditor.callback('callback-selection-changed', joinedArguments);
     this.callback("callback-input", joinedArguments);
