@@ -1804,11 +1804,7 @@ typedef enum
 	} else if ([pasteboard containsPasteboardTypes:@[kTextPasteboardType]]) {
 		NSString* urlString = [pasteboard valueForPasteboardType:kTextPasteboardType];
 		
-		NSURL* prevalidatedUrl = [NSURL URLWithString:urlString];
-		
-		if ([self isURLValid:prevalidatedUrl]) {
-			url = prevalidatedUrl;
-		}
+        url = [self urlFromStringOnlyIfValid:urlString];
 	}
 	
 	return url;
@@ -1824,9 +1820,34 @@ typedef enum
  */
 - (BOOL)isURLValid:(NSURL*)url
 {
-	NSParameterAssert([url isKindOfClass:[NSURL class]]);
-	
-	return url && url.scheme && url.host;
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    return url && url.scheme && url.host;
+}
+
+/**
+ *  @brief      Returns the url from a string only if the final URL is valid.
+ *
+ *  @param      urlString       The url string to normalize.  Cannot be nil.
+ *
+ *  @returns    The normalized URL.
+ */
+- (NSURL*)urlFromStringOnlyIfValid:(NSString*)urlString
+{
+    NSParameterAssert([urlString isKindOfClass:[NSString class]]);
+    
+    if ([urlString hasPrefix:@"www"]) {
+        urlString = [self.editorView normalizeURL:urlString];
+    }
+    
+    NSURL* prevalidatedUrl = [NSURL URLWithString:urlString];
+    NSURL* url = nil;
+    
+    if (prevalidatedUrl && [self isURLValid:prevalidatedUrl]) {
+        url = prevalidatedUrl;
+    }
+    
+    return url;
 }
 
 #pragma mark - WPEditorViewDelegate

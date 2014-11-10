@@ -1037,6 +1037,23 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
+#pragma mark - URL normalization
+
+- (NSString*)normalizeURL:(NSString*)url
+{
+    static NSString* const kDefaultScheme = @"http://";
+    static NSString* const kURLSchemePrefix = @"://";
+    
+    NSString* normalizedURL = url;
+    NSRange substringRange = [url rangeOfString:kURLSchemePrefix];
+
+    if (substringRange.length == 0) {
+        normalizedURL = [kDefaultScheme stringByAppendingString:url];
+    }
+    
+    return normalizedURL;
+}
+
 #pragma mark - Links
 
 - (void)insertLink:(NSString *)url
@@ -1045,6 +1062,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	NSParameterAssert([url isKindOfClass:[NSString class]]);
 	NSParameterAssert([title isKindOfClass:[NSString class]]);
 	
+    url = [self normalizeURL:url];
+    
 	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertLink(\"%@\",\"%@\");", url, title];
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 	
@@ -1061,7 +1080,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
 	NSParameterAssert([url isKindOfClass:[NSString class]]);
 	NSParameterAssert([title isKindOfClass:[NSString class]]);
-	
+    
+    url = [self normalizeURL:url];
+    
 	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.updateLink(\"%@\",\"%@\");", url, title];
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 	
