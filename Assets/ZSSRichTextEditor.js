@@ -672,132 +672,136 @@ ZSSEditor.sendEnabledStyles = function(e) {
 
 	var items = [];
 	
-	// Find all relevant parent tags
-	var parentTags = ZSSEditor.parentTags();
-	
-	for (var i = 0; i < parentTags.length; i++) {
-		var currentNode = parentTags[i];
-		
-		if (currentNode.nodeName.toLowerCase() == 'a') {
-			ZSSEditor.currentEditingLink = currentNode;
-			
-			var title = encodeURIComponent(currentNode.text);
-			var href = encodeURIComponent(currentNode.href);
-			
-			items.push('link-title:' + title);
-			items.push('link:' + href);
-		}
-	}
-	
-	if (ZSSEditor.isCommandEnabled('bold')) {
-		items.push('bold');
-	}
-	if (ZSSEditor.isCommandEnabled('createLink')) {
-		items.push('createLink');
-	}
-	if (ZSSEditor.isCommandEnabled('italic')) {
-		items.push('italic');
-	}
-	if (ZSSEditor.isCommandEnabled('subscript')) {
-		items.push('subscript');
-	}
-	if (ZSSEditor.isCommandEnabled('superscript')) {
-		items.push('superscript');
-	}
-	if (ZSSEditor.isCommandEnabled('strikeThrough')) {
-		items.push('strikeThrough');
-	}
-	if (ZSSEditor.isCommandEnabled('underline')) {
-		var isUnderlined = false;
-		
-		// DRM: 'underline' gets highlighted if it's inside of a link... so we need a special test
-		// in that case.
-		if (!ZSSEditor.currentEditingLink) {
-			items.push('underline');
-		}
-	}
-	if (ZSSEditor.isCommandEnabled('insertOrderedList')) {
-		items.push('orderedList');
-	}
-	if (ZSSEditor.isCommandEnabled('insertUnorderedList')) {
-		items.push('unorderedList');
-	}
-	if (ZSSEditor.isCommandEnabled('justifyCenter')) {
-		items.push('justifyCenter');
-	}
-	if (ZSSEditor.isCommandEnabled('justifyFull')) {
-		items.push('justifyFull');
-	}
-	if (ZSSEditor.isCommandEnabled('justifyLeft')) {
-		items.push('justifyLeft');
-	}
-	if (ZSSEditor.isCommandEnabled('justifyRight')) {
-		items.push('justifyRight');
-	}
-    if (ZSSEditor.isCommandEnabled('insertHorizontalRule')) {
-		items.push('horizontalRule');
-	}
-	var formatBlock = document.queryCommandValue('formatBlock');
-	if (formatBlock.length > 0) {
-		items.push(formatBlock);
-	}
-    // Images
-	$('img').bind('touchstart', function(e) {
-        $('img').removeClass('zs_active');
-        $(this).addClass('zs_active');
-    });
-	
-	// Use jQuery to figure out those that are not supported
-	if (typeof(e) != "undefined") {
-		
-		// The target element
-		var t = $(e.target);
-		var nodeName = e.target.nodeName.toLowerCase();
-		
-		// Background Color
-		try
-		{
-			var bgColor = t.css('backgroundColor');
-			if (bgColor && bgColor.length != 0 && bgColor != 'rgba(0, 0, 0, 0)' && bgColor != 'rgb(0, 0, 0)' && bgColor != 'transparent') {
-				items.push('backgroundColor');
-			}
-		}
-		catch(e)
-		{
-			// DRM: I had to add these stupid try-catch blocks to solve an issue with t.css throwing
-			// exceptions for no reason.
-		}
-		
-		// Text Color
-		try
-		{
-			var textColor = t.css('color');
-			if (textColor && textColor.length != 0 && textColor != 'rgba(0, 0, 0, 0)' && textColor != 'rgb(0, 0, 0)' && textColor != 'transparent') {
-				items.push('textColor');
-			}
-		}
-		catch(e)
-		{
-			// DRM: I had to add these stupid try-catch blocks to solve an issue with t.css throwing
-			// exceptions for no reason.
-		}
-		
-        // Blockquote
-        if (nodeName == 'blockquote') {
-			items.push('indent');
-		}
-        // Image
-        if (nodeName == 'img') {
-            ZSSEditor.currentEditingImage = t;
-            items.push('image:'+t.attr('src'));
-            if (t.attr('alt') !== undefined) {
-                items.push('image-alt:'+t.attr('alt'));
+    var focusedField = this.getFocusedField();
+    
+    if (!focusedField.hasNoStyle) {
+        // Find all relevant parent tags
+        var parentTags = ZSSEditor.parentTags();
+        
+        for (var i = 0; i < parentTags.length; i++) {
+            var currentNode = parentTags[i];
+            
+            if (currentNode.nodeName.toLowerCase() == 'a') {
+                ZSSEditor.currentEditingLink = currentNode;
+                
+                var title = encodeURIComponent(currentNode.text);
+                var href = encodeURIComponent(currentNode.href);
+                
+                items.push('link-title:' + title);
+                items.push('link:' + href);
+            }
+        }
+        
+        if (ZSSEditor.isCommandEnabled('bold')) {
+            items.push('bold');
+        }
+        if (ZSSEditor.isCommandEnabled('createLink')) {
+            items.push('createLink');
+        }
+        if (ZSSEditor.isCommandEnabled('italic')) {
+            items.push('italic');
+        }
+        if (ZSSEditor.isCommandEnabled('subscript')) {
+            items.push('subscript');
+        }
+        if (ZSSEditor.isCommandEnabled('superscript')) {
+            items.push('superscript');
+        }
+        if (ZSSEditor.isCommandEnabled('strikeThrough')) {
+            items.push('strikeThrough');
+        }
+        if (ZSSEditor.isCommandEnabled('underline')) {
+            var isUnderlined = false;
+            
+            // DRM: 'underline' gets highlighted if it's inside of a link... so we need a special test
+            // in that case.
+            if (!ZSSEditor.currentEditingLink) {
+                items.push('underline');
+            }
+        }
+        if (ZSSEditor.isCommandEnabled('insertOrderedList')) {
+            items.push('orderedList');
+        }
+        if (ZSSEditor.isCommandEnabled('insertUnorderedList')) {
+            items.push('unorderedList');
+        }
+        if (ZSSEditor.isCommandEnabled('justifyCenter')) {
+            items.push('justifyCenter');
+        }
+        if (ZSSEditor.isCommandEnabled('justifyFull')) {
+            items.push('justifyFull');
+        }
+        if (ZSSEditor.isCommandEnabled('justifyLeft')) {
+            items.push('justifyLeft');
+        }
+        if (ZSSEditor.isCommandEnabled('justifyRight')) {
+            items.push('justifyRight');
+        }
+        if (ZSSEditor.isCommandEnabled('insertHorizontalRule')) {
+            items.push('horizontalRule');
+        }
+        var formatBlock = document.queryCommandValue('formatBlock');
+        if (formatBlock.length > 0) {
+            items.push(formatBlock);
+        }
+        // Images
+        $('img').bind('touchstart', function(e) {
+            $('img').removeClass('zs_active');
+            $(this).addClass('zs_active');
+        });
+        
+        // Use jQuery to figure out those that are not supported
+        if (typeof(e) != "undefined") {
+            
+            // The target element
+            var t = $(e.target);
+            var nodeName = e.target.nodeName.toLowerCase();
+            
+            // Background Color
+            try
+            {
+                var bgColor = t.css('backgroundColor');
+                if (bgColor && bgColor.length != 0 && bgColor != 'rgba(0, 0, 0, 0)' && bgColor != 'rgb(0, 0, 0)' && bgColor != 'transparent') {
+                    items.push('backgroundColor');
+                }
+            }
+            catch(e)
+            {
+                // DRM: I had to add these stupid try-catch blocks to solve an issue with t.css throwing
+                // exceptions for no reason.
             }
             
-        } else {
-            ZSSEditor.currentEditingImage = null;
+            // Text Color
+            try
+            {
+                var textColor = t.css('color');
+                if (textColor && textColor.length != 0 && textColor != 'rgba(0, 0, 0, 0)' && textColor != 'rgb(0, 0, 0)' && textColor != 'transparent') {
+                    items.push('textColor');
+                }
+            }
+            catch(e)
+            {
+                // DRM: I had to add these stupid try-catch blocks to solve an issue with t.css throwing
+                // exceptions for no reason.
+            }
+            
+            // Blockquote
+            if (nodeName == 'blockquote') {
+                items.push('indent');
+            }
+            // Image
+            if (nodeName == 'img') {
+                ZSSEditor.currentEditingImage = t;
+                items.push('image:'+t.attr('src'));
+                if (t.attr('alt') !== undefined) {
+                    items.push('image-alt:'+t.attr('alt'));
+                }
+                
+            } else {
+                ZSSEditor.currentEditingImage = null;
+            }
         }
-	}
+    }
 	
 	ZSSEditor.stylesCallback(items);
 };
@@ -909,6 +913,10 @@ function ZSSField(wrappedObject) {
     this.multiline = false;
     this.wrappedObject = wrappedObject;
     this.bodyPlaceholderColor = '#000000';
+    
+    if (this.wrappedDomNode().hasAttribute('nostyle')) {
+        this.hasNoStyle = true;
+    }
     
     this.bindListeners();
 };
