@@ -653,6 +653,16 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remo
             ZSSEditor.callback("callback-input", joinedArguments);
         }
         
+        image.onerror = function () {
+            // Even on an error, we swap the image for the time being.  This is because private
+            // blogs are currently failing to download images due to access privilege issues.
+            //
+            imageNode.attr('src', image.src);
+            
+            var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
+            ZSSEditor.callback("callback-input", joinedArguments);
+        }
+        
         image.src = remoteImageUrl;
     }
 };
