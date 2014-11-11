@@ -1056,6 +1056,14 @@ ZSSField.prototype.callback = function(callbackScheme, callbackPath) {
 ZSSField.prototype.callbackThroughIFrame = function(url) {
     var iframe = document.createElement("IFRAME");
     iframe.setAttribute("src", url);
+    
+    // IMPORTANT: the IFrame was showing up as a black box below our text.  By setting its borders
+    // to be 0px transparent we make sure it's not shown at all.
+    //
+    // REF BUG: https://github.com/wordpress-mobile/WordPress-iOS-Editor/issues/318
+    //
+    iframe.style.cssText = "border: 0px transparent;";
+    
     document.documentElement.appendChild(iframe);
     iframe.parentNode.removeChild(iframe);
     iframe = null;
