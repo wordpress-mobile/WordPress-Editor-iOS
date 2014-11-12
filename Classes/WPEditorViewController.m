@@ -1323,10 +1323,13 @@ typedef enum
 
 - (void)setTitlePlaceholderText:(NSString*)titlePlaceholderText
 {
-    _titlePlaceholderText = titlePlaceholderText;
-    [self.editorView.titleField setPlaceholderText:_titlePlaceholderText];
-    self.editorView.sourceViewTitleField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:_titlePlaceholderText
-                                                                                                attributes:@{NSForegroundColorAttributeName: [WPStyleGuide allTAllShadeGrey]}];
+    NSParameterAssert(titlePlaceholderText);
+    if (![titlePlaceholderText isEqualToString:_titlePlaceholderText]) {
+        _titlePlaceholderText = titlePlaceholderText;
+        [self.editorView.titleField setPlaceholderText:_titlePlaceholderText];
+        self.editorView.sourceViewTitleField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:_titlePlaceholderText
+                                                                                                     attributes:@{NSForegroundColorAttributeName: [WPStyleGuide allTAllShadeGrey]}];
+    }
 }
 
 - (NSString*)bodyText
@@ -1341,8 +1344,11 @@ typedef enum
 
 - (void)setBodyPlaceholderText:(NSString*)bodyPlaceholderText
 {
-    _bodyPlaceholderText = bodyPlaceholderText;
-    [self.editorView.contentField setPlaceholderText:_bodyPlaceholderText];
+    NSParameterAssert(bodyPlaceholderText);
+    if (![bodyPlaceholderText isEqualToString:_bodyPlaceholderText]) {
+        _bodyPlaceholderText = bodyPlaceholderText;
+        [self.editorView.contentField setPlaceholderText:_bodyPlaceholderText];
+    }
 }
 
 #pragma mark - Actions
