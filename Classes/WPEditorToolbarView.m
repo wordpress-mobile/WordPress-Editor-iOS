@@ -452,12 +452,27 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
         item.tintColor = _itemTintColor;
     }
     
-    self.htmlBarButtonItem.tintColor = itemTintColor;
+    if (self.htmlBarButtonItem) {
+        WPEditorToolbarButton* htmlButton = (WPEditorToolbarButton*)self.htmlBarButtonItem.customView;
+        NSAssert([htmlButton isKindOfClass:[WPEditorToolbarButton class]],
+                 @"Expected to have an HTML button of class WPEditorToolbarButton here.");
+        
+        htmlButton.normalTintColor = itemTintColor;
+        self.htmlBarButtonItem.tintColor = itemTintColor;
+    }
 }
 
 - (void)setSelectedItemTintColor:(UIColor *)selectedItemTintColor
 {
     _selectedItemTintColor = selectedItemTintColor;
+
+    if (self.htmlBarButtonItem) {
+        WPEditorToolbarButton* htmlButton = (WPEditorToolbarButton*)self.htmlBarButtonItem.customView;
+        NSAssert([htmlButton isKindOfClass:[WPEditorToolbarButton class]],
+                 @"Expected to have an HTML button of class WPEditorToolbarButton here.");
+        
+        htmlButton.selectedTintColor = selectedItemTintColor;
+    }
 }
 
 #pragma mark - Temporary: added to make the refactor easier, but should be removed at some point

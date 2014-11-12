@@ -1,5 +1,4 @@
 #import "WPEditorViewController.h"
-#import "WPEditorViewController_Internal.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIAlertView+Blocks/UIAlertView+Blocks.h>
 #import <UIKit/UIKit.h>
@@ -1054,6 +1053,14 @@ NSInteger const WPLinkAlertViewTag = 92;
 	
 	[self disableEditing];
 	[self tellOurDelegateEditingDidEnd];
+}
+
+#pragma mark - WPEditorToolbarViewDelegate
+
+- (void)editorToolbarView:(WPEditorToolbarView *)editorToolbarView
+           showHTMLSource:(UIBarButtonItem *)barButtonItem
+{
+    [self showHTMLSource:barButtonItem];
 }
 
 #pragma mark - Editor Interaction
