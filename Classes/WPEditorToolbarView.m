@@ -70,9 +70,6 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
 
 - (void)buildToolbar
 {
-    NSAssert(_toolbarScroll == nil, @"This ivar should be nil here.");
-    NSAssert(_leftToolbar == nil, @"This ivar should be nil here.");
-    
     [self buildMainToolbarHolder];
     [self buildToolbarScroll];
     [self buildLeftToolbar];
@@ -151,7 +148,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
 
 - (void)buildLeftToolbar
 {
-    NSAssert(!self.leftToolbar, @"This is supposed to be called only once.");
+    NSAssert(_leftToolbar == nil, @"This is supposed to be called only once.");
     
     UIToolbar* leftToolbar = [[UIToolbar alloc] initWithFrame:CGRectZero];
     leftToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -187,7 +184,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
 
 - (void)buildToolbarScroll
 {
-    NSAssert(!self.toolbarScroll, @"This is supposed to be called only once.");
+    NSAssert(_toolbarScroll == nil, @"This is supposed to be called only once.");
     
     CGFloat scrollviewHeight = CGRectGetWidth(self.frame);
     
