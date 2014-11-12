@@ -160,9 +160,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
 }
 
 - (void)buildMainToolbarHolder
-{
-    self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    
+{    
     CGRect subviewFrame = self.frame;
     subviewFrame.origin = CGPointZero;
     

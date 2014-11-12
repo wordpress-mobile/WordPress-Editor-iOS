@@ -110,11 +110,14 @@ NSInteger const WPLinkAlertViewTag = 92;
     
     _toolbarView = [[WPEditorToolbarView alloc] initWithFrame:toolbarFrame];
     _toolbarView.delegate = self;
-    _toolbarView.items = [self itemsForToolbar];
+    
+    _toolbarView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     _toolbarView.backgroundColor = [UIColor whiteColor];
     _toolbarView.borderColor = [WPStyleGuide readGrey];
     _toolbarView.itemTintColor = [WPStyleGuide textFieldPlaceholderGrey];
     _toolbarView.selectedItemTintColor = [WPStyleGuide baseDarkerBlue];
+    
+    _toolbarView.items = [self itemsForToolbar];
 }
 
 #pragma mark - UIViewController
