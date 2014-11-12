@@ -447,7 +447,6 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
 {
     _itemTintColor = itemTintColor;
     
-    // Update the color
     for (UIBarButtonItem *item in self.leftToolbar.items) {
         item.tintColor = _itemTintColor;
     }
