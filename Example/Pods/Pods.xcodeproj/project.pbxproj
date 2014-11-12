@@ -377,7 +377,6 @@
 		F5E57ED1D6149D5AFB721B1F /* DTCoreTextMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 3404C73083494F2DD4671CAE /* DTCoreTextMacros.h */; };
 		F61B5C42E5E1A38CCC333468 /* WPStyleGuide.h in Headers */ = {isa = PBXBuildFile; fileRef = B67E289B629C0F0A57EB8527 /* WPStyleGuide.h */; };
 		F71ED71D7135174DBE8EBF39 /* NSMutableAttributedString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = 92DA929908FE99D991B4C710 /* NSMutableAttributedString+HTML.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -DOS_OBJECT_USE_OBJC=0"; }; };
-		F76130BC0A4B553E7B2FA822 /* WPEditorViewController_Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B94C37A56FB3E571F22AB2C /* WPEditorViewController_Internal.h */; };
 		F91C300FF59EDDA07BA4E606 /* DTAttributedLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 63EFD6CF325C736756704CE9 /* DTAttributedLabel.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -DOS_OBJECT_USE_OBJC=0"; }; };
 		FA22FD015E720597C6D33F2B /* DTTextHTMLElement.h in Headers */ = {isa = PBXBuildFile; fileRef = 957159334D0C53FFA2E1D413 /* DTTextHTMLElement.h */; };
 		FA75B743511F5C8F61E18C3E /* DTAccessibilityElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C3A9964F975C1F13A8F5CC4 /* DTAccessibilityElement.m */; settings = {COMPILER_FLAGS = "-fobjc-arc -DOS_OBJECT_USE_OBJC=0"; }; };
@@ -727,7 +726,6 @@
 		5A08CCC0E2A9DC00D2B46FFE /* icon_format_unlink@2x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "icon_format_unlink@2x.png"; path = "Assets/icon_format_unlink@2x.png"; sourceTree = "<group>"; };
 		5A8F1ABE4739C279584C01F2 /* AFNetworkReachabilityManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFNetworkReachabilityManager.h; path = AFNetworking/AFNetworkReachabilityManager.h; sourceTree = "<group>"; };
 		5AEFE3075740058FB1AC3418 /* DTCoreTextFunctions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DTCoreTextFunctions.h; path = Core/Source/DTCoreTextFunctions.h; sourceTree = "<group>"; };
-		5B94C37A56FB3E571F22AB2C /* WPEditorViewController_Internal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = WPEditorViewController_Internal.h; path = Classes/WPEditorViewController_Internal.h; sourceTree = "<group>"; };
 		5BECA85595AE6A8BB156F350 /* NSURL+DTUnshorten.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSURL+DTUnshorten.h"; path = "Core/Source/NSURL+DTUnshorten.h"; sourceTree = "<group>"; };
 		5C6A48DD543E5189E184A67D /* NSString+DTUtilities.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSString+DTUtilities.m"; path = "Core/Source/NSString+DTUtilities.m"; sourceTree = "<group>"; };
 		5C90102CFEA299AED40A6ACB /* ZSStextcolor@2x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "ZSStextcolor@2x.png"; path = "Assets/ZSStextcolor@2x.png"; sourceTree = "<group>"; };
@@ -1399,7 +1397,6 @@
 				6519066D5081F89A4EC5FBEE /* WPEditorView.m */,
 				DD426A21B335F6EF6DE732A7 /* WPEditorViewController.h */,
 				BFC1888A380CB062D9A25C8C /* WPEditorViewController.m */,
-				5B94C37A56FB3E571F22AB2C /* WPEditorViewController_Internal.h */,
 				63588B298EC99CE29838339A /* WPLegacyEditorViewController.h */,
 				A3E892331B738957A1166405 /* WPLegacyEditorViewController.m */,
 				CE74738A0A30A007EE0E9AE2 /* WPLegacyKeyboardToolbarBase.h */,
@@ -2200,7 +2197,6 @@
 				B37CD481B1FE681FC5A69887 /* WPEditorToolbarButton.h in Headers */,
 				E80700AAACCF223B9FE756EA /* WPEditorView.h in Headers */,
 				3356FA3393241109AE8AA2B9 /* WPEditorViewController.h in Headers */,
-				F76130BC0A4B553E7B2FA822 /* WPEditorViewController_Internal.h in Headers */,
 				073F5604EE1B7C14E834BBDF /* WPLegacyEditorViewController.h in Headers */,
 				486C5D306AE5DA3578AEF7A2 /* WPLegacyKeyboardToolbarBase.h in Headers */,
 				C9286B10C8A0DB373F708E29 /* WPLegacyKeyboardToolbarButtonItem.h in Headers */,
