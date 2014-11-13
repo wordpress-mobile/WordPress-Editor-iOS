@@ -57,6 +57,11 @@
     [self setBodyText:htmlParam];
 }
 
+- (BOOL)editorShouldDisplaySourceView:(WPEditorViewController *)editorController
+{
+    return YES;
+}
+
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController
 {
     DDLogInfo(@"Pressed Media!");
