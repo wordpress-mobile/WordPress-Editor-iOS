@@ -1,5 +1,5 @@
 #import "DDASLLogger.h"
-
+#import <asl.h>
 #import <libkern/OSAtomic.h>
 
 /**
@@ -13,35 +13,23 @@
 **/
 
 #if ! __has_feature(objc_arc)
-#warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#error This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
 #endif
-
-
-@implementation DDASLLogger
 
 static DDASLLogger *sharedInstance;
 
-/**
- * The runtime sends initialize to each class in a program exactly one time just before the class,
- * or any class that inherits from it, is sent its first message from within the program. (Thus the
- * method may never be invoked if the class is not used.) The runtime sends the initialize message to
- * classes in a thread-safe manner. Superclasses receive this message before their subclasses.
- *
- * This method may also be called directly (assumably by accident), hence the safety mechanism.
-**/
-+ (void)initialize
+@implementation DDASLLogger
 {
-    static BOOL initialized = NO;
-    if (!initialized)
-    {
-        initialized = YES;
-        
-        sharedInstance = [[[self class] alloc] init];
-    }
+    aslclient client;
 }
 
 + (instancetype)sharedInstance
 {
+    static dispatch_once_t DDASLLoggerOnceToken;
+    dispatch_once(&DDASLLoggerOnceToken, ^{
+        sharedInstance = [[[self class] alloc] init];
+    });
+    
     return sharedInstance;
 }
 
@@ -64,6 +52,10 @@ static DDASLLogger *sharedInstance;
 
 - (void)logMessage:(DDLogMessage *)logMessage
 {
+    // Skip captured log messages.
+    if (strcmp(logMessage->file, "DDASLLogCapture") == 0)
+        return;
+    
     NSString *logMsg = logMessage->logMsg;
     
     if (formatter)
@@ -80,15 +72,18 @@ static DDASLLogger *sharedInstance;
         {
             // Note: By default ASL will filter anything above level 5 (Notice).
             // So our mappings shouldn't go above that level.
-            
-            case LOG_FLAG_ERROR : aslLogLevel = ASL_LEVEL_ALERT;   break;
-            case LOG_FLAG_WARN  : aslLogLevel = ASL_LEVEL_CRIT;    break;
-            case LOG_FLAG_INFO  : aslLogLevel = ASL_LEVEL_ERR;     break;
-            case LOG_FLAG_DEBUG : aslLogLevel = ASL_LEVEL_WARNING; break;
-            default             : aslLogLevel = ASL_LEVEL_NOTICE;  break;
+            case LOG_FLAG_ERROR     : aslLogLevel = ASL_LEVEL_CRIT;     break;
+            case LOG_FLAG_WARN      : aslLogLevel = ASL_LEVEL_ERR;      break;
+            case LOG_FLAG_INFO      : aslLogLevel = ASL_LEVEL_WARNING;  break; // Regular NSLog's level
+            case LOG_FLAG_DEBUG     :
+            case LOG_FLAG_VERBOSE   :
+            default                 : aslLogLevel = ASL_LEVEL_NOTICE;   break;
         }
         
-        asl_log(client, NULL, aslLogLevel, "%s", msg);
+        aslmsg m = asl_new(ASL_TYPE_MSG);
+        asl_set(m, ASL_KEY_READ_UID, "501");
+        asl_log(client, m, aslLogLevel, "%s", msg);
+        asl_free(m);
     }
 }
 

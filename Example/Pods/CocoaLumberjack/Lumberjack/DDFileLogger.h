@@ -22,12 +22,14 @@
 // maximumFileSize         -> DEFAULT_LOG_MAX_FILE_SIZE
 // rollingFrequency        -> DEFAULT_LOG_ROLLING_FREQUENCY
 // maximumNumberOfLogFiles -> DEFAULT_LOG_MAX_NUM_LOG_FILES
+// logFilesDiskQuota       -> DEFAULT_LOG_FILES_DISK_QUOTA
 // 
 // You should carefully consider the proper configuration values for your application.
 
-#define DEFAULT_LOG_MAX_FILE_SIZE     (1024 * 1024)   //  1 MB
-#define DEFAULT_LOG_ROLLING_FREQUENCY (60 * 60 * 24)  // 24 Hours
-#define DEFAULT_LOG_MAX_NUM_LOG_FILES (5)             //  5 Files
+#define DEFAULT_LOG_MAX_FILE_SIZE     (1024 * 1024)      //  1 MB
+#define DEFAULT_LOG_ROLLING_FREQUENCY (60 * 60 * 24)     // 24 Hours
+#define DEFAULT_LOG_MAX_NUM_LOG_FILES (5)                //  5 Files
+#define DEFAULT_LOG_FILES_DISK_QUOTA  (20 * 1024 * 1024) // 20 MB
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,9 +69,17 @@
  * then the LogFileManager will only keep 3 archived log files (plus the current active log file) on disk.
  * Once the active log file is rolled/archived, then the oldest of the existing 3 rolled/archived log files is deleted.
  * 
- * You may optionally disable deleting old/rolled/archived log files by setting this property to zero.
+ * You may optionally disable this option by setting it to zero.
 **/
-@property (readwrite, assign) NSUInteger maximumNumberOfLogFiles;
+@property (readwrite, assign, atomic) NSUInteger maximumNumberOfLogFiles;
+
+/**
+ * The maximum space that logs can take. On rolling logfile all old logfiles that exceed logFilesDiskQuota will
+ * be deleted.
+ *
+ * You may optionally disable this option by setting it to zero.
+**/
+@property (readwrite, assign, atomic) unsigned long long logFilesDiskQuota;
 
 // Public methods
 
@@ -116,11 +126,29 @@
 @interface DDLogFileManagerDefault : NSObject <DDLogFileManager>
 {
     NSUInteger maximumNumberOfLogFiles;
+    unsigned long long logFilesDiskQuota;
     NSString *_logsDirectory;
+#if TARGET_OS_IPHONE
+    NSString* _defaultFileProtectionLevel;
+#endif
 }
 
 - (id)init;
 - (instancetype)initWithLogsDirectory:(NSString *)logsDirectory;
+#if TARGET_OS_IPHONE
+/*
+ * Calling this constructor you can override the default "automagically" chosen NSFileProtection level.
+ * Useful if you are writing a command line utility / CydiaSubstrate addon for iOS that has no NSBundle
+ * or like SpringBoard no BackgroundModes key in the NSBundle:
+ *    iPhone:~ root# cycript -p SpringBoard
+ *    cy# [NSBundle mainBundle]
+ *    #"NSBundle </System/Library/CoreServices/SpringBoard.app> (loaded)"
+ *    cy# [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
+ *    null
+ *    cy#
+ **/
+- (instancetype)initWithLogsDirectory:(NSString *)logsDirectory defaultFileProtectionLevel:(NSString*)fileProtectionLevel;
+#endif
 
 /*
  * Methods to override.
@@ -152,7 +180,8 @@
 
 /* Inherited from DDLogFileManager protocol:
 
-@property (readwrite, assign) NSUInteger maximumNumberOfLogFiles;
+@property (readwrite, assign, atomic) NSUInteger maximumNumberOfLogFiles;
+@property (readwrite, assign, atomic) NSUInteger logFilesDiskQuota;
 
 - (NSString *)logsDirectory;
 
@@ -246,6 +275,7 @@
 **/
 @property (readwrite, assign) unsigned long long maximumFileSize;
 @property (readwrite, assign) NSTimeInterval rollingFrequency;
+@property (readwrite, assign, atomic) BOOL doNotReuseLogFiles;
 
 /**
  * The DDLogFileManager instance can be used to retrieve the list of log files,
@@ -255,6 +285,13 @@
 **/
 @property (strong, nonatomic, readonly) id <DDLogFileManager> logFileManager;
 
+/**
+ * When using a custom formatter you can set the logMessage method not to append
+ * '\n' character after each output. This allows for some greater flexibility with
+ * custom formatters. Default value is YES.
+**/
+ 
+@property (readwrite, assign) BOOL automaticallyAppendNewlineForCustomFormatters;
 
 // You can optionally force the current log file to be rolled with this method.
 // CompletionBlock will be called on main queue.
