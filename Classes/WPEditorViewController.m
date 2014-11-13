@@ -932,6 +932,10 @@ NSInteger const WPLinkAlertViewTag = 92;
         self.editorView.backgroundColor = [UIColor whiteColor];
         self.editorView.sourceView.inputAccessoryView = self.toolbarView;
         self.editorView.sourceViewTitleField.inputAccessoryView = self.toolbarView;
+        
+        // Default placeholder text
+        self.titlePlaceholderText = NSLocalizedString(@"Post title",  @"Placeholder for the post title.");
+        self.bodyPlaceholderText = NSLocalizedString(@"Share your story here...", @"Placeholder for the post body.");
     }
 	
     [self.view addSubview:self.editorView];
@@ -950,6 +954,17 @@ NSInteger const WPLinkAlertViewTag = 92;
     [self.editorView.sourceViewTitleField setText:titleText];
 }
 
+- (void)setTitlePlaceholderText:(NSString*)titlePlaceholderText
+{
+    NSParameterAssert(titlePlaceholderText);
+    if (![titlePlaceholderText isEqualToString:_titlePlaceholderText]) {
+        _titlePlaceholderText = titlePlaceholderText;
+        [self.editorView.titleField setPlaceholderText:_titlePlaceholderText];
+        self.editorView.sourceViewTitleField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:_titlePlaceholderText
+                                                                                                     attributes:@{NSForegroundColorAttributeName: [WPStyleGuide allTAllShadeGrey]}];
+    }
+}
+
 - (NSString*)bodyText
 {
     return [self.editorView.contentField html];
@@ -958,6 +973,15 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)setBodyText:(NSString*)bodyText
 {
     [self.editorView.contentField setHtml:bodyText];
+}
+
+- (void)setBodyPlaceholderText:(NSString*)bodyPlaceholderText
+{
+    NSParameterAssert(bodyPlaceholderText);
+    if (![bodyPlaceholderText isEqualToString:_bodyPlaceholderText]) {
+        _bodyPlaceholderText = bodyPlaceholderText;
+        [self.editorView.contentField setPlaceholderText:_bodyPlaceholderText];
+    }
 }
 
 #pragma mark - Actions
@@ -1493,24 +1517,18 @@ NSInteger const WPLinkAlertViewTag = 92;
     if (field == self.editorView.titleField) {
         field.inputAccessoryView = self.toolbarView;
         
-        NSString* placeholderHTMLString = NSLocalizedString(@"Post title",
-                                                            @"Placeholder for the post title.");
-        
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:NO];
-        [field setPlaceholderText:placeholderHTMLString];
         [field setPlaceholderColor:[WPStyleGuide allTAllShadeGrey]];
-        self.editorView.sourceViewTitleField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:placeholderHTMLString
+        [field setPlaceholderText:self.titlePlaceholderText];
+        self.editorView.sourceViewTitleField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.titlePlaceholderText
                                                                                                      attributes:@{NSForegroundColorAttributeName: [WPStyleGuide allTAllShadeGrey]}];
     } else if (field == self.editorView.contentField) {
         field.inputAccessoryView = self.toolbarView;
         
-        NSString* placeholderHTMLString = NSLocalizedString(@"Share your story here...",
-                                                            @"Placeholder for the post body.");
-        
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:YES];
-        [field setPlaceholderText:placeholderHTMLString];
+        [field setPlaceholderText:self.bodyPlaceholderText];
         [field setPlaceholderColor:[WPStyleGuide allTAllShadeGrey]];
     }
     

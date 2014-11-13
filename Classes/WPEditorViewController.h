@@ -41,7 +41,9 @@ WPEditorViewControllerMode;
 
 @property (nonatomic, weak) id<WPEditorViewControllerDelegate> delegate;
 @property (nonatomic, copy) NSString *titleText;
+@property (nonatomic, copy) NSString *titlePlaceholderText;
 @property (nonatomic, copy) NSString *bodyText;
+@property (nonatomic, copy) NSString *bodyPlaceholderText;
 
 #pragma mark - Properties: Editor View
 @property (nonatomic, strong, readonly) WPEditorView *editorView;
