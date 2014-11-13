@@ -1084,7 +1084,12 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)editorToolbarView:(WPEditorToolbarView *)editorToolbarView
            showHTMLSource:(UIBarButtonItem *)barButtonItem
 {
-    [self showHTMLSource:barButtonItem];
+    if ([self askOurDelegateShouldDisplaySourceView]) {
+        [self showHTMLSource:barButtonItem];
+    } else {
+        // Deselect the HTML button so it is in the proper state
+        [(UIButton *)barButtonItem setSelected:NO];
+    }
 }
 
 #pragma mark - Editor Interaction
@@ -1642,6 +1647,14 @@ didFailLoadWithError:(NSError *)error
     if ([self.delegate respondsToSelector:@selector(editorDidFinishLoadingDOM:)]) {
         [self.delegate editorDidFinishLoadingDOM:self];
     }
+}
+
+- (BOOL)askOurDelegateShouldDisplaySourceView
+{
+    if ([self.delegate respondsToSelector:@selector(editorShouldDisplaySourceView:)]) {
+        return [self.delegate editorShouldDisplaySourceView:self];
+    }
+    return YES;
 }
 
 @end
