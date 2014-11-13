@@ -48,28 +48,6 @@ WPEditorViewControllerMode;
 #pragma mark - Properties: Editor View
 @property (nonatomic, strong, readonly) WPEditorView *editorView;
 
-#pragma mark - Coloring
-
-/**
- *	@brief		The background color for the toolbar.
- */
-@property (nonatomic, copy, readwrite) UIColor* toolbarBackgroundColor;
-
-/**
- *	@brief		The border color for the toolbar.
- */
-@property (nonatomic, copy, readwrite) UIColor* toolbarBorderColor;
-
-/**
- *  Color to tint the toolbar items
- */
-@property (nonatomic, strong) UIColor *toolbarItemTintColor;
-
-/**
- *  Color to tint selected items
- */
-@property (nonatomic, strong) UIColor *toolbarItemSelectedTintColor;
-
 #pragma mark - Initializers
 
 /**

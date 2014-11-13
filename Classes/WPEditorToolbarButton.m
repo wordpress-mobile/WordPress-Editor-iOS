@@ -105,7 +105,7 @@ static const int kBottomLineHeight = 2;
 	bottomLineFrame.size.height = kBottomLineHeight;
 	
 	UIView* bottomLineView = [[UIView alloc] initWithFrame:bottomLineFrame];
-	bottomLineView.backgroundColor = self.tintColor;
+	bottomLineView.backgroundColor = self.selectedTintColor;
 	bottomLineView.userInteractionEnabled = NO;
 	
 	[self addSubview:bottomLineView];
