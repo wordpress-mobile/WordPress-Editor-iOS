@@ -1,11 +1,3 @@
-//
-//  WPDeviceIdentification.h
-//  Pods
-//
-//  Created by Diego E. Rey Mendez on 11/12/14.
-//
-//
-
 #import <Foundation/Foundation.h>
 
 /**
