@@ -1084,12 +1084,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)editorToolbarView:(WPEditorToolbarView *)editorToolbarView
            showHTMLSource:(UIBarButtonItem *)barButtonItem
 {
-    if ([self askOurDelegateShouldDisplaySourceView]) {
-        [self showHTMLSource:barButtonItem];
-    } else {
-        // Deselect the HTML button so it is in the proper state
-        [(UIButton *)barButtonItem setSelected:NO];
-    }
+    [self showHTMLSource:barButtonItem];
 }
 
 #pragma mark - Editor Interaction
@@ -1097,9 +1092,13 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)showHTMLSource:(UIBarButtonItem *)barButtonItem
 {	
     if ([self.editorView isInVisualMode]) {
-		[self.editorView showHTMLSource];
-		
-        barButtonItem.tintColor = [self barButtonItemSelectedDefaultColor];
+        if ([self askOurDelegateShouldDisplaySourceView]) {
+            [self.editorView showHTMLSource];
+            barButtonItem.tintColor = [self barButtonItemSelectedDefaultColor];
+        } else {
+            // Deselect the HTML button so it is in the proper state
+            [(UIButton *)barButtonItem setSelected:NO];
+        }
     } else {
 		[self.editorView showVisualEditor];
 		
