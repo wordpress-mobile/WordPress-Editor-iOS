@@ -27,6 +27,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
 @property (nonatomic, weak) UIToolbar *leftToolbar;
 @property (nonatomic, weak) UIToolbar *rightToolbar;
 @property (nonatomic, weak) UIView *rightToolbarHolder;
+@property (nonatomic, weak) UIView *rightToolbarDivider;
 @property (nonatomic, weak) UIScrollView *toolbarScroll;
 
 #pragma mark - Properties: Toolbar items
@@ -377,24 +378,27 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     
     if (!rightToolbarHolder) {
         
-        CGRect dividerLineFrame = CGRectMake(0.0f,
-                                             floorf((WPEditorToolbarHeight - WPEditorToolbarDividerLineHeight) / 2),
-                                             WPEditorToolbarDividerLineWidth,
-                                             WPEditorToolbarDividerLineHeight);
+        UIView* rightToolbarDivider = _rightToolbarDivider;
+        if (!rightToolbarDivider) {
+            CGRect dividerLineFrame = CGRectMake(0.0f,
+                                                 floorf((WPEditorToolbarHeight - WPEditorToolbarDividerLineHeight) / 2),
+                                                 WPEditorToolbarDividerLineWidth,
+                                                 WPEditorToolbarDividerLineHeight);
+            rightToolbarDivider = [[UIView alloc] initWithFrame:dividerLineFrame];
+            rightToolbarDivider.backgroundColor = self.borderColor;
+            rightToolbarDivider.alpha = 0.7f;
+            _rightToolbarDivider = rightToolbarDivider;
+        }
         
-        UIView *dividerLine = [[UIView alloc] initWithFrame:dividerLineFrame];
-        dividerLine.backgroundColor = self.borderColor;
-        dividerLine.alpha = 0.7f;
-        
-        CGRect rightSpacerFrame = CGRectMake(CGRectGetMaxX(dividerLine.frame),
+        CGRect rightSpacerFrame = CGRectMake(CGRectGetMaxX(self.rightToolbarDivider.frame),
                                              0.0f,
                                              kNegativeRightToolbarPadding / 2,
                                              WPEditorToolbarHeight);
         UIView *rightSpacer = [[UIView alloc] initWithFrame:rightSpacerFrame];
         
-        CGRect rightToolbarHolderFrame = CGRectMake(CGRectGetWidth(self.frame) - (WPEditorToolbarButtonWidth + CGRectGetWidth(dividerLine.frame) + CGRectGetWidth(rightSpacer.frame)),
+        CGRect rightToolbarHolderFrame = CGRectMake(CGRectGetWidth(self.frame) - (WPEditorToolbarButtonWidth + CGRectGetWidth(self.rightToolbarDivider.frame) + CGRectGetWidth(rightSpacer.frame)),
                                                     0.0f,
-                                                    WPEditorToolbarButtonWidth + CGRectGetWidth(dividerLine.frame) + CGRectGetWidth(rightSpacer.frame),
+                                                    WPEditorToolbarButtonWidth + CGRectGetWidth(self.rightToolbarDivider.frame) + CGRectGetWidth(rightSpacer.frame),
                                                     WPEditorToolbarHeight);
         rightToolbarHolder = [[UIView alloc] initWithFrame:rightToolbarHolderFrame];
         rightToolbarHolder.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
@@ -408,8 +412,8 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
         UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:toolbarFrame];
         self.rightToolbar = toolbar;
         
-        [rightToolbarHolder addSubview:dividerLine];
         [rightToolbarHolder addSubview:rightSpacer];
+        [rightToolbarHolder addSubview:self.rightToolbarDivider];
         [rightToolbarHolder addSubview:toolbar];
         
         UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
@@ -447,6 +451,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
         _borderColor = borderColor;
         
         self.topBorderView.backgroundColor = borderColor;
+        self.rightToolbarDivider.backgroundColor = borderColor;
     }
 }
 
