@@ -451,9 +451,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
         _borderColor = borderColor;
         
         self.topBorderView.backgroundColor = borderColor;
-        if (self.rightToolbarDivider) {
-            self.rightToolbarDivider.backgroundColor = borderColor;
-        }
+        self.rightToolbarDivider.backgroundColor = borderColor;
     }
 }
 
