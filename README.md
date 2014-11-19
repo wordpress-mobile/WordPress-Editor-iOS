@@ -38,6 +38,7 @@ and the following Cocoapods:
 * [CocoaLumberjack](https://github.com/CocoaLumberjack/CocoaLumberjack)
 * [UIAlertView+Blocks](https://github.com/jivadevoe/UIAlertView-Blocks)
 * [WordPress-iOS-Shared](https://github.com/wordpress-mobile/WordPress-iOS-Shared)
+* [WordPressCom-Analytics-iOS](https://github.com/wordpress-mobile/WordPressCom-Analytics-iOS)
 
 See the [podspec](https://github.com/wordpress-mobile/WordPress-iOS-Editor/blob/develop/WordPress-iOS-Editor.podspec) for more details.
 
