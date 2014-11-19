@@ -1,10 +1,11 @@
 #import "WPViewController.h"
 
+@import AssetsLibrary;
 #import <CocoaLumberjack/DDLog.h>
 #import "WPEditorField.h"
 #import "WPEditorView.h"
 
-@interface WPViewController ()
+@interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 @end
 
 @implementation WPViewController
@@ -65,6 +66,7 @@
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController
 {
     DDLogInfo(@"Pressed Media!");
+    [self showPhotoPicker];
 }
 
 - (void)editorTitleDidChange:(WPEditorViewController *)editorController
@@ -81,5 +83,43 @@
 {
     DDLogInfo(@"Editor field created: %@", field.nodeId);
 }
+
+- (void)showPhotoPicker
+{
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    picker.delegate = self;
+    picker.allowsEditing = NO;
+    picker.navigationBar.translucent = NO;
+    picker.modalPresentationStyle = UIModalPresentationCurrentContext;
+    
+    [self.navigationController presentViewController:picker animated:YES completion:nil];
+}
+
+- (void)addAssetToContent:(NSURL *)assetURL {
+    ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
+    [assetsLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset){
+        UIImage * image = [UIImage imageWithCGImage:asset.defaultRepresentation.fullScreenImage];
+        NSData * data = UIImageJPEGRepresentation(image, 0.7);
+        NSString * imageID = [[NSUUID UUID] UUIDString];
+        NSString * path = [NSString stringWithFormat:@"%@/%@", NSTemporaryDirectory(), imageID];
+        [data writeToFile:path atomically:YES];
+        [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
+    } failureBlock:^(NSError *error) {
+        DDLogInfo(@"Failed to inser media: %@", [error localizedDescription]);
+    }];
+}
+
+#pragma mark - UIImagePickerControllerDelegate methods
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    [self.navigationController dismissViewControllerAnimated:YES completion:^{
+        NSURL *assetURL = info[UIImagePickerControllerReferenceURL];
+        [self addAssetToContent:assetURL];
+    }];
+    
+}
+
 
 @end
