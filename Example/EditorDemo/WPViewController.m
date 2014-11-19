@@ -6,6 +6,9 @@
 #import "WPEditorView.h"
 
 @interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+
+@property(nonatomic, strong) NSMutableArray * imagesAdded;
+
 @end
 
 @implementation WPViewController
@@ -19,6 +22,7 @@
                                                                              style:UIBarButtonItemStyleBordered
                                                                             target:self
                                                                             action:@selector(editTouchedUpInside)];
+    self.imagesAdded = [NSMutableArray array];
 }
 
 #pragma mark - Navigation Bar
@@ -105,9 +109,27 @@
         NSString * path = [NSString stringWithFormat:@"%@/%@", NSTemporaryDirectory(), imageID];
         [data writeToFile:path atomically:YES];
         [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
+        [self.imagesAdded addObject:imageID];
+        NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID}];
+        progress.totalUnitCount = 100;
+        NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                           target:self
+                                                         selector:@selector(timerFireMethod:)
+                                                         userInfo:progress
+                                                          repeats:YES];
     } failureBlock:^(NSError *error) {
         DDLogInfo(@"Failed to inser media: %@", [error localizedDescription]);
     }];
+}
+
+-(void)timerFireMethod:(NSTimer *)timer{
+    NSProgress * progress = (NSProgress *)timer.userInfo;
+    NSString * imageID = progress.userInfo[@"imageID"];
+    progress.completedUnitCount++;
+    [self.editorView setProgress:progress.fractionCompleted onImage:imageID];
+    if (progress.fractionCompleted >= 1){
+        [timer invalidate];
+    }
 }
 
 #pragma mark - UIImagePickerControllerDelegate methods

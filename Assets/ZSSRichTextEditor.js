@@ -675,6 +675,26 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remo
     }
 };
 
+/**
+ *  @brief      Changes the progress indicator for the image with the value set.
+ *
+ *  @details
+ *
+ *
+ *  @param      imageNodeIndetifier     This is a unique ID provided by the caller.  It exists as
+ *                                      a mechanism to update the image node with the remote URL
+ *                                      when replaceLocalImageWithRemoteImage() is called.
+ *  @param      progress          A value between 0 and 1 indicating the progress on the image.
+ */
+ZSSEditor.setProgressOnImage = function(imageNodeIndentifier, progress) {
+    var element = document.getElementById(imageNodeIndentifier);
+    if (progress >=1){
+        element.style.opacity = 1;
+    } else {
+        element.style.opacity = 0.2 + (0.7*progress);
+    }
+};
+
 // MARK: - Commands
 
 ZSSEditor.insertHTML = function(html) {

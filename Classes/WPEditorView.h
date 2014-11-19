@@ -185,6 +185,8 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 - (void)updateImage:(NSString *)url alt:(NSString *)alt;
 
+- (void)setProgress:(double) progress onImage:(NSString*)uniqueId;
+
 #pragma mark - Links
 
 /**

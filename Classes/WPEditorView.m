@@ -1037,6 +1037,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
+- (void)setProgress:(double) progress onImage:(NSString*)uniqueId
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.setProgressOnImage(\"%@\", %f);", uniqueId, progress];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
 #pragma mark - URL normalization
 
 - (NSString*)normalizeURL:(NSString*)url
