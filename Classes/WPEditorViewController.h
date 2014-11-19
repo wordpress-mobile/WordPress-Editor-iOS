@@ -18,6 +18,7 @@ WPEditorViewControllerMode;
 - (void)editorDidBeginEditing:(WPEditorViewController *)editorController;
 - (void)editorDidEndEditing:(WPEditorViewController *)editorController;
 - (void)editorDidFinishLoadingDOM:(WPEditorViewController*)editorController;
+- (BOOL)editorShouldDisplaySourceView:(WPEditorViewController *)editorController;
 - (void)editorTitleDidChange:(WPEditorViewController *)editorController;
 - (void)editorTextDidChange:(WPEditorViewController *)editorController;
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController;
@@ -41,32 +42,12 @@ WPEditorViewControllerMode;
 
 @property (nonatomic, weak) id<WPEditorViewControllerDelegate> delegate;
 @property (nonatomic, copy) NSString *titleText;
+@property (nonatomic, copy) NSString *titlePlaceholderText;
 @property (nonatomic, copy) NSString *bodyText;
+@property (nonatomic, copy) NSString *bodyPlaceholderText;
 
 #pragma mark - Properties: Editor View
 @property (nonatomic, strong, readonly) WPEditorView *editorView;
-
-#pragma mark - Coloring
-
-/**
- *	@brief		The background color for the toolbar.
- */
-@property (nonatomic, copy, readwrite) UIColor* toolbarBackgroundColor;
-
-/**
- *	@brief		The border color for the toolbar.
- */
-@property (nonatomic, copy, readwrite) UIColor* toolbarBorderColor;
-
-/**
- *  Color to tint the toolbar items
- */
-@property (nonatomic, strong) UIColor *toolbarItemTintColor;
-
-/**
- *  Color to tint selected items
- */
-@property (nonatomic, strong) UIColor *toolbarItemSelectedTintColor;
 
 #pragma mark - Initializers
 

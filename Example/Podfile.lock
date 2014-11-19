@@ -20,10 +20,10 @@ PODS:
   - AFNetworking/UIKit (2.3.1):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - CocoaLumberjack (1.8.1):
+  - CocoaLumberjack (1.9.2):
     - CocoaLumberjack/Extensions
-  - CocoaLumberjack/Core (1.8.1)
-  - CocoaLumberjack/Extensions (1.8.1):
+  - CocoaLumberjack/Core (1.9.2)
+  - CocoaLumberjack/Extensions (1.9.2):
     - CocoaLumberjack/Core
   - DTCoreText (1.6.13):
     - DTFoundation/Core (~> 1.7.1)
@@ -38,21 +38,21 @@ PODS:
     - DTFoundation/Core
   - UIAlertView+Blocks (0.8.1)
   - WordPress-iOS-Editor (0.2.2):
-    - CocoaLumberjack (~> 1.8.1)
+    - CocoaLumberjack (~> 1.9)
     - UIAlertView+Blocks
-    - WordPress-iOS-Shared (~> 0.1.3)
+    - WordPress-iOS-Shared (~> 0.1.4)
     - WordPressCom-Analytics-iOS (~> 0.0.4)
-  - WordPress-iOS-Shared (0.1.3):
+  - WordPress-iOS-Shared (0.1.4):
     - AFNetworking (~> 2.3.1)
-    - CocoaLumberjack (~> 1.8.1)
+    - CocoaLumberjack (~> 1.9)
     - DTCoreText (= 1.6.13)
   - WordPressCom-Analytics-iOS (0.0.10)
 
 DEPENDENCIES:
-  - CocoaLumberjack (~> 1.8.1)
+  - CocoaLumberjack (~> 1.9)
   - UIAlertView+Blocks
   - WordPress-iOS-Editor (from `../`)
-  - WordPress-iOS-Shared (~> 0.1.3)
+  - WordPress-iOS-Shared (~> 0.1.4)
   - WordPressCom-Analytics-iOS (~> 0.0.4)
 
 EXTERNAL SOURCES:
@@ -61,12 +61,12 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AFNetworking: 6d7b76aa5d04c8c37daad3eef4b7e3f2a7620da3
-  CocoaLumberjack: 9d198d6e19909b3b113a38c5f06f7bb8eedd0427
+  CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
   DTCoreText: 84eb8ba2e70448fdd9d837540e371f9f587b65ba
   DTFoundation: 360bc65ab44f588611f47324b8cfb0f18e04b263
   UIAlertView+Blocks: 0b749f1f7bd5131ff2233b30a406c1585a7171b2
-  WordPress-iOS-Editor: 95a9ebb07bb955396fc17bed8b4e285a3f33add0
-  WordPress-iOS-Shared: 48ca916221bec8731a6bd5e5fcf683977f15766d
+  WordPress-iOS-Editor: 8352cfe6be7601d9a7933a4d126e29f8ce5ccf67
+  WordPress-iOS-Shared: cb00b5b2530e5b581d34926ac6966b7ec476a93a
   WordPressCom-Analytics-iOS: 8a95339dd6f79758502a3e2d8aa8bcafd62ca0f0
 
 COCOAPODS: 0.34.4

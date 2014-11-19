@@ -2,6 +2,14 @@
   <img src="LumberjackLogo.png" title="Lumberjack logo" float=left>
 </p>
 
+CocoaLumberjack
+===============
+[![Build Status](http://img.shields.io/travis/CocoaLumberjack/CocoaLumberjack/master.svg?style=flat)](https://travis-ci.org/CocoaLumberjack/CocoaLumberjack)
+[![Pod Version](http://img.shields.io/cocoapods/v/CocoaLumberjack.svg?style=flat)](http://cocoadocs.org/docsets/CocoaLumberjack/)
+[![Pod Platform](http://img.shields.io/cocoapods/p/CocoaLumberjack.svg?style=flat)](http://cocoadocs.org/docsets/CocoaLumberjack/)
+[![Pod License](http://img.shields.io/cocoapods/l/CocoaLumberjack.svg?style=flat)](http://opensource.org/licenses/BSD-3-Clause)
+[![Reference Status](https://www.versioneye.com/objective-c/cocoalumberjack/reference_badge.svg?style=flat)](https://www.versioneye.com/objective-c/cocoalumberjack/references)
+
 **CocoaLumberjack** is a fast & simple, yet powerful & flexible logging framework for Mac and iOS.
 
 #### Lumberjack is Fast & Simple, yet Powerful & Flexible.
@@ -51,12 +59,14 @@ pod 'CocoaLumberjack'
 - [FAQ](https://github.com/CocoaLumberjack/CocoaLumberjack/wiki/FAQ)<br/>
 - [Analysis of performance with benchmarks](https://github.com/CocoaLumberjack/CocoaLumberjack/wiki/Performance)<br/>
 - [Common issues you may encounter and their solutions](https://github.com/CocoaLumberjack/CocoaLumberjack/wiki/ProblemSolution)<br/>
+- [AppCode support](https://github.com/CocoaLumberjack/CocoaLumberjack/wiki/AppCode-support)
 - **[full Lumberjack wiki](https://github.com/CocoaLumberjack/CocoaLumberjack/wiki)**<br/>
 
 ### Requirements 
 - Xcode 4.4 or later is required
 - iOS 5 or later
 - OS X 10.7 or later
+- for OS X < 10.7 support, use the 1.6.0 version
 
 ### Author
 - [Robbie Hanson](https://github.com/robbiehanson)
@@ -69,6 +79,3 @@ pod 'CocoaLumberjack'
 
 ### License
 - CocoaLumberjack is available under the BSD license. See the [LICENSE file](https://github.com/CocoaLumberjack/CocoaLumberjack/blob/master/LICENSE.txt).
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/CocoaLumberjack/cocoalumberjack/trend.png)](https://bitdeli.com/free "Bitdeli Badge")

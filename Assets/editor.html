@@ -861,8 +861,13 @@ function style_html(html_source, options) {
             font-size: 16px;
         }
     
-        div[placeholderText][contenteditable=true]:empty:not(:focus):before {
+        div[placeholderText][contenteditable=true]:empty:before {
             content: attr(placeholderText);
+            transition: 0.2s ease opacity;
+        }
+    
+        div[placeholderText][contenteditable=true]:empty:focus:before {
+            opacity: 0.6;
         }
     
         #zss_field_title, #zss_field_title p {
@@ -879,10 +884,10 @@ function style_html(html_source, options) {
     </style>
   </head>
   <body>
-      <div contenteditable="true" id="zss_field_title">
+      <div contenteditable="false" id="zss_field_title" nostyle>
       </div>
       <hr/>
-      <div contenteditable="true" id="zss_field_content">
+      <div contenteditable="false" id="zss_field_content">
       </div>
   </body>
 </html>

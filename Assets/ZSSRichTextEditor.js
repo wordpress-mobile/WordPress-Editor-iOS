@@ -17,6 +17,12 @@ var defaultCallbackSeparator = '~';
 // The editor object
 var ZSSEditor = {};
 
+// These variables exist to reduce garbage (as in memory garbage) generation when typing real fast
+// in the editor.
+//
+ZSSEditor.caretArguments = ['yOffset=' + 0, 'height=' + 0];
+ZSSEditor.caretInfo = { y: 0, height: 0 };
+
 // The current selection
 ZSSEditor.currentSelection;
 
@@ -27,9 +33,6 @@ ZSSEditor.currentEditingImage;
 ZSSEditor.currentEditingLink;
 
 ZSSEditor.focusedField = null;
-
-ZSSEditor.getYCaretInfoCallCount = 0;
-ZSSEditor.getYCaretInfoCallCountForGC = 10;
 
 // The objects that are enabled
 ZSSEditor.enabledItems = {};
@@ -59,7 +62,6 @@ ZSSEditor.init = function() {
     
 	document.addEventListener("selectionchange", function(e) {
 		ZSSEditor.currentEditingLink = null;
-
 		// DRM: only do something here if the editor has focus.  The reason is that when the
 		// selection changes due to the editor loosing focus, the focusout event will not be
 		// sent if we try to load a callback here.
@@ -144,14 +146,10 @@ ZSSEditor.domLoadedCallback = function() {
 
 ZSSEditor.selectionChangedCallback = function () {
     
-    var caretInfo = this.getYCaretInfo();
-    
-    var arguments = ['yOffset=' + caretInfo.y,
-                     'height=' + caretInfo.height];
-    
-    var joinedArguments = arguments.join(defaultCallbackSeparator);
+    var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
     
     ZSSEditor.callback('callback-selection-changed', joinedArguments);
+    this.callback("callback-input", joinedArguments);
 };
 
 ZSSEditor.callback = function(callbackScheme, callbackPath) {
@@ -181,6 +179,14 @@ ZSSEditor.callback = function(callbackScheme, callbackPath) {
 ZSSEditor.callbackThroughIFrame = function(url) {
     var iframe = document.createElement("IFRAME");
     iframe.setAttribute("src", url);
+    
+    // IMPORTANT: the IFrame was showing up as a black box below our text.  By setting its borders
+    // to be 0px transparent we make sure it's not shown at all.
+    //
+    // REF BUG: https://github.com/wordpress-mobile/WordPress-iOS-Editor/issues/318
+    //
+    iframe.style.cssText = "border: 0px transparent;";
+    
     document.documentElement.appendChild(iframe);
     iframe.parentNode.removeChild(iframe);
     iframe = null;
@@ -230,6 +236,33 @@ ZSSEditor.getSelectedText = function() {
 	return selection.toString();
 };
 
+ZSSEditor.getCaretArguments = function() {
+    var caretInfo = this.getYCaretInfo();
+    
+    this.caretArguments[0] = 'yOffset=' + caretInfo.y;
+    this.caretArguments[1] = 'height=' + caretInfo.height;
+    
+    return this.caretArguments;
+};
+
+ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments = function() {
+    
+    var joinedArguments = ZSSEditor.getJoinedCaretArguments();
+    var idArgument = "id=" + ZSSEditor.getFocusedField().getNodeId();
+    
+    joinedArguments = idArgument + defaultCallbackSeparator + joinedArguments;
+    
+    return joinedArguments;
+};
+
+ZSSEditor.getJoinedCaretArguments = function() {
+    
+    var caretArguments = this.getCaretArguments();
+    var joinedArguments = this.caretArguments.join(defaultCallbackSeparator);
+    
+    return joinedArguments;
+};
+
 ZSSEditor.getYCaretInfo = function() {
     var y = 0, height = 0;
     var sel = window.getSelection();
@@ -277,18 +310,10 @@ ZSSEditor.getYCaretInfo = function() {
         }
     }
     
-    // PROBLEM: this method seems to increase memory consumption considerably each time it's called
-    // and the GC doesn't seem to be keeping up with it.  In fact under iOS 7, if you type really
-    // fast you get a malloc issue.
-    //
-    // WORKAROUND: force the garbage collector to run every few calls of this method.
-    getYCaretInfoCallCount++;
+    this.caretInfo.y = y;
+    this.caretInfo.height = height;
     
-    if (getYCaretInfoCallCount >= getYCaretInfoCallCountForGC) {
-        _system.gc();
-    }
-    
-    return { y: y, height: height };
+    return this.caretInfo;
 };
 
 // MARK: - Default paragraph separator
@@ -629,8 +654,21 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remo
     if (imageNode) {
         var image = new Image;
         
-        image.onLoad = function () {
-            imageNode.src = this.src;
+        image.onload = function () {
+            imageNode.attr('src', image.src);
+            
+            var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
+            ZSSEditor.callback("callback-input", joinedArguments);
+        }
+        
+        image.onerror = function () {
+            // Even on an error, we swap the image for the time being.  This is because private
+            // blogs are currently failing to download images due to access privilege issues.
+            //
+            imageNode.attr('src', image.src);
+            
+            var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
+            ZSSEditor.callback("callback-input", joinedArguments);
         }
         
         image.src = remoteImageUrl;
@@ -652,132 +690,136 @@ ZSSEditor.sendEnabledStyles = function(e) {
 
 	var items = [];
 	
-	// Find all relevant parent tags
-	var parentTags = ZSSEditor.parentTags();
-	
-	for (var i = 0; i < parentTags.length; i++) {
-		var currentNode = parentTags[i];
-		
-		if (currentNode.nodeName.toLowerCase() == 'a') {
-			ZSSEditor.currentEditingLink = currentNode;
-			
-			var title = encodeURIComponent(currentNode.text);
-			var href = encodeURIComponent(currentNode.href);
-			
-			items.push('link-title:' + title);
-			items.push('link:' + href);
-		}
-	}
-	
-	if (ZSSEditor.isCommandEnabled('bold')) {
-		items.push('bold');
-	}
-	if (ZSSEditor.isCommandEnabled('createLink')) {
-		items.push('createLink');
-	}
-	if (ZSSEditor.isCommandEnabled('italic')) {
-		items.push('italic');
-	}
-	if (ZSSEditor.isCommandEnabled('subscript')) {
-		items.push('subscript');
-	}
-	if (ZSSEditor.isCommandEnabled('superscript')) {
-		items.push('superscript');
-	}
-	if (ZSSEditor.isCommandEnabled('strikeThrough')) {
-		items.push('strikeThrough');
-	}
-	if (ZSSEditor.isCommandEnabled('underline')) {
-		var isUnderlined = false;
-		
-		// DRM: 'underline' gets highlighted if it's inside of a link... so we need a special test
-		// in that case.
-		if (!ZSSEditor.currentEditingLink) {
-			items.push('underline');
-		}
-	}
-	if (ZSSEditor.isCommandEnabled('insertOrderedList')) {
-		items.push('orderedList');
-	}
-	if (ZSSEditor.isCommandEnabled('insertUnorderedList')) {
-		items.push('unorderedList');
-	}
-	if (ZSSEditor.isCommandEnabled('justifyCenter')) {
-		items.push('justifyCenter');
-	}
-	if (ZSSEditor.isCommandEnabled('justifyFull')) {
-		items.push('justifyFull');
-	}
-	if (ZSSEditor.isCommandEnabled('justifyLeft')) {
-		items.push('justifyLeft');
-	}
-	if (ZSSEditor.isCommandEnabled('justifyRight')) {
-		items.push('justifyRight');
-	}
-    if (ZSSEditor.isCommandEnabled('insertHorizontalRule')) {
-		items.push('horizontalRule');
-	}
-	var formatBlock = document.queryCommandValue('formatBlock');
-	if (formatBlock.length > 0) {
-		items.push(formatBlock);
-	}
-    // Images
-	$('img').bind('touchstart', function(e) {
-        $('img').removeClass('zs_active');
-        $(this).addClass('zs_active');
-    });
-	
-	// Use jQuery to figure out those that are not supported
-	if (typeof(e) != "undefined") {
-		
-		// The target element
-		var t = $(e.target);
-		var nodeName = e.target.nodeName.toLowerCase();
-		
-		// Background Color
-		try
-		{
-			var bgColor = t.css('backgroundColor');
-			if (bgColor && bgColor.length != 0 && bgColor != 'rgba(0, 0, 0, 0)' && bgColor != 'rgb(0, 0, 0)' && bgColor != 'transparent') {
-				items.push('backgroundColor');
-			}
-		}
-		catch(e)
-		{
-			// DRM: I had to add these stupid try-catch blocks to solve an issue with t.css throwing
-			// exceptions for no reason.
-		}
-		
-		// Text Color
-		try
-		{
-			var textColor = t.css('color');
-			if (textColor && textColor.length != 0 && textColor != 'rgba(0, 0, 0, 0)' && textColor != 'rgb(0, 0, 0)' && textColor != 'transparent') {
-				items.push('textColor');
-			}
-		}
-		catch(e)
-		{
-			// DRM: I had to add these stupid try-catch blocks to solve an issue with t.css throwing
-			// exceptions for no reason.
-		}
-		
-        // Blockquote
-        if (nodeName == 'blockquote') {
-			items.push('indent');
-		}
-        // Image
-        if (nodeName == 'img') {
-            ZSSEditor.currentEditingImage = t;
-            items.push('image:'+t.attr('src'));
-            if (t.attr('alt') !== undefined) {
-                items.push('image-alt:'+t.attr('alt'));
+    var focusedField = this.getFocusedField();
+    
+    if (!focusedField.hasNoStyle) {
+        // Find all relevant parent tags
+        var parentTags = ZSSEditor.parentTags();
+        
+        for (var i = 0; i < parentTags.length; i++) {
+            var currentNode = parentTags[i];
+            
+            if (currentNode.nodeName.toLowerCase() == 'a') {
+                ZSSEditor.currentEditingLink = currentNode;
+                
+                var title = encodeURIComponent(currentNode.text);
+                var href = encodeURIComponent(currentNode.href);
+                
+                items.push('link-title:' + title);
+                items.push('link:' + href);
+            }
+        }
+        
+        if (ZSSEditor.isCommandEnabled('bold')) {
+            items.push('bold');
+        }
+        if (ZSSEditor.isCommandEnabled('createLink')) {
+            items.push('createLink');
+        }
+        if (ZSSEditor.isCommandEnabled('italic')) {
+            items.push('italic');
+        }
+        if (ZSSEditor.isCommandEnabled('subscript')) {
+            items.push('subscript');
+        }
+        if (ZSSEditor.isCommandEnabled('superscript')) {
+            items.push('superscript');
+        }
+        if (ZSSEditor.isCommandEnabled('strikeThrough')) {
+            items.push('strikeThrough');
+        }
+        if (ZSSEditor.isCommandEnabled('underline')) {
+            var isUnderlined = false;
+            
+            // DRM: 'underline' gets highlighted if it's inside of a link... so we need a special test
+            // in that case.
+            if (!ZSSEditor.currentEditingLink) {
+                items.push('underline');
+            }
+        }
+        if (ZSSEditor.isCommandEnabled('insertOrderedList')) {
+            items.push('orderedList');
+        }
+        if (ZSSEditor.isCommandEnabled('insertUnorderedList')) {
+            items.push('unorderedList');
+        }
+        if (ZSSEditor.isCommandEnabled('justifyCenter')) {
+            items.push('justifyCenter');
+        }
+        if (ZSSEditor.isCommandEnabled('justifyFull')) {
+            items.push('justifyFull');
+        }
+        if (ZSSEditor.isCommandEnabled('justifyLeft')) {
+            items.push('justifyLeft');
+        }
+        if (ZSSEditor.isCommandEnabled('justifyRight')) {
+            items.push('justifyRight');
+        }
+        if (ZSSEditor.isCommandEnabled('insertHorizontalRule')) {
+            items.push('horizontalRule');
+        }
+        var formatBlock = document.queryCommandValue('formatBlock');
+        if (formatBlock.length > 0) {
+            items.push(formatBlock);
+        }
+        // Images
+        $('img').bind('touchstart', function(e) {
+            $('img').removeClass('zs_active');
+            $(this).addClass('zs_active');
+        });
+        
+        // Use jQuery to figure out those that are not supported
+        if (typeof(e) != "undefined") {
+            
+            // The target element
+            var t = $(e.target);
+            var nodeName = e.target.nodeName.toLowerCase();
+            
+            // Background Color
+            try
+            {
+                var bgColor = t.css('backgroundColor');
+                if (bgColor && bgColor.length != 0 && bgColor != 'rgba(0, 0, 0, 0)' && bgColor != 'rgb(0, 0, 0)' && bgColor != 'transparent') {
+                    items.push('backgroundColor');
+                }
+            }
+            catch(e)
+            {
+                // DRM: I had to add these stupid try-catch blocks to solve an issue with t.css throwing
+                // exceptions for no reason.
             }
             
-        } else {
-            ZSSEditor.currentEditingImage = null;
+            // Text Color
+            try
+            {
+                var textColor = t.css('color');
+                if (textColor && textColor.length != 0 && textColor != 'rgba(0, 0, 0, 0)' && textColor != 'rgb(0, 0, 0)' && textColor != 'transparent') {
+                    items.push('textColor');
+                }
+            }
+            catch(e)
+            {
+                // DRM: I had to add these stupid try-catch blocks to solve an issue with t.css throwing
+                // exceptions for no reason.
+            }
+            
+            // Blockquote
+            if (nodeName == 'blockquote') {
+                items.push('indent');
+            }
+            // Image
+            if (nodeName == 'img') {
+                ZSSEditor.currentEditingImage = t;
+                items.push('image:'+t.attr('src'));
+                if (t.attr('alt') !== undefined) {
+                    items.push('image-alt:'+t.attr('alt'));
+                }
+                
+            } else {
+                ZSSEditor.currentEditingImage = null;
+            }
         }
-	}
+    }
 	
 	ZSSEditor.stylesCallback(items);
 };
@@ -890,6 +932,10 @@ function ZSSField(wrappedObject) {
     this.wrappedObject = wrappedObject;
     this.bodyPlaceholderColor = '#000000';
     
+    if (this.wrappedDomNode().hasAttribute('nostyle')) {
+        this.hasNoStyle = true;
+    }
+    
     this.bindListeners();
 };
 
@@ -926,14 +972,18 @@ ZSSField.prototype.emptyFieldIfNoContents = function() {
     }
 };
 
+ZSSField.prototype.emptyFieldIfNoContentsAndRefreshPlaceholderColor = function() {
+    this.emptyFieldIfNoContents();
+    this.refreshPlaceholderColor();
+};
+
 // MARK: - Handle event listeners
 
 ZSSField.prototype.handleBlurEvent = function(e) {
     ZSSEditor.focusedField = null;
     
-    this.emptyFieldIfNoContents();
+    this.emptyFieldIfNoContentsAndRefreshPlaceholderColor();
     
-    this.refreshPlaceholderColor();
     this.callback("callback-focus-out");
 };
 
@@ -957,17 +1007,18 @@ ZSSField.prototype.handleKeyDownEvent = function(e) {
 };
 
 ZSSField.prototype.handleInputEvent = function(e) {
-    var caretInfo = ZSSEditor.getYCaretInfo();
     
-    var arguments = ['yOffset=' + caretInfo.y,
-                     'height=' + caretInfo.height];
+    // IMPORTANT: we want the placeholder to come up if there's no text, so we clear the field if
+    // there's no real content in it.  It's important to do this here and not on keyDown or keyUp
+    // as the field could become empty because of a cut or paste operation as well as a key press.
+    // This event takes care of all cases.
+    //
+    this.emptyFieldIfNoContentsAndRefreshPlaceholderColor();
     
-    var joinedArguments = arguments.join(defaultCallbackSeparator);
-    
-    ZSSEditor.callback('callback-selection-changed', joinedArguments);
-     
-    this.callback("callback-input", joinedArguments);
+    var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
 
+    ZSSEditor.callback('callback-selection-changed', joinedArguments);
+    this.callback("callback-input", joinedArguments);
 };
 
 ZSSField.prototype.handleTapEvent = function(e) {
@@ -1005,27 +1056,10 @@ ZSSField.prototype.callback = function(callbackScheme, callbackPath) {
     }
     
     if (isUsingiOS) {
-        this.callbackThroughIFrame(url);
+        ZSSEditor.callbackThroughIFrame(url);
     } else {
         console.log(url);
     }
-};
-
-/**
- *  @brief      Executes a callback by loading it into an IFrame.
- *  @details    The reason why we're using this instead of window.location is that window.location
- *              can sometimes fail silently when called multiple times in rapid succession.
- *              Found here:
- *              http://stackoverflow.com/questions/10010342/clicking-on-a-link-inside-a-webview-that-will-trigger-a-native-ios-screen-with/10080969#10080969
- *
- *  @param      url     The callback URL.
- */
-ZSSField.prototype.callbackThroughIFrame = function(url) {
-    var iframe = document.createElement("IFRAME");
-    iframe.setAttribute("src", url);
-    document.documentElement.appendChild(iframe);
-    iframe.parentNode.removeChild(iframe);
-    iframe = null;
 };
 
 // MARK: - Focus
@@ -1151,10 +1185,14 @@ ZSSField.prototype.refreshPlaceholderColorAboutToGainFocus = function(willGainFo
 
 ZSSField.prototype.refreshPlaceholderColorForAttributes = function(hasPlaceholderText, isFocused, isEmpty) {
     
-    var shouldColorText = hasPlaceholderText && !isFocused && isEmpty;
+    var shouldColorText = hasPlaceholderText && isEmpty;
     
     if (shouldColorText) {
-        this.wrappedObject.css('color', this.bodyPlaceholderColor);
+        if (isFocused) {
+            this.wrappedObject.css('color', this.bodyPlaceholderColor);
+        } else {
+            this.wrappedObject.css('color', this.bodyPlaceholderColor);
+        }
     } else {
         this.wrappedObject.css('color', '');
     }

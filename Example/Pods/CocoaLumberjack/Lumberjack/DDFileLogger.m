@@ -16,7 +16,7 @@
 **/
 
 #if ! __has_feature(objc_arc)
-#warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#error This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
 #endif
 
 // We probably shouldn't be using DDLog() statements within the DDLog implementation.
@@ -60,6 +60,8 @@ BOOL doesAppRunInBackground(void);
 @implementation DDLogFileManagerDefault
 
 @synthesize maximumNumberOfLogFiles;
+@synthesize logFilesDiskQuota;
+
 
 - (id)init
 {
@@ -71,6 +73,7 @@ BOOL doesAppRunInBackground(void);
     if ((self = [super init]))
     {
         maximumNumberOfLogFiles = DEFAULT_LOG_MAX_NUM_LOG_FILES;
+        logFilesDiskQuota = DEFAULT_LOG_FILES_DISK_QUOTA;
         
         if (aLogsDirectory)
             _logsDirectory = [aLogsDirectory copy];
@@ -80,6 +83,7 @@ BOOL doesAppRunInBackground(void);
         NSKeyValueObservingOptions kvoOptions = NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew;
         
         [self addObserver:self forKeyPath:NSStringFromSelector(@selector(maximumNumberOfLogFiles)) options:kvoOptions context:nil];
+        [self addObserver:self forKeyPath:NSStringFromSelector(@selector(logFilesDiskQuota)) options:kvoOptions context:nil];
         
         NSLogVerbose(@"DDFileLogManagerDefault: logsDirectory:\n%@", [self logsDirectory]);
         NSLogVerbose(@"DDFileLogManagerDefault: sortedLogFileNames:\n%@", [self sortedLogFileNames]);
@@ -87,11 +91,26 @@ BOOL doesAppRunInBackground(void);
     return self;
 }
 
+#if TARGET_OS_IPHONE
+- (instancetype)initWithLogsDirectory:(NSString *)logsDirectory defaultFileProtectionLevel:(NSString*)fileProtectionLevel {
+    if ((self = [self initWithLogsDirectory:logsDirectory])) {
+        if ([fileProtectionLevel isEqualToString:NSFileProtectionNone] ||
+            [fileProtectionLevel isEqualToString:NSFileProtectionComplete] ||
+            [fileProtectionLevel isEqualToString:NSFileProtectionCompleteUnlessOpen] ||
+            [fileProtectionLevel isEqualToString:NSFileProtectionCompleteUntilFirstUserAuthentication]) {
+            _defaultFileProtectionLevel = fileProtectionLevel;
+        }
+    }
+    return self;
+}
+#endif
+
 - (void)dealloc
 {
     // try-catch because the observer might be removed or never added. In this case, removeObserver throws and exception
     @try {
         [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(maximumNumberOfLogFiles))];
+        [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(logFilesDiskQuota))];
     }
     @catch (NSException *exception) {
         
@@ -116,9 +135,10 @@ BOOL doesAppRunInBackground(void);
         return;
     }
     
-    if ([keyPath isEqualToString:NSStringFromSelector(@selector(maximumNumberOfLogFiles))])
+    if ([keyPath isEqualToString:NSStringFromSelector(@selector(maximumNumberOfLogFiles))] ||
+        [keyPath isEqualToString:NSStringFromSelector(@selector(logFilesDiskQuota))])
     {
-        NSLogInfo(@"DDFileLogManagerDefault: Responding to configuration change: maximumNumberOfLogFiles");
+        NSLogInfo(@"DDFileLogManagerDefault: Responding to configuration change: %@", keyPath);
         
         dispatch_async([DDLog loggingQueue], ^{ @autoreleasepool {
             
@@ -132,58 +152,78 @@ BOOL doesAppRunInBackground(void);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Deletes archived log files that exceed the maximumNumberOfLogFiles configuration value.
+ * Deletes archived log files that exceed the maximumNumberOfLogFiles or logFilesDiskQuota configuration values.
 **/
 - (void)deleteOldLogFiles
 {
     NSLogVerbose(@"DDLogFileManagerDefault: deleteOldLogFiles");
     
-    NSUInteger maxNumLogFiles = self.maximumNumberOfLogFiles;
-    if (maxNumLogFiles == 0)
-    {
-        // Unlimited - don't delete any log files
-        return;
-    }
-    
     NSArray *sortedLogFileInfos = [self sortedLogFileInfos];
-    
-    // Do we consider the first file?
-    // We are only supposed to be deleting archived files.
-    // In most cases, the first file is likely the log file that is currently being written to.
-    // So in most cases, we do not want to consider this file for deletion.
-    
-    NSUInteger count = [sortedLogFileInfos count];
-    BOOL excludeFirstFile = NO;
-    
-    if (count > 0)
+
+    NSUInteger firstIndexToDelete = NSNotFound;
+
+    const unsigned long long diskQuota = self.logFilesDiskQuota;
+    const NSUInteger maxNumLogFiles = self.maximumNumberOfLogFiles;
+
+    if (diskQuota)
     {
-        DDLogFileInfo *logFileInfo = [sortedLogFileInfos objectAtIndex:0];
-        
-        if (!logFileInfo.isArchived)
+        unsigned long long used = 0;
+
+        for (NSUInteger i = 0; i < sortedLogFileInfos.count; i++)
         {
-            excludeFirstFile = YES;
+            DDLogFileInfo *info = sortedLogFileInfos[i];
+            used += info.fileSize;
+
+            if (used > diskQuota)
+            {
+                firstIndexToDelete = i;
+                break;
+            }
         }
     }
-    
-    NSArray *sortedArchivedLogFileInfos;
-    if (excludeFirstFile)
+
+    if (maxNumLogFiles)
     {
-        count--;
-        sortedArchivedLogFileInfos = [sortedLogFileInfos subarrayWithRange:NSMakeRange(1, count)];
+        if (firstIndexToDelete == NSNotFound)
+        {
+            firstIndexToDelete = maxNumLogFiles;
+        }
+        else
+        {
+            firstIndexToDelete = MIN(firstIndexToDelete, maxNumLogFiles);
+        }
     }
-    else
-    {
-        sortedArchivedLogFileInfos = sortedLogFileInfos;
+
+    if (firstIndexToDelete == 0) {
+        // Do we consider the first file?
+        // We are only supposed to be deleting archived files.
+        // In most cases, the first file is likely the log file that is currently being written to.
+        // So in most cases, we do not want to consider this file for deletion.
+
+        if (sortedLogFileInfos.count > 0)
+        {
+            DDLogFileInfo *logFileInfo = [sortedLogFileInfos objectAtIndex:0];
+
+            if (! logFileInfo.isArchived)
+            {
+                // Don't delete active file.
+                ++firstIndexToDelete;
+            }
+        }
     }
-    
-    NSUInteger i;
-    for (i = maxNumLogFiles; i < count; i++)
+
+    if (firstIndexToDelete != NSNotFound)
     {
-        DDLogFileInfo *logFileInfo = [sortedArchivedLogFileInfos objectAtIndex:i];
-        
-        NSLogInfo(@"DDLogFileManagerDefault: Deleting file: %@", logFileInfo.fileName);
-        
-        [[NSFileManager defaultManager] removeItemAtPath:logFileInfo.filePath error:nil];
+        // removing all logfiles starting with firstIndexToDelete
+
+        for (NSUInteger i = firstIndexToDelete; i < sortedLogFileInfos.count; i++)
+        {
+            DDLogFileInfo *logFileInfo = sortedLogFileInfos[i];
+
+            NSLogInfo(@"DDLogFileManagerDefault: Deleting file: %@", logFileInfo.fileName);
+
+            [[NSFileManager defaultManager] removeItemAtPath:logFileInfo.filePath error:nil];
+        }
     }
 }
 
@@ -284,10 +324,19 @@ BOOL doesAppRunInBackground(void);
 
 - (NSDateFormatter *)logFileDateFormatter
 {
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd' 'HH'-'mm'"];
-    [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
-
+    NSMutableDictionary *dictionary = [[NSThread currentThread]
+                                       threadDictionary];
+    NSString *dateFormat = @"yyyy'-'MM'-'dd' 'HH'-'mm'";
+    NSString *key = [NSString stringWithFormat:@"logFileDateFormatter.%@", dateFormat];
+    NSDateFormatter *dateFormatter = [dictionary objectForKey:key];
+    if (dateFormatter == nil) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:dateFormat];
+        [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+        [dictionary setObject:dateFormatter
+                       forKey:key];
+    }
+    
     return dateFormatter;
 }
 
@@ -473,8 +522,8 @@ BOOL doesAppRunInBackground(void);
              // want (even if device is locked). Thats why that attribute have to be changed to
              // NSFileProtectionCompleteUntilFirstUserAuthentication.
 
-            NSString *key = doesAppRunInBackground() ?
-                NSFileProtectionCompleteUntilFirstUserAuthentication : NSFileProtectionCompleteUnlessOpen;
+            NSString *key = _defaultFileProtectionLevel ? :
+                            (doesAppRunInBackground() ? NSFileProtectionCompleteUntilFirstUserAuthentication : NSFileProtectionCompleteUnlessOpen);
 
             attributes = @{ NSFileProtectionKey : key };
         #endif
@@ -577,6 +626,7 @@ BOOL doesAppRunInBackground(void);
     {
         maximumFileSize = DEFAULT_LOG_MAX_FILE_SIZE;
         rollingFrequency = DEFAULT_LOG_ROLLING_FREQUENCY;
+        _automaticallyAppendNewlineForCustomFormatters = YES;
         
         logFileManager = aLogFileManager;
         
@@ -905,22 +955,18 @@ BOOL doesAppRunInBackground(void);
         {
             DDLogFileInfo *mostRecentLogFileInfo = [sortedLogFileInfos objectAtIndex:0];
             
-            BOOL useExistingLogFile = YES;
             BOOL shouldArchiveMostRecent = NO;
             
             if (mostRecentLogFileInfo.isArchived)
             {
-                useExistingLogFile = NO;
                 shouldArchiveMostRecent = NO;
             }
             else if (maximumFileSize > 0 && mostRecentLogFileInfo.fileSize >= maximumFileSize)
             {
-                useExistingLogFile = NO;
                 shouldArchiveMostRecent = YES;
             }
             else if (rollingFrequency > 0.0 && mostRecentLogFileInfo.age >= rollingFrequency)
             {
-                useExistingLogFile = NO;
                 shouldArchiveMostRecent = YES;
             }
 
@@ -934,18 +980,19 @@ BOOL doesAppRunInBackground(void);
             //
             // If previous log was created when app wasn't running in background, but now it is - we archive it and create
             // a new one.
+            //
+            // If user has owerwritten to NSFileProtectionNone there is no neeed to create a new one.
 
-            if (useExistingLogFile && doesAppRunInBackground()) {
+            if (!_doNotReuseLogFiles && doesAppRunInBackground()) {
                 NSString *key = mostRecentLogFileInfo.fileAttributes[NSFileProtectionKey];
 
-                if (! [key isEqualToString:NSFileProtectionCompleteUntilFirstUserAuthentication]) {
-                    useExistingLogFile = NO;
+                if (! ([key isEqualToString:NSFileProtectionCompleteUntilFirstUserAuthentication] || [key isEqualToString:NSFileProtectionNone])) {
                     shouldArchiveMostRecent = YES;
                 }
             }
         #endif
-            
-            if (useExistingLogFile)
+
+            if (!_doNotReuseLogFiles && !mostRecentLogFileInfo.isArchived && !shouldArchiveMostRecent)
             {
                 NSLogVerbose(@"DDFileLogger: Resuming logging with file %@", mostRecentLogFileInfo.fileName);
                 
@@ -1025,17 +1072,20 @@ static int exception_count = 0;
 - (void)logMessage:(DDLogMessage *)logMessage
 {
     NSString *logMsg = logMessage->logMsg;
-    
+    BOOL isFormatted = NO;
+
     if (formatter)
     {
         logMsg = [formatter formatLogMessage:logMessage];
+        isFormatted = logMsg != logMessage->logMsg;
     }
     
     if (logMsg)
     {
-        if (![logMsg hasSuffix:@"\n"])
+        if ((!isFormatted || _automaticallyAppendNewlineForCustomFormatters) &&
+        (![logMsg hasSuffix:@"\n"]))
         {
-            logMsg = [logMsg stringByAppendingString:@"\n"];
+                logMsg = [logMsg stringByAppendingString:@"\n"];
         }
         
         NSData *logData = [logMsg dataUsingEncoding:NSUTF8StringEncoding];
@@ -1250,10 +1300,10 @@ static int exception_count = 0;
         NSLogVerbose(@"DDLogFileInfo: Renaming file: '%@' -> '%@'", self.fileName, newFileName);
 
         NSError *error = nil;
-        if (![[NSFileManager defaultManager] fileExistsAtPath:newFilePath]){
-            if([[NSFileManager defaultManager] removeItemAtPath:newFilePath error:&error]){
-                NSLogError(@"DDLogFileInfo: Error deleting archive (%@): %@", self.fileName, error);
-            }
+        if ([[NSFileManager defaultManager] fileExistsAtPath:newFilePath] &&
+           ![[NSFileManager defaultManager] removeItemAtPath:newFilePath error:&error])
+        {
+            NSLogError(@"DDLogFileInfo: Error deleting archive (%@): %@", self.fileName, error);
         }
 
         if (![[NSFileManager defaultManager] moveItemAtPath:filePath toPath:newFilePath error:&error])
