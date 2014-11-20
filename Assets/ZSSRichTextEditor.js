@@ -623,7 +623,7 @@ ZSSEditor.quickLink = function() {
  *                                      does not check for that.  It would be a mistake.
  */
 ZSSEditor.insertLocalImage = function(imageNodeIndentifier, localImageUrl) {
-    var html = '<img id="' + imageNodeIndentifier + '" src="' + localImageUrl + '" alt="" />';
+    var html = '<progress id="progress-'+ imageNodeIndentifier +'"max="100" value="0"></progress> <img id="' + imageNodeIndentifier + '" src="' + localImageUrl + '" alt="" />';
     
     this.insertHTML(html);
     this.sendEnabledStyles();
@@ -692,6 +692,12 @@ ZSSEditor.setProgressOnImage = function(imageNodeIndentifier, progress) {
         element.style.opacity = 1;
     } else {
         element.style.opacity = 0.2 + (0.7*progress);
+    }
+    
+    var progressElement = document.getElementById('progress-'+imageNodeIndentifier);
+    progressElement.value = 100 * progress;
+    if (progress >=1){
+        progressElement.parentNode.removeChild(progressElement);
     }
 };
 
