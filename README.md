@@ -4,7 +4,7 @@
 
 # WordPress-iOS-Editor
 
-![WordPress-iOS-Editor Screenshot](https://i.cloudup.com/M_Qk9N3B9k-2000x2000.png)
+![WordPress-iOS-Editor Screenshot](https://cldup.com/2_b0osLaFA.png)![WordPress-iOS-Editor Screenshot 2](https://cldup.com/BluIq2pgbZ.png)
 
 ## Introduction
 
