@@ -4,7 +4,7 @@
 
 # WordPress-iOS-Editor
 
-![WordPress-iOS-Editor Screenshot](https://i.cloudup.com/M_Qk9N3B9k-2000x2000.png)
+![WordPress-iOS-Editor Screenshot](https://cldup.com/2_b0osLaFA.png)![WordPress-iOS-Editor Screenshot 2](https://cldup.com/BluIq2pgbZ.png)
 
 ## Introduction
 
@@ -38,6 +38,7 @@ and the following Cocoapods:
 * [CocoaLumberjack](https://github.com/CocoaLumberjack/CocoaLumberjack)
 * [UIAlertView+Blocks](https://github.com/jivadevoe/UIAlertView-Blocks)
 * [WordPress-iOS-Shared](https://github.com/wordpress-mobile/WordPress-iOS-Shared)
+* [WordPressCom-Analytics-iOS](https://github.com/wordpress-mobile/WordPressCom-Analytics-iOS)
 
 See the [podspec](https://github.com/wordpress-mobile/WordPress-iOS-Editor/blob/develop/WordPress-iOS-Editor.podspec) for more details.
 

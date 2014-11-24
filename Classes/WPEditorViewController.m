@@ -132,9 +132,12 @@ NSInteger const WPLinkAlertViewTag = 92;
     self.didFinishLoadingEditor = NO;
     self.view.backgroundColor = [UIColor whiteColor];
     
-    // Calling this here so the Merriweather font is
-    // loaded (if it has not been already).
+    // Calling the fonts we use here so they are availible to the UIWebView
     [WPFontManager merriweatherBoldFontOfSize:30];
+    [WPFontManager openSansRegularFontOfSize:16];
+    [WPFontManager openSansItalicFontOfSize:16];
+    [WPFontManager openSansBoldFontOfSize:16];
+    [WPFontManager openSansBoldItalicFontOfSize:16];
 	
     [self createToolbarView];
     [self buildTextViews];
