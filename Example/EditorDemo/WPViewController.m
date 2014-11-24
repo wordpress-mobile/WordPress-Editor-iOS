@@ -88,6 +88,19 @@
     DDLogInfo(@"Editor field created: %@", field.nodeId);
 }
 
+- (void)editorViewController:(WPEditorViewController*)editorViewController
+       imageTapped:(NSString *)imageId
+               url:(NSURL *)url
+{
+    NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageId}];
+    progress.totalUnitCount = 100;
+    NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                       target:self
+                                                     selector:@selector(timerFireMethod:)
+                                                     userInfo:progress
+                                                      repeats:YES];
+}
+
 - (void)showPhotoPicker
 {
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];

@@ -623,7 +623,7 @@ ZSSEditor.quickLink = function() {
  *                                      does not check for that.  It would be a mistake.
  */
 ZSSEditor.insertLocalImage = function(imageNodeIndentifier, localImageUrl) {
-    var html = '<progress id="progress-'+ imageNodeIndentifier +'"max="100" value="0"></progress> <img id="' + imageNodeIndentifier + '" src="' + localImageUrl + '" alt="" />';
+    var html = '<progress id="progress-'+ imageNodeIndentifier +'"max="100" value="0" contenteditable="false"></progress> <img id="' + imageNodeIndentifier + '" src="' + localImageUrl + '" alt="" />';
     
     this.insertHTML(html);
     this.sendEnabledStyles();
@@ -681,20 +681,29 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remo
  *  @details
  *
  *
- *  @param      imageNodeIndetifier     This is a unique ID provided by the caller.  It exists as
+ *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.  It exists as
  *                                      a mechanism to update the image node with the remote URL
  *                                      when replaceLocalImageWithRemoteImage() is called.
  *  @param      progress          A value between 0 and 1 indicating the progress on the image.
  */
-ZSSEditor.setProgressOnImage = function(imageNodeIndentifier, progress) {
-    var element = document.getElementById(imageNodeIndentifier);
+ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
+    var element = document.getElementById(imageNodeIdentifier);
     if (progress >=1){
         element.style.opacity = 1;
     } else {
         element.style.opacity = 0.2 + (0.7*progress);
     }
     
-    var progressElement = document.getElementById('progress-'+imageNodeIndentifier);
+    var progressElement = document.getElementById('progress-'+imageNodeIdentifier);
+    if (!progressElement){
+        progressElement = document.createElement("progress");
+        progressElement.id = 'progress-'+ imageNodeIdentifier;
+        progressElement.max = 100;
+        progressElement.value = 0;
+        progressElement.contentEditable = false;
+        element.parentNode.insertBefore(progressElement, element);
+        document.add(progressElement);
+    }
     progressElement.value = 100 * progress;
     if (progress >=1){
         progressElement.parentNode.removeChild(progressElement);
@@ -788,11 +797,6 @@ ZSSEditor.sendEnabledStyles = function(e) {
         if (formatBlock.length > 0) {
             items.push(formatBlock);
         }
-        // Images
-        $('img').bind('touchstart', function(e) {
-            $('img').removeClass('zs_active');
-            $(this).addClass('zs_active');
-        });
         
         // Use jQuery to figure out those that are not supported
         if (typeof(e) != "undefined") {
@@ -1065,6 +1069,21 @@ ZSSField.prototype.handleTapEvent = function(e) {
             // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
             //
             setTimeout(function() { thisObj.callback('callback-link-tap', joinedArguments);}, 500);
+        }
+        if (targetNode.nodeName.toLowerCase() == 'img') {
+            $('img').removeClass('zs_active');
+            $(targetNode).addClass('zs_active');
+            
+            var arguments = ['id=' + encodeURIComponent(targetNode.id),
+                             'title=' + encodeURIComponent(targetNode.src)];
+            
+            var joinedArguments = arguments.join(defaultCallbackSeparator);
+            
+            var thisObj = this;
+            
+            // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
+            //
+            setTimeout(function() { thisObj.callback('callback-image-tap', joinedArguments);}, 500);
         }
     }
 };
