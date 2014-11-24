@@ -695,15 +695,15 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
     }
     
     var progressElement = document.getElementById('progress-'+imageNodeIdentifier);
-    if (!progressElement){
-        progressElement = document.createElement("progress");
-        progressElement.id = 'progress-'+ imageNodeIdentifier;
-        progressElement.max = 100;
-        progressElement.value = 0;
-        progressElement.contentEditable = false;
-        element.parentNode.insertBefore(progressElement, element);
-        document.add(progressElement);
-    }
+//    if (!progressElement){
+//        progressElement = document.createElement("progress");
+//        progressElement.id = 'progress-'+ imageNodeIdentifier;
+//        progressElement.max = 100;
+//        progressElement.value = 0;
+//        progressElement.contentEditable = false;
+//        element.parentNode.insertBefore(progressElement, element);
+//        document.add(progressElement);
+//    }
     progressElement.value = 100 * progress;
     if (progress >=1){
         progressElement.parentNode.removeChild(progressElement);
