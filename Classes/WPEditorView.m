@@ -1086,6 +1086,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
+- (void)markImageAsFailed:(NSString*)uniqueId
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.markImageAsFailed(\"%@\");", uniqueId];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+
 #pragma mark - URL normalization
 
 - (NSString*)normalizeURL:(NSString*)url

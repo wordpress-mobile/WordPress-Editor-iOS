@@ -7,7 +7,7 @@
 
 @interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
-@property(nonatomic, strong) NSMutableArray * imagesAdded;
+@property(nonatomic, strong) NSMutableDictionary * imagesAdded;
 
 @end
 
@@ -22,7 +22,7 @@
                                                                              style:UIBarButtonItemStyleBordered
                                                                             target:self
                                                                             action:@selector(editTouchedUpInside)];
-    self.imagesAdded = [NSMutableArray array];
+    self.imagesAdded = [NSMutableDictionary dictionary];
 }
 
 #pragma mark - Navigation Bar
@@ -92,13 +92,8 @@
        imageTapped:(NSString *)imageId
                url:(NSURL *)url
 {
-    NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageId}];
-    progress.totalUnitCount = 100;
-    NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
-                                                       target:self
-                                                     selector:@selector(timerFireMethod:)
-                                                     userInfo:progress
-                                                      repeats:YES];
+    [self.imagesAdded[imageId] invalidate];
+    [self.editorView markImageAsFailed:imageId];
 }
 
 - (void)showPhotoPicker
@@ -122,7 +117,6 @@
         NSString * path = [NSString stringWithFormat:@"%@/%@", NSTemporaryDirectory(), imageID];
         [data writeToFile:path atomically:YES];
         [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
-        [self.imagesAdded addObject:imageID];
         NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID}];
         progress.totalUnitCount = 100;
         NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
@@ -130,6 +124,7 @@
                                                          selector:@selector(timerFireMethod:)
                                                          userInfo:progress
                                                           repeats:YES];
+        self.imagesAdded[imageID] = timer;
     } failureBlock:^(NSError *error) {
         DDLogInfo(@"Failed to inser media: %@", [error localizedDescription]);
     }];

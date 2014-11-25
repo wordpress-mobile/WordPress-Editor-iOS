@@ -863,7 +863,7 @@ function style_html(html_source, options) {
             min-width: 30px;
             min-height: 30px;
             max-width: 100%;
-            opacity: 1;
+            opacity:1;
         }
     
         a {
@@ -880,6 +880,11 @@ function style_html(html_source, options) {
     
         img.zs_active {
             border: 2px dashed #000;
+        }
+    
+        img.failed {
+            opacity:1;
+            -webkit-filter:blur(5px);
         }
     
         progress[value] {

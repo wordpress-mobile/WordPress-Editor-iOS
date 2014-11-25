@@ -704,12 +704,32 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
         progressElement.max = 100;
         progressElement.value = 0;
         progressElement.contentEditable = false;
-        element.parentNode.insertBefore(progressElement, element);
-        document.add(progressElement);
+        element.parentNode.insertBefore(progressElement, element);        
     }
     progressElement.value = 100 * progress;
     if (progress >=1){
         progressElement.parentNode.removeChild(progressElement);
+    }
+};
+
+/**
+ *  @brief      Marks the image as failed to upload
+ *
+ *  @details
+ *
+ *
+ *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.
+ */
+ZSSEditor.markImageAsFailed = function(imageNodeIdentifier) {
+    var element = $('#'+imageNodeIdentifier);
+    if (!element){
+        return;
+    }
+    element.addClass('failed');
+    
+    var progressElement = $('#progress-'+imageNodeIdentifier);
+    if (progressElement){
+        progressElement.remove();
     }
 };
 
@@ -1076,7 +1096,6 @@ ZSSField.prototype.handleTapEvent = function(e) {
         if (targetNode.nodeName.toLowerCase() == 'img') {
             $('img').removeClass('zs_active');
             $(targetNode).addClass('zs_active');
-            
             var arguments = ['id=' + encodeURIComponent(targetNode.id),
                              'title=' + encodeURIComponent(targetNode.src)];
             

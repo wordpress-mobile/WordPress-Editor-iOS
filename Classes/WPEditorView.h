@@ -202,6 +202,8 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 - (void)setProgress:(double) progress onImage:(NSString*)uniqueId;
 
+- (void)markImageAsFailed:(NSString*)uniqueId;
+
 #pragma mark - Links
 
 /**
