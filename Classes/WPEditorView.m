@@ -20,11 +20,16 @@ static const CGFloat HTMLViewLeftRightInset = 10.0f;
 static const CGFloat UITextFieldLeftRightInset = 15.5f;
 static const CGFloat UITextFieldFieldHeight = 44.0f;
 
+static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
+
 @interface WPEditorView () <UITextViewDelegate, UIWebViewDelegate, UITextFieldDelegate>
 
 #pragma mark - Cached caret & line data
 @property (nonatomic, assign, readwrite) CGFloat caretYOffset;
 @property (nonatomic, assign, readwrite) CGFloat lineHeight;
+
+#pragma mark - Editor height
+@property (nonatomic, assign, readwrite) NSInteger lastEditorHeight;
 
 #pragma mark - Editing state
 @property (nonatomic, assign, readwrite, getter = isEditing) BOOL editing;
@@ -60,6 +65,7 @@ static const CGFloat UITextFieldFieldHeight = 44.0f;
 - (void)dealloc
 {
     [self stopObservingKeyboardNotifications];
+    [self stopObservingWebViewContentSizeChanges];
 }
 
 #pragma mark - UIView
@@ -156,6 +162,8 @@ static const CGFloat UITextFieldFieldHeight = 44.0f;
     _webView.usesGUIFixes = YES;
     _webView.keyboardDisplayRequiresUserAction = NO;
     _webView.scrollView.bounces = YES;
+
+    [self startObservingWebViewContentSizeChanges];
     
 	[self addSubview:_webView];
 }
@@ -224,6 +232,51 @@ static const CGFloat UITextFieldFieldHeight = 44.0f;
 	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--editor-->" withString:editorJavascriptContentsString];
 	
 	return fileContentString;
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+    // IMPORTANT: WORKAROUND: the following code is a fix to prevent the web view from thinking it's
+    // taller than it really is.  The problem we were having is that when we were switching the
+    // focus from the title field to the content field, the web view was trying to scroll down, and
+    // jumping back up.
+    //
+    // The reason behind the sizing issues is that the web view doesn't really like having insets
+    // and wants it's body and content to be as tall as possible.
+    //
+    // Ref bug: https://github.com/wordpress-mobile/WordPress-iOS-Editor/issues/324
+    //
+    if (object == self.webView.scrollView) {
+        UIScrollView* scrollView = self.webView.scrollView;
+    
+        NSValue *newValue = change[NSKeyValueChangeNewKey];
+        
+        CGSize newSize;
+        [newValue getValue:&newSize];
+    
+        if (newSize.height != self.lastEditorHeight) {
+            [self refreshVisibleViewportAndContentSize];
+        }
+    }
+}
+
+- (void)startObservingWebViewContentSizeChanges
+{
+    [_webView.scrollView addObserver:self
+                          forKeyPath:WPEditorViewWebViewContentSizeKey
+                             options:NSKeyValueObservingOptionNew
+                             context:nil];
+}
+
+- (void)stopObservingWebViewContentSizeChanges
+{
+    [self.webView.scrollView removeObserver:self
+                                 forKeyPath:WPEditorViewWebViewContentSizeKey];
 }
 
 #pragma mark - Keyboard notifications
@@ -322,6 +375,7 @@ static const CGFloat UITextFieldFieldHeight = 44.0f;
     NSString* newHeightString = [self.webView stringByEvaluatingJavaScriptFromString:@"$(document.body).height();"];
     NSInteger newHeight = [newHeightString integerValue];
     
+    self.lastEditorHeight = newHeight;
     self.webView.scrollView.contentSize = CGSizeMake(self.frame.size.width, newHeight);
 }
 

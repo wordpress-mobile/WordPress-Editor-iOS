@@ -948,7 +948,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (NSString*)titleText
 {
-    return [self.editorView.titleField html];
+    return [self.editorView.titleField strippedHtml];
 }
 
 - (void)setTitleText:(NSString*)titleText
