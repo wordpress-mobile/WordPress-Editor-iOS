@@ -691,20 +691,6 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
     } else {
         element.style.opacity = 0.2 + (0.6*progress);
     }
-    var progressIdentifier = 'progress-'+imageNodeIdentifier;
-    var progressElement = document.getElementById(progressIdentifier);
-    if (!progressElement){
-        progressElement = document.createElement("progress");
-        progressElement.id = progressIdentifier;
-        progressElement.max = 100;
-        progressElement.value = 0;
-        progressElement.contentEditable = false;
-        element.parentNode.insertBefore(progressElement, element);        
-    }
-    progressElement.value = 100 * progress;
-    if (progress >=1){
-        progressElement.parentNode.removeChild(progressElement);
-    }
 };
 
 /**
