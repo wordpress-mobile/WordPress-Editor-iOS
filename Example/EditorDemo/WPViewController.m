@@ -93,7 +93,7 @@
                url:(NSURL *)url
 {
     [self.imagesAdded[imageId] invalidate];
-    [self.editorView markImageAsFailed:imageId];
+    [self.editorView markImageUploadFailed:imageId];
 }
 
 - (void)showPhotoPicker

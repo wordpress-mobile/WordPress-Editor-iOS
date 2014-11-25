@@ -715,7 +715,7 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
  *
  *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.
  */
-ZSSEditor.markImageAsFailed = function(imageNodeIdentifier) {
+ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier) {
     var element = $('#'+imageNodeIdentifier);
     if (!element){
         return;
