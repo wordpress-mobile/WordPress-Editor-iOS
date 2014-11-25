@@ -23,6 +23,7 @@ WPEditorViewControllerMode;
 - (void)editorTextDidChange:(WPEditorViewController *)editorController;
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController;
 
+
 /**
  *	@brief		Received when the field is created and can be used.
  *  @details    The editor fields will be nil before this method is called.  This is because editor
@@ -33,6 +34,20 @@ WPEditorViewControllerMode;
  */
 - (void)editorViewController:(WPEditorViewController*)editorViewController
                 fieldCreated:(WPEditorField*)field;
+
+/**
+ *	@brief		Received when the user taps on a image in the editor.
+ *
+ *	@param		editorView	The editor view.
+ *	@param		imageId		The id of image of the image that was tapped.
+ *	@param		url			The url of the image that was tapped.
+ *
+ *	@return		YES if the tap was handled by the receiver and default handler should be supressed,
+ *				NO if it wasn't.
+ */
+- (void)editorViewController:(WPEditorViewController*)editorViewController
+       imageTapped:(NSString *)imageId
+               url:(NSURL *)url;
 
 @end
 

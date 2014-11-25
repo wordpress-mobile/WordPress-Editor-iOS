@@ -675,6 +675,64 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remo
     }
 };
 
+/**
+ *  @brief      Changes the progress indicator for the image with the value set.
+ *
+ *  @details
+ *
+ *
+ *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.  It exists as
+ *                                      a mechanism to update the image node with the remote URL
+ *                                      when replaceLocalImageWithRemoteImage() is called.
+ *  @param      progress          A value between 0 and 1 indicating the progress on the image.
+ */
+ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
+    var element = document.getElementById(imageNodeIdentifier);
+    if (!element){
+        return;
+    }
+    if (progress >=1){
+        element.style.opacity = 1;
+    } else {
+        element.style.opacity = 0.2 + (0.6*progress);
+    }
+    
+    var progressElement = document.getElementById('progress-'+imageNodeIdentifier);
+    if (!progressElement){
+        progressElement = document.createElement("progress");
+        progressElement.id = 'progress-'+ imageNodeIdentifier;
+        progressElement.max = 100;
+        progressElement.value = 0;
+        progressElement.contentEditable = false;
+        element.parentNode.insertBefore(progressElement, element);        
+    }
+    progressElement.value = 100 * progress;
+    if (progress >=1){
+        progressElement.parentNode.removeChild(progressElement);
+    }
+};
+
+/**
+ *  @brief      Marks the image as failed to upload
+ *
+ *  @details
+ *
+ *
+ *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.
+ */
+ZSSEditor.markImageAsFailed = function(imageNodeIdentifier) {
+    var element = $('#'+imageNodeIdentifier);
+    if (!element){
+        return;
+    }
+    element.addClass('failed');
+    
+    var progressElement = $('#progress-'+imageNodeIdentifier);
+    if (progressElement){
+        progressElement.remove();
+    }
+};
+
 // MARK: - Commands
 
 ZSSEditor.insertHTML = function(html) {
@@ -762,11 +820,6 @@ ZSSEditor.sendEnabledStyles = function(e) {
         if (formatBlock.length > 0) {
             items.push(formatBlock);
         }
-        // Images
-        $('img').bind('touchstart', function(e) {
-            $('img').removeClass('zs_active');
-            $(this).addClass('zs_active');
-        });
         
         // Use jQuery to figure out those that are not supported
         if (typeof(e) != "undefined") {
@@ -1039,6 +1092,20 @@ ZSSField.prototype.handleTapEvent = function(e) {
             // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
             //
             setTimeout(function() { thisObj.callback('callback-link-tap', joinedArguments);}, 500);
+        }
+        if (targetNode.nodeName.toLowerCase() == 'img') {
+            $('img').removeClass('zs_active');
+            $(targetNode).addClass('zs_active');
+            var arguments = ['id=' + encodeURIComponent(targetNode.id),
+                             'title=' + encodeURIComponent(targetNode.src)];
+            
+            var joinedArguments = arguments.join(defaultCallbackSeparator);
+            
+            var thisObj = this;
+            
+            // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
+            //
+            setTimeout(function() { thisObj.callback('callback-image-tap', joinedArguments);}, 500);
         }
     }
 };

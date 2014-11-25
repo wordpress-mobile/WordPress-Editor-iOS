@@ -75,6 +75,21 @@
 			 title:(NSString*)title;
 
 /**
+ *	@brief		Received when the user taps on a image in the editor.
+ *
+ *	@param		editorView	The editor view.
+ *	@param		imageId		The id of image of the image that was tapped.
+ *	@param		url			The url of the image that was tapped.
+ *
+ *	@return		YES if the tap was handled by the receiver and default handler should be supressed,
+ *				NO if it wasn't.
+ */
+- (BOOL)editorView:(WPEditorView*)editorView
+        imageTapped:(NSString *)imageId
+                url:(NSURL *)url;
+
+
+/**
  *	@brief		Received when the selection is changed.
  *	@details	Useful to know what styles surround the current selection.
  *
@@ -184,6 +199,10 @@ stylesForCurrentSelection:(NSArray*)styles;
 - (void)replaceLocalImageWithRemoteImage:(NSString*)url uniqueId:(NSString*)uniqueId;
 
 - (void)updateImage:(NSString *)url alt:(NSString *)alt;
+
+- (void)setProgress:(double) progress onImage:(NSString*)uniqueId;
+
+- (void)markImageAsFailed:(NSString*)uniqueId;
 
 #pragma mark - Links
 

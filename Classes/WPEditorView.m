@@ -436,6 +436,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([self isLinkTappedScheme:scheme]) {
             [self handleLinkTappedCallback:url];
             handled = YES;
+        } else if ([self isImageTappedScheme:scheme]) {
+            [self handleImageTappedCallback:url];
+            handled = YES;
         } else if ([self isLogCallbackScheme:scheme]){
             [self handleLogCallbackScheme:url];
             handled = YES;
@@ -588,6 +591,36 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 /**
+ *	@brief		Handles a image tapped callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleImageTappedCallback:(NSURL*)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    static NSString* const kTappedUrlParameterName = @"url";
+    static NSString* const kTappedIdParameterName = @"id";
+    
+    __block NSURL* tappedUrl = nil;
+    __block NSString* tappedId = nil;
+    
+    [self parseParametersFromCallbackURL:url
+         andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+     {
+         if ([parameterName isEqualToString:kTappedUrlParameterName]) {
+             tappedUrl = [NSURL URLWithString:[self stringByDecodingURLFormat:parameterValue]];
+         } else if ([parameterName isEqualToString:kTappedIdParameterName]) {
+             tappedId = [self stringByDecodingURLFormat:parameterValue];
+         }
+     } onComplete:^{
+         if ([self.delegate respondsToSelector:@selector(editorView:imageTapped:url:)]) {
+             [self.delegate editorView:self imageTapped:tappedId url:tappedUrl];
+         }
+     }];
+}
+
+/**
  *	@brief		Handles a log callback.
  *
  *	@param		url		The url with all the callback information.
@@ -713,6 +746,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	static NSString* const kCallbackScheme = @"callback-link-tap";
 	
 	return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isImageTappedScheme:(NSString*)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
+    static NSString* const kCallbackScheme = @"callback-image-tap";
+    
+    return [scheme isEqualToString:kCallbackScheme];
 }
 
 - (BOOL)isLogCallbackScheme:(NSString*)scheme
@@ -1090,6 +1133,19 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.updateImage(\"%@\", \"%@\");", url, alt];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
+
+- (void)setProgress:(double) progress onImage:(NSString*)uniqueId
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.setProgressOnImage(\"%@\", %f);", uniqueId, progress];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)markImageAsFailed:(NSString*)uniqueId
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.markImageAsFailed(\"%@\");", uniqueId];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
 
 #pragma mark - URL normalization
 

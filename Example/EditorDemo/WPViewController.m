@@ -1,10 +1,14 @@
 #import "WPViewController.h"
 
+@import AssetsLibrary;
 #import <CocoaLumberjack/DDLog.h>
 #import "WPEditorField.h"
 #import "WPEditorView.h"
 
-@interface WPViewController ()
+@interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+
+@property(nonatomic, strong) NSMutableDictionary * imagesAdded;
+
 @end
 
 @implementation WPViewController
@@ -18,6 +22,7 @@
                                                                              style:UIBarButtonItemStyleBordered
                                                                             target:self
                                                                             action:@selector(editTouchedUpInside)];
+    self.imagesAdded = [NSMutableDictionary dictionary];
 }
 
 #pragma mark - Navigation Bar
@@ -65,6 +70,7 @@
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController
 {
     DDLogInfo(@"Pressed Media!");
+    [self showPhotoPicker];
 }
 
 - (void)editorTitleDidChange:(WPEditorViewController *)editorController
@@ -81,5 +87,69 @@
 {
     DDLogInfo(@"Editor field created: %@", field.nodeId);
 }
+
+- (void)editorViewController:(WPEditorViewController*)editorViewController
+       imageTapped:(NSString *)imageId
+               url:(NSURL *)url
+{
+    [self.imagesAdded[imageId] invalidate];
+    [self.editorView markImageAsFailed:imageId];
+}
+
+- (void)showPhotoPicker
+{
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    picker.delegate = self;
+    picker.allowsEditing = NO;
+    picker.navigationBar.translucent = NO;
+    picker.modalPresentationStyle = UIModalPresentationCurrentContext;
+    
+    [self.navigationController presentViewController:picker animated:YES completion:nil];
+}
+
+- (void)addAssetToContent:(NSURL *)assetURL {
+    ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
+    [assetsLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset){
+        UIImage * image = [UIImage imageWithCGImage:asset.defaultRepresentation.fullScreenImage];
+        NSData * data = UIImageJPEGRepresentation(image, 0.7);
+        NSString * imageID = [[NSUUID UUID] UUIDString];
+        NSString * path = [NSString stringWithFormat:@"%@/%@", NSTemporaryDirectory(), imageID];
+        [data writeToFile:path atomically:YES];
+        [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
+        NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID}];
+        progress.totalUnitCount = 100;
+        NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                           target:self
+                                                         selector:@selector(timerFireMethod:)
+                                                         userInfo:progress
+                                                          repeats:YES];
+        self.imagesAdded[imageID] = timer;
+    } failureBlock:^(NSError *error) {
+        DDLogInfo(@"Failed to inser media: %@", [error localizedDescription]);
+    }];
+}
+
+-(void)timerFireMethod:(NSTimer *)timer{
+    NSProgress * progress = (NSProgress *)timer.userInfo;
+    NSString * imageID = progress.userInfo[@"imageID"];
+    progress.completedUnitCount++;
+    [self.editorView setProgress:progress.fractionCompleted onImage:imageID];
+    if (progress.fractionCompleted >= 1){
+        [timer invalidate];
+    }
+}
+
+#pragma mark - UIImagePickerControllerDelegate methods
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    [self.navigationController dismissViewControllerAnimated:YES completion:^{
+        NSURL *assetURL = info[UIImagePickerControllerReferenceURL];
+        [self addAssetToContent:assetURL];
+    }];
+    
+}
+
 
 @end
