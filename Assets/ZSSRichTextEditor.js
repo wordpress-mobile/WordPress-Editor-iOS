@@ -691,11 +691,11 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
     } else {
         element.style.opacity = 0.2 + (0.6*progress);
     }
-    
-    var progressElement = document.getElementById('progress-'+imageNodeIdentifier);
+    var progressIdentifier = 'progress-'+imageNodeIdentifier;
+    var progressElement = document.getElementById(progressIdentifier);
     if (!progressElement){
         progressElement = document.createElement("progress");
-        progressElement.id = 'progress-'+ imageNodeIdentifier;
+        progressElement.id = progressIdentifier;
         progressElement.max = 100;
         progressElement.value = 0;
         progressElement.contentEditable = false;
