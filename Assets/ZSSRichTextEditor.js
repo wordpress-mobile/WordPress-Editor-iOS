@@ -623,7 +623,7 @@ ZSSEditor.quickLink = function() {
  *                                      does not check for that.  It would be a mistake.
  */
 ZSSEditor.insertLocalImage = function(imageNodeIndentifier, localImageUrl) {
-    var html = '<progress id="progress-'+ imageNodeIndentifier +'"max="100" value="0" contenteditable="false"></progress> <img id="' + imageNodeIndentifier + '" src="' + localImageUrl + '" alt="" />';
+    var html = '<img id="' + imageNodeIndentifier + '" src="' + localImageUrl + '" alt="" />';
     
     this.insertHTML(html);
     this.sendEnabledStyles();
@@ -688,22 +688,25 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remo
  */
 ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
     var element = document.getElementById(imageNodeIdentifier);
+    if (!element){
+        return;
+    }
     if (progress >=1){
         element.style.opacity = 1;
     } else {
-        element.style.opacity = 0.2 + (0.7*progress);
+        element.style.opacity = 0.2 + (0.6*progress);
     }
     
     var progressElement = document.getElementById('progress-'+imageNodeIdentifier);
-//    if (!progressElement){
-//        progressElement = document.createElement("progress");
-//        progressElement.id = 'progress-'+ imageNodeIdentifier;
-//        progressElement.max = 100;
-//        progressElement.value = 0;
-//        progressElement.contentEditable = false;
-//        element.parentNode.insertBefore(progressElement, element);
-//        document.add(progressElement);
-//    }
+    if (!progressElement){
+        progressElement = document.createElement("progress");
+        progressElement.id = 'progress-'+ imageNodeIdentifier;
+        progressElement.max = 100;
+        progressElement.value = 0;
+        progressElement.contentEditable = false;
+        element.parentNode.insertBefore(progressElement, element);
+        document.add(progressElement);
+    }
     progressElement.value = 100 * progress;
     if (progress >=1){
         progressElement.parentNode.removeChild(progressElement);
