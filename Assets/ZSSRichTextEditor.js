@@ -690,6 +690,8 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
     } else {
         element.css("opacity",0.3);
     }
+    element.attr("contenteditable","false");
+    
     var progressIdentifier = 'progress_'+imageNodeIdentifier;
     var imageContainerIdentifier = 'img_container_'+imageNodeIdentifier;
     var progressElement = $('#'+progressIdentifier);
@@ -706,6 +708,7 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
     progressElement.attr("value",progress);
     if (progress >=1 && (element.parent().attr("id") == imageContainerIdentifier)){
         element.parent().replaceWith(element);
+        element.attr("contenteditable","true");
     }
 };
 
@@ -721,6 +724,7 @@ ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier) {
     }
     element.addClass('failed');
     element.parent().replaceWith(element);
+    element.attr("contenteditable","false");
 };
 
 // MARK: - Commands
