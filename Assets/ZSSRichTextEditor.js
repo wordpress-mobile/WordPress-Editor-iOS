@@ -711,9 +711,6 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
 /**
  *  @brief      Marks the image as failed to upload
  *
- *  @details
- *
- *
  *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.
  */
 ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier) {
