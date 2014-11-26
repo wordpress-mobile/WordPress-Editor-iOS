@@ -691,9 +691,10 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
         element.css("opacity",0.3);
     }
     var progressIdentifier = 'progress_'+imageNodeIdentifier;
+    var imageContainerIdentifier = 'img_container_'+imageNodeIdentifier;
     var progressElement = $('#'+progressIdentifier);
     if (progressElement.length == 0){
-        var img_container = $('<span id="img_container_'+imageNodeIdentifier+'"class="img_container" contenteditable=false></span>');
+        var img_container = $('<span id="'+imageContainerIdentifier+'" class="img_container" contenteditable=false></span>');
         element.wrap(img_container);
         progressElement = $('<progress class="wp_media_indicator"/>');
         progressElement.attr("id",progressIdentifier);
@@ -703,7 +704,7 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
         
     }
     progressElement.attr("value",progress);
-    if (progress >=1 && (element.parent().attr("id") == 'img_container_'+imageNodeIdentifier)){
+    if (progress >=1 && (element.parent().attr("id") == imageContainerIdentifier)){
         element.parent().replaceWith(element);
     }
 };
