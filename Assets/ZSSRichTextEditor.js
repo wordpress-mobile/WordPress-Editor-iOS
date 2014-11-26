@@ -1086,8 +1086,6 @@ ZSSField.prototype.handleTapEvent = function(e) {
             setTimeout(function() { thisObj.callback('callback-link-tap', joinedArguments);}, 500);
         }
         if (targetNode.nodeName.toLowerCase() == 'img') {
-            $('img').removeClass('zs_active');
-            $(targetNode).addClass('zs_active');
             var arguments = ['id=' + encodeURIComponent(targetNode.id),
                              'title=' + encodeURIComponent(targetNode.src)];
             
