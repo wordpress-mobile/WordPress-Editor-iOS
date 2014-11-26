@@ -7,7 +7,6 @@
  *
  */
 
-
 // If we are using iOS or desktop
 var isUsingiOS = true;
 
@@ -675,6 +674,59 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remo
     }
 };
 
+/**
+ *  @brief      Update the progress indicator for the image identified with the value in progress.
+ *
+ *  @param      imageNodeIdentifier This is a unique ID provided by the caller.
+ *  @param      progress    A value between 0 and 1 indicating the progress on the image.
+ */
+ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
+    var element = $('#'+imageNodeIdentifier);
+    if (element.length == 0){
+        return;
+    }
+    if (progress >=1){
+        element.css("opacity",1);
+    } else {
+        element.css("opacity",0.3);
+    }
+    element.attr("contenteditable","false");
+    
+    var progressIdentifier = 'progress_'+imageNodeIdentifier;
+    var imageContainerIdentifier = 'img_container_'+imageNodeIdentifier;
+    var progressElement = $('#'+progressIdentifier);
+    if (progressElement.length == 0){
+        var img_container = $('<span id="'+imageContainerIdentifier+'" class="img_container" contenteditable=false></span>');
+        element.wrap(img_container);
+        progressElement = $('<progress class="wp_media_indicator"/>');
+        progressElement.attr("id",progressIdentifier);
+        progressElement.attr("value",0);
+        progressElement.attr("contenteditable","false");
+        element.before(progressElement);
+        
+    }
+    progressElement.attr("value",progress);
+    if (progress >=1 && (element.parent().attr("id") == imageContainerIdentifier)){
+        element.parent().replaceWith(element);
+        element.attr("contenteditable","true");
+    }
+};
+
+/**
+ *  @brief      Marks the image as failed to upload
+ *
+ *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.
+ */
+ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier) {
+    var element = $('#'+imageNodeIdentifier);
+    if (!element){
+        return;
+    }
+    element.addClass('failed');
+    element.parent().replaceWith(element);
+    element.attr("contenteditable","false");
+};
+
 // MARK: - Commands
 
 ZSSEditor.insertHTML = function(html) {
@@ -762,11 +814,6 @@ ZSSEditor.sendEnabledStyles = function(e) {
         if (formatBlock.length > 0) {
             items.push(formatBlock);
         }
-        // Images
-        $('img').bind('touchstart', function(e) {
-            $('img').removeClass('zs_active');
-            $(this).addClass('zs_active');
-        });
         
         // Use jQuery to figure out those that are not supported
         if (typeof(e) != "undefined") {
@@ -1039,6 +1086,18 @@ ZSSField.prototype.handleTapEvent = function(e) {
             // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
             //
             setTimeout(function() { thisObj.callback('callback-link-tap', joinedArguments);}, 500);
+        }
+        if (targetNode.nodeName.toLowerCase() == 'img') {
+            var arguments = ['id=' + encodeURIComponent(targetNode.id),
+                             'title=' + encodeURIComponent(targetNode.src)];
+            
+            var joinedArguments = arguments.join(defaultCallbackSeparator);
+            
+            var thisObj = this;
+            
+            // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
+            //
+            setTimeout(function() { thisObj.callback('callback-image-tap', joinedArguments);}, 500);
         }
     }
 };

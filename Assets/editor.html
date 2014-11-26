@@ -859,10 +859,11 @@ function style_html(html_source, options) {
         img {
             width: auto;
             height: auto;
-            margin: 10px 0 10px 0;
+            margin: 0px 0 0px 0;
             min-width: 30px;
             min-height: 30px;
             max-width: 100%;
+            opacity:1;
         }
     
         a {
@@ -880,7 +881,35 @@ function style_html(html_source, options) {
         img.zs_active {
             border: 2px dashed #000;
         }
+    
+        img.failed {
+            opacity:0.2;
+        }
+    
+        span.img_container {
+            position: relative;
+            display: inline-block;
+        }
         
+        progress.wp_media_indicator {
+            /* Reset the default appearance */
+            -webkit-appearance: none;
+            appearance: none;
+            position: absolute;
+            top:-2pt; height:2pt;
+            left:0px; width:100%;
+        }
+        
+        progress.wp_media_indicator::-webkit-progress-bar {
+            background-color: rgba(232,240,247,1.0);
+            border-radius: 2pt;
+        }
+        
+        progress.wp_media_indicator::-webkit-progress-value {
+            background-color:rgba(0,135,190,1.0);
+            border-radius: 2pt; 
+        }
+    
         div[contenteditable] {
             padding: 15px 10px 5px 10px;
             box-sizing: border-box;
