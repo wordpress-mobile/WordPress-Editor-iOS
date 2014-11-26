@@ -7,7 +7,6 @@
  *
  */
 
-
 // If we are using iOS or desktop
 var isUsingiOS = true;
 
@@ -682,14 +681,30 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remo
  *  @param      progress    A value between 0 and 1 indicating the progress on the image.
  */
 ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
-    var element = document.getElementById(imageNodeIdentifier);
-    if (!element){
+    var element = $('#'+imageNodeIdentifier);
+    if (element.length == 0){
         return;
     }
     if (progress >=1){
-        element.style.opacity = 1;
+        element.css("opacity",1);
     } else {
-        element.style.opacity = 0.2 + (0.6*progress);
+        element.css("opacity",0.3);
+    }
+    var progressIdentifier = 'progress-'+imageNodeIdentifier;
+    var progressElement = $('#'+progressIdentifier);
+    if (progressElement.length == 0){
+        var img_container = $('<span id="img_container_'+imageNodeIdentifier+'"class="img_container" contenteditable=false></span>');
+        element.wrap(img_container);
+        progressElement = $('<progress class="wp_media_indicator"/>');
+        progressElement.attr("id",progressIdentifier);
+        progressElement.attr("value",0);
+        progressElement.attr("contenteditable","false");
+        element.before(progressElement);
+        
+    }
+    progressElement.attr("value",progress);
+    if (progress >=1 && (element.parent().attr("id") == 'img_container_'+imageNodeIdentifier)){
+        element.parent().replaceWith(element);
     }
 };
 
@@ -707,11 +722,7 @@ ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier) {
         return;
     }
     element.addClass('failed');
-    
-    var progressElement = $('#progress-'+imageNodeIdentifier);
-    if (progressElement){
-        progressElement.remove();
-    }
+    element.parent().replaceWith(element);
 };
 
 // MARK: - Commands

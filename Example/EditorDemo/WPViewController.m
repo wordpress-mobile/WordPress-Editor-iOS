@@ -92,8 +92,6 @@
        imageTapped:(NSString *)imageId
                url:(NSURL *)url
 {
-    [self.imagesAdded[imageId] invalidate];
-    [self.editorView markImageUploadFailed:imageId];
 }
 
 - (void)showPhotoPicker
