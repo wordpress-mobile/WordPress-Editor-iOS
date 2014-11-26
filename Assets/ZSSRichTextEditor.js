@@ -690,7 +690,7 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
     } else {
         element.css("opacity",0.3);
     }
-    var progressIdentifier = 'progress-'+imageNodeIdentifier;
+    var progressIdentifier = 'progress_'+imageNodeIdentifier;
     var progressElement = $('#'+progressIdentifier);
     if (progressElement.length == 0){
         var img_container = $('<span id="img_container_'+imageNodeIdentifier+'"class="img_container" contenteditable=false></span>');
