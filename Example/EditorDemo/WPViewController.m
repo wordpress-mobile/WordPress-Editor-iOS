@@ -7,7 +7,7 @@
 
 @interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
-@property(nonatomic, strong) NSMutableDictionary * imagesAdded;
+@property(nonatomic, strong) NSMutableDictionary *imagesAdded;
 
 @end
 
