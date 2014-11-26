@@ -42,8 +42,6 @@ WPEditorViewControllerMode;
  *	@param		imageId		The id of image of the image that was tapped.
  *	@param		url			The url of the image that was tapped.
  *
- *	@return		YES if the tap was handled by the receiver and default handler should be supressed,
- *				NO if it wasn't.
  */
 - (void)editorViewController:(WPEditorViewController*)editorViewController
        imageTapped:(NSString *)imageId
