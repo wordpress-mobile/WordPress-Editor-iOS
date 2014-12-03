@@ -694,7 +694,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 	
 	ZSSBarButtonItem *barButtonItem = [self barButtonItemWithTag:kWPEditorViewControllerElementTagInsertImageBarButton
 													htmlProperty:@"image"
-													   imageName:@"icon_media"
+													   imageName:@"icon_format_media"
 														  target:self
 														selector:@selector(didTouchMediaOptions)
 											  accessibilityLabel:accessibilityLabel];
