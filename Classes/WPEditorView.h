@@ -204,6 +204,7 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 - (void)markImageUploadFailed:(NSString*)uniqueId;
 
+- (void)removeImage:(NSString*)uniqueId;
 #pragma mark - Links
 
 /**

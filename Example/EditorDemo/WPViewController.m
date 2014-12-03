@@ -5,10 +5,10 @@
 #import "WPEditorField.h"
 #import "WPEditorView.h"
 
-@interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate>
 
 @property(nonatomic, strong) NSMutableDictionary *imagesAdded;
-
+@property(nonatomic, strong) NSString *selectedImageId;
 @end
 
 @implementation WPViewController
@@ -92,6 +92,9 @@
        imageTapped:(NSString *)imageId
                url:(NSURL *)url
 {
+    UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:@"Remove Image" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Remove" otherButtonTitles:nil];
+    [actionSheet showInView:self.view];
+    self.selectedImageId= imageId;
 }
 
 - (void)showPhotoPicker
@@ -147,6 +150,15 @@
         [self addAssetToContent:assetURL];
     }];
     
+}
+
+#pragma mark - UIActionSheetDelegate
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 0){
+        [self.editorView removeImage:self.selectedImageId];
+    }
 }
 
 
