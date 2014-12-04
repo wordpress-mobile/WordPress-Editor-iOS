@@ -92,6 +92,9 @@
        imageTapped:(NSString *)imageId
                url:(NSURL *)url
 {
+    if (imageId.length == 0){
+        return;
+    }
     UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:@"Remove Image" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Remove" otherButtonTitles:nil];
     [actionSheet showInView:self.view];
     self.selectedImageId= imageId;
