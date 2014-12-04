@@ -727,6 +727,25 @@ ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier) {
     element.attr("contenteditable","false");
 };
 
+/**
+ *  @brief      Remove the image from the DOM.
+ *
+ *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.
+ */
+ZSSEditor.removeImage = function(imageNodeIdentifier) {
+    var element = $('#'+imageNodeIdentifier);
+    if (!element){
+        return;
+    }
+    element.remove();
+    // if image is inside options container we need to remove the container
+    var container = $('#img_container_'+imageNodeIdentifier);
+    if (!container){
+        return;
+    }
+    container.remove();
+};
+
 // MARK: - Commands
 
 ZSSEditor.insertHTML = function(html) {
