@@ -95,7 +95,7 @@
     if (imageId.length == 0){
         return;
     }
-    UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:@"Remove Image" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Remove" otherButtonTitles:nil];
+    UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
     [actionSheet showInView:self.view];
     self.selectedImageId= imageId;
 }
@@ -121,6 +121,7 @@
         NSString * path = [NSString stringWithFormat:@"%@/%@", NSTemporaryDirectory(), imageID];
         [data writeToFile:path atomically:YES];
         [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
+            
         NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID}];
         progress.totalUnitCount = 100;
         NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
@@ -140,6 +141,7 @@
     progress.completedUnitCount++;
     [self.editorView setProgress:progress.fractionCompleted onImage:imageID];
     if (progress.fractionCompleted >= 1){
+        [self.imagesAdded removeObjectForKey:imageID];
         [timer invalidate];
     }
 }
@@ -159,7 +161,7 @@
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if (buttonIndex == 0){
+    if (buttonIndex == actionSheet.destructiveButtonIndex) {
         [self.editorView removeImage:self.selectedImageId];
     }
 }

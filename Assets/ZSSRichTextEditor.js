@@ -608,28 +608,37 @@ ZSSEditor.quickLink = function() {
 
 // MARK: - Images
 
+ZSSEditor.insertImage = function(url, alt) {
+    var html = '<img src="'+url+'" alt="'+alt+'" />';
+    
+    this.insertHTML(html);
+    this.sendEnabledStyles();
+};
+
 /**
  *  @brief      Inserts a local image URL.  Useful for images that need to be uploaded.
  *  @details    By inserting a local image URL, we can make sure the image is shown to the user
  *              as soon as it's selected for uploading.  Once the image is successfully uploaded
  *              the application should call replaceLocalImageWithRemoteImage().
  *
- *  @param      imageNodeIndetifier     This is a unique ID provided by the caller.  It exists as
+ *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.  It exists as
  *                                      a mechanism to update the image node with the remote URL
  *                                      when replaceLocalImageWithRemoteImage() is called.
  *  @param      localImageUrl           The URL of the local image to display.  Please keep in mind
  *                                      that a remote URL can be used here too, since this method
  *                                      does not check for that.  It would be a mistake.
  */
-ZSSEditor.insertLocalImage = function(imageNodeIndentifier, localImageUrl) {
-    var html = '<img id="' + imageNodeIndentifier + '" src="' + localImageUrl + '" alt="" />';
-    
-    this.insertHTML(html);
-    this.sendEnabledStyles();
-};
-
-ZSSEditor.insertImage = function(url, alt) {
-    var html = '<img src="'+url+'" alt="'+alt+'" />';
+ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
+    // this hiddenChar helps with editing the content around images: http://stackoverflow.com/questions/18985261/cursor-in-wrong-place-in-contenteditable
+    var hiddenChar = '\ufeff';
+    var progressIdentifier = 'progress_' + imageNodeIdentifier;
+    var imageContainerIdentifier = 'img_container_' + imageNodeIdentifier;
+    var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container" contenteditable="false">';
+    var imgContainerEnd = '</span>';
+    var progress = '<progress id="' + progressIdentifier+'" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
+    var image = '<img id="' + imageNodeIdentifier + '" src="' + localImageUrl + '" alt="" />';
+    var html = imgContainerStart + progress+image + imgContainerEnd;
+    html = hiddenChar + html + hiddenChar;
     
     this.insertHTML(html);
     this.sendEnabledStyles();
@@ -641,7 +650,7 @@ ZSSEditor.insertImage = function(url, alt) {
  *  @details    The remote image can be available after a while, when uploading images.  This method
  *              allows for the remote URL to be loaded once the upload completes.
  *
- *  @param      imageNodeIndetifier     This is a unique ID provided by the caller.  It exists as
+ *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.  It exists as
  *                                      a mechanism to update the image node with the remote URL
  *                                      when replaceLocalImageWithRemoteImage() is called.
  *  @param      remoteImageUrl          The URL of the remote image to display.
@@ -686,29 +695,21 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
         return;
     }
     if (progress >=1){
-        element.css("opacity",1);
+        element.removeClass("uploading");
+        element.removeAttr("class");
     } else {
-        element.css("opacity",0.3);
+        element.addClass("uploading");
     }
-    element.attr("contenteditable","false");
     
     var progressIdentifier = 'progress_'+imageNodeIdentifier;
     var imageContainerIdentifier = 'img_container_'+imageNodeIdentifier;
     var progressElement = $('#'+progressIdentifier);
     if (progressElement.length == 0){
-        var img_container = $('<span id="'+imageContainerIdentifier+'" class="img_container" contenteditable=false></span>');
-        element.wrap(img_container);
-        progressElement = $('<progress class="wp_media_indicator"/>');
-        progressElement.attr("id",progressIdentifier);
-        progressElement.attr("value",0);
-        progressElement.attr("contenteditable","false");
-        element.before(progressElement);
-        
+          return;
     }
     progressElement.attr("value",progress);
     if (progress >=1 && (element.parent().attr("id") == imageContainerIdentifier)){
         element.parent().replaceWith(element);
-        element.attr("contenteditable","true");
     }
 };
 
