@@ -312,21 +312,11 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
 - (void)keyboardDidShow:(NSNotification *)notification
 {
-    // IMPORTANT: we could've put these lines in keyboardWillShow for iOS 8+.  Unfortunately, iOS 7
-    // takes a bit longer to resize the viewport, so it's very important that the content size is
-    // recalculated only after the keyboard is shown.
-    //
-    [self refreshVisibleViewportAndContentSize];
     [self scrollToCaretAnimated:NO];
 }
 
 - (void)keyboardDidHide:(NSNotification *)notification
 {
-    // IMPORTANT: we could've put these lines in keyboardWillHide for iOS 8+. Unfortunately, iOS 7
-    // takes a bit longer to resize the viewport, so it's very important that the content size is
-    // recalculated only after the keyboard is hidden.
-    //
-    [self refreshVisibleViewportAndContentSize];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification
@@ -546,15 +536,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
          }
      } onComplete:^() {
          
-         // WORKAOROUND: if we don't add a small delay here, the method
-         // refreshVisibleViewportAndContentSize fails to calculate the appropriate content size
-         // because our javascript is a bit delayed.
-         //
-         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-             
-             [self refreshVisibleViewportAndContentSize];
-             [self scrollToCaretAnimated:NO];
-         });
+         [self scrollToCaretAnimated:NO];
      }];
 }
 
@@ -691,16 +673,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              self.lineHeight = [parameterValue floatValue];
          }
      } onComplete:^() {
-         
-         // WORKAOROUND: if we don't add a small delay here, the method
-         // refreshVisibleViewportAndContentSize fails to calculate the appropriate content size
-         // because our javascript is a bit delayed.
-         //
-         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-             
-             [self refreshVisibleViewportAndContentSize];
-             [self scrollToCaretAnimated:NO];
-         });
+         [self scrollToCaretAnimated:NO];
      }];
 }
 
