@@ -631,11 +631,14 @@ ZSSEditor.insertImage = function(url, alt) {
 ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
     // this hiddenChar helps with editing the content around images: http://stackoverflow.com/questions/18985261/cursor-in-wrong-place-in-contenteditable
     var hiddenChar = '\ufeff';
-    var progressIdentifier = 'progress_'+imageNodeIdentifier;
-    var imageContainerIdentifier = 'img_container_'+imageNodeIdentifier;
-    var img_container = hiddenChar+'<span id="'+imageContainerIdentifier+'" class="img_container" contenteditable="false">';
-    var progress = '<progress id="'+progressIdentifier+'" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
-    var html = img_container+progress+'<img id="' + imageNodeIdentifier + '" src="' + localImageUrl + '" alt="" /></span>'+hiddenChar;
+    var progressIdentifier = 'progress_' + imageNodeIdentifier;
+    var imageContainerIdentifier = 'img_container_' + imageNodeIdentifier;
+    var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container" contenteditable="false">';
+    var imgContainerEnd = '</span>';
+    var progress = '<progress id="' + progressIdentifier+'" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
+    var image = '<img id="' + imageNodeIdentifier + '" src="' + localImageUrl + '" alt="" />';
+    var html = imgContainerStart + progress+image + imgContainerEnd;
+    html = hiddenChar + html + hiddenChar;
     
     this.insertHTML(html);
     this.sendEnabledStyles();
