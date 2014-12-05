@@ -608,6 +608,13 @@ ZSSEditor.quickLink = function() {
 
 // MARK: - Images
 
+ZSSEditor.insertImage = function(url, alt) {
+    var html = '<img src="'+url+'" alt="'+alt+'" />';
+    
+    this.insertHTML(html);
+    this.sendEnabledStyles();
+};
+
 /**
  *  @brief      Inserts a local image URL.  Useful for images that need to be uploaded.
  *  @details    By inserting a local image URL, we can make sure the image is shown to the user
@@ -629,13 +636,6 @@ ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
     var img_container = hiddenChar+'<span id="'+imageContainerIdentifier+'" class="img_container" contenteditable="false">';
     var progress = '<progress id="'+progressIdentifier+'" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
     var html = img_container+progress+'<img id="' + imageNodeIdentifier + '" src="' + localImageUrl + '" alt="" /></span>'+hiddenChar;
-    
-    this.insertHTML(html);
-    this.sendEnabledStyles();
-};
-
-ZSSEditor.insertImage = function(url, alt) {
-    var html = '<img src="'+url+'" alt="'+alt+'" />';
     
     this.insertHTML(html);
     this.sendEnabledStyles();
