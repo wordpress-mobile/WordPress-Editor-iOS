@@ -697,6 +697,7 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
     }
     
     var progressIdentifier = 'progress_'+imageNodeIdentifier;
+    var imageContainerIdentifier = 'img_container_'+imageNodeIdentifier;
     var progressElement = $('#'+progressIdentifier);
     if (progressElement.length == 0){
           return;
