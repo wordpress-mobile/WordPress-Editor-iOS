@@ -252,13 +252,16 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     // Ref bug: https://github.com/wordpress-mobile/WordPress-iOS-Editor/issues/324
     //
     if (object == self.webView.scrollView) {
-        NSValue *newValue = change[NSKeyValueChangeNewKey];
         
-        CGSize newSize;
-        [newValue getValue:&newSize];
-    
-        if (newSize.height != self.lastEditorHeight) {
-            [self refreshVisibleViewportAndContentSize];
+        if ([keyPath isEqualToString:WPEditorViewWebViewContentSizeKey]) {
+            NSValue *newValue = change[NSKeyValueChangeNewKey];
+            
+            CGSize newSize;
+            [newValue getValue:&newSize];
+        
+            if (newSize.height != self.lastEditorHeight) {
+                [self refreshVisibleViewportAndContentSize];
+            }
         }
     }
 }
@@ -324,6 +327,8 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
         
         UIEdgeInsets insets = UIEdgeInsetsMake(0.0f, 0.0f, vOffset, 0.0f);
         
+        self.webView.scrollView.contentInset = insets;
+        self.webView.scrollView.scrollIndicatorInsets = insets;
         self.sourceView.contentInset = insets;
         self.sourceView.scrollIndicatorInsets = insets;
     }
@@ -339,6 +344,8 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     CGFloat vOffset = self.sourceView.inputAccessoryView.frame.size.height;
     UIEdgeInsets insets = UIEdgeInsetsMake(0.0f, 0.0f, vOffset, 0.0f);
     
+    self.webView.scrollView.contentInset = insets;
+    self.webView.scrollView.scrollIndicatorInsets = insets;
     self.sourceView.contentInset = insets;
     self.sourceView.scrollIndicatorInsets = insets;
 }
