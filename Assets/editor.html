@@ -882,6 +882,10 @@ function style_html(html_source, options) {
             border: 2px dashed #000;
         }
     
+        img.uploading {
+            opacity:0.3;
+            -webkit-user-select: none;
+        }
         img.failed {
             opacity:0.2;
         }
@@ -889,11 +893,13 @@ function style_html(html_source, options) {
         span.img_container {
             position: relative;
             display: inline-block;
+            -webkit-user-select: none;
         }
         
         progress.wp_media_indicator {
             /* Reset the default appearance */
             -webkit-appearance: none;
+            -webkit-user-select: none;
             appearance: none;
             position: absolute;
             top:-2pt; height:2pt;

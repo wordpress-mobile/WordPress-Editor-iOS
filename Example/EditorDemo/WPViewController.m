@@ -123,7 +123,7 @@
         [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
         NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID}];
         progress.totalUnitCount = 100;
-        NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+        NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.5
                                                            target:self
                                                          selector:@selector(timerFireMethod:)
                                                          userInfo:progress
