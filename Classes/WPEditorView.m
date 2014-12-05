@@ -285,10 +285,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
                                              selector:@selector(keyboardDidShow:)
                                                  name:UIKeyboardDidShowNotification
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardDidHide:)
-                                                 name:UIKeyboardDidHideNotification
-                                               object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
@@ -303,7 +299,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 - (void)stopObservingKeyboardNotifications
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
@@ -313,10 +308,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 - (void)keyboardDidShow:(NSNotification *)notification
 {
     [self scrollToCaretAnimated:NO];
-}
-
-- (void)keyboardDidHide:(NSNotification *)notification
-{
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification
