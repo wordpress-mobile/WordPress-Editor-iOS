@@ -252,8 +252,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     // Ref bug: https://github.com/wordpress-mobile/WordPress-iOS-Editor/issues/324
     //
     if (object == self.webView.scrollView) {
-        UIScrollView* scrollView = self.webView.scrollView;
-    
         NSValue *newValue = change[NSKeyValueChangeNewKey];
         
         CGSize newSize;
