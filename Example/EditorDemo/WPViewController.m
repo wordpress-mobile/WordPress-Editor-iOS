@@ -95,7 +95,7 @@
     if (imageId.length == 0){
         return;
     }
-    UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:@"Remove Image" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Remove" otherButtonTitles:nil];
+    UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
     [actionSheet showInView:self.view];
     self.selectedImageId= imageId;
 }
@@ -129,7 +129,7 @@
                                                          selector:@selector(timerFireMethod:)
                                                          userInfo:progress
                                                           repeats:YES];
-        self.imagesAdded[imageID] = timer;        
+        self.imagesAdded[imageID] = timer;
     } failureBlock:^(NSError *error) {
         DDLogInfo(@"Failed to inser media: %@", [error localizedDescription]);
     }];
@@ -141,6 +141,7 @@
     progress.completedUnitCount++;
     [self.editorView setProgress:progress.fractionCompleted onImage:imageID];
     if (progress.fractionCompleted >= 1){
+        [self.imagesAdded removeObjectForKey:imageID];
         [timer invalidate];
     }
 }
@@ -160,7 +161,7 @@
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if (buttonIndex == 0){
+    if (buttonIndex == actionSheet.destructiveButtonIndex) {
         [self.editorView removeImage:self.selectedImageId];
     }
 }
