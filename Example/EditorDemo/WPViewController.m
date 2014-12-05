@@ -121,14 +121,15 @@
         NSString * path = [NSString stringWithFormat:@"%@/%@", NSTemporaryDirectory(), imageID];
         [data writeToFile:path atomically:YES];
         [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
+            
         NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID}];
         progress.totalUnitCount = 100;
-        NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.5
+        NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
                                                            target:self
                                                          selector:@selector(timerFireMethod:)
                                                          userInfo:progress
                                                           repeats:YES];
-        self.imagesAdded[imageID] = timer;
+        self.imagesAdded[imageID] = timer;        
     } failureBlock:^(NSError *error) {
         DDLogInfo(@"Failed to inser media: %@", [error localizedDescription]);
     }];
