@@ -824,11 +824,11 @@ function style_html(html_source, options) {
         }
         
         html {
+            padding:0;
             box-sizing: border-box;
         }
         
         html, body {
-            padding:0;
             margin:0;
             font-family:OpenSans, sans-serif;
             font-size:1em;
@@ -838,6 +838,8 @@ function style_html(html_source, options) {
         body {
             padding-left:5px;
             padding-right:5px;
+            padding-top: 0px;
+            padding-bottom: 0px;
             overflow-y: auto;
             min-height: 100vh;
         }
@@ -853,7 +855,7 @@ function style_html(html_source, options) {
             height: 1px;
             color: #e8f0f5;
             background-color: #e8f0f5;
-            width: 95%;
+            width: 100%;
         }
 
         img {
@@ -916,19 +918,25 @@ function style_html(html_source, options) {
             border-radius: 2pt; 
         }
     
-        div[contenteditable] {
+        div.field[contenteditable] {
             padding: 15px 10px 5px 10px;
             box-sizing: border-box;
             font-size: 16px;
         }
     
-        div[placeholderText][contenteditable=true]:empty:before {
+        div.field[placeholderText][contenteditable=true]:empty:before {
             content: attr(placeholderText);
             transition: 0.2s ease opacity;
         }
     
-        div[placeholderText][contenteditable=true]:empty:focus:before {
+        div.field[placeholderText][contenteditable=true]:empty:focus:before {
             opacity: 0.6;
+        }
+    
+        #separatorDiv {
+            -webkit-user-select: none;
+            padding-left: 10px;
+            padding-right: 10px;
         }
     
         #zss_field_title, #zss_field_title p {
@@ -945,10 +953,12 @@ function style_html(html_source, options) {
     </style>
   </head>
   <body>
-      <div contenteditable="false" id="zss_field_title" nostyle>
+      <div contenteditable="false" id="zss_field_title" class="field" nostyle>
       </div>
-      <hr/>
-      <div contenteditable="false" id="zss_field_content">
+      <div contenteditable="false" id="separatorDiv" >
+          <hr/>
+      </div>
+      <div contenteditable="false" id="zss_field_content" class="field">
       </div>
   </body>
 </html>
