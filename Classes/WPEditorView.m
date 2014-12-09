@@ -252,15 +252,16 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     // Ref bug: https://github.com/wordpress-mobile/WordPress-iOS-Editor/issues/324
     //
     if (object == self.webView.scrollView) {
-        UIScrollView* scrollView = self.webView.scrollView;
-    
-        NSValue *newValue = change[NSKeyValueChangeNewKey];
         
-        CGSize newSize;
-        [newValue getValue:&newSize];
-    
-        if (newSize.height != self.lastEditorHeight) {
-            [self refreshVisibleViewportAndContentSize];
+        if ([keyPath isEqualToString:WPEditorViewWebViewContentSizeKey]) {
+            NSValue *newValue = change[NSKeyValueChangeNewKey];
+            
+            CGSize newSize;
+            [newValue getValue:&newSize];
+        
+            if (newSize.height != self.lastEditorHeight) {
+                [self refreshVisibleViewportAndContentSize];
+            }
         }
     }
 }
@@ -287,10 +288,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
                                              selector:@selector(keyboardDidShow:)
                                                  name:UIKeyboardDidShowNotification
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardDidHide:)
-                                                 name:UIKeyboardDidHideNotification
-                                               object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
@@ -305,7 +302,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 - (void)stopObservingKeyboardNotifications
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
@@ -314,21 +310,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
 - (void)keyboardDidShow:(NSNotification *)notification
 {
-    // IMPORTANT: we could've put these lines in keyboardWillShow for iOS 8+.  Unfortunately, iOS 7
-    // takes a bit longer to resize the viewport, so it's very important that the content size is
-    // recalculated only after the keyboard is shown.
-    //
-    [self refreshVisibleViewportAndContentSize];
     [self scrollToCaretAnimated:NO];
-}
-
-- (void)keyboardDidHide:(NSNotification *)notification
-{
-    // IMPORTANT: we could've put these lines in keyboardWillHide for iOS 8+. Unfortunately, iOS 7
-    // takes a bit longer to resize the viewport, so it's very important that the content size is
-    // recalculated only after the keyboard is hidden.
-    //
-    [self refreshVisibleViewportAndContentSize];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification
@@ -345,6 +327,8 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
         
         UIEdgeInsets insets = UIEdgeInsetsMake(0.0f, 0.0f, vOffset, 0.0f);
         
+        self.webView.scrollView.contentInset = insets;
+        self.webView.scrollView.scrollIndicatorInsets = insets;
         self.sourceView.contentInset = insets;
         self.sourceView.scrollIndicatorInsets = insets;
     }
@@ -360,6 +344,8 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     CGFloat vOffset = self.sourceView.inputAccessoryView.frame.size.height;
     UIEdgeInsets insets = UIEdgeInsetsMake(0.0f, 0.0f, vOffset, 0.0f);
     
+    self.webView.scrollView.contentInset = insets;
+    self.webView.scrollView.scrollIndicatorInsets = insets;
     self.sourceView.contentInset = insets;
     self.sourceView.scrollIndicatorInsets = insets;
 }
@@ -548,15 +534,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
          }
      } onComplete:^() {
          
-         // WORKAOROUND: if we don't add a small delay here, the method
-         // refreshVisibleViewportAndContentSize fails to calculate the appropriate content size
-         // because our javascript is a bit delayed.
-         //
-         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-             
-             [self refreshVisibleViewportAndContentSize];
-             [self scrollToCaretAnimated:NO];
-         });
+         [self scrollToCaretAnimated:NO];
      }];
 }
 
@@ -693,16 +671,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              self.lineHeight = [parameterValue floatValue];
          }
      } onComplete:^() {
-         
-         // WORKAOROUND: if we don't add a small delay here, the method
-         // refreshVisibleViewportAndContentSize fails to calculate the appropriate content size
-         // because our javascript is a bit delayed.
-         //
-         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-             
-             [self refreshVisibleViewportAndContentSize];
-             [self scrollToCaretAnimated:NO];
-         });
+         [self scrollToCaretAnimated:NO];
      }];
 }
 
