@@ -51,7 +51,7 @@ ZSSEditor.init = function() {
     document.execCommand('insertBrOnReturn', false, false);
     document.execCommand('defaultParagraphSeparator', false, this.defaultParagraphSeparator);
     
-    var editor = $('[contenteditable]').each(function() {
+    var editor = $('div.field').each(function() {
         var editableField = new ZSSField($(this));
         var editableFieldId = editableField.getNodeId();
                                              
