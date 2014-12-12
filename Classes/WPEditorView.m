@@ -205,33 +205,28 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     return fileContentString;
 }
 
-- (NSString*)editorScript
+- (NSString *)javascriptFromBundleResourceNamed:(NSString *)filename
 {
-    NSString *editorJavascriptPath = [[NSBundle mainBundle] pathForResource:@"ZSSRichTextEditor" ofType:@"js"];
-    NSData* editorJavascriptContentsData = [NSData dataWithContentsOfFile:editorJavascriptPath];
-    NSString *editorJavascriptContentsString = [[NSString alloc] initWithData:editorJavascriptContentsData encoding:NSUTF8StringEncoding];
-    
-    return editorJavascriptContentsString;
-}
+    NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:@"js"];
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 
-- (NSString*)jQueryMobileScript
-{
-    NSString *jQueryMobileEventsPath = [[NSBundle mainBundle] pathForResource:@"jquery.mobile-events.min" ofType:@"js"];
-    NSData* jQueryMobileEventsContentsData = [NSData dataWithContentsOfFile:jQueryMobileEventsPath];
-    NSString *jQueryMobileEventsContentsString = [[NSString alloc] initWithData:jQueryMobileEventsContentsData encoding:NSUTF8StringEncoding];
-    
-    return jQueryMobileEventsContentsString;
+    return content;
 }
 
 - (NSString*)editorHTML
 {
     NSString *fileContentString = [self editorRawHTML];
-    NSString *jQueryMobileEventsContentsString = [self jQueryMobileScript];
-    NSString *editorJavascriptContentsString = [self editorScript];
-    
+    NSString *jQueryMobileEventsContentsString = [self javascriptFromBundleResourceNamed:@"jquery.mobile-events.min"];
+    NSString *editorJavascriptContentsString = [self javascriptFromBundleResourceNamed:@"ZSSRichTextEditor"];
+    NSString *shortcodeJavascriptContentString = [self javascriptFromBundleResourceNamed:@"shortcode"];
+    NSString *underscoreJavascriptContentString = [self javascriptFromBundleResourceNamed:@"underscore-min"];
+
 	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--jquery-mobile-events-->" withString:jQueryMobileEventsContentsString];
 	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--editor-->" withString:editorJavascriptContentsString];
-	
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--underscore-->" withString:underscoreJavascriptContentString];
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--shortcode-->" withString:shortcodeJavascriptContentString];
+
 	return fileContentString;
 }
 
