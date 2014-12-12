@@ -156,7 +156,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     [self.editorView setProgress:progress.fractionCompleted onImage:imageID];
     if (progress.fractionCompleted >= 0.15){
         [progress cancel];
-        [self.editorView markImage:imageID failedUploadWithMessage:@"Upload failed, tap to retry."];
+        [self.editorView markImage:imageID failedUploadWithMessage:@"Failed"];
         [timer invalidate];
     }
     if (progress.fractionCompleted >= 1){
