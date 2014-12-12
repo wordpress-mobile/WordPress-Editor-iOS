@@ -633,7 +633,7 @@ ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
     var hiddenChar = '\ufeff';
     var progressIdentifier = 'progress_' + imageNodeIdentifier;
     var imageContainerIdentifier = 'img_container_' + imageNodeIdentifier;
-    var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container" contenteditable="false">';
+    var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container" contenteditable="false" data-failed="Tap to try again!">';
     var imgContainerEnd = '</span>';
     var progress = '<progress id="' + progressIdentifier+'" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
     var image = '<img id="' + imageNodeIdentifier + '" src="' + localImageUrl + '" alt="" />';
@@ -717,15 +717,61 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
  *  @brief      Marks the image as failed to upload
  *
  *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.
+ *  @param      message                 A message to show to the user, overlayed on the image
  */
-ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier) {
+ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier, message) {
     var element = $('#'+imageNodeIdentifier);
-    if (!element){
+    if (element.length == 0){
         return;
     }
+    
     element.addClass('failed');
-    element.parent().replaceWith(element);
     element.attr("contenteditable","false");
+    
+    var imageContainerIdentifier = 'img_container_'+imageNodeIdentifier;
+    var elementContainer = $('#'+imageContainerIdentifier);
+    if(elementContainer.length == 0){
+        return;
+    }
+    elementContainer.attr("data-failed", message);
+    elementContainer.addClass('failed');
+    
+    var progressIdentifier = 'progress_'+imageNodeIdentifier;
+    var progressElement = $('#'+progressIdentifier);
+    if (progressElement.length == 0){
+        return;
+    }
+    progressElement.addClass('failed');
+};
+
+/**
+ *  @brief      Unmarks the image as failed to upload
+ *
+ *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.
+ */
+ZSSEditor.unmarkImageUploadFailed = function(imageNodeIdentifier, message) {
+    var element = $('#'+imageNodeIdentifier);
+    if (element.length == 0){
+        return;
+    }
+    
+    element.removeClass('failed');
+    element.attr("contenteditable","false");
+    
+    var imageContainerIdentifier = 'img_container_'+imageNodeIdentifier;
+    var elementContainer = $('#'+imageContainerIdentifier);
+    if(elementContainer.length == 0){
+        return;
+    }
+    elementContainer.removeAttr("data-failed");
+    elementContainer.removeClass('failed');
+    
+    var progressIdentifier = 'progress_'+imageNodeIdentifier;
+    var progressElement = $('#'+progressIdentifier);
+    if (progressElement.length == 0){
+        return;
+    }
+    progressElement.removeClass('failed');
 };
 
 /**

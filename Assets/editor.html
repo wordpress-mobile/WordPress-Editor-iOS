@@ -888,8 +888,9 @@ function style_html(html_source, options) {
             opacity:0.3;
             -webkit-user-select: none;
         }
+    
         img.failed {
-            opacity:0.2;
+            opacity:1;
         }
     
         span.img_container {
@@ -897,7 +898,35 @@ function style_html(html_source, options) {
             display: inline-block;
             -webkit-user-select: none;
         }
-        
+
+        span.img_container.failed::after {
+            position: absolute;
+            top:35%;left:0%;
+            text-align: center;
+            color: white;
+            width:100%;
+            height:35%;
+            opacity:1;
+            background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><path d="M35.3 12.7C32.41 9.8 28.42 8 24 8 15.16 8 8.02 15.16 8.02 24S15.16 40 24 40c7.45 0 13.69-5.1 15.46-12H35.3c-1.65 4.66-6.07 8-11.3 8-6.63 0-12-5.37-12-12s5.37-12 12-12c3.31 0 6.28 1.38 8.45 3.55L26 22h14V8l-4.7 4.7z" stroke="white" fill="white"/></svg>') no-repeat center bottom;
+            -webkit-user-select: none;
+            pointer-events: none;
+            content:attr(data-failed);
+        }
+    
+        span.img_container.failed::before {
+            position: absolute;
+            top:0%;left:0%;
+            text-align: center;
+            color: black;
+            width:100%;
+            height:98%;
+            opacity:0.5;
+            background:rgba(124,124,124,124);
+            -webkit-user-select: none;
+            pointer-events: none;
+            content:"";
+        }
+    
         progress.wp_media_indicator {
             /* Reset the default appearance */
             -webkit-appearance: none;
@@ -910,15 +939,24 @@ function style_html(html_source, options) {
         
         progress.wp_media_indicator::-webkit-progress-bar {
             background-color: rgba(232,240,247,1.0);
-            border-radius: 2pt;
         }
         
         progress.wp_media_indicator::-webkit-progress-value {
             background-color:rgba(0,135,190,1.0);
-            border-radius: 2pt; 
+            border-radius: 0 2pt 2pt 0;
         }
     
-        div.field[contenteditable] {
+        progress.wp_media_indicator.failed::-webkit-progress-bar {
+            background-color: rgba(232,232,232,1.0);
+        }
+        
+        progress.wp_media_indicator.failed::-webkit-progress-value {
+            background-color:rgba(135,135,135,1.0);
+            border-radius: 0 2pt 2pt 0;
+        }
+
+
+        div[contenteditable] {
             padding: 15px 10px 5px 10px;
             box-sizing: border-box;
             font-size: 16px;
