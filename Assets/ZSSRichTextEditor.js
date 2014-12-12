@@ -558,19 +558,6 @@ ZSSEditor.unlink = function() {
 	ZSSEditor.sendEnabledStyles();
 };
 
-ZSSEditor.updateImage = function(url, alt) {
-
-    ZSSEditor.restoreRange();
-
-    if (ZSSEditor.currentEditingImage) {
-        var c = ZSSEditor.currentEditingImage;
-        c.attr('src', url);
-        c.attr('alt', alt);
-    }
-    ZSSEditor.sendEnabledStyles();
-
-}; //end
-
 ZSSEditor.unwrapNode = function(node) {
 	var newObject = $(node).replaceWith(node.innerHTML);
 };
@@ -607,6 +594,20 @@ ZSSEditor.quickLink = function() {
 };
 
 // MARK: - Images
+
+
+ZSSEditor.updateImage = function(url, alt) {
+
+    ZSSEditor.restoreRange();
+
+    if (ZSSEditor.currentEditingImage) {
+        var c = ZSSEditor.currentEditingImage;
+        c.attr('src', url);
+        c.attr('alt', alt);
+    }
+    ZSSEditor.sendEnabledStyles();
+
+};
 
 ZSSEditor.insertImage = function(url, alt) {
     var html = '<img src="'+url+'" alt="'+alt+'" />';
@@ -746,6 +747,238 @@ ZSSEditor.removeImage = function(imageNodeIdentifier) {
     }
     container.remove();
 };
+
+/**
+ *  Modified from wp-includes/js/media-editor.js
+ *  see `image`
+ *
+ *  @brief      Construct html markup for an image, and optionally a link an caption shortcode.
+ *
+ *  @param      props   A dictionary of properties used to compose the markup. See comments in extractImageMeta.
+ *
+ *  @return     Returns the html mark up as a string
+ */
+ZSSEditor.createImageFromMeta = function( props ) {
+    var img = {},
+    options, classes, shortcode, html;
+
+    classes = props.classes || [];
+
+    _.extend( img, _.pick( props, 'width', 'height', 'alt', 'src' ) );
+
+    // Only assign the align class to the image if we're not printing
+    // a caption, since the alignment is sent to the shortcode.
+    if ( props.align && ! props.caption ) {
+        classes.push( 'align' + props.align );
+    }
+
+    if ( props.size ) {
+        classes.push( 'size-' + props.size );
+    }
+
+    img['class'] = _.compact( classes ).join(' ');
+
+    // Generate `img` tag options.
+    options = {
+        tag:    'img',
+        attrs:  img,
+        single: true
+    };
+
+    // Generate the `a` element options, if they exist.
+    if ( props.linkUrl ) {
+        options = {
+            tag:   'a',
+            attrs: {
+                href: props.linkUrl
+            },
+            content: options
+        };
+        if (props.linkClassName) {
+            options.attrs.class = props.linkClassName;
+        }
+        if (props.linkTargetBlank) {
+            options.attrs.target = "_blank";
+        }
+    }
+
+    html = wp.html.string( options );
+
+    // Generate the caption shortcode.
+    if ( props.caption ) {
+        shortcode = {};
+
+        if ( img.width ) {
+            shortcode.width = img.width;
+        }
+
+        if ( props.captionId ) {
+            shortcode.id = props.captionId;
+        }
+
+        if ( props.align ) {
+            shortcode.align = 'align' + props.align;
+        }
+
+        if (props.captionClassName) {
+            shortcode.class = props.captionClassName;
+        }
+
+        html = wp.shortcode.string({
+                                   tag:     'caption',
+                                   attrs:   shortcode,
+                                   content: html + ' ' + props.caption
+                                   });
+    }
+
+    return html;
+};
+
+/**
+ *  Modified from wp-includes/js/tinymce/plugins/wpeditimage/plugin.js
+ *  see `extractImageData`
+ *
+ *  @brief      Extracts properties and meta data from an image, and optionally its link and caption.
+ *
+ *  @param      imageNode   An image node in the DOM to inspect.
+ *
+ *  @return     Returns an object containing the extracted properties and meta data.
+ */
+ZSSEditor.extractImageMeta = function( imageNode ) {
+    var classes, extraClasses, metadata, captionBlock, caption, link, width, height,
+    captionClassName = [],
+    isIntRegExp = /^\d+$/;
+
+    // default attributes
+    metadata = {
+        alt:'',
+        align: 'none',
+        attachment_id: '',
+        caption: '',
+        captionClassName:'',
+        classes: '',
+        height:'',
+        link: false,
+        linkClassName: '',
+        linkTargetBlank: false,
+        linkUrl: '',
+        size: 'custom',
+        title: '',
+        src:'',
+        width:''
+    };
+
+    // populate metadata with values of matched attributes
+    metadata.src = $(imageNode).attr( 'src' ) || '';
+    metadata.alt = $(imageNode).attr( 'alt' ) || '';
+    metadata.title = $(imageNode).attr( 'title' ) || '';
+
+    width = $(imageNode).attr( 'width' );
+    height = $(imageNode).attr( 'height' );
+
+    if ( ! isIntRegExp.test( width ) || parseInt( width, 10 ) < 1 ) {
+        width = imageNode.naturalWidth || imageNode.width;
+    }
+
+    if ( ! isIntRegExp.test( height ) || parseInt( height, 10 ) < 1 ) {
+        height = imageNode.naturalHeight || imageNode.height;
+    }
+
+    metadata.width = width;
+    metadata.height = height;
+
+    classes = imageNode.className.split(/\s+/);
+    extraClasses = [];
+
+    $.each( classes, function( index, value ) {
+        if ( /^wp-image/.test( name ) ) {
+           metadata.attachment_id = parseInt( name.replace( 'wp-image-', '' ), 10 );
+        } else if ( /^align/.test( name ) ) {
+           metadata.align = name.replace( 'align', '' );
+        } else if ( /^size/.test( name ) ) {
+           metadata.size = name.replace( 'size-', '' );
+        } else {
+           extraClasses.push( name );
+        }
+    } );
+
+    metadata.classes = extraClasses.join( ' ' );
+
+    // Extract caption
+    var captionMeta = ZSSEditor.captionMetaForImage(imageNode)
+    metadata = $.extend(metadata, captionMeta);
+
+    // Extract linkTo
+    if ( imageNode.parentNode && imageNode.parentNode.nodeName === 'A' ) {
+        link = imageNode.parentNode;
+        metadata.linkUrl = $(link).attr( 'href' ) || '';
+        metadata.linkTargetBlank = $(link).attr( 'target' ) === '_blank' ? true : false;
+        metadata.linkClassName = link.className;
+    }
+
+    return metadata;
+};
+
+/**
+ *  @brief      Extracts the caption shortcode for an image.
+ *
+ *  @param      imageNode   An image node in the DOM to inspect.
+ *
+ *  @return     Returns a shortcode match (if any) for the passed image node.
+ *  See shortcode.js::next or details
+ */
+ZSSEditor.getCaptionForImage = function(imageNode) {
+    var openingBlock, closingBlock;
+    var node = imageNode;
+
+    if (node.parentNode && node.parentNode.nodeName === 'A' ) {
+        node = node.parentNode;
+    }
+
+    if (node.previousSibling.nodeType === 3) {
+        openingBlock = node.previousSibling.nodeValue;
+    }
+
+    if (node.nextSibling.nodeType === 3) {
+        closingBlock = node.nextSibling.nodeValue;
+    }
+
+    if (!openingBlock || !closingBlock) {
+        return false;
+    }
+
+    var text = openingBlock + node.outerHTML + closingBlock;
+
+    return wp.shortcode.next( "caption", text, 0);
+};
+
+/**
+ *  @brief      Extracts meta data for the caption (if any) for the passed image node.
+ *
+ *  @param      imageNode   An image node in the DOM to inspect.
+ *
+ *  @return     Returns an object containing the extracted meta data.
+ *  See shortcode.js::next or details
+ */
+ZSSEditor.captionMetaForImage = function(imageNode) {
+    var caption, attrs;
+    var meta = {};
+    var caption = ZSSEditor.getCaptionForImage(imageNode);
+    if (!caption) {
+        return meta;
+    }
+
+    attrs = caption.shortcode.attrs.named;
+
+    if (attrs.class) {
+        meta.captionClassName = attrs.class;
+    }
+    if (attrs.align) {
+        meta.align = attrs.align.replace( 'align', '' );
+    }
+    meta.caption = caption.shortcode.content.substr(caption.shortcode.content.lastIndexOf(">")+1);
+    return meta;
+}
 
 // MARK: - Commands
 
