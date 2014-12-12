@@ -145,6 +145,8 @@
 		5D2E84EB2296A691CF58FD05 /* ZSSTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = 56375D09F629B9DD4EBD220B /* ZSSTextView.h */; };
 		5D5E6E261A3B46AF006C595E /* underscore-min.js in Resources */ = {isa = PBXBuildFile; fileRef = 5D5E6E251A3B46AF006C595E /* underscore-min.js */; };
 		5D5E6E281A3B46FE006C595E /* shortcode.js in Resources */ = {isa = PBXBuildFile; fileRef = 5D5E6E271A3B46FE006C595E /* shortcode.js */; };
+		5D5E6E2B1A3B5414006C595E /* WPImageMeta.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E6E2A1A3B5414006C595E /* WPImageMeta.m */; };
+		5D5E6E2C1A3B5414006C595E /* WPImageMeta.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D5E6E2A1A3B5414006C595E /* WPImageMeta.m */; };
 		5DB50E37A875C5A40A6E8A22 /* DDDispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 688AC0932EBEBCEB8309BE06 /* DDDispatchQueueLogFormatter.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-checker -Xanalyzer deadcode"; }; };
 		5E48298718A7A18F30F7D225 /* DTWeakSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = AF62C3BF7DB5BCDDCFAA90AB /* DTWeakSupport.h */; };
 		5E68893F89270C734779B52C /* DTCoreTextGlyphRun.m in Sources */ = {isa = PBXBuildFile; fileRef = D7223F5F12F3CA94005696D5 /* DTCoreTextGlyphRun.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
@@ -733,6 +735,8 @@
 		5D34F035074F7412D31B3AF2 /* Pods-EditorDemo-DTCoreText-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-EditorDemo-DTCoreText-prefix.pch"; sourceTree = "<group>"; };
 		5D5E6E251A3B46AF006C595E /* underscore-min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "underscore-min.js"; sourceTree = "<group>"; };
 		5D5E6E271A3B46FE006C595E /* shortcode.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = shortcode.js; sourceTree = "<group>"; };
+		5D5E6E291A3B5414006C595E /* WPImageMeta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WPImageMeta.h; path = Classes/WPImageMeta.h; sourceTree = "<group>"; };
+		5D5E6E2A1A3B5414006C595E /* WPImageMeta.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WPImageMeta.m; path = Classes/WPImageMeta.m; sourceTree = "<group>"; };
 		5E29D9FF10635202D9DF81D8 /* Pods-EditorDemoTests-CocoaLumberjack-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "Pods-EditorDemoTests-CocoaLumberjack-dummy.m"; path = "../Pods-EditorDemoTests-CocoaLumberjack/Pods-EditorDemoTests-CocoaLumberjack-dummy.m"; sourceTree = "<group>"; };
 		60028C6654E335054111DAD0 /* icon_format_unlink@2x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; name = "icon_format_unlink@2x.png"; path = "Assets/icon_format_unlink@2x.png"; sourceTree = "<group>"; };
 		6067E725F4BECB57F53FDA74 /* Pods-EditorDemo-WordPress-iOS-Editor-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-EditorDemo-WordPress-iOS-Editor-prefix.pch"; sourceTree = "<group>"; };
@@ -1658,6 +1662,8 @@
 				FCDEC10256D992E43BDCAEF8 /* WPEditorView.m */,
 				1AF0DC6302E6849FD50987C1 /* WPEditorViewController.h */,
 				9BD264E18C087BE43FAF90A9 /* WPEditorViewController.m */,
+				5D5E6E291A3B5414006C595E /* WPImageMeta.h */,
+				5D5E6E2A1A3B5414006C595E /* WPImageMeta.m */,
 				08710EBE30DC94273F8EDACD /* WPLegacyEditorViewController.h */,
 				281814D87079B17FFFC10FDD /* WPLegacyEditorViewController.m */,
 				82378E36F59FA4B8571C2688 /* WPLegacyKeyboardToolbarBase.h */,
@@ -2715,6 +2721,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D5E6E2C1A3B5414006C595E /* WPImageMeta.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2821,6 +2828,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				91805BBC2A6BE9DE7386131F /* Pods-EditorDemo-dummy.m in Sources */,
+				5D5E6E2B1A3B5414006C595E /* WPImageMeta.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
