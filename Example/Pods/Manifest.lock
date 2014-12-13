@@ -37,7 +37,7 @@ PODS:
   - DTFoundation/UIKit (1.7.4):
     - DTFoundation/Core
   - UIAlertView+Blocks (0.8.1)
-  - WordPress-iOS-Editor (0.3):
+  - WordPress-iOS-Editor (0.2.3.1):
     - CocoaLumberjack (~> 1.9)
     - UIAlertView+Blocks
     - WordPress-iOS-Shared (~> 0.1.4)
@@ -46,7 +46,7 @@ PODS:
     - AFNetworking (~> 2.3.1)
     - CocoaLumberjack (~> 1.9)
     - DTCoreText (= 1.6.13)
-  - WordPressCom-Analytics-iOS (0.0.14)
+  - WordPressCom-Analytics-iOS (0.0.16)
 
 DEPENDENCIES:
   - CocoaLumberjack (~> 1.9)
@@ -65,8 +65,8 @@ SPEC CHECKSUMS:
   DTCoreText: 84eb8ba2e70448fdd9d837540e371f9f587b65ba
   DTFoundation: 721a63964fb9acd64cb8c9d3d1642ee60bac3d6a
   UIAlertView+Blocks: 0b749f1f7bd5131ff2233b30a406c1585a7171b2
-  WordPress-iOS-Editor: 6391c16211a971d34543a1e878ec4d6d68b42fd5
+  WordPress-iOS-Editor: 90921cc23a033bc701c0ee105633cb6d6178f1cd
   WordPress-iOS-Shared: cb00b5b2530e5b581d34926ac6966b7ec476a93a
-  WordPressCom-Analytics-iOS: 93ca6c432c7015f26f1361482ba1e2b839a8b222
+  WordPressCom-Analytics-iOS: 6e1f522f0701ce0378a9d9180e649fea0bbd8305
 
 COCOAPODS: 0.35.0
