@@ -32,7 +32,7 @@
     self.scrollView.contentSize = self.contentView.bounds.size;
 
     self.alignField.text = self.imageMeta.align;
-    self.altField.text = self.imageMeta.align;
+    self.altField.text = self.imageMeta.alt;
     self.attachmentIdField.text = self.imageMeta.attachmentId;
     self.captionField.text = self.imageMeta.caption;
     self.captionClassNameField.text = self.imageMeta.captionClassName;
@@ -56,7 +56,7 @@
 - (void)updateImageMeta
 {
     self.imageMeta.align = self.alignField.text;
-    self.imageMeta.align = self.altField.text;
+    self.imageMeta.alt = self.altField.text;
     self.imageMeta.attachmentId = self.attachmentIdField.text;
     self.imageMeta.caption = self.captionField.text;
     self.imageMeta.captionClassName = self.captionClassNameField.text;
