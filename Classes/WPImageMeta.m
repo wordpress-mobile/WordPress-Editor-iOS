@@ -4,10 +4,6 @@
 
 + (instancetype)imageMetaFromJSONString:(NSString *)str
 {
-    if (![NSJSONSerialization isValidJSONObject:str]) {
-        return nil;
-    }
-
     NSData *jsonData = [str dataUsingEncoding:NSUTF8StringEncoding];
     NSError *error;
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
