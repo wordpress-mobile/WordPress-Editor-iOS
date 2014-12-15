@@ -663,8 +663,7 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remo
         var image = new Image;
         
         image.onload = function () {
-            imageNode.attr('src', image.src);
-            imageNode.removeAttr("id");
+            imageNode.attr('src', image.src);            
             var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
             ZSSEditor.callback("callback-input", joinedArguments);
         }
