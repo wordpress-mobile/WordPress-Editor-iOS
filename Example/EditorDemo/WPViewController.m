@@ -4,8 +4,9 @@
 #import <CocoaLumberjack/DDLog.h>
 #import "WPEditorField.h"
 #import "WPEditorView.h"
+#import "WPImageMetaViewController.h"
 
-@interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate>
+@interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, WPImageMetaViewControllerDelegate>
 
 @property(nonatomic, strong) NSMutableDictionary *imagesAdded;
 @property(nonatomic, strong) NSString *selectedImageId;
@@ -89,6 +90,26 @@
 }
 
 - (void)editorViewController:(WPEditorViewController*)editorViewController
+                 imageTapped:(NSString *)imageId
+                         url:(NSURL *)url
+                   imageMeta:(WPImageMeta *)imageMeta
+{
+    if (imageId.length > 0){
+        UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
+        [actionSheet showInView:self.view];
+        self.selectedImageId= imageId;
+        return;
+    }
+
+    WPImageMetaViewController *controller = [self.storyboard instantiateViewControllerWithIdentifier:@"WPImageMetaViewController"];
+    controller.imageMeta = imageMeta;
+    controller.delegate = self;
+    //WPImageMetaViewController *controller = [[WPImageMetaViewController alloc] initWithImageMeta:imageMeta];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+    [self.navigationController presentViewController:navController animated:YES completion:nil];
+}
+
+- (void)editorViewController:(WPEditorViewController*)editorViewController
        imageTapped:(NSString *)imageId
                url:(NSURL *)url
 {
@@ -166,5 +187,11 @@
     }
 }
 
+#pragma mark - WPImageMetaViewControllerDelegate
+
+- (void)imageMetaViewController:(WPImageMetaViewController *)controller didFinishEditingImageMeta:(WPImageMeta *)imageMeta
+{
+    [self.editorView updateCurrentImageMeta:imageMeta];
+}
 
 @end
