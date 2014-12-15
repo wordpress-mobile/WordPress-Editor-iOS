@@ -664,7 +664,7 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remo
         
         image.onload = function () {
             imageNode.attr('src', image.src);
-            
+            imageNode.removeAttr("id");
             var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
             ZSSEditor.callback("callback-input", joinedArguments);
         }
@@ -697,7 +697,6 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
     if (progress >=1){
         element.removeClass("uploading");
         element.removeAttr("class");
-        element.removeAttr("id");
     } else {
         element.addClass("uploading");
     }
