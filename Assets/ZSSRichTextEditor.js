@@ -781,13 +781,13 @@ ZSSEditor.unmarkImageUploadFailed = function(imageNodeIdentifier, message) {
  */
 ZSSEditor.removeImage = function(imageNodeIdentifier) {
     var element = $('#'+imageNodeIdentifier);
-    if (!element){
+    if (element.length == 0){
         return;
     }
     element.remove();
     // if image is inside options container we need to remove the container
     var container = $('#img_container_'+imageNodeIdentifier);
-    if (!container){
+    if (container.length == 0){
         return;
     }
     container.remove();
