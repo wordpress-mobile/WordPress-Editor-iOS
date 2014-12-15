@@ -697,6 +697,7 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
     if (progress >=1){
         element.removeClass("uploading");
         element.removeAttr("class");
+        element.removeAttr("id");
     } else {
         element.addClass("uploading");
     }
