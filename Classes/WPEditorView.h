@@ -4,6 +4,7 @@
 
 @class WPEditorView;
 @class WPEditorField;
+@class WPImageMeta;
 
 @protocol WPEditorViewDelegate <UIWebViewDelegate>
 @optional
@@ -88,6 +89,10 @@
         imageTapped:(NSString *)imageId
                 url:(NSURL *)url;
 
+- (BOOL)editorView:(WPEditorView*)editorView
+       imageTapped:(NSString *)imageId
+               url:(NSURL *)url
+         imageMeta:(WPImageMeta *)imageMeta;
 
 /**
  *	@brief		Received when the selection is changed.
@@ -199,6 +204,8 @@ stylesForCurrentSelection:(NSArray*)styles;
 - (void)replaceLocalImageWithRemoteImage:(NSString*)url uniqueId:(NSString*)uniqueId;
 
 - (void)updateImage:(NSString *)url alt:(NSString *)alt;
+
+- (void)updateCurrentImageMeta:(WPImageMeta *)imageMeta;
 
 - (void)setProgress:(double) progress onImage:(NSString*)uniqueId;
 

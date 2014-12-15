@@ -3,6 +3,7 @@
 #import "UIWebView+GUIFixes.h"
 #import "HRColorUtil.h"
 #import "WPEditorField.h"
+#import "WPImageMeta.h"
 #import "ZSSTextView.h"
 #import <WordPress-iOS-Shared/WPFontManager.h>
 #import <WordPress-iOS-Shared/WPStyleGuide.h>
@@ -573,11 +574,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
-    static NSString* const kTappedUrlParameterName = @"url";
-    static NSString* const kTappedIdParameterName = @"id";
+    static NSString *const kTappedUrlParameterName = @"url";
+    static NSString *const kTappedIdParameterName = @"id";
+    static NSString *const kTappedMetaName = @"meta";
     
-    __block NSURL* tappedUrl = nil;
-    __block NSString* tappedId = nil;
+    __block NSURL *tappedUrl = nil;
+    __block NSString *tappedId = nil;
+    __block NSString *tappedMeta = nil;
     
     [self parseParametersFromCallbackURL:url
          andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
@@ -586,10 +589,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              tappedUrl = [NSURL URLWithString:[self stringByDecodingURLFormat:parameterValue]];
          } else if ([parameterName isEqualToString:kTappedIdParameterName]) {
              tappedId = [self stringByDecodingURLFormat:parameterValue];
+         } else if ([parameterName isEqualToString:kTappedMetaName]) {
+             tappedMeta = [self stringByDecodingURLFormat:parameterValue];
          }
      } onComplete:^{
-         if ([self.delegate respondsToSelector:@selector(editorView:imageTapped:url:)]) {
-             [self.delegate editorView:self imageTapped:tappedId url:tappedUrl];
+         if ([self.delegate respondsToSelector:@selector(editorView:imageTapped:url:imageMeta:)]) {
+             WPImageMeta *imageMeta = [WPImageMeta imageMetaFromJSONString:tappedMeta];
+             [self.delegate editorView:self imageTapped:tappedId url:tappedUrl imageMeta:imageMeta];
          }
      }];
 }
@@ -1096,6 +1102,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)updateImage:(NSString *)url alt:(NSString *)alt
 {
     NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.updateImage(\"%@\", \"%@\");", url, alt];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)updateCurrentImageMeta:(WPImageMeta *)imageMeta
+{
+    NSString *jsonString = [imageMeta jsonStringRepresentation];
+    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.updateCurrentImageMeta(\"%@\");", jsonString];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
