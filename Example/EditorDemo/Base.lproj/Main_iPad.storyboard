@@ -80,7 +80,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Fa-HP-JPP">
-                                        <rect key="frame" x="0.0" y="0.0" width="768" height="1100"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="768" height="1200"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Align" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mH2-m6-lyb">
                                                 <rect key="frame" x="8" y="8" width="304" height="21"/>

@@ -24,7 +24,7 @@
         [dict setObject:self.align forKey:@"align"];
     }
     if (self.alt) {
-        [dict setObject:self.align forKey:@"alt"];
+        [dict setObject:self.alt forKey:@"alt"];
     }
     if (self.attachmentId) {
         [dict setObject:self.attachmentId forKey:@"attachment_id"];
