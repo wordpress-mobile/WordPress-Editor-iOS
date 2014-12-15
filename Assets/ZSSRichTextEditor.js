@@ -595,7 +595,6 @@ ZSSEditor.quickLink = function() {
 
 // MARK: - Images
 
-
 ZSSEditor.updateImage = function(url, alt) {
 
     ZSSEditor.restoreRange();
@@ -749,6 +748,66 @@ ZSSEditor.removeImage = function(imageNodeIdentifier) {
 };
 
 /**
+ *  @brief      Updates the currently selected image, replacing its markup with new markup based on the specified meta data string.
+ *
+ *  @param      imageMetaString   A JSON string representing the updated meta data.
+ */
+ZSSEditor.updateCurrentImageMeta = function(imageMetaString) {
+    ZSSEditor.restoreRange();
+
+    if ( ZSSEditor.currentEditingImage ) {
+        var imageMeta = JSON.parse( imageMetaString );
+        var html = ZSSEditor.createImageFromMeta( imageMeta );
+
+        ZSSEditor.selectImageCaptionBlock( ZSSEditor.currentEditingImage );
+        ZSSEditor.insertHTML( html );
+        return; // return to avoid sending enabled styles twice.
+    }
+
+    ZSSEditor.sendEnabledStyles();
+}
+
+/**
+ *  @brief      Selects the specified image, and its anchor and caption shortcode (if any).
+ *
+ *  @param      imageNode   An image node in the DOM to inspect.
+ */
+ZSSEditor.selectImageCaptionBlock = function( imageNode ) {
+    var node = imageNode;
+    if ( node.parentNode && node.parentNode.nodeName === 'A' ) {
+        node = node.parentNode;
+    }
+
+    var startNode = endNode = node;
+    var startOffset = endOffset = 0;
+
+    if ( node.previousSibling && node.previousSibling.nodeType === 3 && node.previousSibling.nodeValue.lastIndexOf( '[caption' ) > -1 ) {
+        var tempNode = node;
+        while ( tempNode = tempNode.nextSibling ) {
+            if ( tempNode.nodeValue.indexOf( ']' ) > -1 ) {
+                startNode = node.previousSibling;
+                startOffset = startNode.nodeValue.lastIndexOf( '[caption' );
+                endNode = tempNode;
+                endOffset = endNode.nodeValue.indexOf( ']' ) + 1;
+                break;
+            }
+        }
+    }
+
+    var range = document.createRange();
+    if ( startNode === endNode ) {
+        range.selectNode( startNode );
+    } else {
+        range.setStart( startNode, startOffset );
+        range.setEnd( endNode, endOffset );
+    }
+
+    var selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange( range );
+}
+
+/**
  *  Modified from wp-includes/js/media-editor.js
  *  see `image`
  *
@@ -763,6 +822,9 @@ ZSSEditor.createImageFromMeta = function( props ) {
     options, classes, shortcode, html;
 
     classes = props.classes || [];
+    if (!(classes instanceof Array)) {
+        classes = classes.split(' ');
+    }
 
     _.extend( img, _.pick( props, 'width', 'height', 'alt', 'src' ) );
 
@@ -935,11 +997,11 @@ ZSSEditor.getCaptionForImage = function(imageNode) {
         node = node.parentNode;
     }
 
-    if (node.previousSibling.nodeType === 3) {
+    if (node.previousSibling && node.previousSibling.nodeType === 3) {
         openingBlock = node.previousSibling.nodeValue;
     }
 
-    if (node.nextSibling.nodeType === 3) {
+    if (node.nextSibling && node.nextSibling.nodeType === 3) {
         closingBlock = node.nextSibling.nodeValue;
     }
 
@@ -1341,8 +1403,12 @@ ZSSField.prototype.handleTapEvent = function(e) {
             setTimeout(function() { thisObj.callback('callback-link-tap', joinedArguments);}, 500);
         }
         if (targetNode.nodeName.toLowerCase() == 'img') {
+            ZSSEditor.currentEditingImage = targetNode;
+
+            var meta = JSON.stringify( ZSSEditor.extractImageMeta(targetNode) );
             var arguments = ['id=' + encodeURIComponent(targetNode.id),
-                             'title=' + encodeURIComponent(targetNode.src)];
+                             'title=' + encodeURIComponent(targetNode.src),
+                             'meta=' + encodeURIComponent(meta)];
             
             var joinedArguments = arguments.join(defaultCallbackSeparator);
             
