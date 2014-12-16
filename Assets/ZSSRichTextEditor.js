@@ -638,7 +638,7 @@ ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
     var progress = '<progress id="' + progressIdentifier+'" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
     var image = '<img id="' + imageNodeIdentifier + '" src="' + localImageUrl + '" alt="" />';
     var html = imgContainerStart + progress+image + imgContainerEnd;
-    html = hiddenChar + html + hiddenChar;
+    html = '<p>' + hiddenChar + html + hiddenChar +'</p>';
     
     this.insertHTML(html);
     this.sendEnabledStyles();
