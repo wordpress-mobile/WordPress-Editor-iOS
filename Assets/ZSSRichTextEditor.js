@@ -781,7 +781,7 @@ ZSSEditor.selectImageCaptionBlock = function( imageNode ) {
     var startNode = endNode = node;
     var startOffset = endOffset = 0;
 
-    if ( node.previousSibling && node.previousSibling.nodeType === 3 && node.previousSibling.nodeValue.lastIndexOf( '[caption' ) > -1 ) {
+    if ( node.previousSibling && node.previousSibling.nodeType === document.TEXT_NODE && node.previousSibling.nodeValue.lastIndexOf( '[caption' ) > -1 ) {
         var tempNode = node;
         while ( tempNode = tempNode.nextSibling ) {
             if ( tempNode.nodeValue.indexOf( ']' ) > -1 ) {
@@ -997,11 +997,11 @@ ZSSEditor.getCaptionForImage = function(imageNode) {
         node = node.parentNode;
     }
 
-    if (node.previousSibling && node.previousSibling.nodeType === 3) {
+    if (node.previousSibling && node.previousSibling.nodeType === document.TEXT_NODE) {
         openingBlock = node.previousSibling.nodeValue;
     }
 
-    if (node.nextSibling && node.nextSibling.nodeType === 3) {
+    if (node.nextSibling && node.nextSibling.nodeType === document.TEXT_NODE) {
         closingBlock = node.nextSibling.nodeValue;
     }
 
