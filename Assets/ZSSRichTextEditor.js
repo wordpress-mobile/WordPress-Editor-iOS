@@ -732,7 +732,6 @@ ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier, message) {
     }
     
     imageNode.addClass('failed');
-    imageNode.attr("contenteditable","false");
     
     var imageContainerIdentifier = 'img_container_'+imageNodeIdentifier;
     var elementContainer = $('#'+imageContainerIdentifier);
