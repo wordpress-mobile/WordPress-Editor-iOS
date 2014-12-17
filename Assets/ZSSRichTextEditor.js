@@ -665,6 +665,8 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remot
     if (imageNode.length == 0) {
         return;
     }
+    //when we decide to put the final url we can remove this from the node.
+    imageNode.removeAttr('data-wpid');
     
     var image = new Image;
     
@@ -713,7 +715,6 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
     }
     progressElement.attr("value",progress);
     if (progress >=1 && (imageNode.parent().attr("id") == imageContainerIdentifier)){
-        imageNode.removeAttr('data-wpid');
         imageNode.parent().replaceWith(imageNode);
     }
 };
