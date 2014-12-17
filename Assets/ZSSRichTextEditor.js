@@ -1159,7 +1159,11 @@ ZSSField.prototype.handleTapEvent = function(e) {
             setTimeout(function() { thisObj.callback('callback-link-tap', joinedArguments);}, 500);
         }
         if (targetNode.nodeName.toLowerCase() == 'img') {
-            var arguments = ['id=' + encodeURIComponent(targetNode.dataset.wpid),
+            var imageId = "";
+            if (targetNode.hasAttribute('data-wpid')){
+                imageId = targetNode.getAttribute('data-wpid')
+            }
+            var arguments = ['id=' + encodeURIComponent(imageId),
                              'url=' + encodeURIComponent(targetNode.src)];
             
             var joinedArguments = arguments.join(defaultCallbackSeparator);
