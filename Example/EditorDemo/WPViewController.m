@@ -188,9 +188,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     } else if (actionSheet.tag == WPViewControllerActionSheetUploadRetry){
         if (buttonIndex == actionSheet.destructiveButtonIndex) {
             [self.editorView removeImage:self.selectedImageId];
-        }
-        
-        if (buttonIndex == 1) {
+        } else if (buttonIndex == actionSheet.firstOtherButtonIndex) {
             NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":self.selectedImageId}];
             progress.totalUnitCount = 100;
             NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
