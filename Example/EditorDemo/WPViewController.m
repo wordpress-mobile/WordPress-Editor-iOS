@@ -138,11 +138,11 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
         NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID, @"url":path}];
         progress.cancellable = YES;
         progress.totalUnitCount = 100;
-        NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
-                                                           target:self
-                                                         selector:@selector(timerFireMethod:)
-                                                         userInfo:progress
-                                                          repeats:YES];
+        [NSTimer scheduledTimerWithTimeInterval:0.1
+                                         target:self
+                                       selector:@selector(timerFireMethod:)
+                                       userInfo:progress
+                                        repeats:YES];
         self.imagesAdded[imageID] = progress;
     } failureBlock:^(NSError *error) {
         DDLogInfo(@"Failed to insert media: %@", [error localizedDescription]);
@@ -191,11 +191,11 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
         } else if (buttonIndex == actionSheet.firstOtherButtonIndex) {
             NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":self.selectedImageId}];
             progress.totalUnitCount = 100;
-            NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
-                                                               target:self
-                                                             selector:@selector(timerFireMethod:)
-                                                             userInfo:progress
-                                                              repeats:YES];
+            [NSTimer scheduledTimerWithTimeInterval:0.1
+                                             target:self
+                                           selector:@selector(timerFireMethod:)
+                                           userInfo:progress
+                                            repeats:YES];
             self.imagesAdded[self.selectedImageId] = progress;
             [self.editorView unmarkImageFailedUpload:self.selectedImageId];
         }
