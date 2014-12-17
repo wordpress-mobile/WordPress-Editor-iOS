@@ -712,7 +712,8 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
           return;
     }
     progressElement.attr("value",progress);
-    if (progress >=1 && (element.parent().attr("id") == imageContainerIdentifier)){
+    if (progress >=1 && (imageNode.parent().attr("id") == imageContainerIdentifier)){
+        imageNode.removeAttr('data-wpid');
         imageNode.parent().replaceWith(imageNode);
     }
 };
