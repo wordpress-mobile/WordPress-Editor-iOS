@@ -154,11 +154,11 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     NSString * imageID = progress.userInfo[@"imageID"];
     progress.completedUnitCount++;
     [self.editorView setProgress:progress.fractionCompleted onImage:imageID];
-    if (progress.fractionCompleted >= 0.15){
-        [progress cancel];
-        [self.editorView markImage:imageID failedUploadWithMessage:@"Failed"];
-        [timer invalidate];
-    }
+//    if (progress.fractionCompleted >= 0.15){
+//        [progress cancel];
+//        [self.editorView markImage:imageID failedUploadWithMessage:@"Failed"];
+//        [timer invalidate];
+//    }
     if (progress.fractionCompleted >= 1){
         [self.imagesAdded removeObjectForKey:imageID];
         [timer invalidate];
