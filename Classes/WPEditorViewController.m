@@ -170,7 +170,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    [super viewDidDisappear:animated];
+    [super viewWillDisappear:animated];
     
     // It's important to save the edit selection before the view disappears, because as soon as it
     // disappears the first responder is changed.
