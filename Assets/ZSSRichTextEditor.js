@@ -631,8 +631,8 @@ ZSSEditor.insertImage = function(url, alt) {
 ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
     // this hiddenChar helps with editing the content around images: http://stackoverflow.com/questions/18985261/cursor-in-wrong-place-in-contenteditable
     var hiddenChar = '\ufeff';
-    var progressIdentifier = 'progress_' + imageNodeIdentifier;
-    var imageContainerIdentifier = 'img_container_' + imageNodeIdentifier;
+    var progressIdentifier = this.getImageProgressIdentifier(imageNodeIdentifier);
+    var imageContainerIdentifier = this.getImageContainerIdentifier(imageNodeIdentifier);
     var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container" contenteditable="false" data-failed="Tap to try again!">';
     var imgContainerEnd = '</span>';
     var progress = '<progress id="' + progressIdentifier+'" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
@@ -646,7 +646,25 @@ ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
 
 ZSSEditor.getImageNodeWithIdentifier = function(imageNodeIdentifier) {
     return $('img[data-wpid="' + imageNodeIdentifier+'"]');
-}
+};
+
+ZSSEditor.getImageProgressIdentifier = function(imageNodeIdentifier) {
+    return 'progress_' + imageNodeIdentifier;
+};
+
+ZSSEditor.getImageProgressNodeWithIdentifier = function(imageNodeIdentifier) {
+    return $('#'+this.getImageProgressIdentifier(imageNodeIdentifier));
+};
+
+ZSSEditor.getImageContainerIdentifier = function(imageNodeIdentifier) {
+    return 'img_container_' + imageNodeIdentifier;
+};
+
+ZSSEditor.getImageContainerNodeWithIdentifier = function(imageNodeIdentifier) {
+    return $('#'+this.getImageContainerIdentifier(imageNodeIdentifier));
+};
+
+
 /**
  *  @brief      Replaces a local image URL with a remote image URL.  Useful for images that have
  *              just finished uploading.
@@ -707,14 +725,15 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
         imageNode.addClass("uploading");
     }
     
-    var progressIdentifier = 'progress_'+imageNodeIdentifier;
-    var imageContainerIdentifier = 'img_container_'+imageNodeIdentifier;
-    var progressElement = $('#'+progressIdentifier);
-    if (progressElement.length == 0){
+    var imageProgressNode = this.getImageProgressNodeWithIdentifier(imageNodeIdentifier);
+    if (imageProgressNode.length == 0){
           return;
     }
-    progressElement.attr("value",progress);
-    if (progress >=1 && (imageNode.parent().attr("id") == imageContainerIdentifier)){
+    imageProgressNode.attr("value",progress);
+    // if progress is finished remove all extra nodes.
+    if (progress >=1 &&
+        (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)))
+    {
         imageNode.parent().replaceWith(imageNode);
     }
 };
@@ -733,20 +752,16 @@ ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier, message) {
     
     imageNode.addClass('failed');
     
-    var imageContainerIdentifier = 'img_container_'+imageNodeIdentifier;
-    var elementContainer = $('#'+imageContainerIdentifier);
-    if(elementContainer.length == 0){
-        return;
+    var imageContainerNode = this.getImageContainerNodeWithIdentifier(imageNodeIdentifier);
+    if(imageContainerNode.length != 0){
+        imageContainerNode.attr("data-failed", message);
+        imageContainerNode.addClass('failed');
     }
-    elementContainer.attr("data-failed", message);
-    elementContainer.addClass('failed');
     
-    var progressIdentifier = 'progress_'+imageNodeIdentifier;
-    var progressElement = $('#'+progressIdentifier);
-    if (progressElement.length == 0){
-        return;
+    var imageProgressNode = this.getImageProgressNodeWithIdentifier(imageNodeIdentifier);
+    if (imageProgressNode.length != 0){
+        imageProgressNode.addClass('failed');
     }
-    progressElement.addClass('failed');
 };
 
 /**
@@ -756,27 +771,21 @@ ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier, message) {
  */
 ZSSEditor.unmarkImageUploadFailed = function(imageNodeIdentifier, message) {
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
-    if (imageNode.length == 0){
-        return;
+    if (imageNode.length != 0){
+        imageNode.removeClass('failed');
+        imageNode.attr("contenteditable","false");
     }
     
-    imageNode.removeClass('failed');
-    imageNode.attr("contenteditable","false");
-    
-    var imageContainerIdentifier = 'img_container_'+imageNodeIdentifier;
-    var elementContainer = $('#'+imageContainerIdentifier);
-    if(elementContainer.length == 0){
-        return;
+    var imageContainerNode = this.getImageContainerNodeWithIdentifier(imageNodeIdentifier);
+    if(imageContainerNode.length != 0){
+        imageContainerNode.removeAttr("data-failed");
+        imageContainerNode.removeClass('failed');
     }
-    elementContainer.removeAttr("data-failed");
-    elementContainer.removeClass('failed');
     
-    var progressIdentifier = 'progress_'+imageNodeIdentifier;
-    var progressElement = $('#'+progressIdentifier);
-    if (progressElement.length == 0){
-        return;
+    var imageProgressNode = this.getImageProgressNodeWithIdentifier(imageNodeIdentifier);
+    if (imageProgressNode.length != 0){
+        imageProgressNode.removeClass('failed');
     }
-    progressElement.removeClass('failed');
 };
 
 /**
@@ -786,16 +795,15 @@ ZSSEditor.unmarkImageUploadFailed = function(imageNodeIdentifier, message) {
  */
 ZSSEditor.removeImage = function(imageNodeIdentifier) {
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
-    if (imageNode.length == 0){
-        return;
+    if (imageNode.length != 0){
+        imageNode.remove();
     }
-    imageNode.remove();
+
     // if image is inside options container we need to remove the container
-    var container = $('#img_container_'+imageNodeIdentifier);
-    if (container.length == 0){
-        return;
+    var imageContainerNode = this.getImageContainerNodeWithIdentifier(imageNodeIdentifier);
+    if (imageContainerNode.length != 0){
+        imageContainerNode.remove();
     }
-    container.remove();
 };
 
 // MARK: - Commands
