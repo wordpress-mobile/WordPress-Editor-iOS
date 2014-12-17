@@ -135,7 +135,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
         [data writeToFile:path atomically:YES];
         [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
             
-        NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID}];
+        NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID, @"url":path}];
         progress.cancellable = YES;
         progress.totalUnitCount = 100;
         NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
@@ -160,6 +160,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
 //        [timer invalidate];
 //    }
     if (progress.fractionCompleted >= 1){
+        [self.editorView replaceLocalImageWithRemoteImage:[[NSURL fileURLWithPath:progress.userInfo[@"url"]] absoluteString] uniqueId:imageID];
         [self.imagesAdded removeObjectForKey:imageID];
         [timer invalidate];
     }
