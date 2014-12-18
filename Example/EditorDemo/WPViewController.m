@@ -5,6 +5,11 @@
 #import "WPEditorField.h"
 #import "WPEditorView.h"
 
+typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
+    WPViewControllerActionSheetUploadStop = 200,
+    WPViewControllerActionSheetUploadRetry = 201
+};
+
 @interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate>
 
 @property(nonatomic, strong) NSMutableDictionary *imagesAdded;
@@ -95,8 +100,16 @@
     if (imageId.length == 0){
         return;
     }
-    UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
-    [actionSheet showInView:self.view];
+    NSProgress * progress = self.imagesAdded[imageId];
+    if (!progress.cancelled){
+        UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
+        [actionSheet showInView:self.view];
+        actionSheet.tag = WPViewControllerActionSheetUploadStop;
+    } else {
+        UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Remove Image" otherButtonTitles:@"Retry Upload", nil];
+        [actionSheet showInView:self.view];
+        actionSheet.tag = WPViewControllerActionSheetUploadRetry;
+    }
     self.selectedImageId= imageId;
 }
 
@@ -122,16 +135,17 @@
         [data writeToFile:path atomically:YES];
         [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
             
-        NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID}];
+        NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID, @"url":path}];
+        progress.cancellable = YES;
         progress.totalUnitCount = 100;
-        NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
-                                                           target:self
-                                                         selector:@selector(timerFireMethod:)
-                                                         userInfo:progress
-                                                          repeats:YES];
-        self.imagesAdded[imageID] = timer;
+        [NSTimer scheduledTimerWithTimeInterval:0.1
+                                         target:self
+                                       selector:@selector(timerFireMethod:)
+                                       userInfo:progress
+                                        repeats:YES];
+        self.imagesAdded[imageID] = progress;
     } failureBlock:^(NSError *error) {
-        DDLogInfo(@"Failed to inser media: %@", [error localizedDescription]);
+        DDLogInfo(@"Failed to insert media: %@", [error localizedDescription]);
     }];
 }
 
@@ -140,7 +154,16 @@
     NSString * imageID = progress.userInfo[@"imageID"];
     progress.completedUnitCount++;
     [self.editorView setProgress:progress.fractionCompleted onImage:imageID];
+
+// Uncomment this code if you need to test a failed image upload
+//    if (progress.fractionCompleted >= 0.15){
+//        [progress cancel];
+//        [self.editorView markImage:imageID failedUploadWithMessage:@"Failed"];
+//        [timer invalidate];
+//    }
+    
     if (progress.fractionCompleted >= 1){
+        [self.editorView replaceLocalImageWithRemoteImage:[[NSURL fileURLWithPath:progress.userInfo[@"url"]] absoluteString] uniqueId:imageID];
         [self.imagesAdded removeObjectForKey:imageID];
         [timer invalidate];
     }
@@ -161,9 +184,28 @@
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if (buttonIndex == actionSheet.destructiveButtonIndex) {
-        [self.editorView removeImage:self.selectedImageId];
+    if (actionSheet.tag == WPViewControllerActionSheetUploadStop){
+        if (buttonIndex == actionSheet.destructiveButtonIndex) {
+            [self.editorView removeImage:self.selectedImageId];
+        }
+    } else if (actionSheet.tag == WPViewControllerActionSheetUploadRetry){
+        if (buttonIndex == actionSheet.destructiveButtonIndex) {
+            [self.editorView removeImage:self.selectedImageId];
+        } else if (buttonIndex == actionSheet.firstOtherButtonIndex) {
+            NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":self.selectedImageId}];
+            progress.totalUnitCount = 100;
+            [NSTimer scheduledTimerWithTimeInterval:0.1
+                                             target:self
+                                           selector:@selector(timerFireMethod:)
+                                           userInfo:progress
+                                            repeats:YES];
+            self.imagesAdded[self.selectedImageId] = progress;
+            [self.editorView unmarkImageFailedUpload:self.selectedImageId];
+        }
+
     }
+    
+    
 }
 
 

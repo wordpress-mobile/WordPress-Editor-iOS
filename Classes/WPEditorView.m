@@ -1119,9 +1119,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)markImageUploadFailed:(NSString*)uniqueId
+- (void)markImage:(NSString *)uniqueId failedUploadWithMessage:(NSString*) message;
 {
-    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.markImageUploadFailed(\"%@\");", uniqueId];
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.markImageUploadFailed(\"%@\", \"%@\");", uniqueId, message];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)unmarkImageFailedUpload:(NSString *)uniqueId
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.unmarkImageUploadFailed(\"%@\");", uniqueId];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 

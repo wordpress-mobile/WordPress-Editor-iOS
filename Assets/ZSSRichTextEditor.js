@@ -631,18 +631,39 @@ ZSSEditor.insertImage = function(url, alt) {
 ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
     // this hiddenChar helps with editing the content around images: http://stackoverflow.com/questions/18985261/cursor-in-wrong-place-in-contenteditable
     var hiddenChar = '\ufeff';
-    var progressIdentifier = 'progress_' + imageNodeIdentifier;
-    var imageContainerIdentifier = 'img_container_' + imageNodeIdentifier;
-    var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container" contenteditable="false">';
+    var progressIdentifier = this.getImageProgressIdentifier(imageNodeIdentifier);
+    var imageContainerIdentifier = this.getImageContainerIdentifier(imageNodeIdentifier);
+    var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container" contenteditable="false" data-failed="Tap to try again!">';
     var imgContainerEnd = '</span>';
     var progress = '<progress id="' + progressIdentifier+'" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
-    var image = '<img id="' + imageNodeIdentifier + '" src="' + localImageUrl + '" alt="" />';
+    var image = '<img data-wpid="' + imageNodeIdentifier + '" src="' + localImageUrl + '" alt="" />';
     var html = imgContainerStart + progress+image + imgContainerEnd;
     html = hiddenChar + html + hiddenChar;
     
     this.insertHTML(html);
     this.sendEnabledStyles();
 };
+
+ZSSEditor.getImageNodeWithIdentifier = function(imageNodeIdentifier) {
+    return $('img[data-wpid="' + imageNodeIdentifier+'"]');
+};
+
+ZSSEditor.getImageProgressIdentifier = function(imageNodeIdentifier) {
+    return 'progress_' + imageNodeIdentifier;
+};
+
+ZSSEditor.getImageProgressNodeWithIdentifier = function(imageNodeIdentifier) {
+    return $('#'+this.getImageProgressIdentifier(imageNodeIdentifier));
+};
+
+ZSSEditor.getImageContainerIdentifier = function(imageNodeIdentifier) {
+    return 'img_container_' + imageNodeIdentifier;
+};
+
+ZSSEditor.getImageContainerNodeWithIdentifier = function(imageNodeIdentifier) {
+    return $('#'+this.getImageContainerIdentifier(imageNodeIdentifier));
+};
+
 
 /**
  *  @brief      Replaces a local image URL with a remote image URL.  Useful for images that have
@@ -655,32 +676,35 @@ ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
  *                                      when replaceLocalImageWithRemoteImage() is called.
  *  @param      remoteImageUrl          The URL of the remote image to display.
  */
-ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remoteImageUrl) {
+ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remoteImageUrl) {
     
-    var imageNode = $('#' + imageNodeIndentifier);
+    var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
     
-    if (imageNode) {
-        var image = new Image;
-        
-        image.onload = function () {
-            imageNode.attr('src', image.src);
-            
-            var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
-            ZSSEditor.callback("callback-input", joinedArguments);
-        }
-        
-        image.onerror = function () {
-            // Even on an error, we swap the image for the time being.  This is because private
-            // blogs are currently failing to download images due to access privilege issues.
-            //
-            imageNode.attr('src', image.src);
-            
-            var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
-            ZSSEditor.callback("callback-input", joinedArguments);
-        }
-        
-        image.src = remoteImageUrl;
+    if (imageNode.length == 0) {
+        return;
     }
+    //when we decide to put the final url we can remove this from the node.
+    imageNode.removeAttr('data-wpid');
+    
+    var image = new Image;
+    
+    image.onload = function () {
+        imageNode.attr('src', image.src);            
+        var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
+        ZSSEditor.callback("callback-input", joinedArguments);
+    }
+    
+    image.onerror = function () {
+        // Even on an error, we swap the image for the time being.  This is because private
+        // blogs are currently failing to download images due to access privilege issues.
+        //
+        imageNode.attr('src', image.src);
+        
+        var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
+        ZSSEditor.callback("callback-input", joinedArguments);
+    }
+    
+    image.src = remoteImageUrl;
 };
 
 /**
@@ -690,26 +714,27 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIndentifier, remo
  *  @param      progress    A value between 0 and 1 indicating the progress on the image.
  */
 ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
-    var element = $('#'+imageNodeIdentifier);
-    if (element.length == 0){
+    var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
+    if (imageNode.length == 0){
         return;
     }
     if (progress >=1){
-        element.removeClass("uploading");
-        element.removeAttr("class");
+        imageNode.removeClass("uploading");
+        imageNode.removeAttr("class");
     } else {
-        element.addClass("uploading");
+        imageNode.addClass("uploading");
     }
     
-    var progressIdentifier = 'progress_'+imageNodeIdentifier;
-    var imageContainerIdentifier = 'img_container_'+imageNodeIdentifier;
-    var progressElement = $('#'+progressIdentifier);
-    if (progressElement.length == 0){
+    var imageProgressNode = this.getImageProgressNodeWithIdentifier(imageNodeIdentifier);
+    if (imageProgressNode.length == 0){
           return;
     }
-    progressElement.attr("value",progress);
-    if (progress >=1 && (element.parent().attr("id") == imageContainerIdentifier)){
-        element.parent().replaceWith(element);
+    imageProgressNode.attr("value",progress);
+    // if progress is finished remove all extra nodes.
+    if (progress >=1 &&
+        (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)))
+    {
+        imageNode.parent().replaceWith(imageNode);
     }
 };
 
@@ -717,15 +742,50 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
  *  @brief      Marks the image as failed to upload
  *
  *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.
+ *  @param      message                 A message to show to the user, overlayed on the image
  */
-ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier) {
-    var element = $('#'+imageNodeIdentifier);
-    if (!element){
+ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier, message) {
+    var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
+    if (imageNode.length == 0){
         return;
     }
-    element.addClass('failed');
-    element.parent().replaceWith(element);
-    element.attr("contenteditable","false");
+    
+    imageNode.addClass('failed');
+    
+    var imageContainerNode = this.getImageContainerNodeWithIdentifier(imageNodeIdentifier);
+    if(imageContainerNode.length != 0){
+        imageContainerNode.attr("data-failed", message);
+        imageContainerNode.addClass('failed');
+    }
+    
+    var imageProgressNode = this.getImageProgressNodeWithIdentifier(imageNodeIdentifier);
+    if (imageProgressNode.length != 0){
+        imageProgressNode.addClass('failed');
+    }
+};
+
+/**
+ *  @brief      Unmarks the image as failed to upload
+ *
+ *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.
+ */
+ZSSEditor.unmarkImageUploadFailed = function(imageNodeIdentifier, message) {
+    var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
+    if (imageNode.length != 0){
+        imageNode.removeClass('failed');
+        imageNode.attr("contenteditable","false");
+    }
+    
+    var imageContainerNode = this.getImageContainerNodeWithIdentifier(imageNodeIdentifier);
+    if(imageContainerNode.length != 0){
+        imageContainerNode.removeAttr("data-failed");
+        imageContainerNode.removeClass('failed');
+    }
+    
+    var imageProgressNode = this.getImageProgressNodeWithIdentifier(imageNodeIdentifier);
+    if (imageProgressNode.length != 0){
+        imageProgressNode.removeClass('failed');
+    }
 };
 
 /**
@@ -734,17 +794,16 @@ ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier) {
  *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.
  */
 ZSSEditor.removeImage = function(imageNodeIdentifier) {
-    var element = $('#'+imageNodeIdentifier);
-    if (!element){
-        return;
+    var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
+    if (imageNode.length != 0){
+        imageNode.remove();
     }
-    element.remove();
+
     // if image is inside options container we need to remove the container
-    var container = $('#img_container_'+imageNodeIdentifier);
-    if (!container){
-        return;
+    var imageContainerNode = this.getImageContainerNodeWithIdentifier(imageNodeIdentifier);
+    if (imageContainerNode.length != 0){
+        imageContainerNode.remove();
     }
-    container.remove();
 };
 
 // MARK: - Commands
@@ -1108,8 +1167,12 @@ ZSSField.prototype.handleTapEvent = function(e) {
             setTimeout(function() { thisObj.callback('callback-link-tap', joinedArguments);}, 500);
         }
         if (targetNode.nodeName.toLowerCase() == 'img') {
-            var arguments = ['id=' + encodeURIComponent(targetNode.id),
-                             'title=' + encodeURIComponent(targetNode.src)];
+            var imageId = "";
+            if (targetNode.hasAttribute('data-wpid')){
+                imageId = targetNode.getAttribute('data-wpid')
+            }
+            var arguments = ['id=' + encodeURIComponent(imageId),
+                             'url=' + encodeURIComponent(targetNode.src)];
             
             var joinedArguments = arguments.join(defaultCallbackSeparator);
             
