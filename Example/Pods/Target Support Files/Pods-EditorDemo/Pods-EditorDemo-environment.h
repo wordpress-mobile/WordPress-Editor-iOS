@@ -104,9 +104,10 @@
 
 // WordPress-iOS-Editor
 #define COCOAPODS_POD_AVAILABLE_WordPress_iOS_Editor
-#define COCOAPODS_VERSION_MAJOR_WordPress_iOS_Editor 0
-#define COCOAPODS_VERSION_MINOR_WordPress_iOS_Editor 3
-#define COCOAPODS_VERSION_PATCH_WordPress_iOS_Editor 0
+// This library does not follow semantic-versioning,
+// so we were not able to define version macros.
+// Please contact the author.
+// Version: 0.2.3.1.
 
 // WordPress-iOS-Shared
 #define COCOAPODS_POD_AVAILABLE_WordPress_iOS_Shared
@@ -118,5 +119,5 @@
 #define COCOAPODS_POD_AVAILABLE_WordPressCom_Analytics_iOS
 #define COCOAPODS_VERSION_MAJOR_WordPressCom_Analytics_iOS 0
 #define COCOAPODS_VERSION_MINOR_WordPressCom_Analytics_iOS 0
-#define COCOAPODS_VERSION_PATCH_WordPressCom_Analytics_iOS 14
+#define COCOAPODS_VERSION_PATCH_WordPressCom_Analytics_iOS 16
 
