@@ -135,14 +135,14 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
         [data writeToFile:path atomically:YES];
         [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
             
-        NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID}];
+        NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID, @"url":path}];
         progress.cancellable = YES;
         progress.totalUnitCount = 100;
-        NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
-                                                           target:self
-                                                         selector:@selector(timerFireMethod:)
-                                                         userInfo:progress
-                                                          repeats:YES];
+        [NSTimer scheduledTimerWithTimeInterval:0.1
+                                         target:self
+                                       selector:@selector(timerFireMethod:)
+                                       userInfo:progress
+                                        repeats:YES];
         self.imagesAdded[imageID] = progress;
     } failureBlock:^(NSError *error) {
         DDLogInfo(@"Failed to insert media: %@", [error localizedDescription]);
@@ -154,12 +154,16 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     NSString * imageID = progress.userInfo[@"imageID"];
     progress.completedUnitCount++;
     [self.editorView setProgress:progress.fractionCompleted onImage:imageID];
-    if (progress.fractionCompleted >= 0.15){
-        [progress cancel];
-        [self.editorView markImage:imageID failedUploadWithMessage:@"Failed"];
-        [timer invalidate];
-    }
+
+// Uncomment this code if you need to test a failed image upload
+//    if (progress.fractionCompleted >= 0.15){
+//        [progress cancel];
+//        [self.editorView markImage:imageID failedUploadWithMessage:@"Failed"];
+//        [timer invalidate];
+//    }
+    
     if (progress.fractionCompleted >= 1){
+        [self.editorView replaceLocalImageWithRemoteImage:[[NSURL fileURLWithPath:progress.userInfo[@"url"]] absoluteString] uniqueId:imageID];
         [self.imagesAdded removeObjectForKey:imageID];
         [timer invalidate];
     }
@@ -187,16 +191,14 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     } else if (actionSheet.tag == WPViewControllerActionSheetUploadRetry){
         if (buttonIndex == actionSheet.destructiveButtonIndex) {
             [self.editorView removeImage:self.selectedImageId];
-        }
-        
-        if (buttonIndex == 1) {
+        } else if (buttonIndex == actionSheet.firstOtherButtonIndex) {
             NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":self.selectedImageId}];
             progress.totalUnitCount = 100;
-            NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
-                                                               target:self
-                                                             selector:@selector(timerFireMethod:)
-                                                             userInfo:progress
-                                                              repeats:YES];
+            [NSTimer scheduledTimerWithTimeInterval:0.1
+                                             target:self
+                                           selector:@selector(timerFireMethod:)
+                                           userInfo:progress
+                                            repeats:YES];
             self.imagesAdded[self.selectedImageId] = progress;
             [self.editorView unmarkImageFailedUpload:self.selectedImageId];
         }

@@ -1,1 +1,1 @@
-../../../WordPress-iOS-Shared/WordPress-iOS-Shared/UIImage+Util.h
+../../../WordPress-iOS-Shared/WordPress-iOS-Shared/Core/UIImage+Util.h
