@@ -1462,7 +1462,25 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self callDelegateEditorTextDidChange];
 }
 
-#pragma mark - UITextField delegate
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textViewShouldBeginEditing:(UITextField *)textField
+{
+    return YES;
+}
+
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+{
+    [self callDelegateEditorTitleDidChange];
+    return YES;
+}
+
+- (BOOL)textViewShouldEndEditing:(UITextView *)textView
+{
+    return YES;
+}
+
+#pragma mark - UITextFieldDelegate
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
