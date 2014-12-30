@@ -89,7 +89,16 @@
         imageTapped:(NSString *)imageId
                 url:(NSURL *)url;
 
-- (BOOL)editorView:(WPEditorView*)editorView
+/**
+ * @brief		Received when the user taps on a image in the editor.
+ *
+ * @param		editorView	The editor view.
+ * @param		imageId		The id of image of the image that was tapped.
+ * @param		url			The url of the image that was tapped.
+ * @param		imageMeta	The meta data associated with the image that was tapped.
+ *
+ */
+- (void)editorView:(WPEditorView*)editorView
        imageTapped:(NSString *)imageId
                url:(NSURL *)url
          imageMeta:(WPImageMeta *)imageMeta;

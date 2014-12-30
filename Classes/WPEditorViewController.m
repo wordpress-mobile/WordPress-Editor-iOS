@@ -1567,7 +1567,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 	return YES;
 }
 
-- (BOOL)editorView:(WPEditorView*)editorView
+- (void)editorView:(WPEditorView*)editorView
        imageTapped:(NSString *)imageId
                url:(NSURL *)url
          imageMeta:(WPImageMeta *)imageMeta
@@ -1575,7 +1575,6 @@ NSInteger const WPLinkAlertViewTag = 92;
     if ([self.delegate respondsToSelector:@selector(editorViewController:imageTapped:url:imageMeta:)]) {
         [self.delegate editorViewController:self imageTapped:imageId url:url imageMeta:imageMeta];
     }
-    return YES;
 }
 
 - (BOOL)editorView:(WPEditorView*)editorView
