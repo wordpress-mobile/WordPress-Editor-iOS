@@ -1,4 +1,5 @@
 #import "WPImageMeta.h"
+#import "NSObject+SafeExpectations.h"
 
 @implementation WPImageMeta
 
@@ -74,47 +75,22 @@
 
 - (void)parseDictionary:(NSDictionary *)dict
 {
-    self.align = [self stringForKey:@"align" inDictionary:dict];
-    self.alt = [self stringForKey:@"alt" inDictionary:dict];
-    self.attachmentId = [self stringForKey:@"attachment_id" inDictionary:dict];
-    self.caption = [self stringForKey:@"caption" inDictionary:dict];
-    self.captionClassName = [self stringForKey:@"captionClassName" inDictionary:dict];
-    self.captionId = [self stringForKey:@"captionId" inDictionary:dict];
-    self.classes = [self stringForKey:@"classes" inDictionary:dict];
-    self.height = [self stringForKey:@"height" inDictionary:dict];
-    self.link = [self boolForKey:@"link" inDictionary:dict];
-    self.linkURL = [self stringForKey:@"linkUrl" inDictionary:dict];
-    self.linkClassName = [self stringForKey:@"linkClassName" inDictionary:dict];
-    self.linkTargetBlank = [self boolForKey:@"linkTargetBlank" inDictionary:dict];
-    self.size = [self stringForKey:@"size" inDictionary:dict];
-    self.src = [self stringForKey:@"src" inDictionary:dict];
-    self.title = [self stringForKey:@"title" inDictionary:dict];
-    self.width = [self stringForKey:@"width" inDictionary:dict];
-}
-
-
-#pragma mark - Safe Expectations
-
-- (BOOL)boolForKey:(NSString *)key inDictionary:(NSDictionary *)dict
-{
-    if ([dict objectForKey:key]) {
-        return [[dict objectForKey:key] boolValue];
-    }
-    return NO;
-}
-
-- (NSString *)stringForKey:(NSString *)key inDictionary:(NSDictionary *)dict
-{
-    id value = [dict objectForKey:key];
-    if (value) {
-        if ([value isKindOfClass:[NSString class]]) {
-            return (NSString *)value;
-        }
-        if ([value respondsToSelector:@selector(stringValue)]) {
-            return [value performSelector:@selector(stringValue)];
-        }
-    }
-    return @"";
+    self.align = [dict stringForKey:@"align"];
+    self.alt = [dict stringForKey:@"alt"];
+    self.attachmentId = [dict stringForKey:@"attachment_id"];
+    self.caption = [dict stringForKey:@"caption"];
+    self.captionClassName = [dict stringForKey:@"captionClassName"];
+    self.captionId = [dict stringForKey:@"captionId"];
+    self.classes = [dict stringForKey:@"classes"];
+    self.height = [dict stringForKey:@"height"];
+    self.link = [[dict numberForKey:@"link"] boolValue];
+    self.linkURL = [dict stringForKey:@"linkUrl"];
+    self.linkClassName = [dict stringForKey:@"linkClassName"];
+    self.linkTargetBlank = [[dict numberForKey:@"linkTargetBlank"] boolValue];
+    self.size = [dict stringForKey:@"size"];
+    self.src = [dict stringForKey:@"src"];
+    self.title = [dict stringForKey:@"title"];
+    self.width = [dict stringForKey:@"width"];
 }
 
 @end
