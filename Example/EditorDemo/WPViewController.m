@@ -104,7 +104,6 @@
     WPImageMetaViewController *controller = [self.storyboard instantiateViewControllerWithIdentifier:@"WPImageMetaViewController"];
     controller.imageMeta = imageMeta;
     controller.delegate = self;
-    //WPImageMetaViewController *controller = [[WPImageMetaViewController alloc] initWithImageMeta:imageMeta];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
     [self.navigationController presentViewController:navController animated:YES completion:nil];
 }
