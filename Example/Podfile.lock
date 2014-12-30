@@ -34,7 +34,7 @@ PODS:
   - WordPress-iOS-Shared/Core (0.1.5):
     - AFNetworking (~> 2.3.1)
     - CocoaLumberjack (~> 1.9)
-  - WordPressCom-Analytics-iOS (0.0.16)
+  - WordPressCom-Analytics-iOS (0.0.17)
 
 DEPENDENCIES:
   - CocoaLumberjack (~> 1.9)
@@ -53,6 +53,6 @@ SPEC CHECKSUMS:
   UIAlertView+Blocks: 0b749f1f7bd5131ff2233b30a406c1585a7171b2
   WordPress-iOS-Editor: d48c118e24ae56b3d18b8efeeef0a677efb47d08
   WordPress-iOS-Shared: e73bf6f68cae64cf054daf246d00db53448e4f37
-  WordPressCom-Analytics-iOS: 6e1f522f0701ce0378a9d9180e649fea0bbd8305
+  WordPressCom-Analytics-iOS: 8f4663e9c0e58e731a0f0a44fd863fc0bf7825d1
 
 COCOAPODS: 0.35.0
