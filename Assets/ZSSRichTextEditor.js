@@ -748,7 +748,8 @@ ZSSEditor.removeImage = function(imageNodeIdentifier) {
 };
 
 /**
- *  @brief      Updates the currently selected image, replacing its markup with new markup based on the specified meta data string.
+ *  @brief      Updates the currently selected image, replacing its markup with 
+ *  new markup based on the specified meta data string.
  *
  *  @param      imageMetaString   A JSON string representing the updated meta data.
  */
