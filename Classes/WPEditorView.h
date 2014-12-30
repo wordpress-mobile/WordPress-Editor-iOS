@@ -218,7 +218,21 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 - (void)setProgress:(double) progress onImage:(NSString*)uniqueId;
 
-- (void)markImageUploadFailed:(NSString*)uniqueId;
+/**
+ *  @brief      Marks a image that failed to upload with an overlay that has a retry image and a message.
+ *              allows for the remote URL to be loaded once the upload completes.
+ *
+ *  @param      uniqueId    Unique Id of the image element that is going to be marked as failed
+ *  @param      message     A message to display overlay on the image to explain next steps
+ */
+- (void)markImage:(NSString *)uniqueId failedUploadWithMessage:(NSString*) message;
+
+/**
+ *  @brief      Removes any failure overlay created by the markImage:failedUploadWithMessage
+ *
+ *  @param      uniqueId    Unique Id of the image element that is going to be unmarked as failed
+ */
+- (void)unmarkImageFailedUpload:(NSString *)uniqueId;
 
 - (void)removeImage:(NSString*)uniqueId;
 #pragma mark - Links

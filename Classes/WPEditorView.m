@@ -250,16 +250,25 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     //
     if (object == self.webView.scrollView) {
         
-        if ([keyPath isEqualToString:WPEditorViewWebViewContentSizeKey]) {
-            NSValue *newValue = change[NSKeyValueChangeNewKey];
+        // WORKAROUND: adding this delay seems to fix the following two issues we had...
+        //
+        //  https://github.com/wordpress-mobile/WordPress-iOS-Editor/issues/430
+        //  https://github.com/wordpress-mobile/WordPress-iOS-Editor/issues/430
+        //
+        //  Props to Matt Bumgardner for recommending this!
+        //
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.001 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if ([keyPath isEqualToString:WPEditorViewWebViewContentSizeKey]) {
+                NSValue *newValue = change[NSKeyValueChangeNewKey];
+                
+                CGSize newSize;
+                [newValue getValue:&newSize];
             
-            CGSize newSize;
-            [newValue getValue:&newSize];
-        
-            if (newSize.height != self.lastEditorHeight) {
-                [self refreshVisibleViewportAndContentSize];
+                if (newSize.height != self.lastEditorHeight) {
+                    [self refreshVisibleViewportAndContentSize];
+                }
             }
-        }
+        });
     }
 }
 
@@ -1119,9 +1128,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)markImageUploadFailed:(NSString*)uniqueId
+- (void)markImage:(NSString *)uniqueId failedUploadWithMessage:(NSString*) message;
 {
-    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.markImageUploadFailed(\"%@\");", uniqueId];
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.markImageUploadFailed(\"%@\", \"%@\");", uniqueId, message];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)unmarkImageFailedUpload:(NSString *)uniqueId
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.unmarkImageUploadFailed(\"%@\");", uniqueId];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
