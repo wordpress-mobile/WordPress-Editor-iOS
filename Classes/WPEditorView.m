@@ -1108,7 +1108,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)updateCurrentImageMeta:(WPImageMeta *)imageMeta
 {
     NSString *jsonString = [imageMeta jsonStringRepresentation];
-    jsonString = [jsonString stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+    jsonString = [self addSlashes:jsonString];
     NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.updateCurrentImageMeta(\"%@\");", jsonString];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
