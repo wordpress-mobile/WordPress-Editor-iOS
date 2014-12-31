@@ -882,11 +882,11 @@ ZSSEditor.createImageFromMeta = function( props ) {
     options, classes, shortcode, html;
 
     classes = props.classes || [];
-    if (!(classes instanceof Array)) {
-        classes = classes.split(' ');
+    if ( ! ( classes instanceof Array ) ) {
+        classes = classes.split( ' ' );
     }
 
-    _.extend( img, _.pick( props, 'width', 'height', 'alt', 'src' ) );
+    _.extend( img, _.pick( props, 'width', 'height', 'alt', 'src', 'title' ) );
 
     // Only assign the align class to the image if we're not printing
     // a caption, since the alignment is sent to the shortcode.
@@ -896,6 +896,10 @@ ZSSEditor.createImageFromMeta = function( props ) {
 
     if ( props.size ) {
         classes.push( 'size-' + props.size );
+    }
+
+    if ( props.attachment_id ) {
+        classes.push( 'wp-image-' + props.attachment_id );
     }
 
     img['class'] = _.compact( classes ).join(' ');
@@ -916,10 +920,16 @@ ZSSEditor.createImageFromMeta = function( props ) {
             },
             content: options
         };
-        if (props.linkClassName) {
+
+        if ( props.linkClassName ) {
             options.attrs.class = props.linkClassName;
         }
-        if (props.linkTargetBlank) {
+
+        if ( props.linkRel ) {
+            options.attrs.rel = props.linkRel;
+        }
+
+        if ( props.linkTargetBlank ) { // expects a boolean
             options.attrs.target = "_blank";
         }
     }
@@ -947,10 +957,10 @@ ZSSEditor.createImageFromMeta = function( props ) {
         }
 
         html = wp.shortcode.string({
-                                   tag:     'caption',
-                                   attrs:   shortcode,
-                                   content: html + ' ' + props.caption
-                                   });
+            tag:     'caption',
+            attrs:   shortcode,
+            content: html + ' ' + props.caption
+        });
     }
 
     return html;
@@ -971,29 +981,30 @@ ZSSEditor.extractImageMeta = function( imageNode ) {
     captionClassName = [],
     isIntRegExp = /^\d+$/;
 
-    // default attributes
+    // Default attributes. All values are strings, except linkTargetBlank
     metadata = {
-        alt:'',
-        align: 'none',
-        attachment_id: '',
-        caption: '',
-        captionClassName:'',
-        classes: '',
-        height:'',
-        link: false,
-        linkClassName: '',
-        linkTargetBlank: false,
-        linkUrl: '',
-        size: 'custom',
-        title: '',
-        src:'',
-        width:''
+        alt: '',            // Image alt attribute
+        align: 'none',      // Accepted values: center, left, right or empty string.
+        attachment_id: '',  // Numeric attachment id of the image in the site's media library
+        caption: '',        // The text of the caption for the image (if any)
+        captionId: '',      // The caption shortcode's ID attribute. The numeric value should match the value of attachment_id
+        captionClassName: '', // The classes for the caption shortcode (if any).
+        classes: '',        // The class attribute for the image. Does not include editor generated classes
+        height: '',         // The image height attribute
+        linkClassName: '',  // The class attribute for the link
+        linkRel: '',        // The rel attribute for the link (if any)
+        linkTargetBlank: false, // true if the link should open in a new window.
+        linkUrl: '',        // The href attribute of the link
+        size: 'custom',     // Accepted values: custom, medium, large, thumbnail, or empty string
+        src: '',            // The src attribute of the image
+        title: '',          // The title attribute of the image (if any)
+        width: ''           // The image width attribute
     };
 
     // populate metadata with values of matched attributes
-    metadata.src = $(imageNode).attr( 'src' ) || '';
-    metadata.alt = $(imageNode).attr( 'alt' ) || '';
-    metadata.title = $(imageNode).attr( 'title' ) || '';
+    metadata.src = $( imageNode ).attr( 'src' ) || '';
+    metadata.alt = $( imageNode ).attr( 'alt' ) || '';
+    metadata.title = $( imageNode ).attr( 'title' ) || '';
 
     width = $(imageNode).attr( 'width' );
     height = $(imageNode).attr( 'height' );
@@ -1009,7 +1020,7 @@ ZSSEditor.extractImageMeta = function( imageNode ) {
     metadata.width = width;
     metadata.height = height;
 
-    classes = imageNode.className.split(/\s+/);
+    classes = imageNode.className.split( /\s+/ );
     extraClasses = [];
 
     $.each( classes, function( index, value ) {
@@ -1033,9 +1044,10 @@ ZSSEditor.extractImageMeta = function( imageNode ) {
     // Extract linkTo
     if ( imageNode.parentNode && imageNode.parentNode.nodeName === 'A' ) {
         link = imageNode.parentNode;
-        metadata.linkUrl = $(link).attr( 'href' ) || '';
-        metadata.linkTargetBlank = $(link).attr( 'target' ) === '_blank' ? true : false;
         metadata.linkClassName = link.className;
+        metadata.linkRel = $( link ).attr( 'rel' ) || '';
+        metadata.linkTargetBlank = $( link ).attr( 'target' ) === '_blank' ? true : false;
+        metadata.linkUrl = $( link ).attr( 'href' ) || '';
     }
 
     return metadata;
@@ -1047,31 +1059,35 @@ ZSSEditor.extractImageMeta = function( imageNode ) {
  *  @param      imageNode   An image node in the DOM to inspect.
  *
  *  @return     Returns a shortcode match (if any) for the passed image node.
- *  See shortcode.js::next or details
+ *  See shortcode.js::next for details
  */
-ZSSEditor.getCaptionForImage = function(imageNode) {
+ZSSEditor.getCaptionForImage = function( imageNode ) {
     var openingBlock, closingBlock;
     var node = imageNode;
 
-    if (node.parentNode && node.parentNode.nodeName === 'A' ) {
+    // If the image's parent is an anchor, let the anchor be the working node.
+    if ( node.parentNode && node.parentNode.nodeName === 'A' ) {
         node = node.parentNode;
     }
 
-    if (node.previousSibling && node.previousSibling.nodeType === document.TEXT_NODE) {
+    // If the working node is surrounded by text nodes (both before and after),
+    // let the text nodes define the opening and closing content to be parsed
+    // for the caption shortcode.
+    // If either the opening or closing block is missing, then there is no caption.
+    if ( node.previousSibling && node.previousSibling.nodeType === document.TEXT_NODE ) {
         openingBlock = node.previousSibling.nodeValue;
     }
-
-    if (node.nextSibling && node.nextSibling.nodeType === document.TEXT_NODE) {
+    if ( node.nextSibling && node.nextSibling.nodeType === document.TEXT_NODE ) {
         closingBlock = node.nextSibling.nodeValue;
     }
-
-    if (!openingBlock || !closingBlock) {
+    if ( !openingBlock || !closingBlock ) {
         return false;
     }
 
+    // Compose the text to parse, and return the caption shortcode
     var text = openingBlock + node.outerHTML + closingBlock;
 
-    return wp.shortcode.next( "caption", text, 0);
+    return wp.shortcode.next( "caption", text, 0 );
 };
 
 /**
@@ -1082,23 +1098,32 @@ ZSSEditor.getCaptionForImage = function(imageNode) {
  *  @return     Returns an object containing the extracted meta data.
  *  See shortcode.js::next or details
  */
-ZSSEditor.captionMetaForImage = function(imageNode) {
-    var caption, attrs;
-    var meta = {};
-    var caption = ZSSEditor.getCaptionForImage(imageNode);
-    if (!caption) {
+ZSSEditor.captionMetaForImage = function( imageNode ) {
+    var attrs,
+        meta = {
+            align: '',
+            caption: '',
+            captionClassName: '',
+            captionId: ''
+        };
+
+    var caption = ZSSEditor.getCaptionForImage( imageNode );
+    if ( !caption ) {
         return meta;
     }
 
     attrs = caption.shortcode.attrs.named;
-
-    if (attrs.class) {
-        meta.captionClassName = attrs.class;
-    }
-    if (attrs.align) {
+    if ( attrs.align ) {
         meta.align = attrs.align.replace( 'align', '' );
     }
-    meta.caption = caption.shortcode.content.substr(caption.shortcode.content.lastIndexOf(">")+1);
+    if ( attrs.class ) {
+        meta.captionClassName = attrs.class;
+    }
+    if ( attrs.id ) {
+        meta.captionId = attrs.id;
+    }
+    meta.caption = caption.shortcode.content.substr( caption.shortcode.content.lastIndexOf( ">" ) + 1 );
+
     return meta;
 }
 
