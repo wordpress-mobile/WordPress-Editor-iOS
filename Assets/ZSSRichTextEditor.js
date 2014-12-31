@@ -983,12 +983,12 @@ ZSSEditor.extractImageMeta = function( imageNode ) {
 
     // Default attributes. All values are strings, except linkTargetBlank
     metadata = {
-        alt: '',            // Image alt attribute
         align: 'none',      // Accepted values: center, left, right or empty string.
+        alt: '',            // Image alt attribute
         attachment_id: '',  // Numeric attachment id of the image in the site's media library
         caption: '',        // The text of the caption for the image (if any)
-        captionId: '',      // The caption shortcode's ID attribute. The numeric value should match the value of attachment_id
         captionClassName: '', // The classes for the caption shortcode (if any).
+        captionId: '',      // The caption shortcode's ID attribute. The numeric value should match the value of attachment_id
         classes: '',        // The class attribute for the image. Does not include editor generated classes
         height: '',         // The image height attribute
         linkClassName: '',  // The class attribute for the link
