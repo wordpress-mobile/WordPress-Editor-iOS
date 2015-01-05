@@ -995,6 +995,34 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self callDelegateEditorTextDidChange];
 }
 
+#pragma mark - Text Access
+
+- (NSString*)contents
+{
+    NSString* contents = nil;
+    
+    if ([self isInVisualMode]) {
+        contents = [self.contentField html];
+    } else {
+        contents =  self.sourceView.text;
+    }
+    
+    return contents;
+}
+
+- (NSString*)title
+{
+    NSString* title = nil;
+    
+    if ([self isInVisualMode]) {
+        title = [self.titleField strippedHtml];
+    } else {
+        title =  self.sourceViewTitleField.text;
+    }
+    
+    return title;
+}
+
 #pragma mark - Scrolling support
 
 /**
