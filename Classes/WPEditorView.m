@@ -1497,10 +1497,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     return YES;
 }
 
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+- (void)textViewDidChange:(UITextView *)textView
 {
     [self callDelegateEditorTitleDidChange];
-    return YES;
 }
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView
@@ -1517,8 +1516,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
+    textField.text = [textField.text stringByReplacingCharactersInRange:range withString:string];
     [self callDelegateEditorTitleDidChange];
-    return YES;
+    return NO;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
