@@ -144,7 +144,10 @@ static NSString *const MetaKeyWidth             = @"width";
 - (void)setCaptionId:(NSString *)captionId
 {
     NSString *str = [self numericOrEmptyString:captionId];
-    _captionId = [NSString stringWithFormat:@"attachment_%@", str];
+    if ([str length]) {
+        str = [NSString stringWithFormat:@"attachment_%@", str];
+    }
+    _captionId = str;
 }
 
 /**
