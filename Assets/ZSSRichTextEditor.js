@@ -807,19 +807,19 @@ ZSSEditor.removeImage = function(imageNodeIdentifier) {
 };
 
 /**
- *  @brief      Updates the currently selected image, replacing its markup with 
+ *  @brief      Updates the currently selected image, replacing its markup with
  *  new markup based on the specified meta data string.
  *
  *  @param      imageMetaString   A JSON string representing the updated meta data.
  */
-ZSSEditor.updateCurrentImageMeta = function(imageMetaString) {
-    ZSSEditor.restoreRange();
+ZSSEditor.updateCurrentImageMeta = function( imageMetaString ) {
+    //    ZSSEditor.restoreRange();
 
     if ( ZSSEditor.currentEditingImage ) {
         var imageMeta = JSON.parse( imageMetaString );
         var html = ZSSEditor.createImageFromMeta( imageMeta );
 
-        ZSSEditor.selectImageCaptionBlock( ZSSEditor.currentEditingImage );
+        ZSSEditor.selectImageCaptionNode( ZSSEditor.currentEditingImage );
         ZSSEditor.insertHTML( html );
         return; // return to avoid sending enabled styles twice.
     }
@@ -827,40 +827,28 @@ ZSSEditor.updateCurrentImageMeta = function(imageMetaString) {
     ZSSEditor.sendEnabledStyles();
 }
 
+
 /**
  *  @brief      Selects the specified image, and its anchor and caption shortcode (if any).
  *
  *  @param      imageNode   An image node in the DOM to inspect.
  */
-ZSSEditor.selectImageCaptionBlock = function( imageNode ) {
+ZSSEditor.selectImageCaptionNode = function( imageNode ) {
     var node = imageNode;
     if ( node.parentNode && node.parentNode.nodeName === 'A' ) {
         node = node.parentNode;
     }
 
-    var startNode = endNode = node;
-    var startOffset = endOffset = 0;
+    if ( node.parentNode && node.parentNode.className.indexOf( 'wp-caption' ) != -1 ) {
+        node = node.parentNode;
+    }
 
-    if ( node.previousSibling && node.previousSibling.nodeType === document.TEXT_NODE && node.previousSibling.nodeValue.lastIndexOf( '[caption' ) > -1 ) {
-        var tempNode = node;
-        while ( tempNode = tempNode.nextSibling ) {
-            if ( tempNode.nodeValue.indexOf( ']' ) > -1 ) {
-                startNode = node.previousSibling;
-                startOffset = startNode.nodeValue.lastIndexOf( '[caption' );
-                endNode = tempNode;
-                endOffset = endNode.nodeValue.indexOf( ']' ) + 1;
-                break;
-            }
-        }
+    if ( node.parentNode && (node.parentNode.className.indexOf( 'wp-temp' ) != -1 ) ) {
+        node = node.parentNode;
     }
 
     var range = document.createRange();
-    if ( startNode === endNode ) {
-        range.selectNode( startNode );
-    } else {
-        range.setStart( startNode, startOffset );
-        range.setEnd( endNode, endOffset );
-    }
+    range.selectNode( node );
 
     var selection = window.getSelection();
     selection.removeAllRanges();
@@ -961,6 +949,8 @@ ZSSEditor.createImageFromMeta = function( props ) {
             attrs:   shortcode,
             content: html + ' ' + props.caption
         });
+
+        html = ZSSEditor.applyVisualFormatting( html );
     }
 
     return html;
@@ -1024,22 +1014,22 @@ ZSSEditor.extractImageMeta = function( imageNode ) {
     extraClasses = [];
 
     $.each( classes, function( index, value ) {
-        if ( /^wp-image/.test( name ) ) {
-           metadata.attachment_id = parseInt( name.replace( 'wp-image-', '' ), 10 );
-        } else if ( /^align/.test( name ) ) {
-           metadata.align = name.replace( 'align', '' );
-        } else if ( /^size/.test( name ) ) {
-           metadata.size = name.replace( 'size-', '' );
+        if ( /^wp-image/.test( value ) ) {
+           metadata.attachment_id = parseInt( value.replace( 'wp-image-', '' ), 10 );
+        } else if ( /^align/.test( value ) ) {
+           metadata.align = value.replace( 'align', '' );
+        } else if ( /^size/.test( value ) ) {
+           metadata.size = value.replace( 'size-', '' );
         } else {
-           extraClasses.push( name );
+           extraClasses.push( value );
         }
     } );
 
     metadata.classes = extraClasses.join( ' ' );
 
     // Extract caption
-    var captionMeta = ZSSEditor.captionMetaForImage(imageNode)
-    metadata = $.extend(metadata, captionMeta);
+    var captionMeta = ZSSEditor.captionMetaForImage( imageNode )
+    metadata = $.extend( metadata, captionMeta );
 
     // Extract linkTo
     if ( imageNode.parentNode && imageNode.parentNode.nodeName === 'A' ) {
@@ -1062,7 +1052,6 @@ ZSSEditor.extractImageMeta = function( imageNode ) {
  *  See shortcode.js::next for details
  */
 ZSSEditor.getCaptionForImage = function( imageNode ) {
-    var openingBlock, closingBlock;
     var node = imageNode;
 
     // If the image's parent is an anchor, let the anchor be the working node.
@@ -1070,24 +1059,22 @@ ZSSEditor.getCaptionForImage = function( imageNode ) {
         node = node.parentNode;
     }
 
-    // If the working node is surrounded by text nodes (both before and after),
-    // let the text nodes define the opening and closing content to be parsed
-    // for the caption shortcode.
-    // If either the opening or closing block is missing, then there is no caption.
-    if ( node.previousSibling && node.previousSibling.nodeType === document.TEXT_NODE ) {
-        openingBlock = node.previousSibling.nodeValue;
-    }
-    if ( node.nextSibling && node.nextSibling.nodeType === document.TEXT_NODE ) {
-        closingBlock = node.nextSibling.nodeValue;
-    }
-    if ( !openingBlock || !closingBlock ) {
+   	if ( node.parentNode && node.parentNode.className.indexOf( 'wp-caption' ) != -1 ) {
+        node = node.parentNode;
+    } else {
         return false;
     }
 
-    // Compose the text to parse, and return the caption shortcode
-    var text = openingBlock + node.outerHTML + closingBlock;
+    if ( node.parentNode && (node.parentNode.className.indexOf( 'wp-temp' ) != -1 ) ) {
+        node = node.parentNode;
+    } else {
+        return false;
+    }
 
-    return wp.shortcode.next( "caption", text, 0 );
+    var html = node.outerHTML;
+    html = ZSSEditor.removeVisualFormatting( html );
+
+    return wp.shortcode.next( "caption", html, 0 );
 };
 
 /**
@@ -1127,7 +1114,137 @@ ZSSEditor.captionMetaForImage = function( imageNode ) {
     return meta;
 }
 
+/**
+ *  @brief      Adds visual formatting to a caption shortcodes.
+ *
+ *  @param      html   The markup containing caption shortcodes to process.
+ *
+ *  @return     The html with caption shortcodes replaced with editor specific markup.
+ *  See shortcode.js::next or details
+ */
+ZSSEditor.applyCaptionFormatting = function( match ) {
+    var attrs = match.attrs.named;
+    var out = '<label class="wp-temp" data-wp-temp="caption">';
+    out += '<span class="wp-caption"';
+
+    if ( attrs.width ) {
+        out += ' style="width:' + attrs.width + 'px; max-width:100% !important;"';
+    }
+    $.each( attrs, function( key, value ) {
+        out += " data-caption-" + key + '="' + value + '"';
+    } );
+
+    out += '>';
+    out += match.content;
+    out += '</span>';
+    out += '</label>';
+
+    return out;
+}
+
+/**
+ *  @brief      Removes custom visual formatting for caption shortcodes.
+ *
+ *  @param      html   The markup to process
+ *
+ *  @return     The html with formatted captions restored to the original shortcode markup.
+ */
+ZSSEditor.removeCaptionFormatting = function( html ) {
+    // call methods to restore any transformed content from its visual presentation to its source code.
+    var regex = /<label class="wp-temp" data-wp-temp="caption">([\s\S]+?)<\/label>/g;
+
+    var str = html.replace( regex, ZSSEditor.removeCaptionFormattingCallback );
+
+    return str;
+}
+
+ZSSEditor.removeCaptionFormattingCallback = function( match, content ) {
+    // TODO: check is a visual temp node
+    var out = '';
+
+    if ( content.indexOf('<img ') === -1 ) {
+        // Broken caption. The user managed to drag the image out?
+        // Try to return the caption text as a paragraph.
+        out = content.match( /\s*<span [^>]*>([\s\S]+?)<\/span>/gi );
+
+        if ( out && out[1] ) {
+            return '<p>' + out[1] + '</p>';
+        }
+
+        return '';
+    }
+
+    out = content.replace( /\s*<span ([^>]*)>([\s\S]+?)<\/span>/gi, function( ignoreMatch, attrStr, content ) {
+        if ( ! content ) {
+            return '';
+        }
+
+        var id, classes, align, width, attrs = {};
+
+        width = attrStr.match( /data-caption-width="([0-9]*)"/ );
+        width = ( width && width[1] ) ? width[1] : '';
+        if ( width ) {
+            attrs.width = width;
+        }
+
+        id = attrStr.match( /data-caption-id="([^"]*)"/ );
+        id = ( id && id[1] ) ? id[1] : '';
+        if ( id ) {
+            attrs.id = id;
+        }
+
+        classes = attrStr.match( /data-caption-class="([^"]*)"/ );
+        classes = ( classes && classes[1] ) ? classes[1] : '';
+        if ( classes ) {
+            attrs.class = classes;
+        }
+
+        align = attrStr.match( /data-caption-align="([^"]*)"/ );
+        align = ( align && align[1] ) ? align[1] : '';
+        if ( align ) {
+            attrs.align = align;
+        }
+
+        var options = {
+            'tag':'caption',
+            'attrs':attrs,
+            'type':'closed',
+            'content':content
+        };
+
+        return wp.shortcode.string( options );
+    });
+
+    return out;
+}
+
 // MARK: - Commands
+
+/**
+ *  @brief      Applies editor specific visual formatting.
+ *
+ *  @param      html   The markup to format
+ *
+ *  @return     Returns the string with the visual formatting applied.
+ */
+ZSSEditor.applyVisualFormatting  = function( html ) {
+    var str = wp.shortcode.replace( 'caption', html, ZSSEditor.applyCaptionFormatting );
+
+    return str;
+}
+
+/**
+ *  @brief      Removes editor specific visual formatting
+ *
+ *  @param      html   The markup to remove formatting
+ *
+ *  @return     Returns the string with the visual formatting removed.
+ */
+ZSSEditor.removeVisualFormatting = function( html ) {
+    var str = ZSSEditor.removeCaptionFormatting( html );
+
+    return str;
+}
 
 ZSSEditor.insertHTML = function(html) {
 	document.execCommand('insertHTML', false, html);
@@ -1382,6 +1499,8 @@ function ZSSField(wrappedObject) {
     if (this.wrappedDomNode().hasAttribute('nostyle')) {
         this.hasNoStyle = true;
     }
+
+    this.useVisualFormatting = (this.wrappedObject.data("wpUseVisualFormatting") === "true")
     
     this.bindListeners();
 };
@@ -1428,7 +1547,7 @@ ZSSField.prototype.emptyFieldIfNoContentsAndRefreshPlaceholderColor = function()
 
 ZSSField.prototype.handleBlurEvent = function(e) {
     ZSSEditor.focusedField = null;
-    
+
     this.emptyFieldIfNoContentsAndRefreshPlaceholderColor();
     
     this.callback("callback-focus-out");
@@ -1610,7 +1729,9 @@ ZSSField.prototype.isEmpty = function() {
 };
 
 ZSSField.prototype.getHTML = function() {
-    return this.wrappedObject.html();
+    var html = this.wrappedObject.html();
+    html = ZSSEditor.removeVisualFormatting(html);
+    return html
 };
 
 ZSSField.prototype.strippedHTML = function() {
@@ -1618,9 +1739,11 @@ ZSSField.prototype.strippedHTML = function() {
 };
 
 ZSSField.prototype.setHTML = function(html) {
+    html = ZSSEditor.applyVisualFormatting(html);
     this.wrappedObject.html(html);
     this.refreshPlaceholderColor();
 };
+
 
 // MARK: - Placeholder
 
