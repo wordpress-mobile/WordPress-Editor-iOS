@@ -995,6 +995,34 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self callDelegateEditorTextDidChange];
 }
 
+#pragma mark - Text Access
+
+- (NSString*)contents
+{
+    NSString* contents = nil;
+    
+    if ([self isInVisualMode]) {
+        contents = [self.contentField html];
+    } else {
+        contents =  self.sourceView.text;
+    }
+    
+    return contents;
+}
+
+- (NSString*)title
+{
+    NSString* title = nil;
+    
+    if ([self isInVisualMode]) {
+        title = [self.titleField strippedHtml];
+    } else {
+        title =  self.sourceViewTitleField.text;
+    }
+    
+    return title;
+}
+
 #pragma mark - Scrolling support
 
 /**
@@ -1469,10 +1497,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     return YES;
 }
 
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+- (void)textViewDidChange:(UITextView *)textView
 {
     [self callDelegateEditorTitleDidChange];
-    return YES;
 }
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView
@@ -1489,8 +1516,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
+    textField.text = [textField.text stringByReplacingCharactersInRange:range withString:string];
     [self callDelegateEditorTitleDidChange];
-    return YES;
+    return NO;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
