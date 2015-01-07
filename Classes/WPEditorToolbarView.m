@@ -32,7 +32,6 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
 
 #pragma mark - Properties: Toolbar items
 @property (nonatomic, strong, readwrite) UIBarButtonItem* htmlBarButtonItem;
-@property (nonatomic, strong) NSMutableArray *customBarButtonItems;
 
 /**
  *  Toolbar items to include
@@ -88,28 +87,25 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     }
     
     CGFloat toolbarWidth = 0.0f;
-    NSUInteger numberOfItems = items.count;
-    
-    if (numberOfItems > 0) {
-        CGFloat finalPaddingBetweenItems = kDefaultToolbarItemPadding - toolbarItemsSeparation;
-        
-        toolbarWidth += (numberOfItems * WPEditorToolbarButtonWidth);
-        toolbarWidth += (numberOfItems * finalPaddingBetweenItems);
-    }
-    
-    if (self.customBarButtonItems != nil)
-    {
-        [items addObjectsFromArray:self.customBarButtonItems];
-        
-        for(UIBarButtonItem *buttonItem in self.customBarButtonItems)
-        {
-            toolbarWidth += buttonItem.customView.frame.size.width;
+    if (IS_IPAD) {
+        toolbarWidth = CGRectGetWidth(self.toolbarScroll.frame);
+    } else {
+        NSUInteger numberOfItems = items.count;
+        if (numberOfItems > 0) {
+            CGFloat finalPaddingBetweenItems = kDefaultToolbarItemPadding - toolbarItemsSeparation;
+            
+            toolbarWidth += (numberOfItems * WPEditorToolbarButtonWidth);
+            toolbarWidth += (numberOfItems * finalPaddingBetweenItems);
         }
     }
     
     UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                                                                                        target:nil
                                                                                        action:nil];
+    UIBarButtonItem *flexSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                                                target:nil
+                                                                                action:nil];
+
     negativeSeparator.width = -toolbarItemsSeparation;
     
     // This code adds a negative separator between all the toolbar buttons
@@ -126,7 +122,8 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     negativeSeparatorForToolbar.width = -kNegativeLeftToolbarLeftPadding;
     toolbarWidth += finalToolbarLeftPadding;
     
-    [items insertObject:negativeSeparatorForToolbar atIndex:0];
+    [items insertObject:flexSpacer atIndex:0];
+    [items insertObject:flexSpacer atIndex:items.count-1];
     
     self.leftToolbar.items = items;
     self.leftToolbar.frame = CGRectMake(0,
@@ -135,25 +132,6 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
                                         WPEditorToolbarHeight);
     self.toolbarScroll.contentSize = CGSizeMake(CGRectGetWidth(self.leftToolbar.frame),
                                                 WPEditorToolbarHeight);
-}
-
-#pragma mark - Custom toolbar items
-
-- (void)addCustomToolbarItemWithButton:(UIButton *)button
-{
-    if(self.customBarButtonItems == nil)
-    {
-        self.customBarButtonItems = [NSMutableArray array];
-    }
-    
-    button.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-UltraLight" size:WPEditorToolbarDefaultFontSize];
-    [button setTitleColor:self.itemTintColor forState:UIControlStateNormal];
-    [button setTitleColor:self.selectedItemTintColor forState:UIControlStateHighlighted];
-    
-    UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
-    [self.customBarButtonItems addObject:barButtonItem];
-    
-    [self reloadItems];
 }
 
 #pragma mark - Toolbar building helpers
@@ -214,6 +192,9 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     
     UIScrollView* toolbarScroll = [[UIScrollView alloc] initWithFrame:toolbarScrollFrame];
     toolbarScroll.showsHorizontalScrollIndicator = NO;
+    if (IS_IPAD) {
+        toolbarScroll.scrollEnabled = NO;
+    }
     toolbarScroll.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
     [self.contentView addSubview:toolbarScroll];
