@@ -25,6 +25,24 @@
     [[self trackers] removeAllObjects];
 }
 
++ (void)beginTimerForStat:(WPAnalyticsStat)stat
+{
+    for (id<WPAnalyticsTracker> tracker in [self trackers]) {
+        if ([tracker respondsToSelector:@selector(beginTimerForStat:)]) {
+            [tracker beginTimerForStat:stat];
+        }
+    }
+}
+
++ (void)endTimerForStat:(WPAnalyticsStat)stat withProperties:(NSDictionary *)properties
+{
+    for (id<WPAnalyticsTracker> tracker in [self trackers]) {
+        if ([tracker respondsToSelector:@selector(endTimerForStat:withProperties:)]) {
+            [tracker endTimerForStat:stat withProperties:properties];
+        }
+    }
+}
+
 + (void)track:(WPAnalyticsStat)stat
 {
     for (id<WPAnalyticsTracker> tracker in [self trackers]) {

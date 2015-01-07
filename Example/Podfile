@@ -6,7 +6,7 @@ target 'EditorDemo' do
   pod 'WordPress-iOS-Editor', :path => '../'
   pod 'CocoaLumberjack', '~>1.9', :inhibit_warnings => true
   pod 'UIAlertView+Blocks', :inhibit_warnings => true
-  pod 'WordPress-iOS-Shared/Core', '~>0.1.5', :inhibit_warnings => true
+  pod 'WordPress-iOS-Shared', '~>0.1.6', :inhibit_warnings => true
   pod 'WordPressCom-Analytics-iOS', '~>0.0.4', :inhibit_warnings => true
 end
 
