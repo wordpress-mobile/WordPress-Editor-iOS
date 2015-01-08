@@ -20,6 +20,6 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.dependency 'CocoaLumberjack', '~>1.9'
   s.dependency 'UIAlertView+Blocks'
-  s.dependency 'WordPress-iOS-Shared/Core', '~>0.1.5'
+  s.dependency 'WordPress-iOS-Shared', '~>0.1.6'
   s.dependency 'WordPressCom-Analytics-iOS', '~>0.0.4'
 end
