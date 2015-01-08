@@ -121,10 +121,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     negativeSeparatorForToolbar.width = -kNegativeLeftToolbarLeftPadding;
     toolbarWidth += finalToolbarLeftPadding;
     self.leftToolbar.items = items;
-    self.leftToolbar.frame = CGRectMake(0,
-                                        0,
-                                        toolbarWidth,
-                                        WPEditorToolbarHeight);
+    self.leftToolbar.frame = CGRectMake(0, 0, toolbarWidth, WPEditorToolbarHeight);
     self.toolbarScroll.contentSize = CGSizeMake(CGRectGetWidth(self.leftToolbar.frame),
                                                 WPEditorToolbarHeight);
 }
@@ -139,28 +136,15 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     UIBarButtonItem *buttonSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                                                                                   target:nil
                                                                                   action:nil];
-    UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                                                                       target:nil
-                                                                                       action:nil];
-    negativeSeparator.width = -kiPadNegativeToolbarItemPadding;
-    
-    // This code adds a negative separator between all the toolbar buttons
-    for (NSInteger i = [items count]; i >= 0; i--) {
-        [items insertObject:negativeSeparator atIndex:i];
-    }
-    
-    buttonSpacer.width = WPEditorToolbarButtonWidth/1.5;
-    [items insertObject:buttonSpacer atIndex:2];
-    [items insertObject:buttonSpacer atIndex:9];
-    [items insertObject:buttonSpacer atIndex:12];
-    [items insertObject:buttonSpacer atIndex:19];
+    buttonSpacer.width = WPEditorToolbarButtonWidth;
+    [items insertObject:buttonSpacer atIndex:1];
+    [items insertObject:buttonSpacer atIndex:5];
+    [items insertObject:buttonSpacer atIndex:7];
+    [items insertObject:buttonSpacer atIndex:11];
     [items insertObject:flexSpacer atIndex:0];
     [items insertObject:flexSpacer atIndex:items.count];
     self.leftToolbar.items = items;
-    self.leftToolbar.frame = CGRectMake(0,
-                                        0,
-                                        toolbarWidth,
-                                        WPEditorToolbarHeight);
+    self.leftToolbar.frame = CGRectMake(0, 0, toolbarWidth, WPEditorToolbarHeight);
     self.toolbarScroll.contentSize = CGSizeMake(CGRectGetWidth(self.leftToolbar.frame),
                                                 WPEditorToolbarHeight);
 }
