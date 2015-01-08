@@ -7,6 +7,7 @@ static int kDefaultToolbarItemPadding = 10;
 static int kDefaultToolbarLeftPadding = 10;
 
 static int kNegativeToolbarItemPadding = 12;
+static int kiPadNegativeToolbarItemPadding = 10;
 static int kNegativeSixPlusToolbarItemPadding = 2;
 static int kNegativeLeftToolbarLeftPadding = 3;
 static int kNegativeRightToolbarPadding = 20;
@@ -15,7 +16,6 @@ static int kNegativeSixPlusRightToolbarPadding = 24;
 static const CGFloat WPEditorToolbarHeight = 40;
 static const CGFloat WPEditorToolbarButtonHeight = 40;
 static const CGFloat WPEditorToolbarButtonWidth = 40;
-static const CGFloat WPEditorToolbarDefaultFontSize = 28.5f;
 static const CGFloat WPEditorToolbarDividerLineHeight = 28;
 static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
 
@@ -76,8 +76,16 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
 
 - (void)reloadItems
 {
+    if (IS_IPAD) {
+        [self reloadiPadItems];
+    } else {
+        [self reloadiPhoneItems];
+    }
+}
+
+- (void)reloadiPhoneItems
+{
     NSMutableArray *items = [self.items mutableCopy];
-    
     CGFloat toolbarItemsSeparation = 0.0f;
     
     if ([WPDeviceIdentification isIPhoneSixPlus]) {
@@ -87,25 +95,17 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     }
     
     CGFloat toolbarWidth = 0.0f;
-    if (IS_IPAD) {
-        toolbarWidth = CGRectGetWidth(self.toolbarScroll.frame);
-    } else {
-        NSUInteger numberOfItems = items.count;
-        if (numberOfItems > 0) {
-            CGFloat finalPaddingBetweenItems = kDefaultToolbarItemPadding - toolbarItemsSeparation;
-            
-            toolbarWidth += (numberOfItems * WPEditorToolbarButtonWidth);
-            toolbarWidth += (numberOfItems * finalPaddingBetweenItems);
-        }
+    NSUInteger numberOfItems = items.count;
+    if (numberOfItems > 0) {
+        CGFloat finalPaddingBetweenItems = kDefaultToolbarItemPadding - toolbarItemsSeparation;
+        
+        toolbarWidth += (numberOfItems * WPEditorToolbarButtonWidth);
+        toolbarWidth += (numberOfItems * finalPaddingBetweenItems);
     }
     
     UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                                                                                        target:nil
                                                                                        action:nil];
-    UIBarButtonItem *flexSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                                                target:nil
-                                                                                action:nil];
-
     negativeSeparator.width = -toolbarItemsSeparation;
     
     // This code adds a negative separator between all the toolbar buttons
@@ -116,15 +116,46 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     UIBarButtonItem *negativeSeparatorForToolbar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                                                                                                  target:nil
                                                                                                  action:nil];
-    
     CGFloat finalToolbarLeftPadding = kDefaultToolbarLeftPadding - kNegativeLeftToolbarLeftPadding;
     
     negativeSeparatorForToolbar.width = -kNegativeLeftToolbarLeftPadding;
     toolbarWidth += finalToolbarLeftPadding;
+    self.leftToolbar.items = items;
+    self.leftToolbar.frame = CGRectMake(0,
+                                        0,
+                                        toolbarWidth,
+                                        WPEditorToolbarHeight);
+    self.toolbarScroll.contentSize = CGSizeMake(CGRectGetWidth(self.leftToolbar.frame),
+                                                WPEditorToolbarHeight);
+}
+
+- (void)reloadiPadItems
+{
+    NSMutableArray *items = [self.items mutableCopy];
+    CGFloat toolbarWidth = CGRectGetWidth(self.toolbarScroll.frame);
+    UIBarButtonItem *flexSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                                                target:nil
+                                                                                action:nil];
+    UIBarButtonItem *buttonSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                                                                  target:nil
+                                                                                  action:nil];
+    UIBarButtonItem *negativeSeparator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                                                                       target:nil
+                                                                                       action:nil];
+    negativeSeparator.width = -kiPadNegativeToolbarItemPadding;
     
+    // This code adds a negative separator between all the toolbar buttons
+    for (NSInteger i = [items count]; i >= 0; i--) {
+        [items insertObject:negativeSeparator atIndex:i];
+    }
+    
+    buttonSpacer.width = WPEditorToolbarButtonWidth/1.5;
+    [items insertObject:buttonSpacer atIndex:2];
+    [items insertObject:buttonSpacer atIndex:9];
+    [items insertObject:buttonSpacer atIndex:12];
+    [items insertObject:buttonSpacer atIndex:19];
     [items insertObject:flexSpacer atIndex:0];
-    [items insertObject:flexSpacer atIndex:items.count-1];
-    
+    [items insertObject:flexSpacer atIndex:items.count];
     self.leftToolbar.items = items;
     self.leftToolbar.frame = CGRectMake(0,
                                         0,
