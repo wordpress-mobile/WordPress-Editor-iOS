@@ -1,4 +1,6 @@
+osx_image: xcode611
 language: objective-c
 xcode_workspace: ./Example/EditorDemo.xcworkspace
 xcode_scheme: EditorDemo
-xcode_sdk: iphonesimulator7.1
+xcode_sdk: iphonesimulator8.1
+

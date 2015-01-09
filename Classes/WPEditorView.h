@@ -157,6 +157,22 @@ stylesForCurrentSelection:(NSArray*)styles;
  */
 - (void)redo;
 
+#pragma mark - Text Access
+
+/**
+ *  @brief      Retrieves the content in both HTML and visual mode.
+ *
+ *  @returns    The content.
+ */
+- (NSString*)contents;
+
+/**
+ *  @brief      Retrieves the title in both HTML and visual mode.
+ *
+ *  @returns    The title.
+ */
+- (NSString*)title;
+
 #pragma mark - Selection
 
 

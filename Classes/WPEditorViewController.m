@@ -948,8 +948,8 @@ NSInteger const WPLinkAlertViewTag = 92;
 #pragma mark - Getters and Setters
 
 - (NSString*)titleText
-{
-    return [self.editorView.titleField strippedHtml];
+{    
+    return [self.editorView title];
 }
 
 - (void)setTitleText:(NSString*)titleText
@@ -971,7 +971,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (NSString*)bodyText
 {
-    return [self.editorView.contentField html];
+    return [self.editorView contents];
 }
 
 - (void)setBodyText:(NSString*)bodyText
