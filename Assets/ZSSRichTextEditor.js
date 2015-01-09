@@ -57,8 +57,8 @@ ZSSEditor.init = function() {
         $(document.body).css('padding-left', '80px');
         $(document.body).css('padding-right', '80px');
         $('#zss_field_title').css('font-size', '1.3em');
-        $('#zss_field_content').css('font-size', '1.1em');
-        $('#zss_field_content').css('line-height', '26px');
+        $('#zss_field_content').css('font-size', '1.125em');
+        $('#zss_field_content').css('line-height', '28px');
     }
     
     document.execCommand('insertBrOnReturn', false, false);
