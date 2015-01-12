@@ -54,11 +54,9 @@ ZSSEditor.init = function() {
     // Change a few CSS values if the device is an iPad
     ZSSEditor.isiPad = (navigator.userAgent.match(/iPad/i) != null);
     if (ZSSEditor.isiPad) {
-        $(document.body).css('padding-left', '80px');
-        $(document.body).css('padding-right', '80px');
-        $('#zss_field_title').css('font-size', '1.3em');
-        $('#zss_field_content').css('font-size', '1.125em');
-        $('#zss_field_content').css('line-height', '28px');
+        $(document.body).addClass('ipad_body');
+        $('#zss_field_title').addClass('ipad_field_title');
+        $('#zss_field_content').addClass('ipad_field_content');
     }
     
     document.execCommand('insertBrOnReturn', false, false);

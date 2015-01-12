@@ -7,7 +7,6 @@ static int kDefaultToolbarItemPadding = 10;
 static int kDefaultToolbarLeftPadding = 10;
 
 static int kNegativeToolbarItemPadding = 12;
-static int kiPadNegativeToolbarItemPadding = 10;
 static int kNegativeSixPlusToolbarItemPadding = 2;
 static int kNegativeLeftToolbarLeftPadding = 3;
 static int kNegativeRightToolbarPadding = 20;
