@@ -213,7 +213,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 			[items addObject:[self underlineBarButton]];
 		}
 		
-		if ([self canShowBlockQuoteBarButton]) {
+		if (!IS_IPAD && [self canShowBlockQuoteBarButton]) {
 			[items addObject:[self blockQuoteBarButton]];
 		}
 		
@@ -276,6 +276,10 @@ NSInteger const WPLinkAlertViewTag = 92;
 		if ([self canShowBackgroundColorBarButton]) {
 			[items addObject:[self backgroundColorBarButton]];
 		}
+        
+        if (IS_IPAD && [self canShowInsertLinkBarButton]) {
+            [items addObject:[self inserLinkBarButton]];
+        }
 		
 		if ([self canShowUnorderedListBarButton]) {
 			[items addObject:[self unorderedListBarButton]];
@@ -297,9 +301,13 @@ NSInteger const WPLinkAlertViewTag = 92;
 			[items addObject:[self outdentBarButton]];
 		}
 		
-		if ([self canShowInsertLinkBarButton]) {
+		if (!IS_IPAD && [self canShowInsertLinkBarButton]) {
 			[items addObject:[self inserLinkBarButton]];
 		}
+        
+        if (IS_IPAD && [self canShowBlockQuoteBarButton]) {
+            [items addObject:[self blockQuoteBarButton]];
+        }
 		
 		if ([self canShowRemoveLinkBarButton]) {
 			[items addObject:[self removeLinkBarButton]];
