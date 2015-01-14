@@ -22,6 +22,9 @@ var ZSSEditor = {};
 ZSSEditor.caretArguments = ['yOffset=' + 0, 'height=' + 0];
 ZSSEditor.caretInfo = { y: 0, height: 0 };
 
+// Is this device an iPad
+ZSSEditor.isiPad;
+
 // The current selection
 ZSSEditor.currentSelection;
 
@@ -47,6 +50,14 @@ ZSSEditor.defaultParagraphSeparator = 'p';
  * The initializer function that must be called onLoad
  */
 ZSSEditor.init = function() {
+    
+    // Change a few CSS values if the device is an iPad
+    ZSSEditor.isiPad = (navigator.userAgent.match(/iPad/i) != null);
+    if (ZSSEditor.isiPad) {
+        $(document.body).addClass('ipad_body');
+        $('#zss_field_title').addClass('ipad_field_title');
+        $('#zss_field_content').addClass('ipad_field_content');
+    }
     
     document.execCommand('insertBrOnReturn', false, false);
     document.execCommand('defaultParagraphSeparator', false, this.defaultParagraphSeparator);
