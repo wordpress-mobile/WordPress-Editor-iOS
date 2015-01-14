@@ -544,6 +544,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
          }
      } onComplete:^() {
          
+         [self refreshVisibleViewportAndContentSize];
          [self scrollToCaretAnimated:NO];
      }];
 }
