@@ -813,18 +813,11 @@ ZSSEditor.removeImage = function(imageNodeIdentifier) {
  *  @param      imageMetaString   A JSON string representing the updated meta data.
  */
 ZSSEditor.updateCurrentImageMeta = function( imageMetaString ) {
-    //    ZSSEditor.restoreRange();
+    var imageMeta = JSON.parse( imageMetaString );
+    var html = ZSSEditor.createImageFromMeta( imageMeta );
 
-    if ( ZSSEditor.currentEditingImage ) {
-        var imageMeta = JSON.parse( imageMetaString );
-        var html = ZSSEditor.createImageFromMeta( imageMeta );
-
-        ZSSEditor.selectImageCaptionNode( ZSSEditor.currentEditingImage );
-        ZSSEditor.insertHTML( html );
-        return; // return to avoid sending enabled styles twice.
-    }
-
-    ZSSEditor.sendEnabledStyles();
+    ZSSEditor.selectImageCaptionNode( ZSSEditor.currentEditingImage );
+    ZSSEditor.insertHTML( html );
 }
 
 
@@ -834,6 +827,21 @@ ZSSEditor.updateCurrentImageMeta = function( imageMetaString ) {
  *  @param      imageNode   An image node in the DOM to inspect.
  */
 ZSSEditor.selectImageCaptionNode = function( imageNode ) {
+    var node = ZSSEditor.findImageCaptionNode( imageNode );
+    var range = document.createRange();
+    range.selectNode( node );
+
+    var selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange( range );
+}
+
+/**
+ *  @brief       Finds all related caption nodes for the specified image node.
+ *
+ *  @param      imageNode   An image node in the DOM to inspect.
+ */
+ZSSEditor.findImageCaptionNode = function( imageNode ) {
     var node = imageNode;
     if ( node.parentNode && node.parentNode.nodeName === 'A' ) {
         node = node.parentNode;
@@ -847,12 +855,7 @@ ZSSEditor.selectImageCaptionNode = function( imageNode ) {
         node = node.parentNode;
     }
 
-    var range = document.createRange();
-    range.selectNode( node );
-
-    var selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange( range );
+    return node;
 }
 
 /**
@@ -1052,22 +1055,10 @@ ZSSEditor.extractImageMeta = function( imageNode ) {
  *  See shortcode.js::next for details
  */
 ZSSEditor.getCaptionForImage = function( imageNode ) {
-    var node = imageNode;
+    var node = ZSSEditor.findImageCaptionNode( imageNode );
 
-    // If the image's parent is an anchor, let the anchor be the working node.
-    if ( node.parentNode && node.parentNode.nodeName === 'A' ) {
-        node = node.parentNode;
-    }
-
-   	if ( node.parentNode && node.parentNode.className.indexOf( 'wp-caption' ) != -1 ) {
-        node = node.parentNode;
-    } else {
-        return false;
-    }
-
-    if ( node.parentNode && (node.parentNode.className.indexOf( 'wp-temp' ) != -1 ) ) {
-        node = node.parentNode;
-    } else {
+    // Ensure we're working with the formatted caption
+    if ( node.className.indexOf( 'wp-temp' ) != -1 ) {
         return false;
     }
 
