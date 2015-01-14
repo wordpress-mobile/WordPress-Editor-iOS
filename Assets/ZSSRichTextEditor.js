@@ -824,6 +824,10 @@ ZSSEditor.removeImage = function(imageNodeIdentifier) {
  *  @param      imageMetaString   A JSON string representing the updated meta data.
  */
 ZSSEditor.updateCurrentImageMeta = function( imageMetaString ) {
+    if ( !ZSSEditor.currentEditingImage ) {
+        return;
+    }
+
     var imageMeta = JSON.parse( imageMetaString );
     var html = ZSSEditor.createImageFromMeta( imageMeta );
 
