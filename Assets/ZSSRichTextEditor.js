@@ -831,24 +831,16 @@ ZSSEditor.updateCurrentImageMeta = function( imageMetaString ) {
     var imageMeta = JSON.parse( imageMetaString );
     var html = ZSSEditor.createImageFromMeta( imageMeta );
 
-    ZSSEditor.selectImageCaptionNode( ZSSEditor.currentEditingImage );
-    ZSSEditor.insertHTML( html );
-}
+    // Insert the updated html and remove the outdated node.
+    // This approach is preferred to selecting the current node via a range,
+    // and then replacing it when calling insertHTML. The insertHTML call can,
+    // in certain cases, modify the current and inserted markup depending on what
+    // elements surround the targeted node.  This approach is safer.
+    var node = ZSSEditor.findImageCaptionNode( ZSSEditor.currentEditingImage );
+    node.insertAdjacentHTML( 'afterend', html );
+    node.remove();
 
-
-/**
- *  @brief      Selects the specified image, and its anchor and caption shortcode (if any).
- *
- *  @param      imageNode   An image node in the DOM to inspect.
- */
-ZSSEditor.selectImageCaptionNode = function( imageNode ) {
-    var node = ZSSEditor.findImageCaptionNode( imageNode );
-    var range = document.createRange();
-    range.selectNode( node );
-
-    var selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange( range );
+    ZSSEditor.currentEditingImage = null;
 }
 
 /**
@@ -1159,7 +1151,7 @@ ZSSEditor.removeCaptionFormatting = function( html ) {
     // call methods to restore any transformed content from its visual presentation to its source code.
     var regex = /<label class="wp-temp" data-wp-temp="caption">([\s\S]+?)<\/label>/g;
 
-    var str = html.replace( regex, ZSSEditor.removeCaptionFormattingCallback );
+    var str = html.replace( regex, ZSSEditor.removeCaptionFormattingCallback ) + " "; // Add a trailing space for nice formatting.
 
     return str;
 }
