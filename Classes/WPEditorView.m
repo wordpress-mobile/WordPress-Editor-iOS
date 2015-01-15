@@ -544,6 +544,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
          }
      } onComplete:^() {
          
+         // WORKAROUND: it seems that without this call, typing doesn't always follow the caret
+         // position.
+         //
+         // HOW TO TEST THIS: disable the following line, and run the demo... type in the contents
+         // field while also showing the virtual keyboard.  You'll notice the caret can, at times,
+         // go behind the virtual keyboard.
+         //
+         [self refreshVisibleViewportAndContentSize];
          [self scrollToCaretAnimated:NO];
      }];
 }
