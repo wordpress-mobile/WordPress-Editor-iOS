@@ -254,25 +254,17 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     //
     if (object == self.webView.scrollView) {
         
-        // WORKAROUND: adding this delay seems to fix the following two issues we had...
-        //
-        //  https://github.com/wordpress-mobile/WordPress-iOS-Editor/issues/430
-        //  https://github.com/wordpress-mobile/WordPress-iOS-Editor/issues/430
-        //
-        //  Props to Matt Bumgardner for recommending this!
-        //
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.001 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if ([keyPath isEqualToString:WPEditorViewWebViewContentSizeKey]) {
-                NSValue *newValue = change[NSKeyValueChangeNewKey];
-                
-                CGSize newSize;
-                [newValue getValue:&newSize];
+        if ([keyPath isEqualToString:WPEditorViewWebViewContentSizeKey]) {
+            NSValue *newValue = change[NSKeyValueChangeNewKey];
             
-                if (newSize.height != self.lastEditorHeight) {
-                    [self refreshVisibleViewportAndContentSize];
-                }
+            CGSize newSize;
+            [newValue getValue:&newSize];
+        
+            if (newSize.height != self.lastEditorHeight) {
+                [self refreshVisibleViewportAndContentSize];
+                [self workaroundBrokenWebViewRendererBug];
             }
-        });
+        }
     }
 }
 
@@ -288,6 +280,38 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 {
     [self.webView.scrollView removeObserver:self
                                  forKeyPath:WPEditorViewWebViewContentSizeKey];
+}
+
+
+#pragma mark - Bug Workarounds
+
+/**
+ *  @brief      Redraws the web view, since [webView setNeedsDisplay] doesn't seem to work.
+ */
+- (void)redrawWebView
+{
+    NSArray *views = self.webView.scrollView.subviews;
+    
+    for(int i = 0; i< views.count; i++){
+        UIView *view = views[i];
+        
+        [view setNeedsDisplay];
+    }
+}
+
+/**
+ *  @brief      Works around a problem caused by another workaround we're using, that's causing the
+ *              web renderer to be interrupted before finishing.
+ *  @details    When we know of a contentSize change in the web view's scroll view, we override the
+ *              operation to manually calculate the proper new size and set it.  This is causing the
+ *              web renderer to fail and interrupt.  Drawing doesn't finish properly.  This method
+ *              offers a sort of forced redraw mechanism after a very short delay.
+ */
+- (void)workaroundBrokenWebViewRendererBug
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.001 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self redrawWebView];
+    });
 }
 
 #pragma mark - Keyboard notifications
