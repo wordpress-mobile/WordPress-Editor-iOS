@@ -843,6 +843,27 @@ ZSSEditor.updateCurrentImageMeta = function( imageMetaString ) {
     ZSSEditor.currentEditingImage = null;
 }
 
+ZSSEditor.applyImageSelectionFormatting = function( imageNode ) {
+    var node = ZSSEditor.findImageCaptionNode( imageNode );
+    var html = '<span class="img_container editing" contenteditable="false" data-editing="Edit"></span>';
+   	node.insertAdjacentHTML( 'beforebegin', html );
+    var selectionNode = node.previousSibling;
+    selectionNode.appendChild( node );
+}
+
+ZSSEditor.removeImageSelectionFormatting = function( imageNode ) {
+    var node = ZSSEditor.findImageCaptionNode( imageNode );
+    if ( !node.parentNode || node.parentNode.className.indexOf( "img_container" ) == -1 ) {
+        return;
+    }
+
+    var parentNode = node.parentNode;
+    var container = parentNode.parentNode;
+    container.insertBefore( node, parentNode );
+    parentNode.remove();
+}
+
+
 /**
  *  @brief       Finds all related caption nodes for the specified image node.
  *
@@ -1065,8 +1086,8 @@ ZSSEditor.getCaptionForImage = function( imageNode ) {
     var node = ZSSEditor.findImageCaptionNode( imageNode );
 
     // Ensure we're working with the formatted caption
-    if ( node.className.indexOf( 'wp-temp' ) != -1 ) {
-        return false;
+    if ( node.className.indexOf( 'wp-temp' ) == -1 ) {
+        return;
     }
 
     var html = node.outerHTML;
@@ -1122,7 +1143,7 @@ ZSSEditor.captionMetaForImage = function( imageNode ) {
  */
 ZSSEditor.applyCaptionFormatting = function( match ) {
     var attrs = match.attrs.named;
-    var out = '<label class="wp-temp" data-wp-temp="caption">';
+    var out = '<label class="wp-temp" data-wp-temp="caption" contenteditable="false">';
     out += '<span class="wp-caption"';
 
     if ( attrs.width ) {
@@ -1149,7 +1170,7 @@ ZSSEditor.applyCaptionFormatting = function( match ) {
  */
 ZSSEditor.removeCaptionFormatting = function( html ) {
     // call methods to restore any transformed content from its visual presentation to its source code.
-    var regex = /<label class="wp-temp" data-wp-temp="caption">([\s\S]+?)<\/label>/g;
+    var regex = /<label class="wp-temp" data-wp-temp="caption"[^>]*>([\s\S]+?)<\/label>/g;
 
     var str = html.replace( regex, ZSSEditor.removeCaptionFormattingCallback ) + " "; // Add a trailing space for nice formatting.
 
@@ -1376,9 +1397,6 @@ ZSSEditor.sendEnabledStyles = function(e) {
                 if (t.attr('alt') !== undefined) {
                     items.push('image-alt:'+t.attr('alt'));
                 }
-                
-            } else {
-                ZSSEditor.currentEditingImage = null;
             }
         }
     }
@@ -1604,35 +1622,60 @@ ZSSField.prototype.handleTapEvent = function(e) {
             //
             setTimeout(function() { thisObj.callback('callback-link-tap', joinedArguments);}, 500);
         }
-        if (targetNode.nodeName.toLowerCase() == 'img') {
-            ZSSEditor.currentEditingImage = targetNode;
 
-            var meta = JSON.stringify( ZSSEditor.extractImageMeta(targetNode) );
-            var imageId = "";
-            if (targetNode.hasAttribute('data-wpid')){
-                imageId = targetNode.getAttribute('data-wpid')
+        if (targetNode.nodeName.toLowerCase() == 'img') {
+            // Is the tapped image the image we're editing?
+            if ( targetNode == ZSSEditor.currentEditingImage ) {
+                ZSSEditor.removeImageSelectionFormatting( targetNode );
+                this.sendImageTappedCallback( targetNode );
+                return;
             }
-            var arguments = ['id=' + encodeURIComponent(imageId),
-                             'url=' + encodeURIComponent(targetNode.src),
-                             'meta=' + encodeURIComponent(meta)];
-            
-            var joinedArguments = arguments.join(defaultCallbackSeparator);
-            
-            var thisObj = this;
-            
-            // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
-            //
-            setTimeout(function() { thisObj.callback('callback-image-tap', joinedArguments);}, 500);
+
+            // If there is a selected image, deselect it. A different image was tapped.
+            if ( ZSSEditor.currentEditingImage ) {
+                ZSSEditor.removeImageSelectionFormatting( ZSSEditor.currentEditingImage );
+            }
+
+            // Format and flag the image as selected.
+            ZSSEditor.currentEditingImage = targetNode;
+            ZSSEditor.applyImageSelectionFormatting( targetNode );
+
+            return;
+        }
+
+        if ( ZSSEditor.currentEditingImage ) {
+            ZSSEditor.removeImageSelectionFormatting( ZSSEditor.currentEditingImage );
+            ZSSEditor.currentEditingImage = null;
         }
     }
 };
 
+ZSSField.prototype.sendImageTappedCallback = function( imageNode ) {
+    // show editor
+    var meta = JSON.stringify( ZSSEditor.extractImageMeta( imageNode ) );
+    var imageId = "";
+    if ( imageNode.hasAttribute( 'data-wpid' ) ){
+        imageId = imageNode.getAttribute( 'data-wpid' )
+    }
+    var arguments = ['id=' + encodeURIComponent( imageId ),
+                     'url=' + encodeURIComponent( imageNode.src ),
+                     'meta=' + encodeURIComponent( meta )];
+
+    var joinedArguments = arguments.join( defaultCallbackSeparator );
+
+    var thisObj = this;
+
+    // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
+    //
+    setTimeout(function() { thisObj.callback('callback-image-tap', joinedArguments);}, 500);
+}
+
 // MARK: - Callback Execution
 
 ZSSField.prototype.callback = function(callbackScheme, callbackPath) {
-    
+
     var url = callbackScheme + ":";
-    
+
     url = url + "id=" + this.getNodeId();
 
     if (callbackPath) {
