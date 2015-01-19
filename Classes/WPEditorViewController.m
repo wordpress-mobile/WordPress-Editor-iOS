@@ -1555,10 +1555,20 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)editorView:(WPEditorView*)editorView
       fieldFocused:(WPEditorField*)field
 {
-    if (!field || field == self.editorView.titleField) {
+    if (field == self.editorView.titleField) {
         [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
     } else if (field == self.editorView.contentField) {
         [self.toolbarView enableToolbarItems:YES shouldShowSourceButton:YES];
+    }
+}
+
+- (void)editorView:(WPEditorView*)editorView sourceFieldFocused:(UIView*)view
+{
+    // Enable the toolbar if the HTML editor has focus
+    if ([view isKindOfClass:[UITextView class]]) {
+        [self.toolbarView enableToolbarItems:YES shouldShowSourceButton:YES];
+    } else {
+        [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
     }
 }
 
