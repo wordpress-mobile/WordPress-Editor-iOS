@@ -1147,18 +1147,27 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)setBold
 {
     [self.editorView setBold];
+    if (!self.editorView.isInVisualMode) {
+        [self.toolbarView clearSelectedToolbarItems];
+    }
     [WPAnalytics track:WPAnalyticsStatEditorTappedBold];
 }
 
 - (void)setBlockQuote
 {
     [self.editorView setBlockQuote];
+    if (!self.editorView.isInVisualMode) {
+        [self.toolbarView clearSelectedToolbarItems];
+    }
     [WPAnalytics track:WPAnalyticsStatEditorTappedBlockquote];
 }
 
 - (void)setItalic
 {
     [self.editorView setItalic];
+    if (!self.editorView.isInVisualMode) {
+        [self.toolbarView clearSelectedToolbarItems];
+    }
     [WPAnalytics track:WPAnalyticsStatEditorTappedItalic];
 }
 
@@ -1170,6 +1179,9 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)setUnderline
 {
 	[self.editorView setUnderline];
+    if (!self.editorView.isInVisualMode) {
+        [self.toolbarView clearSelectedToolbarItems];
+    }
     [WPAnalytics track:WPAnalyticsStatEditorTappedUnderline];
 }
 
@@ -1181,18 +1193,27 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)setStrikethrough
 {
     [self.editorView setStrikethrough];
+    if (!self.editorView.isInVisualMode) {
+        [self.toolbarView clearSelectedToolbarItems];
+    }
     [WPAnalytics track:WPAnalyticsStatEditorTappedStrikethrough];
 }
 
 - (void)setUnorderedList
 {
     [self.editorView setUnorderedList];
+    if (!self.editorView.isInVisualMode) {
+        [self.toolbarView clearSelectedToolbarItems];
+    }
     [WPAnalytics track:WPAnalyticsStatEditorTappedUnorderedList];
 }
 
 - (void)setOrderedList
 {
     [self.editorView setOrderedList];
+    if (!self.editorView.isInVisualMode) {
+        [self.toolbarView clearSelectedToolbarItems];
+    }
     [WPAnalytics track:WPAnalyticsStatEditorTappedOrderedList];
 }
 
@@ -1564,6 +1585,8 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (void)editorView:(WPEditorView*)editorView sourceFieldFocused:(UIView*)view
 {
+    [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
+    
     // Enable the toolbar if the HTML editor has focus
     if ([view isKindOfClass:[UITextView class]]) {
         [self.toolbarView enableToolbarItems:YES shouldShowSourceButton:YES];
