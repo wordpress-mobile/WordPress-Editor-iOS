@@ -17,9 +17,12 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 static NSString* const kWPEditorViewFieldTitleId = @"zss_field_title";
 static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 
-static const CGFloat HTMLViewLeftRightInset = 10.0f;
 static const CGFloat UITextFieldLeftRightInset = 15.5f;
+static const CGFloat iPadUITextFieldLeftRightInset = 90.0f;
 static const CGFloat UITextFieldFieldHeight = 44.0f;
+static const CGFloat HTMLViewTopInset = 15.0f;
+static const CGFloat HTMLViewLeftRightInset = 10.0f;
+static const CGFloat iPadHTMLViewLeftRightInset = 85.0f;
 
 static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
@@ -107,10 +110,16 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
 - (void)createSourceTitleViewWithFrame:(CGRect)frame
 {
-    NSAssert(!_sourceViewTitleField, @"The source view title field must not exist when this method is called!");
-	
-    CGFloat textWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset);
-    _sourceViewTitleField = [[UITextField alloc] initWithFrame:CGRectMake(UITextFieldLeftRightInset, 5.0f, textWidth, UITextFieldFieldHeight)];
+    NSAssert(!_sourceViewTitleField, @"The source view title field must not exist when this method is called!");	
+    
+    if (IS_IPAD) {
+        CGFloat textWidth = CGRectGetWidth(frame) - (2 * iPadUITextFieldLeftRightInset);
+        _sourceViewTitleField = [[UITextField alloc] initWithFrame:CGRectMake(iPadUITextFieldLeftRightInset, 5.0f, textWidth, UITextFieldFieldHeight)];
+    } else {
+        CGFloat textWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset);
+        _sourceViewTitleField = [[UITextField alloc] initWithFrame:CGRectMake(UITextFieldLeftRightInset, 5.0f, textWidth, UITextFieldFieldHeight)];
+    }
+    
     _sourceViewTitleField.hidden = YES;
     _sourceViewTitleField.font = [WPFontManager merriweatherBoldFontOfSize:18.0f];
     _sourceViewTitleField.autocapitalizationType = UITextAutocapitalizationTypeWords;
@@ -126,8 +135,13 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 {
     NSAssert(!_sourceContentDividerView, @"The source divider view must not exist when this method is called!");
     
-    CGFloat lineWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset);
-    _sourceContentDividerView = [[UIView alloc] initWithFrame:CGRectMake(UITextFieldLeftRightInset, CGRectGetMaxY(frame), lineWidth, CGRectGetHeight(frame))];
+    if (IS_IPAD) {
+        CGFloat lineWidth = CGRectGetWidth(frame) - (2 * iPadUITextFieldLeftRightInset);
+        _sourceContentDividerView = [[UIView alloc] initWithFrame:CGRectMake(iPadUITextFieldLeftRightInset, CGRectGetMaxY(frame), lineWidth, CGRectGetHeight(frame))];
+    } else {
+        CGFloat lineWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset);
+        _sourceContentDividerView = [[UIView alloc] initWithFrame:CGRectMake(UITextFieldLeftRightInset, CGRectGetMaxY(frame), lineWidth, CGRectGetHeight(frame))];
+    }
     _sourceContentDividerView.backgroundColor = [WPStyleGuide readGrey];
     _sourceContentDividerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     _sourceContentDividerView.hidden = YES;
@@ -144,7 +158,11 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     _sourceView.autocorrectionType = UITextAutocorrectionTypeNo;
     _sourceView.autoresizingMask =  UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _sourceView.autoresizesSubviews = YES;
-    _sourceView.textContainerInset = UIEdgeInsetsMake(15.0f, HTMLViewLeftRightInset, 0.0f, HTMLViewLeftRightInset);
+    if (IS_IPAD) {
+        _sourceView.textContainerInset = UIEdgeInsetsMake(HTMLViewTopInset, iPadHTMLViewLeftRightInset, 0, iPadHTMLViewLeftRightInset);
+    } else {
+        _sourceView.textContainerInset = UIEdgeInsetsMake(HTMLViewTopInset, HTMLViewLeftRightInset, 0.0f, HTMLViewLeftRightInset);
+    }
     _sourceView.delegate = self;
     [self addSubview:_sourceView];
 }
@@ -250,25 +268,17 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     //
     if (object == self.webView.scrollView) {
         
-        // WORKAROUND: adding this delay seems to fix the following two issues we had...
-        //
-        //  https://github.com/wordpress-mobile/WordPress-iOS-Editor/issues/430
-        //  https://github.com/wordpress-mobile/WordPress-iOS-Editor/issues/430
-        //
-        //  Props to Matt Bumgardner for recommending this!
-        //
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.001 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            if ([keyPath isEqualToString:WPEditorViewWebViewContentSizeKey]) {
-                NSValue *newValue = change[NSKeyValueChangeNewKey];
-                
-                CGSize newSize;
-                [newValue getValue:&newSize];
+        if ([keyPath isEqualToString:WPEditorViewWebViewContentSizeKey]) {
+            NSValue *newValue = change[NSKeyValueChangeNewKey];
             
-                if (newSize.height != self.lastEditorHeight) {
-                    [self refreshVisibleViewportAndContentSize];
-                }
+            CGSize newSize;
+            [newValue getValue:&newSize];
+        
+            if (newSize.height != self.lastEditorHeight) {
+                [self refreshVisibleViewportAndContentSize];
+                [self workaroundBrokenWebViewRendererBug];
             }
-        });
+        }
     }
 }
 
@@ -284,6 +294,38 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 {
     [self.webView.scrollView removeObserver:self
                                  forKeyPath:WPEditorViewWebViewContentSizeKey];
+}
+
+
+#pragma mark - Bug Workarounds
+
+/**
+ *  @brief      Redraws the web view, since [webView setNeedsDisplay] doesn't seem to work.
+ */
+- (void)redrawWebView
+{
+    NSArray *views = self.webView.scrollView.subviews;
+    
+    for(int i = 0; i< views.count; i++){
+        UIView *view = views[i];
+        
+        [view setNeedsDisplay];
+    }
+}
+
+/**
+ *  @brief      Works around a problem caused by another workaround we're using, that's causing the
+ *              web renderer to be interrupted before finishing.
+ *  @details    When we know of a contentSize change in the web view's scroll view, we override the
+ *              operation to manually calculate the proper new size and set it.  This is causing the
+ *              web renderer to fail and interrupt.  Drawing doesn't finish properly.  This method
+ *              offers a sort of forced redraw mechanism after a very short delay.
+ */
+- (void)workaroundBrokenWebViewRendererBug
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.001 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self redrawWebView];
+    });
 }
 
 #pragma mark - Keyboard notifications
@@ -540,6 +582,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
          }
      } onComplete:^() {
          
+         // WORKAROUND: it seems that without this call, typing doesn't always follow the caret
+         // position.
+         //
+         // HOW TO TEST THIS: disable the following line, and run the demo... type in the contents
+         // field while also showing the virtual keyboard.  You'll notice the caret can, at times,
+         // go behind the virtual keyboard.
+         //
+         [self refreshVisibleViewportAndContentSize];
          [self scrollToCaretAnimated:NO];
      }];
 }
