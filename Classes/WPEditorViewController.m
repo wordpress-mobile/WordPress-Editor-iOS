@@ -999,8 +999,21 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (void)didTouchMediaOptions
 {
-    if ([self.delegate respondsToSelector: @selector(editorDidPressMedia:)]) {
-        [self.delegate editorDidPressMedia:self];
+    if (self.editorView.isInVisualMode) {
+        if ([self.delegate respondsToSelector: @selector(editorDidPressMedia:)]) {
+            [self.delegate editorDidPressMedia:self];
+        }
+    } else {
+        // Do not allow users to insert images in HTML mode for now
+        __weak __typeof(self)weakSelf = self;
+        [UIAlertView showWithTitle:NSLocalizedString(@"Unable to insert image", nil)
+                           message:NSLocalizedString(@"You cannot insert images while editing HTML directly. Please switch back to visual mode.", nil)
+                 cancelButtonTitle:NSLocalizedString(@"OK", @"OK")
+                 otherButtonTitles:nil
+                          tapBlock:^(UIAlertView *alertView, NSInteger buttonIndex) {
+                              [weakSelf.toolbarView clearSelectedToolbarItems];
+                          }
+         ];
     }
     [WPAnalytics track:WPAnalyticsStatEditorTappedImage];
 }
@@ -1439,7 +1452,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (void)insertImage:(NSString *)url alt:(NSString *)alt
 {
-	[self.editorView insertImage:url alt:alt];
+    [self.editorView insertImage:url alt:alt];
 }
 
 - (void)updateImage:(NSString *)url alt:(NSString *)alt
