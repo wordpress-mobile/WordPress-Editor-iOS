@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		15E849FD13EC454FA48CFC80 /* libPods-EditorDemoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 290415B5098D4CEDAA96DF0F /* libPods-EditorDemoTests.a */; };
 		59F15AD219E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 59F15AD119E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.m */; };
+		5D24FEF91A3C9E8B009E1932 /* WPImageMetaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D24FEF81A3C9E8B009E1932 /* WPImageMetaViewController.m */; };
 		74291D0A1940C859004230D4 /* content.html in Resources */ = {isa = PBXBuildFile; fileRef = 74291D091940C859004230D4 /* content.html */; };
 		74587C59193E652B0001052D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74587C58193E652B0001052D /* QuartzCore.framework */; };
 		748D2A89193E516000D5ACC8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748D2A88193E516000D5ACC8 /* Foundation.framework */; };
@@ -43,6 +44,8 @@
 		290415B5098D4CEDAA96DF0F /* libPods-EditorDemoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EditorDemoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		59F15AD019E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPEditorDemoLoggingConfiguration.h; sourceTree = "<group>"; };
 		59F15AD119E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPEditorDemoLoggingConfiguration.m; sourceTree = "<group>"; };
+		5D24FEF71A3C9E8B009E1932 /* WPImageMetaViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPImageMetaViewController.h; sourceTree = "<group>"; };
+		5D24FEF81A3C9E8B009E1932 /* WPImageMetaViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPImageMetaViewController.m; sourceTree = "<group>"; };
 		6267F76F7565480932E34016 /* Pods-EditorDemoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EditorDemoTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-EditorDemoTests/Pods-EditorDemoTests.release.xcconfig"; sourceTree = "<group>"; };
 		74291D091940C859004230D4 /* content.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = content.html; sourceTree = "<group>"; };
 		74587C58193E652B0001052D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -151,10 +154,12 @@
 				748D2A98193E516000D5ACC8 /* WPAppDelegate.m */,
 				59F15AD019E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.h */,
 				59F15AD119E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.m */,
-				748D2A9A193E516000D5ACC8 /* Main_iPhone.storyboard */,
-				748D2A9D193E516000D5ACC8 /* Main_iPad.storyboard */,
+				5D24FEF71A3C9E8B009E1932 /* WPImageMetaViewController.h */,
+				5D24FEF81A3C9E8B009E1932 /* WPImageMetaViewController.m */,
 				748D2AA0193E516000D5ACC8 /* WPViewController.h */,
 				748D2AA1193E516000D5ACC8 /* WPViewController.m */,
+				748D2A9A193E516000D5ACC8 /* Main_iPhone.storyboard */,
+				748D2A9D193E516000D5ACC8 /* Main_iPad.storyboard */,
 				74291D091940C859004230D4 /* content.html */,
 				748D2AA3193E516000D5ACC8 /* Images.xcassets */,
 				748D2A8F193E516000D5ACC8 /* Supporting Files */,
@@ -363,6 +368,7 @@
 			files = (
 				748D2A95193E516000D5ACC8 /* main.m in Sources */,
 				748D2A99193E516000D5ACC8 /* WPAppDelegate.m in Sources */,
+				5D24FEF91A3C9E8B009E1932 /* WPImageMetaViewController.m in Sources */,
 				748D2AA2193E516000D5ACC8 /* WPViewController.m in Sources */,
 				59F15AD219E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.m in Sources */,
 			);

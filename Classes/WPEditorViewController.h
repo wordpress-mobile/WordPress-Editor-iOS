@@ -4,6 +4,7 @@
 @class WPEditorField;
 @class WPEditorView;
 @class WPEditorViewController;
+@class WPImageMeta;
 
 typedef enum
 {
@@ -46,6 +47,19 @@ WPEditorViewControllerMode;
 - (void)editorViewController:(WPEditorViewController*)editorViewController
        imageTapped:(NSString *)imageId
                url:(NSURL *)url;
+
+/**
+ *	@brief		Received when the user taps on a image in the editor.
+ *
+ *	@param		editorView	The editor view.
+ *	@param		imageId		The id of image of the image that was tapped.
+ *	@param		url			The url of the image that was tapped.
+ *  @param		imageMeta	The parsed meta data about the image.
+ */
+- (void)editorViewController:(WPEditorViewController*)editorViewController
+                 imageTapped:(NSString *)imageId
+                         url:(NSURL *)url
+                   imageMeta:(WPImageMeta *)imageMeta;
 
 @end
 

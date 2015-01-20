@@ -569,19 +569,6 @@ ZSSEditor.unlink = function() {
 	ZSSEditor.sendEnabledStyles();
 };
 
-ZSSEditor.updateImage = function(url, alt) {
-
-    ZSSEditor.restoreRange();
-
-    if (ZSSEditor.currentEditingImage) {
-        var c = ZSSEditor.currentEditingImage;
-        c.attr('src', url);
-        c.attr('alt', alt);
-    }
-    ZSSEditor.sendEnabledStyles();
-
-}; //end
-
 ZSSEditor.unwrapNode = function(node) {
 	var newObject = $(node).replaceWith(node.innerHTML);
 };
@@ -618,6 +605,19 @@ ZSSEditor.quickLink = function() {
 };
 
 // MARK: - Images
+
+ZSSEditor.updateImage = function(url, alt) {
+
+    ZSSEditor.restoreRange();
+
+    if (ZSSEditor.currentEditingImage) {
+        var c = ZSSEditor.currentEditingImage;
+        c.attr('src', url);
+        c.attr('alt', alt);
+    }
+    ZSSEditor.sendEnabledStyles();
+
+};
 
 ZSSEditor.insertImage = function(url, alt) {
     var html = '<img src="'+url+'" alt="'+alt+'" />';
@@ -817,7 +817,462 @@ ZSSEditor.removeImage = function(imageNodeIdentifier) {
     }
 };
 
+/**
+ *  @brief      Updates the currently selected image, replacing its markup with
+ *  new markup based on the specified meta data string.
+ *
+ *  @param      imageMetaString   A JSON string representing the updated meta data.
+ */
+ZSSEditor.updateCurrentImageMeta = function( imageMetaString ) {
+    if ( !ZSSEditor.currentEditingImage ) {
+        return;
+    }
+
+    var imageMeta = JSON.parse( imageMetaString );
+    var html = ZSSEditor.createImageFromMeta( imageMeta );
+
+    // Insert the updated html and remove the outdated node.
+    // This approach is preferred to selecting the current node via a range,
+    // and then replacing it when calling insertHTML. The insertHTML call can,
+    // in certain cases, modify the current and inserted markup depending on what
+    // elements surround the targeted node.  This approach is safer.
+    var node = ZSSEditor.findImageCaptionNode( ZSSEditor.currentEditingImage );
+    node.insertAdjacentHTML( 'afterend', html );
+    node.remove();
+
+    ZSSEditor.currentEditingImage = null;
+}
+
+ZSSEditor.applyImageSelectionFormatting = function( imageNode ) {
+    var node = ZSSEditor.findImageCaptionNode( imageNode );
+
+    var sizeClass = '';
+    if ( imageNode.width > 200 && imageNode.height > 240 ) {
+        sizeClass = " large";
+    } else if ( imageNode.width < 100 || imageNode.height < 100 ) {
+        sizeClass = " small";
+    }
+
+    var overlay = '<span class="edit-overlay"><span class="edit-content">Edit</span></span>';
+    var html = '<span class="edit-container' + sizeClass + '">' + overlay + '</span>';
+   	node.insertAdjacentHTML( 'beforebegin', html );
+    var selectionNode = node.previousSibling;
+    selectionNode.appendChild( node );
+}
+
+ZSSEditor.removeImageSelectionFormatting = function( imageNode ) {
+    var node = ZSSEditor.findImageCaptionNode( imageNode );
+    if ( !node.parentNode || node.parentNode.className.indexOf( "edit-container" ) == -1 ) {
+        return;
+    }
+
+    var parentNode = node.parentNode;
+    var container = parentNode.parentNode;
+    container.insertBefore( node, parentNode );
+    parentNode.remove();
+}
+
+
+/**
+ *  @brief       Finds all related caption nodes for the specified image node.
+ *
+ *  @param      imageNode   An image node in the DOM to inspect.
+ */
+ZSSEditor.findImageCaptionNode = function( imageNode ) {
+    var node = imageNode;
+    if ( node.parentNode && node.parentNode.nodeName === 'A' ) {
+        node = node.parentNode;
+    }
+
+    if ( node.parentNode && node.parentNode.className.indexOf( 'wp-caption' ) != -1 ) {
+        node = node.parentNode;
+    }
+
+    if ( node.parentNode && (node.parentNode.className.indexOf( 'wp-temp' ) != -1 ) ) {
+        node = node.parentNode;
+    }
+
+    return node;
+}
+
+/**
+ *  Modified from wp-includes/js/media-editor.js
+ *  see `image`
+ *
+ *  @brief      Construct html markup for an image, and optionally a link an caption shortcode.
+ *
+ *  @param      props   A dictionary of properties used to compose the markup. See comments in extractImageMeta.
+ *
+ *  @return     Returns the html mark up as a string
+ */
+ZSSEditor.createImageFromMeta = function( props ) {
+    var img = {},
+    options, classes, shortcode, html;
+
+    classes = props.classes || [];
+    if ( ! ( classes instanceof Array ) ) {
+        classes = classes.split( ' ' );
+    }
+
+    _.extend( img, _.pick( props, 'width', 'height', 'alt', 'src', 'title' ) );
+
+    // Only assign the align class to the image if we're not printing
+    // a caption, since the alignment is sent to the shortcode.
+    if ( props.align && ! props.caption ) {
+        classes.push( 'align' + props.align );
+    }
+
+    if ( props.size ) {
+        classes.push( 'size-' + props.size );
+    }
+
+    if ( props.attachment_id ) {
+        classes.push( 'wp-image-' + props.attachment_id );
+    }
+
+    img['class'] = _.compact( classes ).join(' ');
+
+    // Generate `img` tag options.
+    options = {
+        tag:    'img',
+        attrs:  img,
+        single: true
+    };
+
+    // Generate the `a` element options, if they exist.
+    if ( props.linkUrl ) {
+        options = {
+            tag:   'a',
+            attrs: {
+                href: props.linkUrl
+            },
+            content: options
+        };
+
+        if ( props.linkClassName ) {
+            options.attrs.class = props.linkClassName;
+        }
+
+        if ( props.linkRel ) {
+            options.attrs.rel = props.linkRel;
+        }
+
+        if ( props.linkTargetBlank ) { // expects a boolean
+            options.attrs.target = "_blank";
+        }
+    }
+
+    html = wp.html.string( options );
+
+    // Generate the caption shortcode.
+    if ( props.caption ) {
+        shortcode = {};
+
+        if ( img.width ) {
+            shortcode.width = img.width;
+        }
+
+        if ( props.captionId ) {
+            shortcode.id = props.captionId;
+        }
+
+        if ( props.align ) {
+            shortcode.align = 'align' + props.align;
+        }
+
+        if (props.captionClassName) {
+            shortcode.class = props.captionClassName;
+        }
+
+        html = wp.shortcode.string({
+            tag:     'caption',
+            attrs:   shortcode,
+            content: html + ' ' + props.caption
+        });
+
+        html = ZSSEditor.applyVisualFormatting( html );
+    }
+
+    return html;
+};
+
+/**
+ *  Modified from wp-includes/js/tinymce/plugins/wpeditimage/plugin.js
+ *  see `extractImageData`
+ *
+ *  @brief      Extracts properties and meta data from an image, and optionally its link and caption.
+ *
+ *  @param      imageNode   An image node in the DOM to inspect.
+ *
+ *  @return     Returns an object containing the extracted properties and meta data.
+ */
+ZSSEditor.extractImageMeta = function( imageNode ) {
+    var classes, extraClasses, metadata, captionBlock, caption, link, width, height,
+    captionClassName = [],
+    isIntRegExp = /^\d+$/;
+
+    // Default attributes. All values are strings, except linkTargetBlank
+    metadata = {
+        align: 'none',      // Accepted values: center, left, right or empty string.
+        alt: '',            // Image alt attribute
+        attachment_id: '',  // Numeric attachment id of the image in the site's media library
+        caption: '',        // The text of the caption for the image (if any)
+        captionClassName: '', // The classes for the caption shortcode (if any).
+        captionId: '',      // The caption shortcode's ID attribute. The numeric value should match the value of attachment_id
+        classes: '',        // The class attribute for the image. Does not include editor generated classes
+        height: '',         // The image height attribute
+        linkClassName: '',  // The class attribute for the link
+        linkRel: '',        // The rel attribute for the link (if any)
+        linkTargetBlank: false, // true if the link should open in a new window.
+        linkUrl: '',        // The href attribute of the link
+        size: 'custom',     // Accepted values: custom, medium, large, thumbnail, or empty string
+        src: '',            // The src attribute of the image
+        title: '',          // The title attribute of the image (if any)
+        width: ''           // The image width attribute
+    };
+
+    // populate metadata with values of matched attributes
+    metadata.src = $( imageNode ).attr( 'src' ) || '';
+    metadata.alt = $( imageNode ).attr( 'alt' ) || '';
+    metadata.title = $( imageNode ).attr( 'title' ) || '';
+
+    width = $(imageNode).attr( 'width' );
+    height = $(imageNode).attr( 'height' );
+
+    if ( ! isIntRegExp.test( width ) || parseInt( width, 10 ) < 1 ) {
+        width = imageNode.naturalWidth || imageNode.width;
+    }
+
+    if ( ! isIntRegExp.test( height ) || parseInt( height, 10 ) < 1 ) {
+        height = imageNode.naturalHeight || imageNode.height;
+    }
+
+    metadata.width = width;
+    metadata.height = height;
+
+    classes = imageNode.className.split( /\s+/ );
+    extraClasses = [];
+
+    $.each( classes, function( index, value ) {
+        if ( /^wp-image/.test( value ) ) {
+           metadata.attachment_id = parseInt( value.replace( 'wp-image-', '' ), 10 );
+        } else if ( /^align/.test( value ) ) {
+           metadata.align = value.replace( 'align', '' );
+        } else if ( /^size/.test( value ) ) {
+           metadata.size = value.replace( 'size-', '' );
+        } else {
+           extraClasses.push( value );
+        }
+    } );
+
+    metadata.classes = extraClasses.join( ' ' );
+
+    // Extract caption
+    var captionMeta = ZSSEditor.captionMetaForImage( imageNode )
+    metadata = $.extend( metadata, captionMeta );
+
+    // Extract linkTo
+    if ( imageNode.parentNode && imageNode.parentNode.nodeName === 'A' ) {
+        link = imageNode.parentNode;
+        metadata.linkClassName = link.className;
+        metadata.linkRel = $( link ).attr( 'rel' ) || '';
+        metadata.linkTargetBlank = $( link ).attr( 'target' ) === '_blank' ? true : false;
+        metadata.linkUrl = $( link ).attr( 'href' ) || '';
+    }
+
+    return metadata;
+};
+
+/**
+ *  @brief      Extracts the caption shortcode for an image.
+ *
+ *  @param      imageNode   An image node in the DOM to inspect.
+ *
+ *  @return     Returns a shortcode match (if any) for the passed image node.
+ *  See shortcode.js::next for details
+ */
+ZSSEditor.getCaptionForImage = function( imageNode ) {
+    var node = ZSSEditor.findImageCaptionNode( imageNode );
+
+    // Ensure we're working with the formatted caption
+    if ( node.className.indexOf( 'wp-temp' ) == -1 ) {
+        return;
+    }
+
+    var html = node.outerHTML;
+    html = ZSSEditor.removeVisualFormatting( html );
+
+    return wp.shortcode.next( "caption", html, 0 );
+};
+
+/**
+ *  @brief      Extracts meta data for the caption (if any) for the passed image node.
+ *
+ *  @param      imageNode   An image node in the DOM to inspect.
+ *
+ *  @return     Returns an object containing the extracted meta data.
+ *  See shortcode.js::next or details
+ */
+ZSSEditor.captionMetaForImage = function( imageNode ) {
+    var attrs,
+        meta = {
+            align: '',
+            caption: '',
+            captionClassName: '',
+            captionId: ''
+        };
+
+    var caption = ZSSEditor.getCaptionForImage( imageNode );
+    if ( !caption ) {
+        return meta;
+    }
+
+    attrs = caption.shortcode.attrs.named;
+    if ( attrs.align ) {
+        meta.align = attrs.align.replace( 'align', '' );
+    }
+    if ( attrs.class ) {
+        meta.captionClassName = attrs.class;
+    }
+    if ( attrs.id ) {
+        meta.captionId = attrs.id;
+    }
+    meta.caption = caption.shortcode.content.substr( caption.shortcode.content.lastIndexOf( ">" ) + 1 );
+
+    return meta;
+}
+
+/**
+ *  @brief      Adds visual formatting to a caption shortcodes.
+ *
+ *  @param      html   The markup containing caption shortcodes to process.
+ *
+ *  @return     The html with caption shortcodes replaced with editor specific markup.
+ *  See shortcode.js::next or details
+ */
+ZSSEditor.applyCaptionFormatting = function( match ) {
+    var attrs = match.attrs.named;
+    var out = '<label class="wp-temp" data-wp-temp="caption" contenteditable="false">';
+    out += '<span class="wp-caption"';
+
+    if ( attrs.width ) {
+        out += ' style="width:' + attrs.width + 'px; max-width:100% !important;"';
+    }
+    $.each( attrs, function( key, value ) {
+        out += " data-caption-" + key + '="' + value + '"';
+    } );
+
+    out += '>';
+    out += match.content;
+    out += '</span>';
+    out += '</label>';
+
+    return out;
+}
+
+/**
+ *  @brief      Removes custom visual formatting for caption shortcodes.
+ *
+ *  @param      html   The markup to process
+ *
+ *  @return     The html with formatted captions restored to the original shortcode markup.
+ */
+ZSSEditor.removeCaptionFormatting = function( html ) {
+    // call methods to restore any transformed content from its visual presentation to its source code.
+    var regex = /<label class="wp-temp" data-wp-temp="caption"[^>]*>([\s\S]+?)<\/label>/g;
+
+    var str = html.replace( regex, ZSSEditor.removeCaptionFormattingCallback ) + " "; // Add a trailing space for nice formatting.
+
+    return str;
+}
+
+ZSSEditor.removeCaptionFormattingCallback = function( match, content ) {
+    // TODO: check is a visual temp node
+    var out = '';
+
+    if ( content.indexOf('<img ') === -1 ) {
+        // Broken caption. The user managed to drag the image out?
+        // Try to return the caption text as a paragraph.
+        out = content.match( /\s*<span [^>]*>([\s\S]+?)<\/span>/gi );
+
+        if ( out && out[1] ) {
+            return '<p>' + out[1] + '</p>';
+        }
+
+        return '';
+    }
+
+    out = content.replace( /\s*<span ([^>]*)>([\s\S]+?)<\/span>/gi, function( ignoreMatch, attrStr, content ) {
+        if ( ! content ) {
+            return '';
+        }
+
+        var id, classes, align, width, attrs = {};
+
+        width = attrStr.match( /data-caption-width="([0-9]*)"/ );
+        width = ( width && width[1] ) ? width[1] : '';
+        if ( width ) {
+            attrs.width = width;
+        }
+
+        id = attrStr.match( /data-caption-id="([^"]*)"/ );
+        id = ( id && id[1] ) ? id[1] : '';
+        if ( id ) {
+            attrs.id = id;
+        }
+
+        classes = attrStr.match( /data-caption-class="([^"]*)"/ );
+        classes = ( classes && classes[1] ) ? classes[1] : '';
+        if ( classes ) {
+            attrs.class = classes;
+        }
+
+        align = attrStr.match( /data-caption-align="([^"]*)"/ );
+        align = ( align && align[1] ) ? align[1] : '';
+        if ( align ) {
+            attrs.align = align;
+        }
+
+        var options = {
+            'tag':'caption',
+            'attrs':attrs,
+            'type':'closed',
+            'content':content
+        };
+
+        return wp.shortcode.string( options );
+    });
+
+    return out;
+}
+
 // MARK: - Commands
+
+/**
+ *  @brief      Applies editor specific visual formatting.
+ *
+ *  @param      html   The markup to format
+ *
+ *  @return     Returns the string with the visual formatting applied.
+ */
+ZSSEditor.applyVisualFormatting  = function( html ) {
+    var str = wp.shortcode.replace( 'caption', html, ZSSEditor.applyCaptionFormatting );
+
+    return str;
+}
+
+/**
+ *  @brief      Removes editor specific visual formatting
+ *
+ *  @param      html   The markup to remove formatting
+ *
+ *  @return     Returns the string with the visual formatting removed.
+ */
+ZSSEditor.removeVisualFormatting = function( html ) {
+    var str = ZSSEditor.removeCaptionFormatting( html );
+
+    return str;
+}
 
 ZSSEditor.insertHTML = function(html) {
 	document.execCommand('insertHTML', false, html);
@@ -951,9 +1406,6 @@ ZSSEditor.sendEnabledStyles = function(e) {
                 if (t.attr('alt') !== undefined) {
                     items.push('image-alt:'+t.attr('alt'));
                 }
-                
-            } else {
-                ZSSEditor.currentEditingImage = null;
             }
         }
     }
@@ -1072,6 +1524,8 @@ function ZSSField(wrappedObject) {
     if (this.wrappedDomNode().hasAttribute('nostyle')) {
         this.hasNoStyle = true;
     }
+
+    this.useVisualFormatting = (this.wrappedObject.data("wpUseVisualFormatting") === "true")
     
     this.bindListeners();
 };
@@ -1118,7 +1572,7 @@ ZSSField.prototype.emptyFieldIfNoContentsAndRefreshPlaceholderColor = function()
 
 ZSSField.prototype.handleBlurEvent = function(e) {
     ZSSEditor.focusedField = null;
-    
+
     this.emptyFieldIfNoContentsAndRefreshPlaceholderColor();
     
     this.callback("callback-focus-out");
@@ -1177,31 +1631,71 @@ ZSSField.prototype.handleTapEvent = function(e) {
             //
             setTimeout(function() { thisObj.callback('callback-link-tap', joinedArguments);}, 500);
         }
+
         if (targetNode.nodeName.toLowerCase() == 'img') {
-            var imageId = "";
-            if (targetNode.hasAttribute('data-wpid')){
-                imageId = targetNode.getAttribute('data-wpid')
+            // If the image is uploading, or is a local image do not select it.
+            if ( targetNode.dataset.wpid ) {
+                this.sendImageTappedCallback( targetNode );
+                return;
             }
-            var arguments = ['id=' + encodeURIComponent(imageId),
-                             'url=' + encodeURIComponent(targetNode.src)];
-            
-            var joinedArguments = arguments.join(defaultCallbackSeparator);
-            
-            var thisObj = this;
-            
-            // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
-            //
-            setTimeout(function() { thisObj.callback('callback-image-tap', joinedArguments);}, 500);
+
+            // Is the tapped image the image we're editing?
+            if ( targetNode == ZSSEditor.currentEditingImage ) {
+                ZSSEditor.removeImageSelectionFormatting( targetNode );
+                this.sendImageTappedCallback( targetNode );
+                return;
+            }
+
+            // If there is a selected image, deselect it. A different image was tapped.
+            if ( ZSSEditor.currentEditingImage ) {
+                ZSSEditor.removeImageSelectionFormatting( ZSSEditor.currentEditingImage );
+            }
+
+            // Format and flag the image as selected.
+            ZSSEditor.currentEditingImage = targetNode;
+            ZSSEditor.applyImageSelectionFormatting( targetNode );
+
+            return;
+        }
+
+        if (targetNode.className.indexOf('edit-overlay') != -1 || targetNode.className.indexOf('edit-content') != -1) {
+            ZSSEditor.removeImageSelectionFormatting( ZSSEditor.currentEditingImage );
+            this.sendImageTappedCallback( ZSSEditor.currentEditingImage );
+            return;
+        }
+
+        if ( ZSSEditor.currentEditingImage ) {
+            ZSSEditor.removeImageSelectionFormatting( ZSSEditor.currentEditingImage );
+            ZSSEditor.currentEditingImage = null;
         }
     }
 };
 
+ZSSField.prototype.sendImageTappedCallback = function( imageNode ) {
+    var meta = JSON.stringify( ZSSEditor.extractImageMeta( imageNode ) );
+    var imageId = "";
+    if ( imageNode.hasAttribute( 'data-wpid' ) ){
+        imageId = imageNode.getAttribute( 'data-wpid' )
+    }
+    var arguments = ['id=' + encodeURIComponent( imageId ),
+                     'url=' + encodeURIComponent( imageNode.src ),
+                     'meta=' + encodeURIComponent( meta )];
+
+    var joinedArguments = arguments.join( defaultCallbackSeparator );
+
+    var thisObj = this;
+
+    // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
+    //
+    setTimeout(function() { thisObj.callback('callback-image-tap', joinedArguments);}, 500);
+}
+
 // MARK: - Callback Execution
 
 ZSSField.prototype.callback = function(callbackScheme, callbackPath) {
-    
+
     var url = callbackScheme + ":";
-    
+
     url = url + "id=" + this.getNodeId();
 
     if (callbackPath) {
@@ -1296,7 +1790,9 @@ ZSSField.prototype.isEmpty = function() {
 };
 
 ZSSField.prototype.getHTML = function() {
-    return this.wrappedObject.html();
+    var html = this.wrappedObject.html();
+    html = ZSSEditor.removeVisualFormatting(html);
+    return html
 };
 
 ZSSField.prototype.strippedHTML = function() {
@@ -1304,9 +1800,11 @@ ZSSField.prototype.strippedHTML = function() {
 };
 
 ZSSField.prototype.setHTML = function(html) {
+    html = ZSSEditor.applyVisualFormatting(html);
     this.wrappedObject.html(html);
     this.refreshPlaceholderColor();
 };
+
 
 // MARK: - Placeholder
 
