@@ -1635,6 +1635,7 @@ ZSSField.prototype.handleTapEvent = function(e) {
         if (targetNode.nodeName.toLowerCase() == 'img') {
             // If the image is uploading, or is a local image do not select it.
             if ( targetNode.dataset.wpid ) {
+                this.sendImageTappedCallback( targetNode );
                 return;
             }
 
@@ -1671,7 +1672,6 @@ ZSSField.prototype.handleTapEvent = function(e) {
 };
 
 ZSSField.prototype.sendImageTappedCallback = function( imageNode ) {
-    // show editor
     var meta = JSON.stringify( ZSSEditor.extractImageMeta( imageNode ) );
     var imageId = "";
     if ( imageNode.hasAttribute( 'data-wpid' ) ){

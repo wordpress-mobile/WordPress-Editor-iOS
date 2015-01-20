@@ -98,13 +98,16 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
                          url:(NSURL *)url
                    imageMeta:(WPImageMeta *)imageMeta
 {
-    if (imageId.length > 0){
-        UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
-        [actionSheet showInView:self.view];
-        self.selectedImageId= imageId;
-        return;
-    }
 
+    if (imageId.length == 0) {
+        [self showImageDetailsForImageMeta:imageMeta];
+    } else {
+        [self showPromptForImageWithID:imageId];
+    }
+}
+
+- (void)showImageDetailsForImageMeta:(WPImageMeta *)imageMeta
+{
     WPImageMetaViewController *controller = [self.storyboard instantiateViewControllerWithIdentifier:@"WPImageMetaViewController"];
     controller.imageMeta = imageMeta;
     controller.delegate = self;
@@ -112,24 +115,22 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     [self.navigationController presentViewController:navController animated:YES completion:nil];
 }
 
-- (void)editorViewController:(WPEditorViewController*)editorViewController
-       imageTapped:(NSString *)imageId
-               url:(NSURL *)url
+- (void)showPromptForImageWithID:(NSString *)imageId
 {
     if (imageId.length == 0){
         return;
     }
-    NSProgress * progress = self.imagesAdded[imageId];
+    NSProgress *progress = self.imagesAdded[imageId];
     if (!progress.cancelled){
-        UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
         [actionSheet showInView:self.view];
         actionSheet.tag = WPViewControllerActionSheetUploadStop;
     } else {
-        UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Remove Image" otherButtonTitles:@"Retry Upload", nil];
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Remove Image" otherButtonTitles:@"Retry Upload", nil];
         [actionSheet showInView:self.view];
         actionSheet.tag = WPViewControllerActionSheetUploadRetry;
     }
-    self.selectedImageId= imageId;
+    self.selectedImageId = imageId;
 }
 
 - (void)showPhotoPicker
