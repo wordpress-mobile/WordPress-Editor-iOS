@@ -845,7 +845,16 @@ ZSSEditor.updateCurrentImageMeta = function( imageMetaString ) {
 
 ZSSEditor.applyImageSelectionFormatting = function( imageNode ) {
     var node = ZSSEditor.findImageCaptionNode( imageNode );
-    var html = '<span class="img_container editing" contenteditable="false" data-editing="Edit"></span>';
+
+    var sizeClass = '';
+    if ( imageNode.naturalWidth > 200 && imageNode.naturalHeight > 200 ) {
+        sizeClass = " large";
+    } else if ( imageNode.naturalWidth < 100 || imageNode.naturalHeight < 100 ) {
+        sizeClass = " small";
+    }
+
+    var overlay = '<span class="edit-overlay"><span class="edit-content">Edit</span></span>';
+    var html = '<span class="edit-container' + sizeClass + '">' + overlay + '</span>';
    	node.insertAdjacentHTML( 'beforebegin', html );
     var selectionNode = node.previousSibling;
     selectionNode.appendChild( node );
@@ -853,7 +862,7 @@ ZSSEditor.applyImageSelectionFormatting = function( imageNode ) {
 
 ZSSEditor.removeImageSelectionFormatting = function( imageNode ) {
     var node = ZSSEditor.findImageCaptionNode( imageNode );
-    if ( !node.parentNode || node.parentNode.className.indexOf( "img_container" ) == -1 ) {
+    if ( !node.parentNode || node.parentNode.className.indexOf( "edit-container" ) == -1 ) {
         return;
     }
 
@@ -1640,6 +1649,12 @@ ZSSField.prototype.handleTapEvent = function(e) {
             ZSSEditor.currentEditingImage = targetNode;
             ZSSEditor.applyImageSelectionFormatting( targetNode );
 
+            return;
+        }
+
+        if (targetNode.className.indexOf('edit-overlay') != -1 || targetNode.className.indexOf('edit-content') != -1) {
+            ZSSEditor.removeImageSelectionFormatting( ZSSEditor.currentEditingImage );
+            this.sendImageTappedCallback( ZSSEditor.currentEditingImage );
             return;
         }
 
