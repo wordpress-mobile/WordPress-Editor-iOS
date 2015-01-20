@@ -1269,7 +1269,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)updateLink:(NSString *)url
 			 title:(NSString*)title
 {
-	NSParameterAssert([url isKindOfClass:[NSString class]]);
+	NSAssert(self.isInVisualMode, @"Editor must be in visual mode when calling this method.");
+    NSParameterAssert([url isKindOfClass:[NSString class]]);
 	NSParameterAssert([title isKindOfClass:[NSString class]]);
     
     url = [self normalizeURL:url];
@@ -1306,6 +1307,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)wrapSourceViewSelectionWithTag:(NSString *)tag
 {
+    NSParameterAssert([tag isKindOfClass:[NSString class]]);
     NSRange range = self.sourceView.selectedRange;
     NSString *selection = [self.sourceView.text substringWithRange:range];
     NSString *prefix, *suffix;

@@ -1013,8 +1013,8 @@ NSInteger const WPLinkAlertViewTag = 92;
     } else {
         // Do not allow users to insert images in HTML mode for now
         __weak __typeof(self)weakSelf = self;
-        [UIAlertView showWithTitle:NSLocalizedString(@"Unable to insert image", nil)
-                           message:NSLocalizedString(@"You cannot insert images while editing HTML directly. Please switch back to visual mode.", nil)
+        [UIAlertView showWithTitle:NSLocalizedString(@"Unable to insert image", @"Title of dialog notifing user they cannot insert an image in the editor's HTML mode.")
+                           message:NSLocalizedString(@"You cannot insert images while editing HTML directly. Please switch back to visual mode.", @"Body of dialog notifing user they cannot insert an image in the editor's HTML mode.")
                  cancelButtonTitle:NSLocalizedString(@"OK", @"OK")
                  otherButtonTitles:nil
                           tapBlock:^(UIAlertView *alertView, NSInteger buttonIndex) {
