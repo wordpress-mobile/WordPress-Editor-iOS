@@ -1127,8 +1127,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (NSString*)selectedText
 {
-	NSString* selectedText = [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.getSelectedText();"];
-	
+    NSString* selectedText;
+    if (self.isInVisualMode) {
+        selectedText = [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.getSelectedText();"];
+    } else {
+        NSRange range = [self.sourceView selectedRange];
+        selectedText = [self.sourceView.text substringWithRange:range];
+    }
+    
 	return selectedText;
 }
 
@@ -1243,9 +1249,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	
     url = [self normalizeURL:url];
     
-	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertLink(\"%@\",\"%@\");", url, title];
-	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
-	
+    if (self.isInVisualMode) {
+        NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertLink(\"%@\",\"%@\");", url, title];
+        [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    } else {
+        NSString *aTagText = [NSString stringWithFormat:@"<a href=\"%@\">%@</a>", url, title];
+        [self.sourceView insertText:aTagText];
+        [self.sourceView becomeFirstResponder];
+    }
+		
     [self callDelegateEditorTextDidChange];
 }
 
@@ -1262,9 +1274,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     url = [self normalizeURL:url];
     
-	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.updateLink(\"%@\",\"%@\");", url, title];
-	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
-	
+    if (self.isInVisualMode) {
+        NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.updateLink(\"%@\",\"%@\");", url, title];
+        [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    }
+    
     [self callDelegateEditorTextDidChange];
 }
 
