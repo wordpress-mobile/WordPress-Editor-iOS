@@ -22,4 +22,5 @@ Pod::Spec.new do |s|
   s.dependency 'UIAlertView+Blocks'
   s.dependency 'WordPress-iOS-Shared', '~>0.1.6'
   s.dependency 'WordPressCom-Analytics-iOS', '~>0.0.4'
+  s.dependency 'NSObject-SafeExpectations', '~>0.0.2'
 end

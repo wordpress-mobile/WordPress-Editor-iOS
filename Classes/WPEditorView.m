@@ -3,6 +3,7 @@
 #import "UIWebView+GUIFixes.h"
 #import "HRColorUtil.h"
 #import "WPEditorField.h"
+#import "WPImageMeta.h"
 #import "ZSSTextView.h"
 #import <WordPress-iOS-Shared/WPFontManager.h>
 #import <WordPress-iOS-Shared/WPStyleGuide.h>
@@ -205,33 +206,28 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     return fileContentString;
 }
 
-- (NSString*)editorScript
+- (NSString *)javascriptFromBundleResourceNamed:(NSString *)filename
 {
-    NSString *editorJavascriptPath = [[NSBundle mainBundle] pathForResource:@"ZSSRichTextEditor" ofType:@"js"];
-    NSData* editorJavascriptContentsData = [NSData dataWithContentsOfFile:editorJavascriptPath];
-    NSString *editorJavascriptContentsString = [[NSString alloc] initWithData:editorJavascriptContentsData encoding:NSUTF8StringEncoding];
-    
-    return editorJavascriptContentsString;
-}
+    NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:@"js"];
+    NSData *data = [NSData dataWithContentsOfFile:path];
+    NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 
-- (NSString*)jQueryMobileScript
-{
-    NSString *jQueryMobileEventsPath = [[NSBundle mainBundle] pathForResource:@"jquery.mobile-events.min" ofType:@"js"];
-    NSData* jQueryMobileEventsContentsData = [NSData dataWithContentsOfFile:jQueryMobileEventsPath];
-    NSString *jQueryMobileEventsContentsString = [[NSString alloc] initWithData:jQueryMobileEventsContentsData encoding:NSUTF8StringEncoding];
-    
-    return jQueryMobileEventsContentsString;
+    return content;
 }
 
 - (NSString*)editorHTML
 {
     NSString *fileContentString = [self editorRawHTML];
-    NSString *jQueryMobileEventsContentsString = [self jQueryMobileScript];
-    NSString *editorJavascriptContentsString = [self editorScript];
-    
+    NSString *jQueryMobileEventsContentsString = [self javascriptFromBundleResourceNamed:@"jquery.mobile-events.min"];
+    NSString *editorJavascriptContentsString = [self javascriptFromBundleResourceNamed:@"ZSSRichTextEditor"];
+    NSString *shortcodeJavascriptContentString = [self javascriptFromBundleResourceNamed:@"shortcode"];
+    NSString *underscoreJavascriptContentString = [self javascriptFromBundleResourceNamed:@"underscore-min"];
+
 	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--jquery-mobile-events-->" withString:jQueryMobileEventsContentsString];
 	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--editor-->" withString:editorJavascriptContentsString];
-	
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--underscore-->" withString:underscoreJavascriptContentString];
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--shortcode-->" withString:shortcodeJavascriptContentString];
+
 	return fileContentString;
 }
 
@@ -619,11 +615,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
-    static NSString* const kTappedUrlParameterName = @"url";
-    static NSString* const kTappedIdParameterName = @"id";
+    static NSString *const kTappedUrlParameterName = @"url";
+    static NSString *const kTappedIdParameterName = @"id";
+    static NSString *const kTappedMetaName = @"meta";
     
-    __block NSURL* tappedUrl = nil;
-    __block NSString* tappedId = nil;
+    __block NSURL *tappedUrl = nil;
+    __block NSString *tappedId = nil;
+    __block NSString *tappedMeta = nil;
     
     [self parseParametersFromCallbackURL:url
          andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
@@ -632,10 +630,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              tappedUrl = [NSURL URLWithString:[self stringByDecodingURLFormat:parameterValue]];
          } else if ([parameterName isEqualToString:kTappedIdParameterName]) {
              tappedId = [self stringByDecodingURLFormat:parameterValue];
+         } else if ([parameterName isEqualToString:kTappedMetaName]) {
+             tappedMeta = [self stringByDecodingURLFormat:parameterValue];
          }
      } onComplete:^{
-         if ([self.delegate respondsToSelector:@selector(editorView:imageTapped:url:)]) {
-             [self.delegate editorView:self imageTapped:tappedId url:tappedUrl];
+         if ([self.delegate respondsToSelector:@selector(editorView:imageTapped:url:imageMeta:)]) {
+             WPImageMeta *imageMeta = [WPImageMeta imageMetaFromJSONString:tappedMeta];
+             [self.delegate editorView:self imageTapped:tappedId url:tappedUrl imageMeta:imageMeta];
          }
      }];
 }
@@ -1170,6 +1171,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)updateImage:(NSString *)url alt:(NSString *)alt
 {
     NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.updateImage(\"%@\", \"%@\");", url, alt];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)updateCurrentImageMeta:(WPImageMeta *)imageMeta
+{
+    NSString *jsonString = [imageMeta jsonStringRepresentation];
+    jsonString = [self addSlashes:jsonString];
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.updateCurrentImageMeta(\"%@\");", jsonString];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 

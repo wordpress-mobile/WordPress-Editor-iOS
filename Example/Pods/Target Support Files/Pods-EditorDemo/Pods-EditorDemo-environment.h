@@ -66,6 +66,12 @@
 #define COCOAPODS_VERSION_MINOR_CocoaLumberjack_Extensions 9
 #define COCOAPODS_VERSION_PATCH_CocoaLumberjack_Extensions 2
 
+// NSObject-SafeExpectations
+#define COCOAPODS_POD_AVAILABLE_NSObject_SafeExpectations
+#define COCOAPODS_VERSION_MAJOR_NSObject_SafeExpectations 0
+#define COCOAPODS_VERSION_MINOR_NSObject_SafeExpectations 0
+#define COCOAPODS_VERSION_PATCH_NSObject_SafeExpectations 2
+
 // UIAlertView+Blocks
 #define COCOAPODS_POD_AVAILABLE_UIAlertView_Blocks
 #define COCOAPODS_VERSION_MAJOR_UIAlertView_Blocks 0
