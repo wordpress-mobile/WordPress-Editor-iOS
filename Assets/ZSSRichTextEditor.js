@@ -1633,6 +1633,11 @@ ZSSField.prototype.handleTapEvent = function(e) {
         }
 
         if (targetNode.nodeName.toLowerCase() == 'img') {
+            // If the image is uploading, or is a local image do not select it.
+            if ( targetNode.dataset.wpid ) {
+                return;
+            }
+
             // Is the tapped image the image we're editing?
             if ( targetNode == ZSSEditor.currentEditingImage ) {
                 ZSSEditor.removeImageSelectionFormatting( targetNode );
