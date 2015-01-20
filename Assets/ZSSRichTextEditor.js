@@ -847,9 +847,9 @@ ZSSEditor.applyImageSelectionFormatting = function( imageNode ) {
     var node = ZSSEditor.findImageCaptionNode( imageNode );
 
     var sizeClass = '';
-    if ( imageNode.naturalWidth > 200 && imageNode.naturalHeight > 200 ) {
+    if ( imageNode.width > 200 && imageNode.height > 240 ) {
         sizeClass = " large";
-    } else if ( imageNode.naturalWidth < 100 || imageNode.naturalHeight < 100 ) {
+    } else if ( imageNode.width < 100 || imageNode.height < 100 ) {
         sizeClass = " small";
     }
 
