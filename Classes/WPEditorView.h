@@ -4,6 +4,7 @@
 
 @class WPEditorView;
 @class WPEditorField;
+@class WPImageMeta;
 
 @protocol WPEditorViewDelegate <UIWebViewDelegate>
 @optional
@@ -97,6 +98,19 @@
         imageTapped:(NSString *)imageId
                 url:(NSURL *)url;
 
+/**
+ * @brief		Received when the user taps on a image in the editor.
+ *
+ * @param		editorView	The editor view.
+ * @param		imageId		The id of image of the image that was tapped.
+ * @param		url			The url of the image that was tapped.
+ * @param		imageMeta	The meta data associated with the image that was tapped.
+ *
+ */
+- (void)editorView:(WPEditorView*)editorView
+       imageTapped:(NSString *)imageId
+               url:(NSURL *)url
+         imageMeta:(WPImageMeta *)imageMeta;
 
 /**
  *	@brief		Received when the selection is changed.
@@ -224,6 +238,8 @@ stylesForCurrentSelection:(NSArray*)styles;
 - (void)replaceLocalImageWithRemoteImage:(NSString*)url uniqueId:(NSString*)uniqueId;
 
 - (void)updateImage:(NSString *)url alt:(NSString *)alt;
+
+- (void)updateCurrentImageMeta:(WPImageMeta *)imageMeta;
 
 - (void)setProgress:(double) progress onImage:(NSString*)uniqueId;
 
