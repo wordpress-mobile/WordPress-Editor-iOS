@@ -53,13 +53,22 @@
       fieldCreated:(WPEditorField*)field;
 
 /**
- *	@brief		Received when the editor focus changes.
+ *	@brief		Received when the editor focus changes on a visual mode field.
  *
  *	@param		editorView		The editor view.
  *	@param		field			The focused field.
  */
 - (void)editorView:(WPEditorView*)editorView
 	  fieldFocused:(WPEditorField*)field;
+
+/**
+ *	@brief		Received when the editor focus changes on a HTML mode field.
+ *
+ *	@param		editorView		The editor view.
+ *	@param		view			The focused view.
+ */
+- (void)editorView:(WPEditorView*)editorView
+      sourceFieldFocused:(UIView*)view;
 
 /**
  *	@brief		Received when the user taps on a link in the editor.

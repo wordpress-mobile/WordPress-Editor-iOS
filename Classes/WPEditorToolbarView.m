@@ -303,6 +303,15 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     }
 }
 
+- (void)clearSelectedToolbarItems
+{
+    for (ZSSBarButtonItem *item in self.leftToolbar.items) {
+        if (item.tag != kWPEditorViewControllerElementShowSourceBarButton) {
+           [item setSelected:NO];
+        }
+    }
+}
+
 - (BOOL)hasSomeEnabledToolbarItems
 {
     return !(self.enabledToolbarItems & ZSSRichTextEditorToolbarNone);

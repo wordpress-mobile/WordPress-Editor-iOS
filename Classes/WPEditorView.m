@@ -1128,8 +1128,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (NSString*)selectedText
 {
-	NSString* selectedText = [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.getSelectedText();"];
-	
+    NSString* selectedText;
+    if (self.isInVisualMode) {
+        selectedText = [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.getSelectedText();"];
+    } else {
+        NSRange range = [self.sourceView selectedRange];
+        selectedText = [self.sourceView.text substringWithRange:range];
+    }
+    
 	return selectedText;
 }
 
@@ -1252,9 +1258,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	
     url = [self normalizeURL:url];
     
-	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertLink(\"%@\",\"%@\");", url, title];
-	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
-	
+    if (self.isInVisualMode) {
+        NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertLink(\"%@\",\"%@\");", url, title];
+        [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    } else {
+        NSString *aTagText = [NSString stringWithFormat:@"<a href=\"%@\">%@</a>", url, title];
+        [self.sourceView insertText:aTagText];
+        [self.sourceView becomeFirstResponder];
+    }
+		
     [self callDelegateEditorTextDidChange];
 }
 
@@ -1266,14 +1278,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)updateLink:(NSString *)url
 			 title:(NSString*)title
 {
-	NSParameterAssert([url isKindOfClass:[NSString class]]);
+	NSAssert(self.isInVisualMode, @"Editor must be in visual mode when calling this method.");
+    NSParameterAssert([url isKindOfClass:[NSString class]]);
 	NSParameterAssert([title isKindOfClass:[NSString class]]);
     
     url = [self normalizeURL:url];
     
-	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.updateLink(\"%@\",\"%@\");", url, title];
-	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
-	
+    if (self.isInVisualMode) {
+        NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.updateLink(\"%@\",\"%@\");", url, title];
+        [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    }
+    
     [self callDelegateEditorTextDidChange];
 }
 
@@ -1298,6 +1313,27 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 #pragma mark - Editing
+
+- (void)wrapSourceViewSelectionWithTag:(NSString *)tag
+{
+    NSParameterAssert([tag isKindOfClass:[NSString class]]);
+    NSRange range = self.sourceView.selectedRange;
+    NSString *selection = [self.sourceView.text substringWithRange:range];
+    NSString *prefix, *suffix;
+    if ([tag isEqualToString:@"more"]) {
+        prefix = @"<!--more-->";
+        suffix = @"\n";
+    } else if ([tag isEqualToString:@"blockquote"]) {
+        prefix = [NSString stringWithFormat:@"\n<%@>", tag];
+        suffix = [NSString stringWithFormat:@"</%@>\n", tag];
+    } else {
+        prefix = [NSString stringWithFormat:@"<%@>", tag];
+        suffix = [NSString stringWithFormat:@"</%@>", tag];
+    }
+    
+    NSString *replacement = [NSString stringWithFormat:@"%@%@%@",prefix,selection,suffix];
+    [self.sourceView insertText:replacement];
+}
 
 - (void)endEditing;
 {
@@ -1398,25 +1434,37 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setBold
 {
-    NSString *trigger = @"ZSSEditor.setBold();";
-	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
-
+    if (self.isInVisualMode) {
+        NSString *trigger = @"ZSSEditor.setBold();";
+        [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    } else {
+        [self wrapSourceViewSelectionWithTag:@"strong"];
+    }
+    
     [self callDelegateEditorTextDidChange];
 }
 
 - (void)setBlockQuote
 {
-    NSString *trigger = @"ZSSEditor.setBlockquote();";
-	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
-
+    if (self.isInVisualMode) {
+        NSString *trigger = @"ZSSEditor.setBlockquote();";
+        [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    } else {
+        [self wrapSourceViewSelectionWithTag:@"blockquote"];
+    }
+    
     [self callDelegateEditorTextDidChange];
 }
 
 - (void)setItalic
 {
-    NSString *trigger = @"ZSSEditor.setItalic();";
-	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
-
+    if (self.isInVisualMode) {
+        NSString *trigger = @"ZSSEditor.setItalic();";
+        [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    } else {
+        [self wrapSourceViewSelectionWithTag:@"em"];
+    }
+    
     [self callDelegateEditorTextDidChange];
 }
 
@@ -1430,9 +1478,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setUnderline
 {
-    NSString *trigger = @"ZSSEditor.setUnderline();";
-	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
-
+    if (self.isInVisualMode) {
+        NSString *trigger = @"ZSSEditor.setUnderline();";
+        [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    } else {
+        [self wrapSourceViewSelectionWithTag:@"u"];
+    }
+    
     [self callDelegateEditorTextDidChange];
 }
 
@@ -1446,24 +1498,36 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)setStrikethrough
 {
-    NSString *trigger = @"ZSSEditor.setStrikeThrough();";
-	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    if (self.isInVisualMode) {
+        NSString *trigger = @"ZSSEditor.setStrikeThrough();";
+        [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    } else {
+        [self wrapSourceViewSelectionWithTag:@"del"];
+    }
 
     [self callDelegateEditorTextDidChange];
 }
 
 - (void)setUnorderedList
 {
-    NSString *trigger = @"ZSSEditor.setUnorderedList();";
-	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    if (self.isInVisualMode) {
+        NSString *trigger = @"ZSSEditor.setUnorderedList();";
+        [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    } else {
+        [self wrapSourceViewSelectionWithTag:@"ul"];
+    }
 
     [self callDelegateEditorTextDidChange];
 }
 
 - (void)setOrderedList
 {
-    NSString *trigger = @"ZSSEditor.setOrderedList();";
-	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    if (self.isInVisualMode) {
+        NSString *trigger = @"ZSSEditor.setOrderedList();";
+        [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    } else {
+        [self wrapSourceViewSelectionWithTag:@"ol"];
+    }
 
     [self callDelegateEditorTextDidChange];
 }
@@ -1540,7 +1604,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self callDelegateEditorTextDidChange];
 }
 
-
 - (void)removeFormat
 {
     NSString *trigger = @"ZSSEditor.removeFormating();";
@@ -1551,14 +1614,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 #pragma mark - UITextViewDelegate
 
-- (BOOL)textViewShouldBeginEditing:(UITextField *)textField
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
+    [self callDelegateSourceFieldFocused:textView];
     return YES;
 }
 
 - (void)textViewDidChange:(UITextView *)textView
 {
-    [self callDelegateEditorTitleDidChange];
+    [self callDelegateEditorTextDidChange];
 }
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView
@@ -1570,6 +1634,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
+    [self callDelegateSourceFieldFocused:textField];
     return YES;
 }
 
@@ -1627,6 +1692,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     if ([self.delegate respondsToSelector:@selector(editorView:fieldFocused:)]) {
         [self.delegate editorView:self fieldFocused:field];
+    }
+}
+
+/**
+ *  @brief      Call's the delegate editorView:sourceFieldFocused: method.
+ */
+- (void)callDelegateSourceFieldFocused:(UIView*)view
+{
+    if ([self.delegate respondsToSelector:@selector(editorView:sourceFieldFocused:)]) {
+        [self.delegate editorView:self sourceFieldFocused:view];
     }
 }
 
