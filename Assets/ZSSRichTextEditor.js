@@ -1639,6 +1639,12 @@ ZSSField.prototype.handleTapEvent = function(e) {
                 return;
             }
 
+            // If we're not currently editing just return. No need to apply styles
+            // or acknowledge the tap
+            if ( !this.wrappedObject.attr('contenteditable') ) {
+                return;
+            }
+
             // Is the tapped image the image we're editing?
             if ( targetNode == ZSSEditor.currentEditingImage ) {
                 ZSSEditor.removeImageSelectionFormatting( targetNode );
