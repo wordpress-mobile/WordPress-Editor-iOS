@@ -174,6 +174,8 @@ install_resource()
                     install_resource "../../Assets/editor.html"
                     install_resource "../../Assets/fastclick.js"
                     install_resource "../../Assets/jquery.mobile-events.min.js"
+                    install_resource "../../Assets/shortcode.js"
+                    install_resource "../../Assets/underscore-min.js"
                     install_resource "../../Assets/ZSSRichTextEditor.js"
                     install_resource "${BUILT_PRODUCTS_DIR}/WordPress-iOS-Shared.bundle"
           

@@ -169,6 +169,11 @@ typedef enum
  */
 - (BOOL)hasSomeEnabledToolbarItems;
 
+/**
+ *  @brief      Clears all selected toolbar items.
+ */
+- (void)clearSelectedToolbarItems;
+
 - (void)selectToolbarItemsForStyles:(NSArray*)styles;
 
 @end

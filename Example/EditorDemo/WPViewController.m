@@ -4,14 +4,14 @@
 #import <CocoaLumberjack/DDLog.h>
 #import "WPEditorField.h"
 #import "WPEditorView.h"
+#import "WPImageMetaViewController.h"
 
 typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     WPViewControllerActionSheetUploadStop = 200,
     WPViewControllerActionSheetUploadRetry = 201
 };
 
-@interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate>
-
+@interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, WPImageMetaViewControllerDelegate>
 @property(nonatomic, strong) NSMutableDictionary *imagesAdded;
 @property(nonatomic, strong) NSString *selectedImageId;
 @end
@@ -94,23 +94,43 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
 }
 
 - (void)editorViewController:(WPEditorViewController*)editorViewController
-       imageTapped:(NSString *)imageId
-               url:(NSURL *)url
+                 imageTapped:(NSString *)imageId
+                         url:(NSURL *)url
+                   imageMeta:(WPImageMeta *)imageMeta
+{
+
+    if (imageId.length == 0) {
+        [self showImageDetailsForImageMeta:imageMeta];
+    } else {
+        [self showPromptForImageWithID:imageId];
+    }
+}
+
+- (void)showImageDetailsForImageMeta:(WPImageMeta *)imageMeta
+{
+    WPImageMetaViewController *controller = [self.storyboard instantiateViewControllerWithIdentifier:@"WPImageMetaViewController"];
+    controller.imageMeta = imageMeta;
+    controller.delegate = self;
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+    [self.navigationController presentViewController:navController animated:YES completion:nil];
+}
+
+- (void)showPromptForImageWithID:(NSString *)imageId
 {
     if (imageId.length == 0){
         return;
     }
-    NSProgress * progress = self.imagesAdded[imageId];
+    NSProgress *progress = self.imagesAdded[imageId];
     if (!progress.cancelled){
-        UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
         [actionSheet showInView:self.view];
         actionSheet.tag = WPViewControllerActionSheetUploadStop;
     } else {
-        UIActionSheet * actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Remove Image" otherButtonTitles:@"Retry Upload", nil];
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Remove Image" otherButtonTitles:@"Retry Upload", nil];
         [actionSheet showInView:self.view];
         actionSheet.tag = WPViewControllerActionSheetUploadRetry;
     }
-    self.selectedImageId= imageId;
+    self.selectedImageId = imageId;
 }
 
 - (void)showPhotoPicker
@@ -208,5 +228,11 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     
 }
 
+#pragma mark - WPImageMetaViewControllerDelegate
+
+- (void)imageMetaViewController:(WPImageMetaViewController *)controller didFinishEditingImageMeta:(WPImageMeta *)imageMeta
+{
+    [self.editorView updateCurrentImageMeta:imageMeta];
+}
 
 @end

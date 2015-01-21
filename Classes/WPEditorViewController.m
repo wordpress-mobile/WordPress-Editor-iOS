@@ -13,6 +13,7 @@
 #import "WPEditorToolbarButton.h"
 #import "WPEditorToolbarView.h"
 #import "WPEditorView.h"
+#import "WPImageMeta.h"
 #import "ZSSBarButtonItem.h"
 
 CGFloat const EPVCStandardOffset = 10.0;
@@ -326,6 +327,13 @@ NSInteger const WPLinkAlertViewTag = 92;
 }
 
 #pragma mark - Toolbar: helper methods
+
+- (void)clearToolbar
+{
+    if (!self.editorView.isInVisualMode) {
+        [self.toolbarView clearSelectedToolbarItems];
+    }
+}
 
 - (BOOL)canShowToolbarOption:(ZSSRichTextEditorToolbar)toolbarOption
 {
@@ -999,8 +1007,21 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (void)didTouchMediaOptions
 {
-    if ([self.delegate respondsToSelector: @selector(editorDidPressMedia:)]) {
-        [self.delegate editorDidPressMedia:self];
+    if (self.editorView.isInVisualMode) {
+        if ([self.delegate respondsToSelector: @selector(editorDidPressMedia:)]) {
+            [self.delegate editorDidPressMedia:self];
+        }
+    } else {
+        // Do not allow users to insert images in HTML mode for now
+        __weak __typeof(self)weakSelf = self;
+        [UIAlertView showWithTitle:NSLocalizedString(@"Unable to insert image", @"Title of dialog notifing user they cannot insert an image in the editor's HTML mode.")
+                           message:NSLocalizedString(@"You cannot insert images while editing HTML directly. Please switch back to visual mode.", @"Body of dialog notifing user they cannot insert an image in the editor's HTML mode.")
+                 cancelButtonTitle:NSLocalizedString(@"OK", @"OK")
+                 otherButtonTitles:nil
+                          tapBlock:^(UIAlertView *alertView, NSInteger buttonIndex) {
+                              [weakSelf clearToolbar];
+                          }
+         ];
     }
     [WPAnalytics track:WPAnalyticsStatEditorTappedImage];
 }
@@ -1147,18 +1168,21 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)setBold
 {
     [self.editorView setBold];
+    [self clearToolbar];
     [WPAnalytics track:WPAnalyticsStatEditorTappedBold];
 }
 
 - (void)setBlockQuote
 {
     [self.editorView setBlockQuote];
+    [self clearToolbar];
     [WPAnalytics track:WPAnalyticsStatEditorTappedBlockquote];
 }
 
 - (void)setItalic
 {
     [self.editorView setItalic];
+    [self clearToolbar];
     [WPAnalytics track:WPAnalyticsStatEditorTappedItalic];
 }
 
@@ -1170,6 +1194,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)setUnderline
 {
 	[self.editorView setUnderline];
+    [self clearToolbar];
     [WPAnalytics track:WPAnalyticsStatEditorTappedUnderline];
 }
 
@@ -1181,18 +1206,21 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)setStrikethrough
 {
     [self.editorView setStrikethrough];
+    [self clearToolbar];
     [WPAnalytics track:WPAnalyticsStatEditorTappedStrikethrough];
 }
 
 - (void)setUnorderedList
 {
     [self.editorView setUnorderedList];
+    [self clearToolbar];
     [WPAnalytics track:WPAnalyticsStatEditorTappedUnorderedList];
 }
 
 - (void)setOrderedList
 {
     [self.editorView setOrderedList];
+    [self clearToolbar];
     [WPAnalytics track:WPAnalyticsStatEditorTappedOrderedList];
 }
 
@@ -1418,7 +1446,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (void)insertImage:(NSString *)url alt:(NSString *)alt
 {
-	[self.editorView insertImage:url alt:alt];
+    [self.editorView insertImage:url alt:alt];
 }
 
 - (void)updateImage:(NSString *)url alt:(NSString *)alt
@@ -1555,10 +1583,22 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)editorView:(WPEditorView*)editorView
       fieldFocused:(WPEditorField*)field
 {
-    if (!field || field == self.editorView.titleField) {
+    if (field == self.editorView.titleField) {
         [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
     } else if (field == self.editorView.contentField) {
         [self.toolbarView enableToolbarItems:YES shouldShowSourceButton:YES];
+    }
+}
+
+- (void)editorView:(WPEditorView*)editorView sourceFieldFocused:(UIView*)view
+{
+    [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
+    
+    // Enable the toolbar if the HTML editor has focus
+    if (view == self.editorView.sourceView) {
+        [self.toolbarView enableToolbarItems:YES shouldShowSourceButton:YES];
+    } else {
+        [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
     }
 }
 
@@ -1572,6 +1612,16 @@ NSInteger const WPLinkAlertViewTag = 92;
 	}
 	
 	return YES;
+}
+
+- (void)editorView:(WPEditorView*)editorView
+       imageTapped:(NSString *)imageId
+               url:(NSURL *)url
+         imageMeta:(WPImageMeta *)imageMeta
+{
+    if ([self.delegate respondsToSelector:@selector(editorViewController:imageTapped:url:imageMeta:)]) {
+        [self.delegate editorViewController:self imageTapped:imageId url:url imageMeta:imageMeta];
+    }
 }
 
 - (BOOL)editorView:(WPEditorView*)editorView
