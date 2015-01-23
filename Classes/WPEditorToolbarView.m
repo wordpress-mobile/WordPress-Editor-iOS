@@ -7,6 +7,7 @@ static int kDefaultToolbarItemPadding = 10;
 static int kDefaultToolbarLeftPadding = 10;
 
 static int kNegativeToolbarItemPadding = 12;
+static int kNegativeSixToolbarItemPadding = 6;
 static int kNegativeSixPlusToolbarItemPadding = 2;
 static int kNegativeLeftToolbarLeftPadding = 3;
 static int kNegativeRightToolbarPadding = 20;
@@ -89,6 +90,8 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     
     if ([WPDeviceIdentification isIPhoneSixPlus]) {
         toolbarItemsSeparation = kNegativeSixPlusToolbarItemPadding;
+    } else if ([WPDeviceIdentification isIPhoneSix]) {
+        toolbarItemsSeparation = kNegativeSixToolbarItemPadding;
     } else {
         toolbarItemsSeparation = kNegativeToolbarItemPadding;
     }
