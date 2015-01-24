@@ -1556,8 +1556,10 @@ ZSSField.prototype.emptyFieldIfNoContents = function() {
     if (text.length == 0) {
         
         var hasChildImages = (this.wrappedObject.find('img').length > 0);
+        var hasUnorderedList = (this.wrappedObject.find('ul').length > 0);
+        var hasOrderedList = (this.wrappedObject.find('ol').length > 0);
         
-        if (!hasChildImages) {
+        if (!hasChildImages && !hasUnorderedList && !hasOrderedList) {
             this.wrappedObject.empty();
         }
     }
