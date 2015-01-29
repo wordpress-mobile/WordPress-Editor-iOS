@@ -275,7 +275,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
             [newValue getValue:&newSize];
         
             if (newSize.height != self.lastEditorHeight) {
-                [self refreshVisibleViewportAndContentSize];
+                self.webView.scrollView.contentSize = CGSizeMake(self.frame.size.width, self.lastEditorHeight);
                 [self workaroundBrokenWebViewRendererBug];
             }
         }
