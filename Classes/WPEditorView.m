@@ -358,6 +358,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
 - (void)keyboardDidShow:(NSNotification *)notification
 {
+    [self refreshVisibleViewportAndContentSize];
     [self scrollToCaretAnimated:NO];
 }
 
