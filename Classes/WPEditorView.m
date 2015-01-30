@@ -1187,7 +1187,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
     
     [self workaroundiOS7FocusIssueAfterHidingBehindAnotherVC];
-    [self refreshVisibleViewportAndContentSize];
 }
 
 - (void)insertImage:(NSString *)url alt:(NSString *)alt
