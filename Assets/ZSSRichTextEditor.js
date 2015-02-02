@@ -760,6 +760,13 @@ ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier, message) {
     if (imageNode.length == 0){
         return;
     }
+
+    var sizeClass = '';
+    if ( imageNode[0].width > 480 && imageNode[0].height > 240 ) {
+        sizeClass = "large";
+    } else if ( imageNode[0].width < 100 || imageNode[0].height < 100 ) {
+        alert("small");
+    }
     
     imageNode.addClass('failed');
     
@@ -767,6 +774,7 @@ ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier, message) {
     if(imageContainerNode.length != 0){
         imageContainerNode.attr("data-failed", message);
         imageContainerNode.addClass('failed');
+        imageContainerNode.addClass(sizeClass);
     }
     
     var imageProgressNode = this.getImageProgressNodeWithIdentifier(imageNodeIdentifier);
