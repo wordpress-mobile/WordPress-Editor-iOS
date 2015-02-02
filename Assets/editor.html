@@ -888,11 +888,13 @@ function style_html(html_source, options) {
     
         img.uploading {
             opacity:0.3;
+            margin:-0.1px;
             -webkit-user-select: none;
         }
     
         img.failed {
-            opacity:0.3;
+            -webkit-filter: blur(4px) grayscale(0.3);
+            margin:-0.1px;
             z-index:-1;
             -webkit-user-select: none;
         }
@@ -903,6 +905,10 @@ function style_html(html_source, options) {
             -webkit-user-select: none;
         }
 
+        span.img_container.failed {
+            overflow: hidden;
+        }
+    
         span.img_container.failed::before {
             position: absolute;
             top:35%;
