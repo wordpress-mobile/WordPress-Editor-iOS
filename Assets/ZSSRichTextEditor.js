@@ -763,9 +763,9 @@ ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier, message) {
 
     var sizeClass = '';
     if ( imageNode[0].width > 480 && imageNode[0].height > 240 ) {
-        sizeClass = "large";
+        sizeClass = "largeFail";
     } else if ( imageNode[0].width < 100 || imageNode[0].height < 100 ) {
-        sizeClass = "small";
+        sizeClass = "smallFail";
     }
     
     imageNode.addClass('failed');
