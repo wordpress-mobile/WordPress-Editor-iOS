@@ -888,11 +888,13 @@ function style_html(html_source, options) {
     
         img.uploading {
             opacity:0.3;
+            margin:-0.1px;
             -webkit-user-select: none;
         }
     
         img.failed {
-            opacity:0.3;
+            -webkit-filter: blur(4px) grayscale(0.3);
+            margin:-0.1px;
             z-index:-1;
             -webkit-user-select: none;
         }
@@ -903,6 +905,10 @@ function style_html(html_source, options) {
             -webkit-user-select: none;
         }
 
+        span.img_container.failed {
+            overflow: hidden;
+        }
+    
         span.img_container.failed::before {
             position: absolute;
             top:35%;
@@ -918,10 +924,15 @@ function style_html(html_source, options) {
             content:"";
             background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><path d="M35.3 12.7C32.41 9.8 28.42 8 24 8 15.16 8 8.02 15.16 8.02 24S15.16 40 24 40c7.45 0 13.69-5.1 15.46-12H35.3c-1.65 4.66-6.07 8-11.3 8-6.63 0-12-5.37-12-12s5.37-12 12-12c3.31 0 6.28 1.38 8.45 3.55L26 22h14V8l-4.7 4.7z" stroke="white" fill="white"/></svg>') no-repeat center top;
         }
+    
+        span.img_container.failed.largeFail::before {
+            background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="124" height="124" viewBox="0 0 124 124"><circle fill="none" stroke="#FFFFFF" stroke-width="4"  cx="62" cy="62" r="60"></circle><path d="M79.0637899,40.93125 C74.1838649,36.0375 67.4465291,33 59.9831144,33 C45.0562852,33 33,45.0825 33,60 C33,74.9175 45.0562852,87 59.9831144,87 C72.5628518,87 83.0994371,78.39375 86.0881801,66.75 L79.0637899,66.75 C76.2776735,74.61375 68.8142589,80.25 59.9831144,80.25 C48.7879925,80.25 39.7204503,71.188125 39.7204503,60 C39.7204503,48.811875 48.7879925,39.75 59.9831144,39.75 C65.5722326,39.75 70.587242,42.07875 74.2514071,45.740625 L63.3602251,56.625 L87,56.625 L87,33 L79.0637899,40.93125 L79.0637899,40.93125 Z" fill="#FFFFFF" ></path></svg>') no-repeat center top;
+        }
 
         span.img_container.failed::after {
             position: absolute;
-            top:55%;left:0%;
+            top:60%;
+            left:0%;
             font-size:24pt;
             font-weight:600;
             text-align: center;
@@ -932,6 +943,14 @@ function style_html(html_source, options) {
             -webkit-user-select: none;
             pointer-events: none;
             content:attr(data-failed);
+        }
+    
+        span.img_container.failed.largeFail::after {
+            top:70%;
+        }
+    
+        span.img_container.failed.smallFail::after {
+            content:"";
         }
 
     /* Image editing overlay styles */

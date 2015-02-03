@@ -16,4 +16,11 @@
  */
 + (BOOL)isIPhoneSixPlus;
 
+/**
+ *  @brief      Call this method to know if the current device is an iPhone6.
+ *
+ *  @returns    YES if the device is an iPhone6.  NO otherwise.
+ */
++ (BOOL)isIPhoneSix;
+
 @end

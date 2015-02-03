@@ -760,13 +760,22 @@ ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier, message) {
     if (imageNode.length == 0){
         return;
     }
+
+    var sizeClass = '';
+    if ( imageNode[0].width > 480 && imageNode[0].height > 240 ) {
+        sizeClass = "largeFail";
+    } else if ( imageNode[0].width < 100 || imageNode[0].height < 100 ) {
+        sizeClass = "smallFail";
+    }
     
     imageNode.addClass('failed');
     
     var imageContainerNode = this.getImageContainerNodeWithIdentifier(imageNodeIdentifier);
     if(imageContainerNode.length != 0){
         imageContainerNode.attr("data-failed", message);
+        imageNode.removeClass("uploading");
         imageContainerNode.addClass('failed');
+        imageContainerNode.addClass(sizeClass);
     }
     
     var imageProgressNode = this.getImageProgressNodeWithIdentifier(imageNodeIdentifier);
@@ -1556,8 +1565,10 @@ ZSSField.prototype.emptyFieldIfNoContents = function() {
     if (text.length == 0) {
         
         var hasChildImages = (this.wrappedObject.find('img').length > 0);
+        var hasUnorderedList = (this.wrappedObject.find('ul').length > 0);
+        var hasOrderedList = (this.wrappedObject.find('ol').length > 0);
         
-        if (!hasChildImages) {
+        if (!hasChildImages && !hasUnorderedList && !hasOrderedList) {
             this.wrappedObject.empty();
         }
     }

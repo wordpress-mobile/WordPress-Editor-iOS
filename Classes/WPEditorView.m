@@ -271,12 +271,20 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
         if ([keyPath isEqualToString:WPEditorViewWebViewContentSizeKey]) {
             NSValue *newValue = change[NSKeyValueChangeNewKey];
             
-            CGSize newSize;
-            [newValue getValue:&newSize];
+            CGSize newSize = [newValue CGSizeValue];
         
             if (newSize.height != self.lastEditorHeight) {
-                [self refreshVisibleViewportAndContentSize];
+                
+                // First make sure that the content size is not changed without us recalculating it.
+                //
+                self.webView.scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.frame), self.lastEditorHeight);
                 [self workaroundBrokenWebViewRendererBug];
+                
+                // Then recalculate it asynchronously so the UIWebView doesn't break.
+                //
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self refreshVisibleViewportAndContentSize];
+                });
             }
         }
     }
@@ -371,7 +379,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     
     if (keyboardOrigin.y > 0) {
         
-        CGFloat vOffset = self.frame.size.height - keyboardOrigin.y;
+        CGFloat vOffset = CGRectGetHeight(self.frame) - keyboardOrigin.y;
         
         UIEdgeInsets insets = UIEdgeInsetsMake(0.0f, 0.0f, vOffset, 0.0f);
         
@@ -410,7 +418,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     NSInteger newHeight = [newHeightString integerValue];
     
     self.lastEditorHeight = newHeight;
-    self.webView.scrollView.contentSize = CGSizeMake(self.frame.size.width, newHeight);
+    self.webView.scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.frame), newHeight);
 }
 
 #pragma mark - UIWebViewDelegate
@@ -1092,7 +1100,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     CGFloat offsetBottom = caretYOffset + lineHeight;
     
     BOOL mustScroll = (caretYOffset < viewport.origin.y
-                       || offsetBottom > viewport.origin.y + viewport.size.height);
+                       || offsetBottom > viewport.origin.y + CGRectGetHeight(viewport));
     
     if (mustScroll) {
         // DRM: by reducing the necessary height we avoid an issue that moves the caret out
@@ -1107,7 +1115,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         
         CGRect targetRect = CGRectMake(0.0f,
                                        caretYOffset,
-                                       viewport.size.width,
+                                       CGRectGetWidth(viewport),
                                        necessaryHeight);
         
         [self.webView.scrollView scrollRectToVisible:targetRect animated:animated];
