@@ -273,49 +273,66 @@ ZSSEditor.getJoinedCaretArguments = function() {
     return joinedArguments;
 };
 
-ZSSEditor.getYCaretInfo = function() {
-    var y = 0, height = 0;
+ZSSEditor.getCaretYPosition = function() {
     var sel = window.getSelection();
-    if (sel.rangeCount) {
+    // Next line is comented to prevent deselecting selection. It looks like work but if there are any issues will appear then uconmment it as well as code above.
+    //sel.collapseToStart();
+    var range = sel.getRangeAt(0);
+    var span = document.createElement('span');// something happening here preventing selection of elements
+    range.insertNode(span);
+    var topPosition = span.offsetTop;
+    span.parentNode.removeChild(span);
+    return topPosition;
+}
+
+ZSSEditor.getYCaretInfo = function() {
+    var y = 0;
+    var height = 0;
+    var selection = window.getSelection();
+    
+    if (! selection.rangeCount) { // if no selection available just return 0
+        this.caretInfo.y = y;
+        this.caretInfo.height = height;
+        return this.caretInfo;
+    }
+    
+    var range = selection.getRangeAt(0);
+    var needsToWorkAroundNewlineBug = (range.startOffset == 0 || range.getClientRects().length == 0);
+    
+    // PROBLEM: iOS seems to have problems getting the offset for some empty nodes and return
+    // 0 (zero) as the selection range top offset.
+    //
+    // WORKAROUND: To fix this problem we just get the node's offset instead.
+    //
+    if (needsToWorkAroundNewlineBug) {
+        var closerParentNode = ZSSEditor.closerParentNode();
+        var closerDiv = ZSSEditor.closerParentNodeWithName('div');
         
-        var range = sel.getRangeAt(0);
-        var needsToWorkAroundNewlineBug = (range.startOffset == 0 || range.getClientRects().length == 0);
+        var fontSize = $(closerParentNode).css('font-size');
+        var lineHeight = Math.floor(parseInt(fontSize.replace('px','')) * 1.5);
         
-        // PROBLEM: iOS seems to have problems getting the offset for some empty nodes and return
-        // 0 (zero) as the selection range top offset.
-        //
-        // WORKAROUND: To fix this problem we just get the node's offset instead.
-        //
-        if (needsToWorkAroundNewlineBug) {
-            var closerParentNode = ZSSEditor.closerParentNode();
-            var closerDiv = ZSSEditor.closerParentNodeWithName('div');
-            
-            var fontSize = $(closerParentNode).css('font-size');
-            var lineHeight = Math.floor(parseInt(fontSize.replace('px','')) * 1.5);
-            
-            y = closerParentNode.offsetTop;
-            height = lineHeight;
-        } else {
-            if (range.getClientRects) {
-                var rects = range.getClientRects();
-                if (rects.length > 0) {
-                    // PROBLEM: some iOS versions differ in what is returned by getClientRects()
-                    // Some versions return the offset from the page's top, some other return the
-                    // offset from the visible viewport's top.
-                    //
-                    // WORKAROUND: see if the offset of the body's top is ever negative.  If it is
-                    // then it means that the offset we have is relative to the body's top, and we
-                    // should add the scroll offset.
-                    //
-                    var addsScrollOffset = document.body.getClientRects()[0].top < 0;
-                    
-                    if (addsScrollOffset) {
-                        y = document.body.scrollTop;
-                    }
-                    
-                    y += rects[0].top;
-                    height = rects[0].height;
+        y = this.getCaretYPosition();
+        height = lineHeight;
+    } else {
+        if (range.getClientRects) {
+            var rects = range.getClientRects();
+            if (rects.length > 0) {
+                // PROBLEM: some iOS versions differ in what is returned by getClientRects()
+                // Some versions return the offset from the page's top, some other return the
+                // offset from the visible viewport's top.
+                //
+                // WORKAROUND: see if the offset of the body's top is ever negative.  If it is
+                // then it means that the offset we have is relative to the body's top, and we
+                // should add the scroll offset.
+                //
+                var addsScrollOffset = document.body.getClientRects()[0].top < 0;
+                
+                if (addsScrollOffset) {
+                    y = document.body.scrollTop;
                 }
+                
+                y += rects[0].top;
+                height = rects[0].height;
             }
         }
     }
