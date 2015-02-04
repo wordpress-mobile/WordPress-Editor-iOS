@@ -120,6 +120,24 @@ ZSSEditor.focusFirstEditableField = function() {
     $('div[contenteditable=true]:first').focus();
 };
 
+
+ZSSEditor.formatNewLine = function(e) {
+    
+    var currentField = this.getFocusedField();
+    
+    if (currentField.isMultiline()) {
+        var currentNode = ZSSEditor.closerParentNodeWithName('blockquote');
+        
+        if (!currentNode
+            && !ZSSEditor.isCommandEnabled('insertOrderedList')
+            && !ZSSEditor.isCommandEnabled('insertUnorderedList')) {
+            document.execCommand('formatBlock', false, 'p');
+        }
+    } else {
+        e.preventDefault();
+    }
+};
+
 ZSSEditor.getField = function(fieldId) {
     
     var field = this.editableFields[fieldId];
@@ -1601,10 +1619,16 @@ ZSSField.prototype.handleFocusEvent = function(e) {
 
 ZSSField.prototype.handleKeyDownEvent = function(e) {
     
-    // IMPORTANT: without this code, we can have text written outside of paragraphs...
-    //
-    if (ZSSEditor.closerParentNode() == this.wrappedDomNode()) {
-        document.execCommand('formatBlock', false, 'p');
+    var wasEnterPressed = (e.keyCode == '13');
+    
+    if(wasEnterPressed) {
+        ZSSEditor.formatNewLine(e);
+    } else {
+        // IMPORTANT: without this code, we can have text written outside of paragraphs...
+        //
+        if (ZSSEditor.closerParentNode() == this.wrappedDomNode()) {
+            document.execCommand('formatBlock', false, 'p');
+        }
     }
 };
 
