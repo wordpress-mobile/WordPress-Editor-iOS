@@ -274,15 +274,21 @@ ZSSEditor.getJoinedCaretArguments = function() {
 };
 
 ZSSEditor.getCaretYPosition = function() {
-    var sel = window.getSelection();
-    // Next line is comented to prevent deselecting selection. It looks like work but if there are any issues will appear then uconmment it as well as code above.
-    //sel.collapseToStart();
-    var range = sel.getRangeAt(0);
-    var span = document.createElement('span');// something happening here preventing selection of elements
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0);
+    var span = document.createElement("span");
+    // Ensure span has dimensions and position by
+    // adding a zero-width space character
+    span.appendChild( document.createTextNode("\u200b") );
     range.insertNode(span);
-    var topPosition = span.offsetTop;
-    span.parentNode.removeChild(span);
-    return topPosition;
+    var y = span.offsetTop;
+    var spanParent = span.parentNode;
+    spanParent.removeChild(span);
+    
+    // Glue any broken text nodes back together
+    spanParent.normalize();
+    
+    return y;
 }
 
 ZSSEditor.getYCaretInfo = function() {
