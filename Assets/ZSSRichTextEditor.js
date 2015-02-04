@@ -297,8 +297,8 @@ ZSSEditor.getYCaretInfo = function() {
     var y = 0;
     var height = 0;
     var selection = window.getSelection();
-    
-    if (! selection.rangeCount) { // if no selection available just return CaretPositionUnknow
+    var noSelectionAvailable = selection.rangeCount == 0;
+    if (noSelectionAvailable) {
         this.caretInfo.y = CaretPositionUnknow;
         this.caretInfo.height = CaretPositionUnknow;
         return this.caretInfo;
@@ -310,7 +310,7 @@ ZSSEditor.getYCaretInfo = function() {
     // PROBLEM: iOS seems to have problems getting the offset for some empty nodes and return
     // 0 (zero) as the selection range top offset.
     //
-    // WORKAROUND: To fix this problem we just get the node's offset instead.
+    // WORKAROUND: To fix this problem we use a different method to obtain the Y position instead.
     //
     if (needsToWorkAroundNewlineBug) {
         var closerParentNode = ZSSEditor.closerParentNode();
