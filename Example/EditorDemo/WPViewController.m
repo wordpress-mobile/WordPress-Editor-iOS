@@ -153,8 +153,10 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
         NSString * imageID = [[NSUUID UUID] UUIDString];
         NSString * path = [NSString stringWithFormat:@"%@/%@", NSTemporaryDirectory(), imageID];
         [data writeToFile:path atomically:YES];
-        [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
-            
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
+        });
+                    
         NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID, @"url":path}];
         progress.cancellable = YES;
         progress.totalUnitCount = 100;

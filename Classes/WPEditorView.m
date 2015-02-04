@@ -26,6 +26,8 @@ static const CGFloat iPadHTMLViewLeftRightInset = 85.0f;
 
 static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
+static NSInteger CaretPositionUnknow = -9999;
+
 @interface WPEditorView () <UITextViewDelegate, UIWebViewDelegate, UITextFieldDelegate>
 
 #pragma mark - Cached caret & line data
@@ -1085,16 +1087,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 #pragma mark - Scrolling support
 
 /**
- *  @brief      Scrolls to a position where the caret is visible.
- *
- *  @param      offset      The offset to show.
- *  @param      height      The height to show below the specified offset.  If this exceeds the
- *                          scroll content size, a smaller height will be automatically used.
+ *  @brief      Scrolls to a position where the caret is visible. This uses the values stored in caretYOffest and lineHeight properties.
+ *  @discussion If the values of both properties  match CaretPositionUnknow no scrolling happens.
+ *  @param      animated    If the scrolling shoud be animated  The offset to show.
  */
 - (void)scrollToCaretAnimated:(BOOL)animated
 {
+    if (self.caretYOffset == CaretPositionUnknow
+        && self.lineHeight == CaretPositionUnknow) {
+        return;
+    }
     CGRect viewport = [self viewport];
-    
     CGFloat caretYOffset = self.caretYOffset;
     CGFloat lineHeight = self.lineHeight;
     CGFloat offsetBottom = caretYOffset + lineHeight;
@@ -1162,30 +1165,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self callDelegateEditorTextDidChange];
 }
 
-#pragma mark - Exceptional Workarounds
-
-/**
- *  @brief      Fixes an issue in iOS 7 that prevents the editor view from properly recovering focus
- *              after the owning VC comes back from hiding behind another VC.
- */
-- (void)workaroundiOS7FocusIssueAfterHidingBehindAnotherVC
-{
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
-        [self saveSelection];
-        [self.contentField blur];
-        [self.contentField focus];
-        [self restoreSelection];
-    }
-}
-
 #pragma mark - Images
 
 - (void)insertLocalImage:(NSString*)url uniqueId:(NSString*)uniqueId
 {
     NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertLocalImage(\"%@\", \"%@\");", uniqueId, url];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
-    
-    [self workaroundiOS7FocusIssueAfterHidingBehindAnotherVC];
 }
 
 - (void)insertImage:(NSString *)url alt:(NSString *)alt
