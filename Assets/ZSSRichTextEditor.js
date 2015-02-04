@@ -13,6 +13,8 @@ var isUsingiOS = true;
 // THe default callback parameter separator
 var defaultCallbackSeparator = '~';
 
+var CaretPositionUnknow = -9999;
+
 // The editor object
 var ZSSEditor = {};
 
@@ -296,9 +298,9 @@ ZSSEditor.getYCaretInfo = function() {
     var height = 0;
     var selection = window.getSelection();
     
-    if (! selection.rangeCount) { // if no selection available just return 0
-        this.caretInfo.y = y;
-        this.caretInfo.height = height;
+    if (! selection.rangeCount) { // if no selection available just return CaretPositionUnknow
+        this.caretInfo.y = CaretPositionUnknow;
+        this.caretInfo.height = CaretPositionUnknow;
         return this.caretInfo;
     }
     
