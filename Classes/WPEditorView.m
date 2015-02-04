@@ -1184,8 +1184,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertLocalImage(\"%@\", \"%@\");", uniqueId, url];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
-    
-    [self workaroundiOS7FocusIssueAfterHidingBehindAnotherVC];
 }
 
 - (void)insertImage:(NSString *)url alt:(NSString *)alt
