@@ -1165,22 +1165,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self callDelegateEditorTextDidChange];
 }
 
-#pragma mark - Exceptional Workarounds
-
-/**
- *  @brief      Fixes an issue in iOS 7 that prevents the editor view from properly recovering focus
- *              after the owning VC comes back from hiding behind another VC.
- */
-- (void)workaroundiOS7FocusIssueAfterHidingBehindAnotherVC
-{
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
-        [self saveSelection];
-        [self.contentField blur];
-        [self.contentField focus];
-        [self restoreSelection];
-    }
-}
-
 #pragma mark - Images
 
 - (void)insertLocalImage:(NSString*)url uniqueId:(NSString*)uniqueId
