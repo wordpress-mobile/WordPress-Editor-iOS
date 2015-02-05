@@ -23,4 +23,11 @@
  */
 + (BOOL)isIPhoneSix;
 
+/**
+ *  @brief      Call this method to know if the current device is running iOS version older than 8.
+ *
+ *  @returns    YES if the device is running iOS version older than 8.  NO otherwise.
+ */
++ (BOOL)isiOSVersionEarlierThan8;
+
 @end
