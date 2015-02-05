@@ -368,11 +368,63 @@ static NSInteger CaretPositionUnknow = -9999;
 
 - (void)keyboardDidShow:(NSNotification *)notification
 {
+    BOOL isiOS7OrEarlier = ([[[UIDevice currentDevice] systemVersion] floatValue] < 8.0);
+    
+    if (isiOS7OrEarlier) {
+        // PROBLEM: under iOS 7, it seems that setting the proper insets in keyboardWillShow: is not
+        // enough.  We were having trouble when adding images, where the keyboard would show but the
+        // insets would be reset to {0, 0, 0, 0} between keyboardWillShow: and keyboardDidShow:
+        //
+        // HOW TO TEST:
+        //
+        // - launch the WPiOS app under iOS 7.
+        // - set a title
+        // - add some text and on the same line add an image
+        // - once the image is added tap once on the content field to make the keyboard come back up
+        //
+        // WORKAROUND: we just set the insets again in keyboardDidShow: for iOS 7
+        //
+        [self refreshKeyboardInsetsWithShowNotification:notification];
+    }
+    
     [self scrollToCaretAnimated:NO];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
+    [self refreshKeyboardInsetsWithShowNotification:notification];
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification
+{
+    // WORKAROUND: sometimes the input accessory view is not taken into account and a
+    // keyboardWillHide: call is triggered instead.  Since there's no way for the source view now
+    // to have focus, we'll just make sure the inputAccessoryView is taken into account when
+    // hiding the keyboard.
+    //
+    CGFloat vOffset = self.sourceView.inputAccessoryView.frame.size.height;
+    UIEdgeInsets insets = UIEdgeInsetsMake(0.0f, 0.0f, vOffset, 0.0f);
+    
+    self.webView.scrollView.contentInset = insets;
+    self.webView.scrollView.scrollIndicatorInsets = insets;
+    self.sourceView.contentInset = insets;
+    self.sourceView.scrollIndicatorInsets = insets;
+}
+
+
+#pragma mark - Keyboard Misc.
+
+/**
+ *  @brief      Takes care of calculating and setting the proper insets when the keyboard is shown.
+ *  @details    This method can be called from both keyboardWillShow: and keyboardDidShow:.
+ *
+ *  @param      notification        The notification containing the size info for the keyboard.
+ *                                  Cannot be nil.
+ */
+- (void)refreshKeyboardInsetsWithShowNotification:(NSNotification*)notification
+{
+    NSParameterAssert([notification isKindOfClass:[NSNotification class]]);
+    
     NSDictionary *info = notification.userInfo;
     CGRect keyboardEnd = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     
@@ -390,22 +442,6 @@ static NSInteger CaretPositionUnknow = -9999;
         self.sourceView.contentInset = insets;
         self.sourceView.scrollIndicatorInsets = insets;
     }
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification
-{
-    // WORKAROUND: sometimes the input accessory view is not taken into account and a
-    // keyboardWillHide: call is triggered instead.  Since there's no way for the source view now
-    // to have focus, we'll just make sure the inputAccessoryView is taken into account when
-    // hiding the keyboard.
-    //
-    CGFloat vOffset = self.sourceView.inputAccessoryView.frame.size.height;
-    UIEdgeInsets insets = UIEdgeInsetsMake(0.0f, 0.0f, vOffset, 0.0f);
-    
-    self.webView.scrollView.contentInset = insets;
-    self.webView.scrollView.scrollIndicatorInsets = insets;
-    self.sourceView.contentInset = insets;
-    self.sourceView.scrollIndicatorInsets = insets;
 }
 
 - (void)refreshVisibleViewportAndContentSize
