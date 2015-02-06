@@ -924,6 +924,21 @@ ZSSEditor.removeImageSelectionFormatting = function( imageNode ) {
     parentNode.remove();
 }
 
+ZSSEditor.removeImageSelectionFormattingFromHTML = function( html ) {
+    var tmp = document.createElement( "div" );
+    var tmpDom = $( tmp ).html( html );
+
+    var matches = tmpDom.find( "span.edit-container img" );
+    if ( matches.length == 0 ) {
+        return html;
+    }
+
+    for ( var i = 0; i < matches.length; i++ ) {
+        ZSSEditor.removeImageSelectionFormatting( matches[i] );
+    }
+
+    return tmpDom.html();
+}
 
 /**
  *  @brief       Finds all related caption nodes for the specified image node.
@@ -1321,8 +1336,9 @@ ZSSEditor.applyVisualFormatting  = function( html ) {
  *  @return     Returns the string with the visual formatting removed.
  */
 ZSSEditor.removeVisualFormatting = function( html ) {
-    var str = ZSSEditor.removeCaptionFormatting( html );
-
+    var str = html;
+    str = ZSSEditor.removeImageSelectionFormattingFromHTML( str );
+    str = ZSSEditor.removeCaptionFormatting( str );
     return str;
 }
 
@@ -1857,7 +1873,7 @@ ZSSField.prototype.isEmpty = function() {
 
 ZSSField.prototype.getHTML = function() {
     var html = this.wrappedObject.html();
-    html = ZSSEditor.removeVisualFormatting(html);
+    html = ZSSEditor.removeVisualFormatting( html );
     return html
 };
 
@@ -1866,6 +1882,7 @@ ZSSField.prototype.strippedHTML = function() {
 };
 
 ZSSField.prototype.setHTML = function(html) {
+    ZSSEditor.currentEditingImage = null;
     html = ZSSEditor.applyVisualFormatting(html);
     this.wrappedObject.html(html);
     this.refreshPlaceholderColor();
