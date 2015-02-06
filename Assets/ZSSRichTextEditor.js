@@ -122,22 +122,27 @@ ZSSEditor.focusFirstEditableField = function() {
     $('div[contenteditable=true]:first').focus();
 };
 
-
 ZSSEditor.formatNewLine = function(e) {
     
     var currentField = this.getFocusedField();
     
     if (currentField.isMultiline()) {
-        var currentNode = ZSSEditor.closerParentNodeWithName('blockquote');
+        var parentBlockQuoteNode = ZSSEditor.closerParentNodeWithName('blockquote');
         
-        if (!currentNode
-            && !ZSSEditor.isCommandEnabled('insertOrderedList')
-            && !ZSSEditor.isCommandEnabled('insertUnorderedList')) {
+        if (parentBlockQuoteNode) {
+            this.formatNewLineInsideBlockquote(e);
+        } else if (!ZSSEditor.isCommandEnabled('insertOrderedList')
+                   && !ZSSEditor.isCommandEnabled('insertUnorderedList')) {
             document.execCommand('formatBlock', false, 'p');
         }
     } else {
         e.preventDefault();
     }
+};
+
+ZSSEditor.formatNewLineInsideBlockquote = function(e) {
+    this.insertBreakTagAtCaretPosition();
+    e.preventDefault();
 };
 
 ZSSEditor.getField = function(fieldId) {
@@ -1479,6 +1484,24 @@ ZSSEditor.sendEnabledStyles = function(e) {
     }
 	
 	ZSSEditor.stylesCallback(items);
+};
+
+// MARK: - Commands: High Level Editing
+
+/**
+ *  @brief      Inserts a br tag at the caret position.
+ */
+ZSSEditor.insertBreakTagAtCaretPosition = function() {
+    // iOS IMPORTANT: we were adding <br> tags with range.insertNode() before using
+    // this method.  Unfortunately this was causing issues with the first <br> tag
+    // being completely ignored under iOS:
+    //
+    // https://bugs.webkit.org/show_bug.cgi?id=23474
+    //
+    // The following line seems to work fine under iOS, so please be careful if this
+    // needs to be changed for any reason.
+    //
+    document.execCommand("insertLineBreak");
 };
 
 // MARK: - Parent nodes & tags
