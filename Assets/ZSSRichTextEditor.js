@@ -791,12 +791,12 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
 };
 
 /**
- *  @brief      Notifies that the image upload as finished and removed extra tags for upload
+ *  @brief      Notifies that the image upload as finished
  *
- *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.
+ *  @param      imageNodeIdentifier     The unique image ID for the uploaded image
  */
 ZSSEditor.markImageUploadDone = function(imageNodeIdentifier) {
-
+    
     this.sendImageReplacedCallback(imageNodeIdentifier);
     
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
@@ -810,20 +810,26 @@ ZSSEditor.markImageUploadDone = function(imageNodeIdentifier) {
     // remove uploading style
     imageNode.removeClass("uploading");
     imageNode.removeAttr("class");
-
+    
     // Remove all extra formatting nodes for progress
     if (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)) {
         imageNode.parent().replaceWith(imageNode);
     }
-}
+};
 
+/**
+ *  @brief      Callbacks to native that the image upload as finished and the local url was replaced by the remote url
+ *
+ *  @param      imageNodeIdentifier     The unique image ID for the uploaded image
+ */
 ZSSEditor.sendImageReplacedCallback = function( imageNodeIdentifier ) {
     var arguments = ['id=' + encodeURIComponent( imageNodeIdentifier )];
     
     var joinedArguments = arguments.join( defaultCallbackSeparator );
     
     this.callback("callback-image-replaced", joinedArguments);
-}
+};
+
 /**
  *  @brief      Marks the image as failed to upload
  *
