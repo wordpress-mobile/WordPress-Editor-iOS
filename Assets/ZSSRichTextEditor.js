@@ -736,21 +736,22 @@ ZSSEditor.getImageContainerNodeWithIdentifier = function(imageNodeIdentifier) {
  *  @param      remoteImageUrl          The URL of the remote image to display.
  */
 ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remoteImageUrl) {
-    
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
     
     if (imageNode.length == 0) {
+        // even if the image is not present anymore we must do callback
+        this.markImageUploadDone(imageNodeIdentifier);
         return;
     }
-    //when we decide to put the final url we can remove this from the node.
-    imageNode.removeAttr('data-wpid');
     
     var image = new Image;
     
     image.onload = function () {
-        imageNode.attr('src', image.src);            
+        imageNode.attr('src', image.src);
+        ZSSEditor.markImageUploadDone(imageNodeIdentifier);
         var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
         ZSSEditor.callback("callback-input", joinedArguments);
+        
     }
     
     image.onerror = function () {
@@ -758,9 +759,10 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remot
         // blogs are currently failing to download images due to access privilege issues.
         //
         imageNode.attr('src', image.src);
-        
+        ZSSEditor.markImageUploadDone(imageNodeIdentifier);
         var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
         ZSSEditor.callback("callback-input", joinedArguments);
+        
     }
     
     image.src = remoteImageUrl;
@@ -777,10 +779,7 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
     if (imageNode.length == 0){
         return;
     }
-    if (progress >=1){
-        imageNode.removeClass("uploading");
-        imageNode.removeAttr("class");
-    } else {
+    if (progress < 1){
         imageNode.addClass("uploading");
     }
     
@@ -789,12 +788,46 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
           return;
     }
     imageProgressNode.attr("value",progress);
-    // if progress is finished remove all extra nodes.
-    if (progress >=1 &&
-        (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)))
-    {
+};
+
+/**
+ *  @brief      Notifies that the image upload as finished
+ *
+ *  @param      imageNodeIdentifier     The unique image ID for the uploaded image
+ */
+ZSSEditor.markImageUploadDone = function(imageNodeIdentifier) {
+    
+    this.sendImageReplacedCallback(imageNodeIdentifier);
+    
+    var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
+    if (imageNode.length == 0){
+        return;
+    }
+    
+    // remove identifier attributed from image
+    imageNode.removeAttr('data-wpid');
+    
+    // remove uploading style
+    imageNode.removeClass("uploading");
+    imageNode.removeAttr("class");
+    
+    // Remove all extra formatting nodes for progress
+    if (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)) {
         imageNode.parent().replaceWith(imageNode);
     }
+};
+
+/**
+ *  @brief      Callbacks to native that the image upload as finished and the local url was replaced by the remote url
+ *
+ *  @param      imageNodeIdentifier     The unique image ID for the uploaded image
+ */
+ZSSEditor.sendImageReplacedCallback = function( imageNodeIdentifier ) {
+    var arguments = ['id=' + encodeURIComponent( imageNodeIdentifier )];
+    
+    var joinedArguments = arguments.join( defaultCallbackSeparator );
+    
+    this.callback("callback-image-replaced", joinedArguments);
 };
 
 /**

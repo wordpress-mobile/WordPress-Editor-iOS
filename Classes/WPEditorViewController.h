@@ -61,6 +61,14 @@ WPEditorViewControllerMode;
                          url:(NSURL *)url
                    imageMeta:(WPImageMeta *)imageMeta;
 
+/**
+ *	@brief		Received when the local image url is replace by the final image in the editor.
+ *
+ *	@param		editorView	The editor view.
+ *	@param		imageId		The id of image of the image that was tapped.
+ */
+- (void)editorViewController:(WPEditorViewController*)editorViewController
+               imageReplaced:(NSString *)imageId;
 @end
 
 @class ZSSBarButtonItem;

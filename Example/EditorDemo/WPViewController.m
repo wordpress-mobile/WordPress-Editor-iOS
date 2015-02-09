@@ -111,6 +111,11 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     }
 }
 
+- (void)editorViewController:(WPEditorViewController *)editorViewController imageReplaced:(NSString *)imageId
+{
+    [self.imagesAdded removeObjectForKey:imageId];
+}
+
 - (void)showImageDetailsForImageMeta:(WPImageMeta *)imageMeta
 {
     WPImageMetaViewController *controller = [self.storyboard instantiateViewControllerWithIdentifier:@"WPImageMetaViewController"];
@@ -191,7 +196,6 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     
     if (progress.fractionCompleted >= 1){
         [self.editorView replaceLocalImageWithRemoteImage:[[NSURL fileURLWithPath:progress.userInfo[@"url"]] absoluteString] uniqueId:imageID];
-        [self.imagesAdded removeObjectForKey:imageID];
         [timer invalidate];
     }
 }

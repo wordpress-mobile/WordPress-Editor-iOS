@@ -1650,6 +1650,15 @@ NSInteger const WPLinkAlertViewTag = 92;
     return YES;
 }
 
+- (void)editorView:(WPEditorView*)editorView
+       imageReplaced:(NSString *)imageId
+{
+    if ([self.delegate respondsToSelector:@selector(editorViewController:imageReplaced:)]) {
+        [self.delegate editorViewController:self imageReplaced:imageId];
+    }
+}
+
+
 - (void)editorView:(WPEditorView*)editorView stylesForCurrentSelection:(NSArray*)styles
 {
     self.editorItemsEnabled = styles;
