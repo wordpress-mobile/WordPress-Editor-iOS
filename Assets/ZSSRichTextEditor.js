@@ -1083,6 +1083,8 @@ ZSSEditor.createImageFromMeta = function( props ) {
 
         if ( props.align ) {
             shortcode.align = 'align' + props.align;
+        } else {
+            shortcode.align = 'alignnone';
         }
 
         if (props.captionClassName) {
