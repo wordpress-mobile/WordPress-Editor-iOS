@@ -1635,7 +1635,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 }
 
 - (void)editorView:(WPEditorView*)editorView
-       localImageReplaced:(NSString *)imageId
+       imageReplaced:(NSString *)imageId
 {
     if ([self.delegate respondsToSelector:@selector(editorViewController:imageReplaced:)]) {
         [self.delegate editorViewController:self imageReplaced:imageId];
