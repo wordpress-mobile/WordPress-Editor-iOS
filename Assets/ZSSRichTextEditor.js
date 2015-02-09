@@ -751,6 +751,7 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remot
         imageNode.attr('src', image.src);            
         var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
         ZSSEditor.callback("callback-input", joinedArguments);
+        this.markImageUploadDone(imageNodeIdentifier);
     }
     
     image.onerror = function () {
@@ -761,6 +762,7 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remot
         
         var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
         ZSSEditor.callback("callback-input", joinedArguments);
+        this.markImageUploadDone(imageNodeIdentifier);
     }
     
     image.src = remoteImageUrl;
@@ -777,10 +779,7 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
     if (imageNode.length == 0){
         return;
     }
-    if (progress >=1){
-        imageNode.removeClass("uploading");
-        imageNode.removeAttr("class");
-    } else {
+    if (progress < 1){
         imageNode.addClass("uploading");
     }
     
@@ -789,13 +788,31 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
           return;
     }
     imageProgressNode.attr("value",progress);
-    // if progress is finished remove all extra nodes.
-    if (progress >=1 &&
-        (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)))
-    {
+};
+
+/**
+ *  @brief      Notifies that the image upload as finished and removed extra tags for upload
+ *
+ *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.
+ */
+ZSSEditor.markImageUploadDone = function(imageNodeIdentifier) {
+    var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
+    if (imageNode.length == 0){
+        return;
+    }
+    
+    // remove identifier attributed from image
+    imageNode.removeAttr('data-wpid');
+    
+    // remove uploading style
+    imageNode.removeClass("uploading");
+    imageNode.removeAttr("class");
+
+    // Remove all extra formatting nodes for progress
+    if (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)) {
         imageNode.parent().replaceWith(imageNode);
     }
-};
+}
 
 /**
  *  @brief      Marks the image as failed to upload
