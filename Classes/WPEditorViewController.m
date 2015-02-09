@@ -16,6 +16,8 @@
 #import "WPImageMeta.h"
 #import "ZSSBarButtonItem.h"
 
+#import "WPDeviceIdentification.h"
+
 CGFloat const EPVCStandardOffset = 10.0;
 NSInteger const WPImageAlertViewTag = 91;
 NSInteger const WPLinkAlertViewTag = 92;
@@ -28,6 +30,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 @property (nonatomic, strong) NSString *selectedImageURL;
 @property (nonatomic, strong) NSString *selectedImageAlt;
 @property (nonatomic) BOOL didFinishLoadingEditor;
+@property (nonatomic, weak) WPEditorField* focusedField;
 
 #pragma mark - Properties: First Setup On View Will Appear
 @property (nonatomic, assign, readwrite) BOOL isFirstSetupComplete;
@@ -162,11 +165,17 @@ NSInteger const WPLinkAlertViewTag = 92;
         if (self.isEditing) {
             [self startEditing];
         }
-    } else {
-        [self restoreEditSelection];
     }
     
     [self.navigationController setToolbarHidden:YES animated:animated];
+}
+
+-(void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if (self.isFirstSetupComplete) {
+        [self restoreEditSelection];
+    }
+
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -1075,6 +1084,10 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)restoreEditSelection
 {
     if (self.isEditing) {
+        if ([WPDeviceIdentification isiOSVersionEarlierThan8]){
+            [self.focusedField blur];
+            [self.focusedField focus];
+        }
         [self.editorView restoreSelection];
     }
 }
@@ -1085,6 +1098,9 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)saveEditSelection
 {
     if (self.isEditing) {
+        if ([WPDeviceIdentification isiOSVersionEarlierThan8]){
+            self.focusedField = self.editorView.focusedField;
+        }
         [self.editorView saveSelection];
     }
 }
