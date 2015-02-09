@@ -738,12 +738,12 @@ ZSSEditor.getImageContainerNodeWithIdentifier = function(imageNodeIdentifier) {
 ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remoteImageUrl) {
     
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
-    
+    this.markImageUploadDone(imageNodeIdentifier);
     if (imageNode.length == 0) {
         return;
     }
-    //when we decide to put the final url we can remove this from the node.
-    imageNode.removeAttr('data-wpid');
+    imageNode.attr('src', remoteImageUrl);
+    return;
     
     var image = new Image;
     
