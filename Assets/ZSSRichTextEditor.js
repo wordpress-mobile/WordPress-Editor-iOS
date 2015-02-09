@@ -328,7 +328,7 @@ ZSSEditor.getYCaretInfo = function() {
     }
     
     var range = selection.getRangeAt(0);
-    var needsToWorkAroundNewlineBug = (range.startOffset == 0 || range.getClientRects().length == 0);
+    var needsToWorkAroundNewlineBug = (range.getClientRects().length == 0);
     
     // PROBLEM: iOS seems to have problems getting the offset for some empty nodes and return
     // 0 (zero) as the selection range top offset.
