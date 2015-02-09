@@ -736,22 +736,22 @@ ZSSEditor.getImageContainerNodeWithIdentifier = function(imageNodeIdentifier) {
  *  @param      remoteImageUrl          The URL of the remote image to display.
  */
 ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remoteImageUrl) {
-    
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
-    this.markImageUploadDone(imageNodeIdentifier);
+    
     if (imageNode.length == 0) {
+        // even if the image is not present anymore we must do callback
+        this.markImageUploadDone(imageNodeIdentifier);
         return;
     }
-    imageNode.attr('src', remoteImageUrl);
-    return;
     
     var image = new Image;
     
     image.onload = function () {
-        imageNode.attr('src', image.src);            
+        imageNode.attr('src', image.src);
+        ZSSEditor.markImageUploadDone(imageNodeIdentifier);
         var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
         ZSSEditor.callback("callback-input", joinedArguments);
-        this.markImageUploadDone(imageNodeIdentifier);
+        
     }
     
     image.onerror = function () {
@@ -759,10 +759,10 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remot
         // blogs are currently failing to download images due to access privilege issues.
         //
         imageNode.attr('src', image.src);
-        
+        ZSSEditor.markImageUploadDone(imageNodeIdentifier);
         var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
         ZSSEditor.callback("callback-input", joinedArguments);
-        this.markImageUploadDone(imageNodeIdentifier);
+        
     }
     
     image.src = remoteImageUrl;
@@ -796,6 +796,9 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
  *  @param      imageNodeIdentifier     This is a unique ID provided by the caller.
  */
 ZSSEditor.markImageUploadDone = function(imageNodeIdentifier) {
+
+    this.sendImageReplacedCallback(imageNodeIdentifier);
+    
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
     if (imageNode.length == 0){
         return;
@@ -814,6 +817,13 @@ ZSSEditor.markImageUploadDone = function(imageNodeIdentifier) {
     }
 }
 
+ZSSEditor.sendImageReplacedCallback = function( imageNodeIdentifier ) {
+    var arguments = ['id=' + encodeURIComponent( imageNodeIdentifier )];
+    
+    var joinedArguments = arguments.join( defaultCallbackSeparator );
+    
+    this.callback("callback-image-replaced", joinedArguments);
+}
 /**
  *  @brief      Marks the image as failed to upload
  *

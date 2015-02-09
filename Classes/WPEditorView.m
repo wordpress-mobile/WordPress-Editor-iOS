@@ -537,6 +537,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([self isDOMLoadedScheme:scheme]) {
             [self handleDOMLoadedCallback:url];
             handled = YES;
+        }  else if ([self isImageReplacedScheme:scheme]) {
+            [self handleImageReplacedCallback:url];
+            handled = YES;
         }
     }
 	
@@ -709,6 +712,32 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 /**
+ *	@brief		Handles a image replaced callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleImageReplacedCallback:(NSURL*)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    static NSString *const kImagedIdParameterName = @"id";
+    
+    __block NSString *imageId = nil;
+    
+    [self parseParametersFromCallbackURL:url
+         andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+     {
+         if ([parameterName isEqualToString:kImagedIdParameterName]) {
+             imageId = [self stringByDecodingURLFormat:parameterValue];
+         }
+     } onComplete:^{
+         if ([self.delegate respondsToSelector:@selector(editorView:imageReplaced:)]) {
+             [self.delegate editorView:self imageReplaced:imageId];
+         }
+     }];
+}
+
+/**
  *	@brief		Handles a log callback.
  *
  *	@param		url		The url with all the callback information.
@@ -833,6 +862,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              @"We're expecting a non-nil string object here.");
     
     static NSString* const kCallbackScheme = @"callback-image-tap";
+    
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isImageReplacedScheme:(NSString*)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
+    static NSString* const kCallbackScheme = @"callback-image-replaced";
     
     return [scheme isEqualToString:kCallbackScheme];
 }
