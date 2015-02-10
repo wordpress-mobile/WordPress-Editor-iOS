@@ -874,7 +874,6 @@ ZSSEditor.unmarkImageUploadFailed = function(imageNodeIdentifier, message) {
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
     if (imageNode.length != 0){
         imageNode.removeClass('failed');
-        imageNode.attr("contenteditable","false");
     }
     
     var imageContainerNode = this.getImageContainerNodeWithIdentifier(imageNodeIdentifier);
