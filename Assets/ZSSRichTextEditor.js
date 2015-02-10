@@ -935,10 +935,8 @@ ZSSEditor.updateCurrentImageMeta = function( imageMetaString ) {
 ZSSEditor.applyImageSelectionFormatting = function( imageNode ) {
     var node = ZSSEditor.findImageCaptionNode( imageNode );
 
-    var sizeClass = '';
-    if ( imageNode.width > 200 && imageNode.height > 240 ) {
-        sizeClass = " large";
-    } else if ( imageNode.width < 100 || imageNode.height < 100 ) {
+    var sizeClass = "";
+    if ( imageNode.width < 100 || imageNode.height < 100 ) {
         sizeClass = " small";
     }
 
