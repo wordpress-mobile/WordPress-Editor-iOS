@@ -972,7 +972,7 @@ function style_html(html_source, options) {
             padding:1px;
         }
 
-        /* default. use when images are < 200px w/h */
+        /* default. use when images are > 100px w/h */
         .edit-container .edit-overlay {
             position: absolute;
             width:100%;
@@ -980,25 +980,18 @@ function style_html(html_source, options) {
             -webkit-transform: translateY(-50%);
             width:100%;
             z-index: 100;
-            height:85px;
-            background:url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="54px" height="54px" viewBox="0 0 16 16" opacity="0.9"><g><path d="M10,2.5l-7,7V13h3.5l7-7L10,2.5z M6,12l-2-2l6-6l2,2L6,12z" fill="white"/><rect x="4.737" y="9.634" transform="matrix(-0.7072 -0.707 0.707 -0.7072 3.6597 21.2832)" width="3" height="0.5" fill="white" /></g><g><rect x="4.86" y="6.896" transform="matrix(-0.7071 0.7071 -0.7071 -0.7071 20.0633 6.19)" width="7.779" height="0.707" fill="white"/></g></svg>') no-repeat center top;
-            min-height: 85px;
-            min-width: 54px;
-        }
-
-        /* use when the image is > 200px w/h */
-        .edit-container.large .edit-overlay {
-            height:170px;
-            min-height: 170px;
-            min-width: 120px;
-            background:url('data:image/svg+xml;utf8,<svg width="124px" height="124px" viewBox="0 0 124 124" version="1.1" xmlns="http://www.w3.org/2000/svg" opacity="0.9"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(2.000000, 2.000000)"><circle stroke="#FFFFFF" stroke-width="4" cx="60" cy="60" r="60"></circle><path d="M33.28125,87.4375 L51.28125,87.4375 L87.28125,51.4375 L69.28125,33.4375 L33.28125,69.4375 L33.28125,87.4375 Z M73.1383929,45.0089286 L49.2321429,68.9151786 L45.375,65.0580357 L69.28125,41.1517857 L73.1383929,45.0089286 Z M55.6607143,75.34375 L51.8035714,71.4866071 L75.7098214,47.5803571 L79.5669643,51.4375 L55.6607143,75.34375 Z M38.4241071,74.0089286 L43.5669643,68.8660714 L53.8526786,79.1517857 L48.7098214,84.2946429 L38.4241071,74.0089286 Z" fill="#FFFFFF"></path></g></g></svg>') no-repeat center top;
+            height:95px;
+            background:url('data:image/svg+xml;utf8,<svg width="60px" height="60px" viewBox="0 0 120 120" version="1.1" opacity="0.9" xmlns="http://www.w3.org/2000/svg"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(2.000000, 2.000000)"><circle stroke="#FFFFFF" stroke-width="4" cx="58" cy="58" r="58"></circle><path d="M31.28125,85.4375 L49.28125,85.4375 L85.28125,49.4375 L67.28125,31.4375 L31.28125,67.4375 L31.28125,85.4375 Z M71.1383929,43.0089286 L47.2321429,66.9151786 L43.375,63.0580357 L67.28125,39.1517857 L71.1383929,43.0089286 Z M53.6607143,73.34375 L49.8035714,69.4866071 L73.7098214,45.5803571 L77.5669643,49.4375 L53.6607143,73.34375 Z M36.4241071,72.0089286 L41.5669643,66.8660714 L51.8526786,77.1517857 L46.7098214,82.2946429 L36.4241071,72.0089286 Z" fill="#FFFFFF"></path></g></g></svg>') no-repeat center top;
+            min-height: 95px;
+            min-width: 60px;
         }
 
         /* use when the image is < 100px w/h */
         .edit-container.small .edit-overlay {
-            height:54px;
-            min-height: 54px;
-            min-width: 54px;
+            height:27px;
+            min-height: 27px;
+            min-width: 27px;
+            background:url('data:image/svg+xml;utf8,<svg width="27px" height="27px" viewBox="0 0 54 54" version="1.1" xmlns="http://www.w3.org/2000/svg" opacity="0.9"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g fill="#FFFFFF"><path d="M0,54 L18,54 L54,18 L36,0 L0,36 L0,54 Z M39.8571429,11.5714286 L15.9508929,35.4776786 L12.09375,31.6205357 L36,7.71428571 L39.8571429,11.5714286 Z M22.3794643,41.90625 L18.5223214,38.0491071 L42.4285714,14.1428571 L46.2857143,18 L22.3794643,41.90625 Z M5.14285714,40.5714286 L10.2857143,35.4285714 L20.5714286,45.7142857 L15.4285714,50.8571429 L5.14285714,40.5714286 Z"></path></g></g></svg>') no-repeat center top;
         }
 
         .edit-container.small .edit-content {
