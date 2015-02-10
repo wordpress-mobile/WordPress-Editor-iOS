@@ -888,15 +888,16 @@ function style_html(html_source, options) {
     
         img.uploading {
             opacity:0.3;
-            margin:-0.1px;
             -webkit-user-select: none;
         }
     
         img.failed {
             -webkit-filter: blur(4px) grayscale(0.3);
-            margin:-0.1px;
+            margin:-1px;
+            padding:1px;
             z-index:-1;
             -webkit-user-select: none;
+            overflow: hidden;
         }
     
         span.img_container {
@@ -911,46 +912,50 @@ function style_html(html_source, options) {
     
         span.img_container.failed::before {
             position: absolute;
-            top:35%;
+            top: 50%;
+            -webkit-transform: translateY(-50%);
             left:0%;
             text-align: center;
             color: white;
             width:100%;
-            height:35%;
+            height:85px;
             opacity:1;
             z-index:10;
             -webkit-user-select: none;
             pointer-events: none;
             content:"";
-            background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><path d="M35.3 12.7C32.41 9.8 28.42 8 24 8 15.16 8 8.02 15.16 8.02 24S15.16 40 24 40c7.45 0 13.69-5.1 15.46-12H35.3c-1.65 4.66-6.07 8-11.3 8-6.63 0-12-5.37-12-12s5.37-12 12-12c3.31 0 6.28 1.38 8.45 3.55L26 22h14V8l-4.7 4.7z" stroke="white" fill="white"/></svg>') no-repeat center top;
+            background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 124 124"><circle fill="none" stroke="#FFFFFF" stroke-width="4"  cx="62" cy="62" r="60"/><path d="M79.0637899,40.93125 C74.1838649,36.0375 67.4465291,33 59.9831144,33 C45.0562852,33 33,45.0825 33,60 C33,74.9175 45.0562852,87 59.9831144,87 C72.5628518,87 83.0994371,78.39375 86.0881801,66.75 L79.0637899,66.75 C76.2776735,74.61375 68.8142589,80.25 59.9831144,80.25 C48.7879925,80.25 39.7204503,71.188125 39.7204503,60 C39.7204503,48.811875 48.7879925,39.75 59.9831144,39.75 C65.5722326,39.75 70.587242,42.07875 74.2514071,45.740625 L63.3602251,56.625 L87,56.625 L87,33 L79.0637899,40.93125 L79.0637899,40.93125 Z" fill="#FFFFFF"/></svg>') no-repeat center top;
         }
     
         span.img_container.failed.largeFail::before {
+            height:170px;
             background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="124" height="124" viewBox="0 0 124 124"><circle fill="none" stroke="#FFFFFF" stroke-width="4"  cx="62" cy="62" r="60"></circle><path d="M79.0637899,40.93125 C74.1838649,36.0375 67.4465291,33 59.9831144,33 C45.0562852,33 33,45.0825 33,60 C33,74.9175 45.0562852,87 59.9831144,87 C72.5628518,87 83.0994371,78.39375 86.0881801,66.75 L79.0637899,66.75 C76.2776735,74.61375 68.8142589,80.25 59.9831144,80.25 C48.7879925,80.25 39.7204503,71.188125 39.7204503,60 C39.7204503,48.811875 48.7879925,39.75 59.9831144,39.75 C65.5722326,39.75 70.587242,42.07875 74.2514071,45.740625 L63.3602251,56.625 L87,56.625 L87,33 L79.0637899,40.93125 L79.0637899,40.93125 Z" fill="#FFFFFF" ></path></svg>') no-repeat center top;
         }
 
         span.img_container.failed::after {
             position: absolute;
-            top:60%;
+            padding:27px 0 0 0;
+            top:50%;
             left:0%;
-            font-size:24pt;
+            font-size:20px;
             font-weight:600;
             text-align: center;
-            text-shadow: 0px 1px 1px 0px rgba(0,0,0,55);
+            text-shadow: 0 1px 2px rgba(0,0,0,.06);
+            background:clear;
             color: white;
             width:100%;
-            height:10%;
+            height:50%;
             -webkit-user-select: none;
             pointer-events: none;
             content:attr(data-failed);
         }
     
         span.img_container.failed.largeFail::after {
-            top:70%;
+            padding:62px 0 0 0;
         }
     
         span.img_container.failed.smallFail::after {
-            content:"";
+            content:attr(data-failed);
         }
 
     /* Image editing overlay styles */
@@ -963,10 +968,11 @@ function style_html(html_source, options) {
 
         .edit-container img {
             -webkit-filter: blur(4px) grayscale(0.3);
-            margin:-0.1px; /*tiny margin to keep crisp edges when blurring the image*/
+            margin:-1px; /*tiny margin to keep crisp edges when blurring the image*/
+            padding:1px;
         }
 
-        /* default. use when images are < 200px w/h */
+        /* default. use when images are > 100px w/h */
         .edit-container .edit-overlay {
             position: absolute;
             width:100%;
@@ -974,25 +980,18 @@ function style_html(html_source, options) {
             -webkit-transform: translateY(-50%);
             width:100%;
             z-index: 100;
-            height:85px;
-            background:url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="54px" height="54px" viewBox="0 0 16 16" ><g><path d="M10,2.5l-7,7V13h3.5l7-7L10,2.5z M6,12l-2-2l6-6l2,2L6,12z" fill="white"/><rect x="4.737" y="9.634" transform="matrix(-0.7072 -0.707 0.707 -0.7072 3.6597 21.2832)" width="3" height="0.5" fill="white" /></g><g><rect x="4.86" y="6.896" transform="matrix(-0.7071 0.7071 -0.7071 -0.7071 20.0633 6.19)" width="7.779" height="0.707" fill="white"/></g></svg>') no-repeat center top;
-            min-height: 85px;
-            min-width: 54px;
-        }
-
-        /* use when the image is > 200px w/h */
-        .edit-container.large .edit-overlay {
-            height:170px;
-            min-height: 170px;
-            min-width: 120px;
-            background:url('data:image/svg+xml;utf8,<svg width="124px" height="124px" viewBox="0 0 124 124" version="1.1" xmlns="http://www.w3.org/2000/svg"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(2.000000, 2.000000)"><circle stroke="#FFFFFF" stroke-width="4" cx="60" cy="60" r="60"></circle><path d="M33.28125,87.4375 L51.28125,87.4375 L87.28125,51.4375 L69.28125,33.4375 L33.28125,69.4375 L33.28125,87.4375 Z M73.1383929,45.0089286 L49.2321429,68.9151786 L45.375,65.0580357 L69.28125,41.1517857 L73.1383929,45.0089286 Z M55.6607143,75.34375 L51.8035714,71.4866071 L75.7098214,47.5803571 L79.5669643,51.4375 L55.6607143,75.34375 Z M38.4241071,74.0089286 L43.5669643,68.8660714 L53.8526786,79.1517857 L48.7098214,84.2946429 L38.4241071,74.0089286 Z" fill="#FFFFFF"></path></g></g></svg>') no-repeat center top;
+            height:95px;
+            background:url('data:image/svg+xml;utf8,<svg width="60px" height="60px" viewBox="0 0 120 120" version="1.1" opacity="0.9" xmlns="http://www.w3.org/2000/svg"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(2.000000, 2.000000)"><circle stroke="#FFFFFF" stroke-width="4" cx="58" cy="58" r="58"></circle><path d="M31.28125,85.4375 L49.28125,85.4375 L85.28125,49.4375 L67.28125,31.4375 L31.28125,67.4375 L31.28125,85.4375 Z M71.1383929,43.0089286 L47.2321429,66.9151786 L43.375,63.0580357 L67.28125,39.1517857 L71.1383929,43.0089286 Z M53.6607143,73.34375 L49.8035714,69.4866071 L73.7098214,45.5803571 L77.5669643,49.4375 L53.6607143,73.34375 Z M36.4241071,72.0089286 L41.5669643,66.8660714 L51.8526786,77.1517857 L46.7098214,82.2946429 L36.4241071,72.0089286 Z" fill="#FFFFFF"></path></g></g></svg>') no-repeat center top;
+            min-height: 95px;
+            min-width: 60px;
         }
 
         /* use when the image is < 100px w/h */
         .edit-container.small .edit-overlay {
-            height:54px;
-            min-height: 54px;
-            min-width: 54px;
+            height:27px;
+            min-height: 27px;
+            min-width: 27px;
+            background:url('data:image/svg+xml;utf8,<svg width="27px" height="27px" viewBox="0 0 54 54" version="1.1" xmlns="http://www.w3.org/2000/svg" opacity="0.9"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g fill="#FFFFFF"><path d="M0,54 L18,54 L54,18 L36,0 L0,36 L0,54 Z M39.8571429,11.5714286 L15.9508929,35.4776786 L12.09375,31.6205357 L36,7.71428571 L39.8571429,11.5714286 Z M22.3794643,41.90625 L18.5223214,38.0491071 L42.4285714,14.1428571 L46.2857143,18 L22.3794643,41.90625 Z M5.14285714,40.5714286 L10.2857143,35.4285714 L20.5714286,45.7142857 L15.4285714,50.8571429 L5.14285714,40.5714286 Z"></path></g></g></svg>') no-repeat center top;
         }
 
         .edit-container.small .edit-content {
@@ -1000,7 +999,7 @@ function style_html(html_source, options) {
         }
 
         .edit-container .edit-content {
-            font-size:20pt;
+            font-size:20px;
             font-weight:600;
             text-align: center;
             text-shadow: 0px 1px 2px rgba(0,0,0,.06);
@@ -1075,6 +1074,9 @@ function style_html(html_source, options) {
 
         .wp-caption {
             padding: 0px 10px 10px 0px;
+            font-size: 75%;
+            font-style: italic;
+            cursor: none;
         }
 
         .ipad_body {
@@ -1091,7 +1093,7 @@ function style_html(html_source, options) {
             line-height: 28px;
         }
     }
-    
+
     </style>
   </head>
   <body>

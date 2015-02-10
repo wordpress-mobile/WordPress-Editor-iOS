@@ -14,4 +14,9 @@
             MAX([UIScreen mainScreen].bounds.size.height,[UIScreen mainScreen].bounds.size.width) == 667);
 }
 
++ (BOOL)isiOSVersionEarlierThan8
+{
+    return [[[UIDevice currentDevice] systemVersion] floatValue] < 8.0;
+}
+
 @end

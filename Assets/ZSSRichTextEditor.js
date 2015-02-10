@@ -13,6 +13,8 @@ var isUsingiOS = true;
 // THe default callback parameter separator
 var defaultCallbackSeparator = '~';
 
+var CaretPositionUnknow = -9999;
+
 // The editor object
 var ZSSEditor = {};
 
@@ -118,6 +120,29 @@ ZSSEditor.refreshVisibleViewportSize = function() {
 
 ZSSEditor.focusFirstEditableField = function() {
     $('div[contenteditable=true]:first').focus();
+};
+
+ZSSEditor.formatNewLine = function(e) {
+    
+    var currentField = this.getFocusedField();
+    
+    if (currentField.isMultiline()) {
+        var parentBlockQuoteNode = ZSSEditor.closerParentNodeWithName('blockquote');
+        
+        if (parentBlockQuoteNode) {
+            this.formatNewLineInsideBlockquote(e);
+        } else if (!ZSSEditor.isCommandEnabled('insertOrderedList')
+                   && !ZSSEditor.isCommandEnabled('insertUnorderedList')) {
+            document.execCommand('formatBlock', false, 'p');
+        }
+    } else {
+        e.preventDefault();
+    }
+};
+
+ZSSEditor.formatNewLineInsideBlockquote = function(e) {
+    this.insertBreakTagAtCaretPosition();
+    e.preventDefault();
 };
 
 ZSSEditor.getField = function(fieldId) {
@@ -273,49 +298,72 @@ ZSSEditor.getJoinedCaretArguments = function() {
     return joinedArguments;
 };
 
+ZSSEditor.getCaretYPosition = function() {
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0);
+    var span = document.createElement("span");
+    // Ensure span has dimensions and position by
+    // adding a zero-width space character
+    span.appendChild( document.createTextNode("\u200b") );
+    range.insertNode(span);
+    var y = span.offsetTop;
+    var spanParent = span.parentNode;
+    spanParent.removeChild(span);
+    
+    // Glue any broken text nodes back together
+    spanParent.normalize();
+    
+    return y;
+}
+
 ZSSEditor.getYCaretInfo = function() {
-    var y = 0, height = 0;
-    var sel = window.getSelection();
-    if (sel.rangeCount) {
+    var y = 0;
+    var height = 0;
+    var selection = window.getSelection();
+    var noSelectionAvailable = selection.rangeCount == 0;
+    if (noSelectionAvailable) {
+        this.caretInfo.y = CaretPositionUnknow;
+        this.caretInfo.height = CaretPositionUnknow;
+        return this.caretInfo;
+    }
+    
+    var range = selection.getRangeAt(0);
+    var needsToWorkAroundNewlineBug = (range.getClientRects().length == 0);
+    
+    // PROBLEM: iOS seems to have problems getting the offset for some empty nodes and return
+    // 0 (zero) as the selection range top offset.
+    //
+    // WORKAROUND: To fix this problem we use a different method to obtain the Y position instead.
+    //
+    if (needsToWorkAroundNewlineBug) {
+        var closerParentNode = ZSSEditor.closerParentNode();
+        var closerDiv = ZSSEditor.closerParentNodeWithName('div');
         
-        var range = sel.getRangeAt(0);
-        var needsToWorkAroundNewlineBug = (range.startOffset == 0 || range.getClientRects().length == 0);
+        var fontSize = $(closerParentNode).css('font-size');
+        var lineHeight = Math.floor(parseInt(fontSize.replace('px','')) * 1.5);
         
-        // PROBLEM: iOS seems to have problems getting the offset for some empty nodes and return
-        // 0 (zero) as the selection range top offset.
-        //
-        // WORKAROUND: To fix this problem we just get the node's offset instead.
-        //
-        if (needsToWorkAroundNewlineBug) {
-            var closerParentNode = ZSSEditor.closerParentNode();
-            var closerDiv = ZSSEditor.closerParentNodeWithName('div');
-            
-            var fontSize = $(closerParentNode).css('font-size');
-            var lineHeight = Math.floor(parseInt(fontSize.replace('px','')) * 1.5);
-            
-            y = closerParentNode.offsetTop;
-            height = lineHeight;
-        } else {
-            if (range.getClientRects) {
-                var rects = range.getClientRects();
-                if (rects.length > 0) {
-                    // PROBLEM: some iOS versions differ in what is returned by getClientRects()
-                    // Some versions return the offset from the page's top, some other return the
-                    // offset from the visible viewport's top.
-                    //
-                    // WORKAROUND: see if the offset of the body's top is ever negative.  If it is
-                    // then it means that the offset we have is relative to the body's top, and we
-                    // should add the scroll offset.
-                    //
-                    var addsScrollOffset = document.body.getClientRects()[0].top < 0;
-                    
-                    if (addsScrollOffset) {
-                        y = document.body.scrollTop;
-                    }
-                    
-                    y += rects[0].top;
-                    height = rects[0].height;
+        y = this.getCaretYPosition();
+        height = lineHeight;
+    } else {
+        if (range.getClientRects) {
+            var rects = range.getClientRects();
+            if (rects.length > 0) {
+                // PROBLEM: some iOS versions differ in what is returned by getClientRects()
+                // Some versions return the offset from the page's top, some other return the
+                // offset from the visible viewport's top.
+                //
+                // WORKAROUND: see if the offset of the body's top is ever negative.  If it is
+                // then it means that the offset we have is relative to the body's top, and we
+                // should add the scroll offset.
+                //
+                var addsScrollOffset = document.body.getClientRects()[0].top < 0;
+                
+                if (addsScrollOffset) {
+                    y = document.body.scrollTop;
                 }
+                
+                y += rects[0].top;
+                height = rects[0].height;
             }
         }
     }
@@ -688,21 +736,22 @@ ZSSEditor.getImageContainerNodeWithIdentifier = function(imageNodeIdentifier) {
  *  @param      remoteImageUrl          The URL of the remote image to display.
  */
 ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remoteImageUrl) {
-    
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
     
     if (imageNode.length == 0) {
+        // even if the image is not present anymore we must do callback
+        this.markImageUploadDone(imageNodeIdentifier);
         return;
     }
-    //when we decide to put the final url we can remove this from the node.
-    imageNode.removeAttr('data-wpid');
     
     var image = new Image;
     
     image.onload = function () {
-        imageNode.attr('src', image.src);            
+        imageNode.attr('src', image.src);
+        ZSSEditor.markImageUploadDone(imageNodeIdentifier);
         var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
         ZSSEditor.callback("callback-input", joinedArguments);
+        
     }
     
     image.onerror = function () {
@@ -710,9 +759,10 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remot
         // blogs are currently failing to download images due to access privilege issues.
         //
         imageNode.attr('src', image.src);
-        
+        ZSSEditor.markImageUploadDone(imageNodeIdentifier);
         var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
         ZSSEditor.callback("callback-input", joinedArguments);
+        
     }
     
     image.src = remoteImageUrl;
@@ -729,10 +779,7 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
     if (imageNode.length == 0){
         return;
     }
-    if (progress >=1){
-        imageNode.removeClass("uploading");
-        imageNode.removeAttr("class");
-    } else {
+    if (progress < 1){
         imageNode.addClass("uploading");
     }
     
@@ -741,12 +788,46 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
           return;
     }
     imageProgressNode.attr("value",progress);
-    // if progress is finished remove all extra nodes.
-    if (progress >=1 &&
-        (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)))
-    {
+};
+
+/**
+ *  @brief      Notifies that the image upload as finished
+ *
+ *  @param      imageNodeIdentifier     The unique image ID for the uploaded image
+ */
+ZSSEditor.markImageUploadDone = function(imageNodeIdentifier) {
+    
+    this.sendImageReplacedCallback(imageNodeIdentifier);
+    
+    var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
+    if (imageNode.length == 0){
+        return;
+    }
+    
+    // remove identifier attributed from image
+    imageNode.removeAttr('data-wpid');
+    
+    // remove uploading style
+    imageNode.removeClass("uploading");
+    imageNode.removeAttr("class");
+    
+    // Remove all extra formatting nodes for progress
+    if (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)) {
         imageNode.parent().replaceWith(imageNode);
     }
+};
+
+/**
+ *  @brief      Callbacks to native that the image upload as finished and the local url was replaced by the remote url
+ *
+ *  @param      imageNodeIdentifier     The unique image ID for the uploaded image
+ */
+ZSSEditor.sendImageReplacedCallback = function( imageNodeIdentifier ) {
+    var arguments = ['id=' + encodeURIComponent( imageNodeIdentifier )];
+    
+    var joinedArguments = arguments.join( defaultCallbackSeparator );
+    
+    this.callback("callback-image-replaced", joinedArguments);
 };
 
 /**
@@ -793,7 +874,6 @@ ZSSEditor.unmarkImageUploadFailed = function(imageNodeIdentifier, message) {
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
     if (imageNode.length != 0){
         imageNode.removeClass('failed');
-        imageNode.attr("contenteditable","false");
     }
     
     var imageContainerNode = this.getImageContainerNodeWithIdentifier(imageNodeIdentifier);
@@ -855,10 +935,8 @@ ZSSEditor.updateCurrentImageMeta = function( imageMetaString ) {
 ZSSEditor.applyImageSelectionFormatting = function( imageNode ) {
     var node = ZSSEditor.findImageCaptionNode( imageNode );
 
-    var sizeClass = '';
-    if ( imageNode.width > 200 && imageNode.height > 240 ) {
-        sizeClass = " large";
-    } else if ( imageNode.width < 100 || imageNode.height < 100 ) {
+    var sizeClass = "";
+    if ( imageNode.width < 100 || imageNode.height < 100 ) {
         sizeClass = " small";
     }
 
@@ -881,6 +959,21 @@ ZSSEditor.removeImageSelectionFormatting = function( imageNode ) {
     parentNode.remove();
 }
 
+ZSSEditor.removeImageSelectionFormattingFromHTML = function( html ) {
+    var tmp = document.createElement( "div" );
+    var tmpDom = $( tmp ).html( html );
+
+    var matches = tmpDom.find( "span.edit-container img" );
+    if ( matches.length == 0 ) {
+        return html;
+    }
+
+    for ( var i = 0; i < matches.length; i++ ) {
+        ZSSEditor.removeImageSelectionFormatting( matches[i] );
+    }
+
+    return tmpDom.html();
+}
 
 /**
  *  @brief       Finds all related caption nodes for the specified image node.
@@ -987,6 +1080,8 @@ ZSSEditor.createImageFromMeta = function( props ) {
 
         if ( props.align ) {
             shortcode.align = 'align' + props.align;
+        } else {
+            shortcode.align = 'alignnone';
         }
 
         if (props.captionClassName) {
@@ -1190,7 +1285,7 @@ ZSSEditor.removeCaptionFormatting = function( html ) {
     // call methods to restore any transformed content from its visual presentation to its source code.
     var regex = /<label class="wp-temp" data-wp-temp="caption"[^>]*>([\s\S]+?)<\/label>/g;
 
-    var str = html.replace( regex, ZSSEditor.removeCaptionFormattingCallback ) + " "; // Add a trailing space for nice formatting.
+    var str = html.replace( regex, ZSSEditor.removeCaptionFormattingCallback );
 
     return str;
 }
@@ -1278,8 +1373,9 @@ ZSSEditor.applyVisualFormatting  = function( html ) {
  *  @return     Returns the string with the visual formatting removed.
  */
 ZSSEditor.removeVisualFormatting = function( html ) {
-    var str = ZSSEditor.removeCaptionFormatting( html );
-
+    var str = html;
+    str = ZSSEditor.removeImageSelectionFormattingFromHTML( str );
+    str = ZSSEditor.removeCaptionFormatting( str );
     return str;
 }
 
@@ -1420,6 +1516,24 @@ ZSSEditor.sendEnabledStyles = function(e) {
     }
 	
 	ZSSEditor.stylesCallback(items);
+};
+
+// MARK: - Commands: High Level Editing
+
+/**
+ *  @brief      Inserts a br tag at the caret position.
+ */
+ZSSEditor.insertBreakTagAtCaretPosition = function() {
+    // iOS IMPORTANT: we were adding <br> tags with range.insertNode() before using
+    // this method.  Unfortunately this was causing issues with the first <br> tag
+    // being completely ignored under iOS:
+    //
+    // https://bugs.webkit.org/show_bug.cgi?id=23474
+    //
+    // The following line seems to work fine under iOS, so please be careful if this
+    // needs to be changed for any reason.
+    //
+    document.execCommand("insertLineBreak");
 };
 
 // MARK: - Parent nodes & tags
@@ -1601,10 +1715,16 @@ ZSSField.prototype.handleFocusEvent = function(e) {
 
 ZSSField.prototype.handleKeyDownEvent = function(e) {
     
-    // IMPORTANT: without this code, we can have text written outside of paragraphs...
-    //
-    if (ZSSEditor.closerParentNode() == this.wrappedDomNode()) {
-        document.execCommand('formatBlock', false, 'p');
+    var wasEnterPressed = (e.keyCode == '13');
+    
+    if(wasEnterPressed) {
+        ZSSEditor.formatNewLine(e);
+    } else {
+        // IMPORTANT: without this code, we can have text written outside of paragraphs...
+        //
+        if (ZSSEditor.closerParentNode() == this.wrappedDomNode()) {
+            document.execCommand('formatBlock', false, 'p');
+        }
     }
 };
 
@@ -1808,7 +1928,7 @@ ZSSField.prototype.isEmpty = function() {
 
 ZSSField.prototype.getHTML = function() {
     var html = this.wrappedObject.html();
-    html = ZSSEditor.removeVisualFormatting(html);
+    html = ZSSEditor.removeVisualFormatting( html );
     return html
 };
 
@@ -1817,6 +1937,7 @@ ZSSField.prototype.strippedHTML = function() {
 };
 
 ZSSField.prototype.setHTML = function(html) {
+    ZSSEditor.currentEditingImage = null;
     html = ZSSEditor.applyVisualFormatting(html);
     this.wrappedObject.html(html);
     this.refreshPlaceholderColor();

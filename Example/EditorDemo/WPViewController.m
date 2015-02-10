@@ -41,6 +41,11 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     }
 }
 
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    [self.editorView saveSelection];
+    [super prepareForSegue:segue sender:sender];
+}
+
 #pragma mark - IBActions
 
 - (IBAction)exit:(UIStoryboardSegue*)segue
@@ -106,6 +111,11 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     }
 }
 
+- (void)editorViewController:(WPEditorViewController *)editorViewController imageReplaced:(NSString *)imageId
+{
+    [self.imagesAdded removeObjectForKey:imageId];
+}
+
 - (void)showImageDetailsForImageMeta:(WPImageMeta *)imageMeta
 {
     WPImageMetaViewController *controller = [self.storyboard instantiateViewControllerWithIdentifier:@"WPImageMetaViewController"];
@@ -153,8 +163,10 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
         NSString * imageID = [[NSUUID UUID] UUIDString];
         NSString * path = [NSString stringWithFormat:@"%@/%@", NSTemporaryDirectory(), imageID];
         [data writeToFile:path atomically:YES];
-        [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
-            
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
+        });
+                    
         NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID, @"url":path}];
         progress.cancellable = YES;
         progress.totalUnitCount = 100;
@@ -184,7 +196,6 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     
     if (progress.fractionCompleted >= 1){
         [self.editorView replaceLocalImageWithRemoteImage:[[NSURL fileURLWithPath:progress.userInfo[@"url"]] absoluteString] uniqueId:imageID];
-        [self.imagesAdded removeObjectForKey:imageID];
         [timer invalidate];
     }
 }

@@ -5,6 +5,7 @@
 #import "WPEditorField.h"
 #import "WPImageMeta.h"
 #import "ZSSTextView.h"
+#import "WPDeviceIdentification.h"
 #import <WordPress-iOS-Shared/WPFontManager.h>
 #import <WordPress-iOS-Shared/WPStyleGuide.h>
 
@@ -25,6 +26,8 @@ static const CGFloat HTMLViewLeftRightInset = 10.0f;
 static const CGFloat iPadHTMLViewLeftRightInset = 85.0f;
 
 static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
+
+static NSInteger CaretPositionUnknow = -9999;
 
 @interface WPEditorView () <UITextViewDelegate, UIWebViewDelegate, UITextFieldDelegate>
 
@@ -366,11 +369,65 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
 - (void)keyboardDidShow:(NSNotification *)notification
 {
+    BOOL isiOSVersionEarlierThan8 = [WPDeviceIdentification isiOSVersionEarlierThan8];
+    
+    if (isiOSVersionEarlierThan8) {
+        // PROBLEM: under iOS 7, it seems that setting the proper insets in keyboardWillShow: is not
+        // enough.  We were having trouble when adding images, where the keyboard would show but the
+        // insets would be reset to {0, 0, 0, 0} between keyboardWillShow: and keyboardDidShow:
+        //
+        // HOW TO TEST:
+        //
+        // - launch the WPiOS app under iOS 7.
+        // - set a title
+        // - make sure the virtual keyboard is up
+        // - add some text and on the same line add an image
+        // - once the image is added tap once on the content field to make the keyboard come back up
+        //   (do this before the upload finishes).
+        //
+        // WORKAROUND: we just set the insets again in keyboardDidShow: for iOS 7
+        //
+        [self refreshKeyboardInsetsWithShowNotification:notification];
+    }
+    
     [self scrollToCaretAnimated:NO];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
+    [self refreshKeyboardInsetsWithShowNotification:notification];
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification
+{
+    // WORKAROUND: sometimes the input accessory view is not taken into account and a
+    // keyboardWillHide: call is triggered instead.  Since there's no way for the source view now
+    // to have focus, we'll just make sure the inputAccessoryView is taken into account when
+    // hiding the keyboard.
+    //
+    CGFloat vOffset = self.sourceView.inputAccessoryView.frame.size.height;
+    UIEdgeInsets insets = UIEdgeInsetsMake(0.0f, 0.0f, vOffset, 0.0f);
+    
+    self.webView.scrollView.contentInset = insets;
+    self.webView.scrollView.scrollIndicatorInsets = insets;
+    self.sourceView.contentInset = insets;
+    self.sourceView.scrollIndicatorInsets = insets;
+}
+
+
+#pragma mark - Keyboard Misc.
+
+/**
+ *  @brief      Takes care of calculating and setting the proper insets when the keyboard is shown.
+ *  @details    This method can be called from both keyboardWillShow: and keyboardDidShow:.
+ *
+ *  @param      notification        The notification containing the size info for the keyboard.
+ *                                  Cannot be nil.
+ */
+- (void)refreshKeyboardInsetsWithShowNotification:(NSNotification*)notification
+{
+    NSParameterAssert([notification isKindOfClass:[NSNotification class]]);
+    
     NSDictionary *info = notification.userInfo;
     CGRect keyboardEnd = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
     
@@ -388,22 +445,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
         self.sourceView.contentInset = insets;
         self.sourceView.scrollIndicatorInsets = insets;
     }
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification
-{
-    // WORKAROUND: sometimes the input accessory view is not taken into account and a
-    // keyboardWillHide: call is triggered instead.  Since there's no way for the source view now
-    // to have focus, we'll just make sure the inputAccessoryView is taken into account when
-    // hiding the keyboard.
-    //
-    CGFloat vOffset = self.sourceView.inputAccessoryView.frame.size.height;
-    UIEdgeInsets insets = UIEdgeInsetsMake(0.0f, 0.0f, vOffset, 0.0f);
-    
-    self.webView.scrollView.contentInset = insets;
-    self.webView.scrollView.scrollIndicatorInsets = insets;
-    self.sourceView.contentInset = insets;
-    self.sourceView.scrollIndicatorInsets = insets;
 }
 
 - (void)refreshVisibleViewportAndContentSize
@@ -495,6 +536,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
             handled = YES;
         } else if ([self isDOMLoadedScheme:scheme]) {
             [self handleDOMLoadedCallback:url];
+            handled = YES;
+        }  else if ([self isImageReplacedScheme:scheme]) {
+            [self handleImageReplacedCallback:url];
             handled = YES;
         }
     }
@@ -668,6 +712,32 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 /**
+ *	@brief		Handles a image replaced callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleImageReplacedCallback:(NSURL*)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    static NSString *const kImagedIdParameterName = @"id";
+    
+    __block NSString *imageId = nil;
+    
+    [self parseParametersFromCallbackURL:url
+         andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+     {
+         if ([parameterName isEqualToString:kImagedIdParameterName]) {
+             imageId = [self stringByDecodingURLFormat:parameterValue];
+         }
+     } onComplete:^{
+         if ([self.delegate respondsToSelector:@selector(editorView:imageReplaced:)]) {
+             [self.delegate editorView:self imageReplaced:imageId];
+         }
+     }];
+}
+
+/**
  *	@brief		Handles a log callback.
  *
  *	@param		url		The url with all the callback information.
@@ -792,6 +862,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              @"We're expecting a non-nil string object here.");
     
     static NSString* const kCallbackScheme = @"callback-image-tap";
+    
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isImageReplacedScheme:(NSString*)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
+    static NSString* const kCallbackScheme = @"callback-image-replaced";
     
     return [scheme isEqualToString:kCallbackScheme];
 }
@@ -1085,16 +1165,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 #pragma mark - Scrolling support
 
 /**
- *  @brief      Scrolls to a position where the caret is visible.
- *
- *  @param      offset      The offset to show.
- *  @param      height      The height to show below the specified offset.  If this exceeds the
- *                          scroll content size, a smaller height will be automatically used.
+ *  @brief      Scrolls to a position where the caret is visible. This uses the values stored in caretYOffest and lineHeight properties.
+ *  @discussion If the values of both properties  match CaretPositionUnknow no scrolling happens.
+ *  @param      animated    If the scrolling shoud be animated  The offset to show.
  */
 - (void)scrollToCaretAnimated:(BOOL)animated
 {
+    if (self.caretYOffset == CaretPositionUnknow
+        && self.lineHeight == CaretPositionUnknow) {
+        return;
+    }
     CGRect viewport = [self viewport];
-    
     CGFloat caretYOffset = self.caretYOffset;
     CGFloat lineHeight = self.lineHeight;
     CGFloat offsetBottom = caretYOffset + lineHeight;
@@ -1162,30 +1243,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self callDelegateEditorTextDidChange];
 }
 
-#pragma mark - Exceptional Workarounds
-
-/**
- *  @brief      Fixes an issue in iOS 7 that prevents the editor view from properly recovering focus
- *              after the owning VC comes back from hiding behind another VC.
- */
-- (void)workaroundiOS7FocusIssueAfterHidingBehindAnotherVC
-{
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
-        [self saveSelection];
-        [self.contentField blur];
-        [self.contentField focus];
-        [self restoreSelection];
-    }
-}
-
 #pragma mark - Images
 
 - (void)insertLocalImage:(NSString*)url uniqueId:(NSString*)uniqueId
 {
     NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertLocalImage(\"%@\", \"%@\");", uniqueId, url];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
-    
-    [self workaroundiOS7FocusIssueAfterHidingBehindAnotherVC];
 }
 
 - (void)insertImage:(NSString *)url alt:(NSString *)alt
