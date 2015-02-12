@@ -2,13 +2,13 @@
 
 ![WordPress Logo](http://s.w.org/about/images/logos/wordpress-logo-hoz-rgb.png)
 
-# WordPress-iOS-Editor
+# WordPress-Editor-iOS
 
 ![WordPress-iOS-Editor Screenshot](https://cldup.com/2_b0osLaFA.png)![WordPress-iOS-Editor Screenshot 2](https://cldup.com/BluIq2pgbZ.png)
 
 ## Introduction
 
-The WordPress-iOS-Editor is the text editor used in the [WordPress iOS app](https://github.com/wordpress-mobile/WordPress-iOS) to create and edit pages & posts. In short it's a simple, straightforward way to visually edit HTML.
+The WordPress-Editor-iOS is the text editor used in the [WordPress iOS app](https://github.com/wordpress-mobile/WordPress-iOS) to create and edit pages & posts. In short it's a simple, straightforward way to visually edit HTML.
 
 ## How to get started
 You can install the editor in your app via [CocoaPods](http://cocoapods.org):
