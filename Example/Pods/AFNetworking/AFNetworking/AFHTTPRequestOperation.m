@@ -1,6 +1,6 @@
 // AFHTTPRequestOperation.m
 //
-// Copyright (c) 2013-2014 AFNetworking (http://afnetworking.com)
+// Copyright (c) 2013-2015 AFNetworking (http://afnetworking.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -168,7 +168,7 @@ static dispatch_group_t http_request_operation_completion_group() {
     self.request = mutableURLRequest;
 }
 
-#pragma mark - NSecureCoding
+#pragma mark - NSSecureCoding
 
 + (BOOL)supportsSecureCoding {
     return YES;
@@ -194,7 +194,7 @@ static dispatch_group_t http_request_operation_completion_group() {
 #pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
-    AFHTTPRequestOperation *operation = [[[self class] allocWithZone:zone] initWithRequest:self.request];
+    AFHTTPRequestOperation *operation = [super copyWithZone:zone];
 
     operation.responseSerializer = [self.responseSerializer copyWithZone:zone];
     operation.completionQueue = self.completionQueue;

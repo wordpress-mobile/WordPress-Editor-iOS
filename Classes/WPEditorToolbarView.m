@@ -88,9 +88,9 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     NSMutableArray *items = [self.items mutableCopy];
     CGFloat toolbarItemsSeparation = 0.0f;
     
-    if ([WPDeviceIdentification isIPhoneSixPlus]) {
+    if ([WPDeviceIdentification isiPhoneSixPlus]) {
         toolbarItemsSeparation = kNegativeSixPlusToolbarItemPadding;
-    } else if ([WPDeviceIdentification isIPhoneSix]) {
+    } else if ([WPDeviceIdentification isiPhoneSix]) {
         toolbarItemsSeparation = kNegativeSixToolbarItemPadding;
     } else {
         toolbarItemsSeparation = kNegativeToolbarItemPadding;
@@ -427,7 +427,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
                                                                                            target:nil
                                                                                            action:nil];
         // Negative separator needs to be different on 6+
-        if ([WPDeviceIdentification isIPhoneSixPlus]) {
+        if ([WPDeviceIdentification isiPhoneSixPlus]) {
             negativeSeparator.width = -kNegativeSixPlusRightToolbarPadding;
         } else {
             negativeSeparator.width = -kNegativeRightToolbarPadding;
