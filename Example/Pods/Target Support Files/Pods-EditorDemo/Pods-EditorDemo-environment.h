@@ -9,43 +9,43 @@
 // AFNetworking
 #define COCOAPODS_POD_AVAILABLE_AFNetworking
 #define COCOAPODS_VERSION_MAJOR_AFNetworking 2
-#define COCOAPODS_VERSION_MINOR_AFNetworking 3
+#define COCOAPODS_VERSION_MINOR_AFNetworking 5
 #define COCOAPODS_VERSION_PATCH_AFNetworking 1
 
 // AFNetworking/NSURLConnection
 #define COCOAPODS_POD_AVAILABLE_AFNetworking_NSURLConnection
 #define COCOAPODS_VERSION_MAJOR_AFNetworking_NSURLConnection 2
-#define COCOAPODS_VERSION_MINOR_AFNetworking_NSURLConnection 3
+#define COCOAPODS_VERSION_MINOR_AFNetworking_NSURLConnection 5
 #define COCOAPODS_VERSION_PATCH_AFNetworking_NSURLConnection 1
 
 // AFNetworking/NSURLSession
 #define COCOAPODS_POD_AVAILABLE_AFNetworking_NSURLSession
 #define COCOAPODS_VERSION_MAJOR_AFNetworking_NSURLSession 2
-#define COCOAPODS_VERSION_MINOR_AFNetworking_NSURLSession 3
+#define COCOAPODS_VERSION_MINOR_AFNetworking_NSURLSession 5
 #define COCOAPODS_VERSION_PATCH_AFNetworking_NSURLSession 1
 
 // AFNetworking/Reachability
 #define COCOAPODS_POD_AVAILABLE_AFNetworking_Reachability
 #define COCOAPODS_VERSION_MAJOR_AFNetworking_Reachability 2
-#define COCOAPODS_VERSION_MINOR_AFNetworking_Reachability 3
+#define COCOAPODS_VERSION_MINOR_AFNetworking_Reachability 5
 #define COCOAPODS_VERSION_PATCH_AFNetworking_Reachability 1
 
 // AFNetworking/Security
 #define COCOAPODS_POD_AVAILABLE_AFNetworking_Security
 #define COCOAPODS_VERSION_MAJOR_AFNetworking_Security 2
-#define COCOAPODS_VERSION_MINOR_AFNetworking_Security 3
+#define COCOAPODS_VERSION_MINOR_AFNetworking_Security 5
 #define COCOAPODS_VERSION_PATCH_AFNetworking_Security 1
 
 // AFNetworking/Serialization
 #define COCOAPODS_POD_AVAILABLE_AFNetworking_Serialization
 #define COCOAPODS_VERSION_MAJOR_AFNetworking_Serialization 2
-#define COCOAPODS_VERSION_MINOR_AFNetworking_Serialization 3
+#define COCOAPODS_VERSION_MINOR_AFNetworking_Serialization 5
 #define COCOAPODS_VERSION_PATCH_AFNetworking_Serialization 1
 
 // AFNetworking/UIKit
 #define COCOAPODS_POD_AVAILABLE_AFNetworking_UIKit
 #define COCOAPODS_VERSION_MAJOR_AFNetworking_UIKit 2
-#define COCOAPODS_VERSION_MINOR_AFNetworking_UIKit 3
+#define COCOAPODS_VERSION_MINOR_AFNetworking_UIKit 5
 #define COCOAPODS_VERSION_PATCH_AFNetworking_UIKit 1
 
 // CocoaLumberjack
@@ -81,18 +81,18 @@
 // WordPress-iOS-Editor
 #define COCOAPODS_POD_AVAILABLE_WordPress_iOS_Editor
 #define COCOAPODS_VERSION_MAJOR_WordPress_iOS_Editor 0
-#define COCOAPODS_VERSION_MINOR_WordPress_iOS_Editor 3
-#define COCOAPODS_VERSION_PATCH_WordPress_iOS_Editor 1
+#define COCOAPODS_VERSION_MINOR_WordPress_iOS_Editor 4
+#define COCOAPODS_VERSION_PATCH_WordPress_iOS_Editor 0
 
 // WordPress-iOS-Shared
 #define COCOAPODS_POD_AVAILABLE_WordPress_iOS_Shared
 #define COCOAPODS_VERSION_MAJOR_WordPress_iOS_Shared 0
-#define COCOAPODS_VERSION_MINOR_WordPress_iOS_Shared 1
-#define COCOAPODS_VERSION_PATCH_WordPress_iOS_Shared 6
+#define COCOAPODS_VERSION_MINOR_WordPress_iOS_Shared 2
+#define COCOAPODS_VERSION_PATCH_WordPress_iOS_Shared 0
 
 // WordPressCom-Analytics-iOS
 #define COCOAPODS_POD_AVAILABLE_WordPressCom_Analytics_iOS
 #define COCOAPODS_VERSION_MAJOR_WordPressCom_Analytics_iOS 0
 #define COCOAPODS_VERSION_MINOR_WordPressCom_Analytics_iOS 0
-#define COCOAPODS_VERSION_PATCH_WordPressCom_Analytics_iOS 20
+#define COCOAPODS_VERSION_PATCH_WordPressCom_Analytics_iOS 25
 
