@@ -1409,6 +1409,8 @@ ZSSEditor.sendEnabledStyles = function(e) {
                 
                 items.push('link-title:' + title);
                 items.push('link:' + href);
+            } else if (currentNode.nodeName.toLowerCase() == 'blockquote') {
+                items.push('blockquote');
             }
         }
         
@@ -1500,10 +1502,6 @@ ZSSEditor.sendEnabledStyles = function(e) {
                 // exceptions for no reason.
             }
             
-            // Blockquote
-            if (nodeName == 'blockquote') {
-                items.push('indent');
-            }
             // Image
             if (nodeName == 'img') {
                 ZSSEditor.currentEditingImage = t;
