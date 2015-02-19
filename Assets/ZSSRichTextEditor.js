@@ -462,7 +462,13 @@ ZSSEditor.setBlockquote = function() {
 	if (formatBlock.length > 0 && formatBlock.toLowerCase() == formatTag) {
         document.execCommand('formatBlock', false, this.defaultParagraphSeparatorTag());
 	} else {
-		document.execCommand('formatBlock', false, '<' + formatTag + '>');
+        var blockquoteNode = this.closerParentNodeWithName(formatTag);
+        
+        if (blockquoteNode) {
+            this.unwrapNode(blockquoteNode);
+        } else {
+            document.execCommand('formatBlock', false, '<' + formatTag + '>');
+        }
 	}
 
 	 ZSSEditor.sendEnabledStyles();
@@ -618,7 +624,7 @@ ZSSEditor.unlink = function() {
 };
 
 ZSSEditor.unwrapNode = function(node) {
-	var newObject = $(node).replaceWith(node.innerHTML);
+    $(node).contents().unwrap();
 };
 
 ZSSEditor.quickLink = function() {
@@ -1409,6 +1415,8 @@ ZSSEditor.sendEnabledStyles = function(e) {
                 
                 items.push('link-title:' + title);
                 items.push('link:' + href);
+            } else if (currentNode.nodeName.toLowerCase() == 'blockquote') {
+                items.push('blockquote');
             }
         }
         
@@ -1500,10 +1508,6 @@ ZSSEditor.sendEnabledStyles = function(e) {
                 // exceptions for no reason.
             }
             
-            // Blockquote
-            if (nodeName == 'blockquote') {
-                items.push('indent');
-            }
             // Image
             if (nodeName == 'img') {
                 ZSSEditor.currentEditingImage = t;
