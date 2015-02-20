@@ -694,8 +694,7 @@ ZSSEditor.insertImage = function(url, alt) {
  *                                      does not check for that.  It would be a mistake.
  */
 ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
-    // this hiddenChar helps with editing the content around images: http://stackoverflow.com/questions/18985261/cursor-in-wrong-place-in-contenteditable
-    var hiddenChar = '\ufeff';
+    var space = '&nbsp';
     var progressIdentifier = this.getImageProgressIdentifier(imageNodeIdentifier);
     var imageContainerIdentifier = this.getImageContainerIdentifier(imageNodeIdentifier);
     var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container" contenteditable="false" data-failed="Tap to try again!">';
@@ -703,7 +702,7 @@ ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
     var progress = '<progress id="' + progressIdentifier+'" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
     var image = '<img data-wpid="' + imageNodeIdentifier + '" src="' + localImageUrl + '" alt="" />';
     var html = imgContainerStart + progress+image + imgContainerEnd;
-    html = hiddenChar + html + hiddenChar;
+    html = space + html + space;
     
     this.insertHTML(html);
     this.sendEnabledStyles();
