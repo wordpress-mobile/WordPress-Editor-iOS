@@ -273,13 +273,12 @@ ZSSEditor.getCaretArguments = function() {
     var caretInfo = this.getYCaretInfo();
     
     if (caretInfo == null) {
-        this.caretArguments = null;
+        return null;
     } else {
         this.caretArguments[0] = 'yOffset=' + caretInfo.y;
         this.caretArguments[1] = 'height=' + caretInfo.height;
+        return this.caretArguments;
     }
-    
-    return this.caretArguments;
 };
 
 ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments = function() {

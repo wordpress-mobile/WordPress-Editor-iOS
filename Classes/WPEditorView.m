@@ -30,8 +30,8 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 @interface WPEditorView () <UITextViewDelegate, UIWebViewDelegate, UITextFieldDelegate>
 
 #pragma mark - Cached caret & line data
-@property (nonatomic, copy, readwrite) NSNumber *caretYOffset;
-@property (nonatomic, copy, readwrite) NSNumber *lineHeight;
+@property (nonatomic, strong, readwrite) NSNumber *caretYOffset;
+@property (nonatomic, strong, readwrite) NSNumber *lineHeight;
 
 #pragma mark - Editor height
 @property (nonatomic, assign, readwrite) NSInteger lastEditorHeight;
