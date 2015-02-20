@@ -615,10 +615,26 @@ ZSSEditor.updateLink = function(url, title) {
 ZSSEditor.unlink = function() {
 	
 	var currentLinkNode = ZSSEditor.closerParentNodeWithName('a');
-	
+    
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0);
+    
+    alert(range.startContainer.nodeName);
+    alert(range.endContainer.nodeName);
+    alert(range.startOffset);
+    alert(range.endOffset);
+    
 	if (currentLinkNode) {
 		ZSSEditor.unwrapNode(currentLinkNode);
 	}
+    
+    selection = window.getSelection();
+    range = selection.getRangeAt(0);
+    
+    alert(range.startContainer.nodeName);
+    alert(range.endContainer.nodeName);
+    alert(range.startOffset);
+    alert(range.endOffset);
 	
 	ZSSEditor.sendEnabledStyles();
 };
