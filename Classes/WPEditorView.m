@@ -1509,7 +1509,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         NSString *trigger = @"ZSSEditor.setBold();";
         [self.webView stringByEvaluatingJavaScriptFromString:trigger];
     } else {
-        [self wrapSourceViewSelectionWithTag:@"strong"];
+        [self wrapSourceViewSelectionWithTag:@"b"];
     }
     
     [self callDelegateEditorTextDidChange];
@@ -1533,7 +1533,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         NSString *trigger = @"ZSSEditor.setItalic();";
         [self.webView stringByEvaluatingJavaScriptFromString:trigger];
     } else {
-        [self wrapSourceViewSelectionWithTag:@"em"];
+        [self wrapSourceViewSelectionWithTag:@"i"];
     }
     
     [self callDelegateEditorTextDidChange];
