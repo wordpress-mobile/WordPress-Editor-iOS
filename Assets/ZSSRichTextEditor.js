@@ -13,8 +13,6 @@ var isUsingiOS = true;
 // THe default callback parameter separator
 var defaultCallbackSeparator = '~';
 
-var CaretPositionUnknow = -9999;
-
 // The editor object
 var ZSSEditor = {};
 
@@ -274,10 +272,13 @@ ZSSEditor.getSelectedText = function() {
 ZSSEditor.getCaretArguments = function() {
     var caretInfo = this.getYCaretInfo();
     
-    this.caretArguments[0] = 'yOffset=' + caretInfo.y;
-    this.caretArguments[1] = 'height=' + caretInfo.height;
-    
-    return this.caretArguments;
+    if (caretInfo == null) {
+        return null;
+    } else {
+        this.caretArguments[0] = 'yOffset=' + caretInfo.y;
+        this.caretArguments[1] = 'height=' + caretInfo.height;
+        return this.caretArguments;
+    }
 };
 
 ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments = function() {
@@ -317,16 +318,15 @@ ZSSEditor.getCaretYPosition = function() {
 }
 
 ZSSEditor.getYCaretInfo = function() {
-    var y = 0;
-    var height = 0;
     var selection = window.getSelection();
     var noSelectionAvailable = selection.rangeCount == 0;
+    
     if (noSelectionAvailable) {
-        this.caretInfo.y = CaretPositionUnknow;
-        this.caretInfo.height = CaretPositionUnknow;
-        return this.caretInfo;
+        return null;
     }
     
+    var y = 0;
+    var height = 0;
     var range = selection.getRangeAt(0);
     var needsToWorkAroundNewlineBug = (range.getClientRects().length == 0);
     
