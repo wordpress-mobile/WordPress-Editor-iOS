@@ -1262,7 +1262,9 @@ ZSSEditor.captionMetaForImage = function( imageNode ) {
  */
 ZSSEditor.applyCaptionFormatting = function( match ) {
     var attrs = match.attrs.named;
-    var out = '<label class="wp-temp" data-wp-temp="caption" contenteditable="false">';
+    // The empty 'onclick' is important. It prevents the cursor jumping to the end
+    // of the content body when `-webkit-user-select: none` is set and the caption is tapped.
+    var out = '<label class="wp-temp" data-wp-temp="caption" contenteditable="false" onclick="">';
     out += '<span class="wp-caption"';
 
     if ( attrs.width ) {
