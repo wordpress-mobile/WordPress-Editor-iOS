@@ -1174,7 +1174,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
  */
 - (void)scrollToCaretAnimated:(BOOL)animated
 {
-    if (self.caretYOffset == nil && self.lineHeight == nil) {
+    BOOL notEnoughInfoToScroll = self.caretYOffset == nil || self.lineHeight == nil;
+    
+    if (notEnoughInfoToScroll) {
         return;
     }
     
