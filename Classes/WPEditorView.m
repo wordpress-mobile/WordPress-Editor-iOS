@@ -27,13 +27,11 @@ static const CGFloat iPadHTMLViewLeftRightInset = 85.0f;
 
 static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
-static NSInteger CaretPositionUnknow = -9999;
-
 @interface WPEditorView () <UITextViewDelegate, UIWebViewDelegate, UITextFieldDelegate>
 
 #pragma mark - Cached caret & line data
-@property (nonatomic, assign, readwrite) CGFloat caretYOffset;
-@property (nonatomic, assign, readwrite) CGFloat lineHeight;
+@property (nonatomic, copy, readwrite) NSNumber *caretYOffset;
+@property (nonatomic, copy, readwrite) NSNumber *lineHeight;
 
 #pragma mark - Editor height
 @property (nonatomic, assign, readwrite) NSInteger lastEditorHeight;
@@ -614,6 +612,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     static NSString* const kYOffsetParameterName = @"yOffset";
     static NSString* const kLineHeightParameterName = @"height";
     
+    self.caretYOffset = nil;
+    self.lineHeight = nil;
+    
     [self parseParametersFromCallbackURL:url
          andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
      {
@@ -627,10 +628,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              self.webView.customInputAccessoryView = self.focusedField.inputAccessoryView;
          } else if ([parameterName isEqualToString:kYOffsetParameterName]) {
              
-             self.caretYOffset = [parameterValue floatValue];
+             self.caretYOffset = @([parameterValue floatValue]);
          } else if ([parameterName isEqualToString:kLineHeightParameterName]) {
              
-             self.lineHeight = [parameterValue floatValue];
+             self.lineHeight = @([parameterValue floatValue]);
          }
      } onComplete:^() {
          
@@ -799,15 +800,18 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     static NSString* const kYOffsetParameterName = @"yOffset";
     static NSString* const kLineHeightParameterName = @"height";
     
+    self.caretYOffset = nil;
+    self.lineHeight = nil;
+    
     [self parseParametersFromCallbackURL:url
          andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
      {
          if ([parameterName isEqualToString:kYOffsetParameterName]) {
              
-             self.caretYOffset = [parameterValue floatValue];
+             self.caretYOffset = @([parameterValue floatValue]);
          } else if ([parameterName isEqualToString:kLineHeightParameterName]) {
              
-             self.lineHeight = [parameterValue floatValue];
+             self.lineHeight = @([parameterValue floatValue]);
          }
      } onComplete:^() {
          [self scrollToCaretAnimated:NO];
@@ -1166,18 +1170,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 /**
  *  @brief      Scrolls to a position where the caret is visible. This uses the values stored in caretYOffest and lineHeight properties.
- *  @discussion If the values of both properties  match CaretPositionUnknow no scrolling happens.
  *  @param      animated    If the scrolling shoud be animated  The offset to show.
  */
 - (void)scrollToCaretAnimated:(BOOL)animated
 {
-    if (self.caretYOffset == CaretPositionUnknow
-        && self.lineHeight == CaretPositionUnknow) {
+    if (self.caretYOffset == nil && self.lineHeight == nil) {
         return;
     }
+    
     CGRect viewport = [self viewport];
-    CGFloat caretYOffset = self.caretYOffset;
-    CGFloat lineHeight = self.lineHeight;
+    CGFloat caretYOffset = [self.caretYOffset floatValue];
+    CGFloat lineHeight = [self.lineHeight floatValue];
     CGFloat offsetBottom = caretYOffset + lineHeight;
     
     BOOL mustScroll = (caretYOffset < viewport.origin.y
