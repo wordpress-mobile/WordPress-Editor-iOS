@@ -246,11 +246,24 @@ static NSInteger CaretPositionUnknow = -9999;
     NSString *rangyCoreContentString = [self javascriptFromBundleResourceNamed:@"rangy-core"];
     NSString *rangyCssClassApplierContentString = [self javascriptFromBundleResourceNamed:@"rangy-cssclassapplier"];
     NSString *rangySelectionSaveRestoreContentString = [self javascriptFromBundleResourceNamed:@"rangy-selectionsaverestore"];
+    NSString *rangySerializerContentString = [self javascriptFromBundleResourceNamed:@"rangy-serializer"];
 
-	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--jquery-mobile-events-->" withString:jQueryMobileEventsContentsString];
-	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--editor-->" withString:editorJavascriptContentsString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--underscore-->" withString:underscoreJavascriptContentString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--shortcode-->" withString:shortcodeJavascriptContentString];
+	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--jquery-mobile-events-->"
+                                                                     withString:jQueryMobileEventsContentsString];
+	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--editor-->"
+                                                                     withString:editorJavascriptContentsString];
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--underscore-->"
+                                                                     withString:underscoreJavascriptContentString];
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--shortcode-->"
+                                                                     withString:shortcodeJavascriptContentString];
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-core-->"
+                                                                     withString:rangyCoreContentString];
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-cssclassapplier-->"
+                                                                     withString:rangyCssClassApplierContentString];
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-selectionsaverestore-->"
+                                                                     withString:rangySelectionSaveRestoreContentString];
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-serializer-->"
+                                                                     withString:rangySerializerContentString];
 
 	return fileContentString;
 }

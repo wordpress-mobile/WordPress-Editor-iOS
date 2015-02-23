@@ -53,6 +53,8 @@ ZSSEditor.defaultParagraphSeparator = 'p';
  */
 ZSSEditor.init = function() {
     
+    rangy.init();
+    
     // Change a few CSS values if the device is an iPad
     ZSSEditor.isiPad = (navigator.userAgent.match(/iPad/i) != null);
     if (ZSSEditor.isiPad) {
@@ -613,28 +615,15 @@ ZSSEditor.updateLink = function(url, title) {
 };
 
 ZSSEditor.unlink = function() {
-	
+	var savedSelection = rangy.saveSelection();
+    
 	var currentLinkNode = ZSSEditor.closerParentNodeWithName('a');
-    
-    var selection = window.getSelection();
-    var range = selection.getRangeAt(0);
-    
-    alert(range.startContainer.nodeName);
-    alert(range.endContainer.nodeName);
-    alert(range.startOffset);
-    alert(range.endOffset);
     
 	if (currentLinkNode) {
 		ZSSEditor.unwrapNode(currentLinkNode);
 	}
     
-    selection = window.getSelection();
-    range = selection.getRangeAt(0);
-    
-    alert(range.startContainer.nodeName);
-    alert(range.endContainer.nodeName);
-    alert(range.startOffset);
-    alert(range.endOffset);
+    rangy.restoreSelection(savedSelection);
 	
 	ZSSEditor.sendEnabledStyles();
 };
