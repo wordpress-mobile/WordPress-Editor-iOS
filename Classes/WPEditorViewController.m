@@ -1328,8 +1328,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (void)linkBarButtonTapped:(WPEditorToolbarButton*)button
 {
-	[self.editorView saveSelection];
-	
 	if ([self.editorView isSelectionALink]) {
 		[self removeLink];
 	} else {
