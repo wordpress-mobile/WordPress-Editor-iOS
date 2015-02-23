@@ -40,6 +40,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 @property (nonatomic, assign, readwrite, getter = isEditing) BOOL editing;
 
 #pragma mark - Selection
+@property (nonatomic, assign, readwrite) NSRange selectionBackup;
 @property (nonatomic, strong, readwrite) NSString *selectedLinkURL;
 @property (nonatomic, strong, readwrite) NSString *selectedLinkTitle;
 @property (nonatomic, strong, readwrite) NSString *selectedImageURL;
@@ -1212,12 +1213,23 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)restoreSelection
 {
-	[self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.restoreRange();"];
+    if (self.isInVisualMode) {
+        [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.restoreRange();"];
+    } else {
+        [self.sourceView select:self];
+        [self.sourceView setSelectedRange:self.selectionBackup];
+        self.selectionBackup = NSMakeRange(0, 0);
+    }
+    
 }
 
 - (void)saveSelection
 {
-    [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.backupRange();"];
+    if (self.isInVisualMode) {
+        [self.webView stringByEvaluatingJavaScriptFromString:@"ZSSEditor.backupRange();"];
+    } else {
+        self.selectionBackup = self.sourceView.selectedRange;
+    }
 }
 
 - (NSString*)selectedText
