@@ -1142,13 +1142,17 @@ ZSSEditor.extractImageMeta = function( imageNode ) {
         size: 'custom',     // Accepted values: custom, medium, large, thumbnail, or empty string
         src: '',            // The src attribute of the image
         title: '',          // The title attribute of the image (if any)
-        width: ''           // The image width attribute
+        width: '',          // The image width attribute
+        naturalWidth:'',    // The natural width of the image.
+        naturalHeight:''    // The natural height of the image.
     };
 
     // populate metadata with values of matched attributes
     metadata.src = $( imageNode ).attr( 'src' ) || '';
     metadata.alt = $( imageNode ).attr( 'alt' ) || '';
     metadata.title = $( imageNode ).attr( 'title' ) || '';
+    metadata.naturalWidth = imageNode.naturalWidth;
+    metadata.naturalHeight = imageNode.naturalHeight;
 
     width = $(imageNode).attr( 'width' );
     height = $(imageNode).attr( 'height' );
