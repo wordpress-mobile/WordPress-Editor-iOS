@@ -18,6 +18,8 @@
 @property (nonatomic, copy) NSString *src;
 @property (nonatomic, copy) NSString *title;
 @property (nonatomic, copy) NSString *width;
+@property (nonatomic, copy) NSString *naturalWidth;
+@property (nonatomic, copy) NSString *naturalHeight;
 
 /**
  Creates a WPImageMeta instance, populated with values from the passed JSON string.

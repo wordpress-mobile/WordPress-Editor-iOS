@@ -17,6 +17,8 @@ static NSString *const MetaKeySize              = @"size";
 static NSString *const MetaKeySrc               = @"src";
 static NSString *const MetaKeyTitle             = @"title";
 static NSString *const MetaKeyWidth             = @"width";
+static NSString *const MetaKeyNaturalWidth      = @"naturalWidth";
+static NSString *const MetaKeyNaturalHeight     = @"naturalHeight";
 
 @interface WPImageMeta()
 @property (nonatomic, readwrite) NSString *captionId;
@@ -89,6 +91,12 @@ static NSString *const MetaKeyWidth             = @"width";
     if (self.width) {
         [dict setObject:self.width forKey:MetaKeyWidth];
     }
+    if (self.naturalWidth) {
+        [dict setObject:self.naturalWidth forKey:MetaKeyNaturalWidth];
+    }
+    if (self.naturalHeight) {
+        [dict setObject:self.naturalHeight forKey:MetaKeyNaturalHeight];
+    }
 
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dict options:0 error:&error];
@@ -124,6 +132,8 @@ static NSString *const MetaKeyWidth             = @"width";
     self.src = [dict stringForKey:MetaKeySrc];
     self.title = [dict stringForKey:MetaKeyTitle];
     self.width = [dict stringForKey:MetaKeyWidth];
+    self.naturalWidth = [dict stringForKey:MetaKeyNaturalWidth];
+    self.naturalHeight = [dict stringForKey:MetaKeyNaturalHeight];
 }
 
 /**
