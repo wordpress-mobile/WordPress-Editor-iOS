@@ -1654,6 +1654,10 @@ ZSSEditor.parentTags = function() {
 // MARK: - ZSSField Constructor
 
 function ZSSField(wrappedObject) {
+    // When this bool is true, we are going to restrict input and certain callbacks
+    // so IME keyboards behave properly when composing.
+    this.isComposing = false;
+    
     this.multiline = false;
     this.wrappedObject = wrappedObject;
     this.bodyPlaceholderColor = '#000000';
@@ -1676,6 +1680,8 @@ ZSSField.prototype.bindListeners = function() {
     this.wrappedObject.bind('blur', function(e) { thisObj.handleBlurEvent(e); });
     this.wrappedObject.bind('keydown', function(e) { thisObj.handleKeyDownEvent(e); });
     this.wrappedObject.bind('input', function(e) { thisObj.handleInputEvent(e); });
+    this.wrappedObject.bind('compositionstart', function(e) { thisObj.handleCompositionStartEvent(e); });
+    this.wrappedObject.bind('compositionend', function(e) { thisObj.handleCompositionEndEvent(e); });
 };
 
 // MARK: - Emptying the field when it should be, well... empty (HTML madness)
@@ -1728,33 +1734,42 @@ ZSSField.prototype.handleFocusEvent = function(e) {
 };
 
 ZSSField.prototype.handleKeyDownEvent = function(e) {
-    
+
     var wasEnterPressed = (e.keyCode == '13');
     
-    if(wasEnterPressed) {
+    if (this.isComposing) {
+        e.stopPropagation();
+    } else if (wasEnterPressed) {
         ZSSEditor.formatNewLine(e);
-    } else {
+    } else if (ZSSEditor.closerParentNode() == this.wrappedDomNode()) {
         // IMPORTANT: without this code, we can have text written outside of paragraphs...
         //
-        if (ZSSEditor.closerParentNode() == this.wrappedDomNode()) {
-            document.execCommand('formatBlock', false, 'p');
-        }
+        document.execCommand('formatBlock', false, 'p');
     }
 };
 
 ZSSField.prototype.handleInputEvent = function(e) {
-    
-    // IMPORTANT: we want the placeholder to come up if there's no text, so we clear the field if
-    // there's no real content in it.  It's important to do this here and not on keyDown or keyUp
-    // as the field could become empty because of a cut or paste operation as well as a key press.
-    // This event takes care of all cases.
-    //
-    this.emptyFieldIfNoContentsAndRefreshPlaceholderColor();
-    
-    var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
+    if (!this.isComposing) {
+        // IMPORTANT: we want the placeholder to come up if there's no text, so we clear the field if
+        // there's no real content in it.  It's important to do this here and not on keyDown or keyUp
+        // as the field could become empty because of a cut or paste operation as well as a key press.
+        // This event takes care of all cases.
+        //
+        this.emptyFieldIfNoContentsAndRefreshPlaceholderColor();
+        
+        var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
 
-    ZSSEditor.callback('callback-selection-changed', joinedArguments);
-    this.callback("callback-input", joinedArguments);
+        ZSSEditor.callback('callback-selection-changed', joinedArguments);
+        this.callback("callback-input", joinedArguments);
+    }
+};
+
+ZSSField.prototype.handleCompositionStartEvent = function(e) {
+    this.isComposing = true;
+};
+
+ZSSField.prototype.handleCompositionEndEvent = function(e) {
+    this.isComposing = false;
 };
 
 ZSSField.prototype.handleTapEvent = function(e) {
