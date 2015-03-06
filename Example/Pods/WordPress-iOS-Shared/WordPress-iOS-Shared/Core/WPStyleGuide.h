@@ -27,15 +27,56 @@
 + (UIFont *)tableviewSubtitleFont;
 + (UIFont *)tableviewSectionHeaderFont;
 
-// Colors
+// Color
 + (UIColor *)wordPressBlue;
-+ (UIColor *)baseLighterBlue;
-+ (UIColor *)baseDarkerBlue;
 + (UIColor *)lightBlue;
-+ (UIColor *)newKidOnTheBlockBlue;
-+ (UIColor *)midnightBlue;
++ (UIColor *)mediumBlue;
++ (UIColor *)darkBlue;
++ (UIColor *)grey;
++ (UIColor *)lightGrey;
++ (UIColor *)greyLighten30;
++ (UIColor *)greyLighten20;
++ (UIColor *)greyLighten10;
++ (UIColor *)greyDarken10;
++ (UIColor *)greyDarken20;
++ (UIColor *)greyDarken30;
++ (UIColor *)darkGrey;
 + (UIColor *)jazzyOrange;
 + (UIColor *)fireOrange;
++ (UIColor *)validGreen;
++ (UIColor *)warningYellow;
++ (UIColor *)errorRed;
+
+// Misc
++ (UIColor *)keyboardColor;
++ (UIColor *)textFieldPlaceholderGrey;
++ (UIColor *)tableViewActionColor;
+
+// Bar Button Styles
++ (UIBarButtonItemStyle)barButtonStyleForDone;
++ (UIBarButtonItemStyle)barButtonStyleForBordered;
++ (void)setLeftBarButtonItemWithCorrectSpacing:(UIBarButtonItem *)barButtonItem forNavigationItem:(UINavigationItem *)navigationItem;
++ (void)setRightBarButtonItemWithCorrectSpacing:(UIBarButtonItem *)barButtonItem forNavigationItem:(UINavigationItem *)navigationItem;
+
+// View and TableView Helpers
++ (void)configureColorsForView:(UIView *)view andTableView:(UITableView *)tableView;
++ (void)configureColorsForView:(UIView *)view collectionView:(UICollectionView *)collectionView;
++ (void)configureTableViewActionCell:(UITableViewCell *)cell;
++ (void)configureTableViewCell:(UITableViewCell *)cell;
++ (void)configureTableViewTextCell:(UITableViewTextFieldCell *)cell;
++ (void)configureTableViewSmallSubtitleCell:(UITableViewCell *)cell;
+
+// Move to a feature category
++ (UIColor *)buttonActionColor;
++ (UIColor *)nuxFormText;
++ (UIColor *)nuxFormPlaceholderText;
++ (void)configureFollowButton:(UIButton *)followButton;
+
+// Deprecated Colors
++ (UIColor *)baseLighterBlue;
++ (UIColor *)baseDarkerBlue;
++ (UIColor *)newKidOnTheBlockBlue;
++ (UIColor *)midnightBlue;
 + (UIColor *)bigEddieGrey;
 + (UIColor *)littleEddieGrey;
 + (UIColor *)whisperGrey;
@@ -43,32 +84,6 @@
 + (UIColor *)readGrey;
 + (UIColor *)itsEverywhereGrey;
 + (UIColor *)darkAsNightGrey;
-+ (UIColor *)textFieldPlaceholderGrey;
 + (UIColor *)validationErrorRed;
-+ (UIColor *)nuxFormText;
-+ (UIColor *)nuxFormPlaceholderText;
-
-+ (UIColor *)tableViewActionColor;
-+ (UIColor *)buttonActionColor;
-
-+ (UIColor *)keyboardColor;
-
-+ (UIColor *)notificationsLightGrey;
-+ (UIColor *)notificationsDarkGrey;
-
-// Bar Button Styles
-+ (UIBarButtonItemStyle)barButtonStyleForDone;
-+ (UIBarButtonItemStyle)barButtonStyleForBordered;
-
-// Utilities
-+ (void)setLeftBarButtonItemWithCorrectSpacing:(UIBarButtonItem *)barButtonItem forNavigationItem:(UINavigationItem *)navigationItem;
-+ (void)setRightBarButtonItemWithCorrectSpacing:(UIBarButtonItem *)barButtonItem forNavigationItem:(UINavigationItem *)navigationItem;
-+ (void)configureTableViewActionCell:(UITableViewCell *)cell;
-+ (void)configureTableViewCell:(UITableViewCell *)cell;
-+ (void)configureTableViewTextCell:(UITableViewTextFieldCell *)cell;
-+ (void)configureTableViewSmallSubtitleCell:(UITableViewCell *)cell;
-+ (void)configureColorsForView:(UIView *)view andTableView:(UITableView *)tableView;
-+ (void)configureColorsForView:(UIView *)view collectionView:(UICollectionView *)collectionView;
-+ (void)configureFollowButton:(UIButton *)followButton;
 
 @end

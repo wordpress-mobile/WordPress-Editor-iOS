@@ -5,7 +5,8 @@
 
 @implementation WPStyleGuide
 
-#pragma mark - Fonts
+#pragma mark - Fonts and Text
+
 + (UIFont *)largePostTitleFont
 {
     return [WPFontManager openSansLightFontOfSize:32.0];
@@ -139,110 +140,119 @@
     return [WPFontManager openSansBoldFontOfSize:12.0];
 }
 
+
 #pragma mark - Colors
+// https://wordpress.com/design-handbook/colors/
+
++ (UIColor *)colorWithR:(NSInteger)red G:(NSInteger)green B:(NSInteger)blue alpha:(CGFloat)alpha
+{
+    return [UIColor colorWithRed:(CGFloat)red/255.0 green:(CGFloat)green/255.0 blue:(CGFloat)blue/255.0 alpha:alpha];
+}
+
+
+#pragma mark - Blues
 
 + (UIColor *)wordPressBlue
 {
-    return [UIColor colorWithRed:0/255.0f green:135/255.0f blue:190/255.0f alpha:1.0f];
-}
-
-+ (UIColor *)baseLighterBlue
-{
-    return [UIColor colorWithRed:0/255.0f green:135/255.0f blue:190/255.0f alpha:1.0f];
-}
-
-+ (UIColor *)baseDarkerBlue
-{
-    return [UIColor colorWithRed:0/255.0f green:135/255.0f blue:190/255.0f alpha:1.0f];
+    return [self colorWithR:0 G:135 B:190 alpha:1.0];
 }
 
 + (UIColor *)lightBlue
 {
-	return [UIColor colorWithRed:120/255.0f green:220/255.0f blue:250/255.0f alpha:1.0f];
+    return [self colorWithR:120 G:220 B:250 alpha:1.0];
 }
 
-+ (UIColor *)newKidOnTheBlockBlue
++ (UIColor *)mediumBlue
 {
-	return [UIColor colorWithRed:0/255.0f green:170/255.0f blue:220/255.0f alpha:1.0f];
+    return [self colorWithR:0 G:170 B:220 alpha:1.0];
 }
 
-+ (UIColor *)midnightBlue
++ (UIColor *)darkBlue
 {
-	return [UIColor colorWithRed:0/255.0f green:80/255.0f blue:130/255.0f alpha:1.0f];
+    return [self colorWithR:0 G:80 B:130 alpha:1.0];
 }
+
+
+#pragma mark - Greys
+
++ (UIColor *)grey
+{
+    return [self colorWithR:135 G:166 B:188 alpha:1.0];
+}
+
++ (UIColor *)lightGrey
+{
+    return [self colorWithR:243 G:246 B:248 alpha:1.0];
+}
+
++ (UIColor *)greyLighten30
+{
+    return [self colorWithR:233 G:239 B:243 alpha:1.0];
+}
+
++ (UIColor *)greyLighten20
+{
+    return [self colorWithR:200 G:215 B:225 alpha:1.0];
+}
+
++ (UIColor *)greyLighten10
+{
+    return [self colorWithR:168 G:190 B:206 alpha:1.0];
+}
+
++ (UIColor *)greyDarken10
+{
+    return [self colorWithR:102 G:142 B:170 alpha:1.0];
+}
+
++ (UIColor *)greyDarken20
+{
+    return [self colorWithR:79 G:116 B:142 alpha:1.0];
+}
+
++ (UIColor *)greyDarken30
+{
+    return [self colorWithR:61 G:89 B:109 alpha:1.0];
+}
+
++ (UIColor *)darkGrey
+{
+    return [self colorWithR:46 G:68 B:83 alpha:1.0];
+}
+
+
+#pragma mark - Oranges
 
 + (UIColor *)jazzyOrange
 {
-	return [UIColor colorWithRed:240/255.0f green:130/255.0f blue:30/255.0f alpha:1.0f];
+    return [self colorWithR:240 G:130 B:30 alpha:1.0];
 }
 
 + (UIColor *)fireOrange
 {
-	return [UIColor colorWithRed:213/255.0f green:78/255.0f blue:33/255.0f alpha:1.0f];
+    return [self colorWithR:213 G:78 B:33 alpha:1.0];
 }
 
-+ (UIColor *)bigEddieGrey
+
+#pragma mark - Validations / Alerts
+
++ (UIColor *)validGreen
 {
-	return [UIColor colorWithRed:34/255.0f green:34/255.0f blue:34/255.0f alpha:1.0f];
+    return [self colorWithR:74 G:184 B:102 alpha:1.0];
 }
 
-+ (UIColor *)littleEddieGrey
++ (UIColor *)warningYellow
 {
-	return [UIColor colorWithRed:50/255.0f green:65/255.0f blue:85/255.0f alpha:1.0f];
+    return [self colorWithR:240 G:184 B:73 alpha:1.0];
 }
 
-+ (UIColor *)whisperGrey
++ (UIColor *)errorRed
 {
-    return  [UIColor colorWithRed:82/255.0f green:122/255.0f blue:148/255.0f alpha:1.0f];
+    return [self colorWithR:217 G:79 B:79 alpha:1.0];
 }
 
-+ (UIColor *)allTAllShadeGrey
-{
-	return  [UIColor colorWithRed:144/255.0f green:174/255.0f blue:194/255.0f alpha:1.0f];
-}
 
-+ (UIColor *)readGrey
-{
-	return [UIColor colorWithRed:210/255.0f green:222/255.0f blue:230/255.0f alpha:1.0f];
-}
-
-+ (UIColor *)itsEverywhereGrey
-{
-	return [UIColor colorWithRed:232/255.0f green:240/255.0f blue:247/255.0f alpha:1.0f];
-}
-
-+ (UIColor *)darkAsNightGrey
-{
-	return [UIColor colorWithRed:0/255.0f green:80/255.0f blue:130/255.0f alpha:1.0f];
-}
-
-+ (UIColor *)textFieldPlaceholderGrey
-{
-    return [UIColor colorWithRed:144.0f/255.0f green:174.0f/255.0f blue:194.0f/255.0f alpha:1.0f];
-}
-
-+ (UIColor *)validationErrorRed
-{
-    return [UIColor colorWithRed:0.7 green:0.0 blue:0.0 alpha:1.0];
-}
-
-+ (UIColor *)nuxFormText {
-    return [UIColor colorWithRed:50.0f/255.0f green:65.0f/255.0f blue:85.0f/255.0f alpha:1.0f];
-}
-
-+ (UIColor *)nuxFormPlaceholderText {
-    return [UIColor colorWithRed:144.0f/255.0f green:174.0f/255.0f blue:194.0f/255.0f alpha:1.0f];
-}
-
-+ (UIColor *)tableViewActionColor
-{
-    return [WPStyleGuide baseLighterBlue];
-}
-
-+ (UIColor *)buttonActionColor
-{
-    return [WPStyleGuide baseLighterBlue];
-}
+#pragma mark - Misc Colors
 
 + (UIColor *)keyboardColor {
     // Pre iOS 7.1 uses a the lighter keyboard background.
@@ -251,7 +261,7 @@
     // Approach based on http://stackoverflow.com/a/5337804
     NSString *versionStr = [[UIDevice currentDevice] systemVersion];
     BOOL hasLighterKeyboard = [versionStr compare:@"7.1" options:NSNumericSearch] == NSOrderedAscending;
-    
+
     if (hasLighterKeyboard) {
         if (IS_IPAD) {
             return [UIColor colorWithRed:207.0f/255.0f green:210.0f/255.0f blue:213.0f/255.0f alpha:1.0];
@@ -259,7 +269,7 @@
             return [UIColor colorWithRed:220.0f/255.0f green:223.0f/255.0f blue:226.0f/255.0f alpha:1.0];
         }
     }
-    
+
     if (IS_IPAD) {
         return [UIColor colorWithRed:217.0f/255.0f green:220.0f/255.0f blue:223.0f/255.0f alpha:1.0];
     } else {
@@ -267,15 +277,34 @@
     }
 }
 
-+ (UIColor *)notificationsLightGrey
++ (UIColor *)textFieldPlaceholderGrey
 {
-	return [UIColor colorWithRed:244/255.0f green:248/255.0f blue:250/255.0f alpha:1.0f];
+    return [self grey];
 }
 
-+ (UIColor *)notificationsDarkGrey
++ (UIColor *)tableViewActionColor
 {
-	return [UIColor colorWithRed:210/255.0f green:222/255.0f blue:230/255.0f alpha:1.0f];
+    return [self wordPressBlue];
 }
+
+// TODO: Move to fetaure category
++ (UIColor *)buttonActionColor
+{
+    return [self wordPressBlue];
+}
+
+// TODO: Move to fetaure category
++ (UIColor *)nuxFormText {
+    return [self darkGrey];
+}
+
+// TODO: Move to fetaure category
++ (UIColor *)nuxFormPlaceholderText {
+    return [self grey];
+}
+
+
+#pragma mark - Bar styles
 
 + (UIBarButtonItemStyle)barButtonStyleForDone
 {
@@ -302,6 +331,24 @@
     UIBarButtonItem *spacerButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     spacerButton.width = -16.0;
     return spacerButton;
+}
+
+
+#pragma mark - View and TableView Styles
+
++ (void)configureColorsForView:(UIView *)view andTableView:(UITableView *)tableView
+{
+    tableView.backgroundView = nil;
+    view.backgroundColor = [WPStyleGuide itsEverywhereGrey];
+    tableView.backgroundColor = [WPStyleGuide itsEverywhereGrey];
+    tableView.separatorColor = [WPStyleGuide readGrey];
+}
+
++ (void)configureColorsForView:(UIView *)view collectionView:(UICollectionView *)collectionView
+{
+    collectionView.backgroundView = nil;
+    collectionView.backgroundColor = [WPStyleGuide itsEverywhereGrey];
+    view.backgroundColor = [WPStyleGuide itsEverywhereGrey];
 }
 
 + (void)configureTableViewActionCell:(UITableViewCell *)cell
@@ -346,21 +393,7 @@
     cell.detailTextLabel.font = [self subtitleFont];
 }
 
-+ (void)configureColorsForView:(UIView *)view andTableView:(UITableView *)tableView
-{
-    tableView.backgroundView = nil;
-    view.backgroundColor = [WPStyleGuide itsEverywhereGrey];
-    tableView.backgroundColor = [WPStyleGuide itsEverywhereGrey];
-    tableView.separatorColor = [WPStyleGuide readGrey];
-}
-
-+ (void)configureColorsForView:(UIView *)view collectionView:(UICollectionView *)collectionView
-{
-    collectionView.backgroundView = nil;
-    collectionView.backgroundColor = [WPStyleGuide itsEverywhereGrey];
-    view.backgroundColor = [WPStyleGuide itsEverywhereGrey];
-}
-
+// TODO: Move to fetaure category
 + (void)configureFollowButton:(UIButton *)followButton {
     followButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
     followButton.backgroundColor = [UIColor clearColor];
@@ -372,6 +405,69 @@
     [followButton setImage:[UIImage imageNamed:@"reader-postaction-follow"] forState:UIControlStateNormal];
     [followButton setImage:[UIImage imageNamed:@"reader-postaction-following"] forState:UIControlStateSelected];
     [followButton setTitleColor:[self allTAllShadeGrey] forState:UIControlStateNormal];
+}
+
+
+#pragma mark - Deprecated Colors
+
++ (UIColor *)baseLighterBlue __deprecated
+{
+    return [self wordPressBlue];
+}
+
++ (UIColor *)baseDarkerBlue __deprecated
+{
+    return [self wordPressBlue];
+}
+
++ (UIColor *)newKidOnTheBlockBlue __deprecated
+{
+    return [self mediumBlue];
+}
+
++ (UIColor *)midnightBlue __deprecated
+{
+    return [self darkBlue];
+}
+
++ (UIColor *)bigEddieGrey __deprecated
+{
+    return [self darkGrey];
+}
+
++ (UIColor *)littleEddieGrey __deprecated
+{
+    return [self darkGrey];
+}
+
++ (UIColor *)whisperGrey __deprecated
+{
+    return [self greyDarken20];
+}
+
++ (UIColor *)allTAllShadeGrey __deprecated
+{
+    return [self grey];
+}
+
++ (UIColor *)readGrey __deprecated
+{
+    return [self greyLighten20];
+}
+
++ (UIColor *)itsEverywhereGrey __deprecated
+{
+    return [self greyLighten30];
+}
+
++ (UIColor *)darkAsNightGrey __deprecated
+{
+    return [self darkBlue];
+}
+
++ (UIColor *)validationErrorRed __deprecated
+{
+    return [self errorRed];
 }
 
 @end
