@@ -1749,19 +1749,20 @@ ZSSField.prototype.handleKeyDownEvent = function(e) {
 };
 
 ZSSField.prototype.handleInputEvent = function(e) {
-    if (!this.isComposing) {
-        // IMPORTANT: we want the placeholder to come up if there's no text, so we clear the field if
-        // there's no real content in it.  It's important to do this here and not on keyDown or keyUp
-        // as the field could become empty because of a cut or paste operation as well as a key press.
-        // This event takes care of all cases.
-        //
-        this.emptyFieldIfNoContentsAndRefreshPlaceholderColor();
-        
-        var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
+    
+    // Skip this if we are composing on an IME keyboard
+    if (this.isComposing ) { return; }
 
-        ZSSEditor.callback('callback-selection-changed', joinedArguments);
-        this.callback("callback-input", joinedArguments);
-    }
+    // IMPORTANT: we want the placeholder to come up if there's no text, so we clear the field if
+    // there's no real content in it.  It's important to do this here and not on keyDown or keyUp
+    // as the field could become empty because of a cut or paste operation as well as a key press.
+    // This event takes care of all cases.
+    //
+    this.emptyFieldIfNoContentsAndRefreshPlaceholderColor();
+    
+    var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
+    ZSSEditor.callback('callback-selection-changed', joinedArguments);
+    this.callback("callback-input", joinedArguments);
 };
 
 ZSSField.prototype.handleCompositionStartEvent = function(e) {
