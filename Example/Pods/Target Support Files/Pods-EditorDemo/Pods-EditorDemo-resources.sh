@@ -179,6 +179,8 @@ install_resource()
                     install_resource "../../Assets/rangy-serializer.js"
                     install_resource "../../Assets/shortcode.js"
                     install_resource "../../Assets/underscore-min.js"
+                    install_resource "../../Assets/wpload.js"
+                    install_resource "../../Assets/wpsave.js"
                     install_resource "../../Assets/ZSSRichTextEditor.js"
                     install_resource "${BUILT_PRODUCTS_DIR}/WordPress-iOS-Shared.bundle"
           

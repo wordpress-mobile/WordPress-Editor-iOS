@@ -246,6 +246,8 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     NSString *rangyCssClassApplierContentString = [self javascriptFromBundleResourceNamed:@"rangy-cssclassapplier"];
     NSString *rangySelectionSaveRestoreContentString = [self javascriptFromBundleResourceNamed:@"rangy-selectionsaverestore"];
     NSString *rangySerializerContentString = [self javascriptFromBundleResourceNamed:@"rangy-serializer"];
+    NSString *wpLoadTextString = [self javascriptFromBundleResourceNamed:@"wpload"];
+    NSString *wpSaveTextString = [self javascriptFromBundleResourceNamed:@"wpsave"];
 
 	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--jquery-mobile-events-->"
                                                                      withString:jQueryMobileEventsContentsString];
@@ -263,6 +265,10 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
                                                                      withString:rangySelectionSaveRestoreContentString];
     fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-serializer-->"
                                                                      withString:rangySerializerContentString];
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--wp-load-->"
+                                                                     withString:wpLoadTextString];
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--wp-save-->"
+                                                                     withString:wpSaveTextString];
 
 	return fileContentString;
 }
