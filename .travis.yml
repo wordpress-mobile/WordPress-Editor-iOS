@@ -1,3 +1,5 @@
+before_install:
+  - gem install cocoapods -v '0.35.0'
 osx_image: xcode611
 language: objective-c
 xcode_workspace: ./Example/EditorDemo.xcworkspace
