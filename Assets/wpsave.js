@@ -18,6 +18,12 @@ window.wp = window.wp || {};
   *  @return     Returns the transformed string
   */
   wp.saveText = function( content ) {
+
+    if ( content == null || !content.trim() ) {
+        // Just whitespace, null, or undefined
+        return '';
+    }
+ 
     var blocklist1, blocklist2,
         preserve_linebreaks = false,
         preserve_br = false;

@@ -1966,6 +1966,12 @@ ZSSField.prototype.strippedHTML = function() {
     return this.wrappedObject.text();
 };
 
+ZSSField.prototype.setPlainText = function(text) {
+    ZSSEditor.currentEditingImage = null;
+    this.wrappedObject.text(text);
+    this.refreshPlaceholderColor();
+};
+
 ZSSField.prototype.setHTML = function(html) {
     ZSSEditor.currentEditingImage = null;
     var mutatedHTML = wp.loadText(html);
@@ -1973,7 +1979,6 @@ ZSSField.prototype.setHTML = function(html) {
     this.wrappedObject.html(mutatedHTML);
     this.refreshPlaceholderColor();
 };
-
 
 // MARK: - Placeholder
 

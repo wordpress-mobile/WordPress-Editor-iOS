@@ -17,7 +17,13 @@ window.wp = window.wp || {};
   *
   *  @return     Returns the transformed string
   */
-  wp.loadText = function(pee) {
+  wp.loadText = function( pee ) {
+ 
+    if ( pee == null || !pee.trim() ) {
+        // Just whitespace, null, or undefined
+        return '';
+    }
+ 
     var preserve_linebreaks = false,
         preserve_br = false,
         blocklist = 'table|thead|tfoot|caption|col|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre' +

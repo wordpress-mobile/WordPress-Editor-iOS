@@ -61,6 +61,14 @@
 - (NSString*)strippedHtml;
 
 /**
+ *  @brief      Sets the field's plain text contents. The param string is
+ *              not interpreted as HTML.
+ *
+ *  @param      text     The new field's plain text contents.
+ */
+- (void)setText:(NSString*)text;
+
+/**
  *  @brief      Sets the field's html contents.
  *
  *  @param      html     The new field's html contents.
