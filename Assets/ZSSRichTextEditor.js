@@ -1957,7 +1957,7 @@ ZSSField.prototype.isEmpty = function() {
 };
 
 ZSSField.prototype.getHTML = function() {
-    var html = this.wrappedObject.html();
+    var html = wp.saveText(this.wrappedObject.html());
     html = ZSSEditor.removeVisualFormatting( html );
     return html
 };
@@ -1966,13 +1966,19 @@ ZSSField.prototype.strippedHTML = function() {
     return this.wrappedObject.text();
 };
 
-ZSSField.prototype.setHTML = function(html) {
+ZSSField.prototype.setPlainText = function(text) {
     ZSSEditor.currentEditingImage = null;
-    html = ZSSEditor.applyVisualFormatting(html);
-    this.wrappedObject.html(html);
+    this.wrappedObject.text(text);
     this.refreshPlaceholderColor();
 };
 
+ZSSField.prototype.setHTML = function(html) {
+    ZSSEditor.currentEditingImage = null;
+    var mutatedHTML = wp.loadText(html);
+    mutatedHTML = ZSSEditor.applyVisualFormatting(mutatedHTML);
+    this.wrappedObject.html(mutatedHTML);
+    this.refreshPlaceholderColor();
+};
 
 // MARK: - Placeholder
 
