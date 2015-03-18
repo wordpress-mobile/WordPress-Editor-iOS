@@ -825,6 +825,9 @@ ZSSEditor.markImageUploadDone = function(imageNodeIdentifier) {
     if (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)) {
         imageNode.parent().replaceWith(imageNode);
     }
+    // Wrap link around image
+    var linkTag = '<a href="' + imageNode.attr("src") + '"></a>';
+    imageNode.wrap(linkTag);
 };
 
 /**
