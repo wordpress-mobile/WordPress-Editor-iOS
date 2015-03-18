@@ -826,7 +826,7 @@ ZSSEditor.markImageUploadDone = function(imageNodeIdentifier) {
         imageNode.parent().replaceWith(imageNode);
     }
     // Wrap link around image
-    var linkTag = '<a href="'+imageNode.attr("src")+'"></a>';
+    var linkTag = '<a href="' + imageNode.attr("src") + '"></a>';
     imageNode.wrap(linkTag);
 };
 
