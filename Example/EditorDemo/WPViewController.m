@@ -1,6 +1,7 @@
 #import "WPViewController.h"
 
 @import AssetsLibrary;
+@import AVFoundation;
 #import <CocoaLumberjack/DDLog.h>
 #import "WPEditorField.h"
 #import "WPEditorView.h"
@@ -151,31 +152,71 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     picker.allowsEditing = NO;
     picker.navigationBar.translucent = NO;
     picker.modalPresentationStyle = UIModalPresentationCurrentContext;
-    
+    picker.mediaTypes = [UIImagePickerController availableMediaTypesForSourceType:picker.sourceType];
     [self.navigationController presentViewController:picker animated:YES completion:nil];
 }
 
-- (void)addAssetToContent:(NSURL *)assetURL {
-    ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
-    [assetsLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset){
-        UIImage * image = [UIImage imageWithCGImage:asset.defaultRepresentation.fullScreenImage];
-        NSData * data = UIImageJPEGRepresentation(image, 0.7);
-        NSString * imageID = [[NSUUID UUID] UUIDString];
-        NSString * path = [NSString stringWithFormat:@"%@/%@", NSTemporaryDirectory(), imageID];
-        [data writeToFile:path atomically:YES];
+- (void)addImageAssetToContent:(ALAsset *)asset
+{
+    UIImage *image = [UIImage imageWithCGImage:asset.defaultRepresentation.fullScreenImage];
+    NSData *data = UIImageJPEGRepresentation(image, 0.7);
+    NSString *imageID = [[NSUUID UUID] UUIDString];
+    NSString *path = [NSString stringWithFormat:@"%@/%@.jpg", NSTemporaryDirectory(), imageID];
+    [data writeToFile:path atomically:YES];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
+    });
+
+    NSProgress *progress = [[NSProgress alloc] initWithParent:nil userInfo:@{ @"imageID": imageID,
+                                                                              @"url": path }];
+    progress.cancellable = YES;
+    progress.totalUnitCount = 100;
+    [NSTimer scheduledTimerWithTimeInterval:0.1
+                                     target:self
+                                   selector:@selector(timerFireMethod:)
+                                   userInfo:progress
+                                    repeats:YES];
+    self.imagesAdded[imageID] = progress;
+}
+
+- (void)addVideoAssetToContent:(ALAsset *)originalAsset
+{
+    UIImage *image = [UIImage imageWithCGImage:[originalAsset thumbnail]];
+    NSData *data = UIImageJPEGRepresentation(image, 0.7);
+    NSString *posterImagePath = [NSString stringWithFormat:@"%@/%@.jpg", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
+    [data writeToFile:posterImagePath atomically:YES];
+
+    ALAssetRepresentation *representation = originalAsset.defaultRepresentation;
+    AVAsset *asset = [AVURLAsset URLAssetWithURL:representation.url options:nil];
+    NSString *videoID = [[NSUUID UUID] UUIDString];
+    NSString *videoPath = [NSString stringWithFormat:@"%@%@.mov", NSTemporaryDirectory(), videoID];
+    NSString *presetName = AVAssetExportPresetPassthrough;
+    AVAssetExportSession *session = [AVAssetExportSession exportSessionWithAsset:asset presetName:presetName];
+    session.outputFileType = representation.UTI;
+    session.shouldOptimizeForNetworkUse = YES;
+    session.outputURL = [NSURL fileURLWithPath:videoPath];
+    [session exportAsynchronouslyWithCompletionHandler:^{
+        if (session.status != AVAssetExportSessionStatusCompleted) {
+            return;
+        }
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
+            [self.editorView insertVideo:[[NSURL fileURLWithPath:videoPath] absoluteString]
+                             posterImage:[[NSURL fileURLWithPath:posterImagePath] absoluteString]
+                                     alt:@"Video"];
         });
-                    
-        NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":imageID, @"url":path}];
-        progress.cancellable = YES;
-        progress.totalUnitCount = 100;
-        [NSTimer scheduledTimerWithTimeInterval:0.1
-                                         target:self
-                                       selector:@selector(timerFireMethod:)
-                                       userInfo:progress
-                                        repeats:YES];
-        self.imagesAdded[imageID] = progress;
+    }];
+}
+
+- (void)addAssetToContent:(NSURL *)assetURL
+{
+    ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
+    [assetsLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset) {
+        
+        if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypeVideo) {
+            [self addVideoAssetToContent:asset];
+        } if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypePhoto) {
+            [self addImageAssetToContent:asset];
+        }
     } failureBlock:^(NSError *error) {
         DDLogInfo(@"Failed to insert media: %@", [error localizedDescription]);
     }];

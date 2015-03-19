@@ -271,6 +271,11 @@ stylesForCurrentSelection:(NSArray*)styles;
 - (void)unmarkImageFailedUpload:(NSString *)uniqueId;
 
 - (void)removeImage:(NSString*)uniqueId;
+
+#pragma mark - Videos
+
+- (void)insertVideo:(NSString *)videoURL posterImage:(NSString *)posterImageURL alt:(NSString *)alt;
+
 #pragma mark - Links
 
 /**

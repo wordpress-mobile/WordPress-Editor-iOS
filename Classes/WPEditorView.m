@@ -184,7 +184,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     _webView.usesGUIFixes = YES;
     _webView.keyboardDisplayRequiresUserAction = NO;
     _webView.scrollView.bounces = YES;
-
+    _webView.allowsInlineMediaPlayback = YES;
     [self startObservingWebViewContentSizeChanges];
     
 	[self addSubview:_webView];
@@ -1339,6 +1339,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.removeImage(\"%@\");", uniqueId];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
+}
+
+#pragma mark - Videos
+
+- (void)insertVideo:(NSString *)videoURL posterImage:(NSString *)posterImageURL alt:(NSString *)alt
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertVideo(\"%@\", \"%@\", \"%@\");", videoURL, posterImageURL, alt];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
 #pragma mark - URL normalization

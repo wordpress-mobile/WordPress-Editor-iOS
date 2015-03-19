@@ -919,6 +919,14 @@ ZSSEditor.removeImage = function(imageNodeIdentifier) {
     }
 };
 
+ZSSEditor.insertVideo = function(videoURL, posterURL, alt) {
+    var html = '<video controls webkit-playsinline poster="' + posterURL+ '"><source src="'
+    + videoURL + '" type="video/mp4"/>alt</video>';
+    
+    this.insertHTML(html);
+    this.sendEnabledStyles();
+};
+
 /**
  *  @brief      Updates the currently selected image, replacing its markup with
  *  new markup based on the specified meta data string.
