@@ -1349,6 +1349,24 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
+- (void)insertLocalVideo:(NSString *)videoURL posterImage:(NSString *)posterImageURL uniqueId:(NSString *)uniqueId
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertLocalVideo(\"%@\", \"%@\", \"%@\");", uniqueId, videoURL, posterImageURL];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setProgress:(double)progress onVideo:(NSString *)uniqueId
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.setProgressOnVideo(\"%@\", %f);", uniqueId, progress];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)replaceLocalVideoWithId:(NSString *)uniqueId forRemoteVideo:(NSString *)url
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.replaceLocalVideoWithRemoteVideo(\"%@\", \"%@\");", uniqueId, url];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
 #pragma mark - URL normalization
 
 - (NSString*)normalizeURL:(NSString*)url

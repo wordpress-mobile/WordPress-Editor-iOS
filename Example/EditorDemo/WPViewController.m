@@ -181,7 +181,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
 
 - (void)addVideoAssetToContent:(ALAsset *)originalAsset
 {
-    UIImage *image = [UIImage imageWithCGImage:[originalAsset thumbnail]];
+    UIImage *image = [UIImage imageWithCGImage:originalAsset.defaultRepresentation.fullScreenImage];
     NSData *data = UIImageJPEGRepresentation(image, 0.7);
     NSString *posterImagePath = [NSString stringWithFormat:@"%@/%@.jpg", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
     [data writeToFile:posterImagePath atomically:YES];
@@ -200,9 +200,19 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
             return;
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.editorView insertVideo:[[NSURL fileURLWithPath:videoPath] absoluteString]
+            [self.editorView insertLocalVideo:[[NSURL fileURLWithPath:videoPath] absoluteString]
                              posterImage:[[NSURL fileURLWithPath:posterImagePath] absoluteString]
-                                     alt:@"Video"];
+                                     uniqueId:videoID];
+            NSProgress *progress = [[NSProgress alloc] initWithParent:nil userInfo:@{ @"videoID": videoID,
+                                                                                      @"url": videoPath }];
+            progress.cancellable = YES;
+            progress.totalUnitCount = 100;
+            [NSTimer scheduledTimerWithTimeInterval:0.1
+                                             target:self
+                                           selector:@selector(timerFireMethod:)
+                                           userInfo:progress
+                                            repeats:YES];
+            self.imagesAdded[videoID] = progress;
         });
     }];
 }
@@ -222,22 +232,34 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     }];
 }
 
--(void)timerFireMethod:(NSTimer *)timer{
-    NSProgress * progress = (NSProgress *)timer.userInfo;
-    NSString * imageID = progress.userInfo[@"imageID"];
+- (void)timerFireMethod:(NSTimer *)timer
+{
+    NSProgress *progress = (NSProgress *)timer.userInfo;
     progress.completedUnitCount++;
-    [self.editorView setProgress:progress.fractionCompleted onImage:imageID];
+    NSString *imageID = progress.userInfo[@"imageID"];
+    if (imageID) {
+        [self.editorView setProgress:progress.fractionCompleted onImage:imageID];
+        // Uncomment this code if you need to test a failed image upload
+        //    if (progress.fractionCompleted >= 0.15){
+        //        [progress cancel];
+        //        [self.editorView markImage:imageID failedUploadWithMessage:@"Failed"];
+        //        [timer invalidate];
+        //    }
+        if (progress.fractionCompleted >= 1) {
+            [self.editorView replaceLocalImageWithRemoteImage:[[NSURL fileURLWithPath:progress.userInfo[@"url"]] absoluteString] uniqueId:imageID];
+            [timer invalidate];
+        }
+        return;
+    }
 
-// Uncomment this code if you need to test a failed image upload
-//    if (progress.fractionCompleted >= 0.15){
-//        [progress cancel];
-//        [self.editorView markImage:imageID failedUploadWithMessage:@"Failed"];
-//        [timer invalidate];
-//    }
-    
-    if (progress.fractionCompleted >= 1){
-        [self.editorView replaceLocalImageWithRemoteImage:[[NSURL fileURLWithPath:progress.userInfo[@"url"]] absoluteString] uniqueId:imageID];
-        [timer invalidate];
+    NSString *videoID = progress.userInfo[@"videoID"];
+    if (videoID) {
+        [self.editorView setProgress:progress.fractionCompleted onVideo:videoID];
+        if (progress.fractionCompleted >= 1) {
+            [self.editorView replaceLocalVideoWithId:videoID forRemoteVideo:[[NSURL fileURLWithPath:progress.userInfo[@"url"]] absoluteString]];
+            [timer invalidate];
+        }
+        return;
     }
 }
 

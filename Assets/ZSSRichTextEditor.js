@@ -921,10 +921,220 @@ ZSSEditor.removeImage = function(imageNodeIdentifier) {
 
 ZSSEditor.insertVideo = function(videoURL, posterURL, alt) {
     var html = '<video controls webkit-playsinline poster="' + posterURL+ '"><source src="'
-    + videoURL + '" type="video/mp4"/>alt</video>';
+    + videoURL + '" type="video/mp4"/>' + alt + '</video>';
     
     this.insertHTML(html);
     this.sendEnabledStyles();
+};
+
+/**
+ *  @brief      Inserts a local video URL.  Useful for videos that need to be uploaded.
+ *  @details    By inserting a local video URL, we can make sure the video is shown to the user
+ *              as soon as it's selected for uploading.  Once the video is successfully uploaded
+ *              the application should call replaceLocalVideoWithRemoteVideo().
+ *
+ *  @param      videoNodeIdentifier     This is a unique ID provided by the caller.  It exists as
+ *                                      a mechanism to update the video node with the remote URL
+ *                                      when replaceLocalVideoWithRemoteVideo() is called.
+ *  @param      localVideoUrl           The URL of the local video to display.  Please keep in mind
+ *                                      that a remote URL can be used here too, since this method
+ *                                      does not check for that.  It would be a mistake.
+ */
+ZSSEditor.insertLocalVideo = function(videoNodeIdentifier, localVideoUrl, posterUrl) {
+    var space = '&nbsp';
+    var progressIdentifier = this.getVideoProgressIdentifier(videoNodeIdentifier);
+    var videoContainerIdentifier = this.getVideoContainerIdentifier(videoNodeIdentifier);
+    var videoContainerStart = '<span id="' + videoContainerIdentifier + '" class="img_container" data-failed="Tap to try again!">';
+    var videoContainerEnd = '</span>';
+    var progress = '<progress id="' + progressIdentifier + '" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
+    var video = '<video data-wpid="' + videoNodeIdentifier + '" webkit-playsinline poster="' + posterUrl + '"></video>';
+    var html =  space + videoContainerStart + progress + video + videoContainerEnd + space;
+    this.insertHTML(html);
+    this.sendEnabledStyles();
+};
+
+ZSSEditor.getVideoNodeWithIdentifier = function(videoNodeIdentifier) {
+    return $('video[data-wpid="' + videoNodeIdentifier+'"]');
+};
+
+ZSSEditor.getVideoProgressIdentifier = function(videoNodeIdentifier) {
+    return 'progress_' + videoNodeIdentifier;
+};
+
+ZSSEditor.getVideoProgressNodeWithIdentifier = function(videoNodeIdentifier) {
+    return $('#'+this.getVideoProgressIdentifier(videoNodeIdentifier));
+};
+
+ZSSEditor.getVideoContainerIdentifier = function(videoNodeIdentifier) {
+    return 'video_container_' + videoNodeIdentifier;
+};
+
+ZSSEditor.getVideoContainerNodeWithIdentifier = function(videoNodeIdentifier) {
+    return $('#'+this.getVideoContainerIdentifier(videoNodeIdentifier));
+};
+
+
+/**
+ *  @brief      Replaces a local Video URL with a remote Video URL.  Useful for Videos that have
+ *              just finished uploading.
+ *  @details    The remote Video can be available after a while, when uploading Videos.  This method
+ *              allows for the remote URL to be loaded once the upload completes.
+ *
+ *  @param      videoNodeIdentifier     This is a unique ID provided by the caller.  It exists as
+ *                                      a mechanism to update the Video node with the remote URL
+ *                                      when replaceLocalVideoWithRemoteVideo() is called.
+ *  @param      remoteVideoUrl          The URL of the remote Video to display.
+ */
+ZSSEditor.replaceLocalVideoWithRemoteVideo = function(videoNodeIdentifier, remoteVideoUrl) {
+    var videoNode = this.getVideoNodeWithIdentifier(videoNodeIdentifier);
+    
+    if (videoNode.length == 0) {
+        // even if the Video is not present anymore we must do callback
+        this.markVideoUploadDone(videoNodeIdentifier);
+        return;
+    }
+    videoNode.attr('src', remoteVideoUrl);
+    videoNode.attr('controls', '');
+    this.markVideoUploadDone(videoNodeIdentifier);
+};
+
+/**
+ *  @brief      Update the progress indicator for the Video identified with the value in progress.
+ *
+ *  @param      VideoNodeIdentifier This is a unique ID provided by the caller.
+ *  @param      progress    A value between 0 and 1 indicating the progress on the Video.
+ */
+ZSSEditor.setProgressOnVideo = function(videoNodeIdentifier, progress) {
+    var videoNode = this.getVideoNodeWithIdentifier(videoNodeIdentifier);
+    if (videoNode.length == 0){
+        return;
+    }
+    if (progress < 1){
+        videoNode.addClass("uploading");
+    }
+    
+    var videoProgressNode = this.getVideoProgressNodeWithIdentifier(videoNodeIdentifier);
+    if (videoProgressNode.length == 0){
+        return;
+    }
+    videoProgressNode.attr("value",progress);
+};
+
+/**
+ *  @brief      Notifies that the Video upload as finished
+ *
+ *  @param      VideoNodeIdentifier     The unique Video ID for the uploaded Video
+ */
+ZSSEditor.markVideoUploadDone = function(videoNodeIdentifier) {
+    
+    this.sendVideoReplacedCallback(videoNodeIdentifier);
+    
+    var videoNode = this.getVideoNodeWithIdentifier(videoNodeIdentifier);
+    if (videoNode.length == 0){
+        return;
+    }
+    
+    // remove identifier attributed from Video
+    videoNode.removeAttr('data-wpid');
+    
+    // remove uploading style
+    videoNode.removeClass("uploading");
+    videoNode.removeAttr("class");
+    
+    // Remove all extra formatting nodes for progress
+    if (videoNode.parent().attr("id") == this.getVideoContainerIdentifier(videoNodeIdentifier)) {
+        videoNode.parent().replaceWith(videoNode);
+    }
+    videoNode.wrap(linkTag);
+};
+
+/**
+ *  @brief      Callbacks to native that the Video upload as finished and the local url was replaced by the remote url
+ *
+ *  @param      VideoNodeIdentifier     The unique Video ID for the uploaded Video
+ */
+ZSSEditor.sendVideoReplacedCallback = function( videoNodeIdentifier ) {
+    var arguments = ['id=' + encodeURIComponent( videoNodeIdentifier )];
+    
+    var joinedArguments = arguments.join( defaultCallbackSeparator );
+    
+    this.callback("callback-video-replaced", joinedArguments);
+};
+
+/**
+ *  @brief      Marks the Video as failed to upload
+ *
+ *  @param      VideoNodeIdentifier     This is a unique ID provided by the caller.
+ *  @param      message                 A message to show to the user, overlayed on the Video
+ */
+ZSSEditor.markVideoUploadFailed = function(videoNodeIdentifier, message) {
+    var videoNode = this.getVideoNodeWithIdentifier(videoNodeIdentifier);
+    if (videoNode.length == 0){
+        return;
+    }
+    
+    var sizeClass = '';
+    if ( videoNode[0].width > 480 && videoNode[0].height > 240 ) {
+        sizeClass = "largeFail";
+    } else if ( videoNode[0].width < 100 || videoNode[0].height < 100 ) {
+        sizeClass = "smallFail";
+    }
+    
+    videoNode.addClass('failed');
+    
+    var videoContainerNode = this.getVideoContainerNodeWithIdentifier(videoNodeIdentifier);
+    if(videoContainerNode.length != 0){
+        videoContainerNode.attr("data-failed", message);
+        videoNode.removeClass("uploading");
+        videoContainerNode.addClass('failed');
+        videoContainerNode.addClass(sizeClass);
+    }
+    
+    var videoProgressNode = this.getVideoProgressNodeWithIdentifier(videoNodeIdentifier);
+    if (videoProgressNode.length != 0){
+        videoProgressNode.addClass('failed');
+    }
+};
+
+/**
+ *  @brief      Unmarks the Video as failed to upload
+ *
+ *  @param      VideoNodeIdentifier     This is a unique ID provided by the caller.
+ */
+ZSSEditor.unmarkVideoUploadFailed = function(videoNodeIdentifier, message) {
+    var videoNode = this.getVideoNodeWithIdentifier(videoNodeIdentifier);
+    if (videoNode.length != 0){
+        videoNode.removeClass('failed');
+    }
+    
+    var videoContainerNode = this.getVideoContainerNodeWithIdentifier(videoNodeIdentifier);
+    if(videoContainerNode.length != 0){
+        videoContainerNode.removeAttr("data-failed");
+        videoContainerNode.removeClass('failed');
+    }
+    
+    var videoProgressNode = this.getVideoProgressNodeWithIdentifier(videoNodeIdentifier);
+    if (videoProgressNode.length != 0){
+        videoProgressNode.removeClass('failed');
+    }
+};
+
+/**
+ *  @brief      Remove the Video from the DOM.
+ *
+ *  @param      videoNodeIdentifier     This is a unique ID provided by the caller.
+ */
+ZSSEditor.removeVideo = function(videoNodeIdentifier) {
+    var videoNode = this.getVideoNodeWithIdentifier(videoNodeIdentifier);
+    if (videoNode.length != 0){
+        videoNode.remove();
+    }
+    
+    // if Video is inside options container we need to remove the container
+    var videoContainerNode = this.getVideoContainerNodeWithIdentifier(videoNodeIdentifier);
+    if (videoContainerNode.length != 0){
+        videoContainerNode.remove();
+    }
 };
 
 /**

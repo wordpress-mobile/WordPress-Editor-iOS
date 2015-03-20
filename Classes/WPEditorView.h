@@ -276,6 +276,12 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 - (void)insertVideo:(NSString *)videoURL posterImage:(NSString *)posterImageURL alt:(NSString *)alt;
 
+- (void)insertLocalVideo:(NSString *)videoURL posterImage:(NSString *)posterImageURL uniqueId:(NSString *)uniqueId;
+
+- (void)setProgress:(double)progress onVideo:(NSString *)uniqueId;
+
+- (void)replaceLocalVideoWithId:(NSString *)uniqueId forRemoteVideo:(NSString *)url;
+
 #pragma mark - Links
 
 /**
