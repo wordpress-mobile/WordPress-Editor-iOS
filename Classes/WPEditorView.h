@@ -282,6 +282,10 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 - (void)replaceLocalVideoWithId:(NSString *)uniqueId forRemoteVideo:(NSString *)url;
 
+- (void)markVideo:(NSString *)uniqueId failedUploadWithMessage:(NSString*) message;
+
+- (void)unmarkVideoFailedUpload:(NSString *)uniqueId;
+
 #pragma mark - Links
 
 /**

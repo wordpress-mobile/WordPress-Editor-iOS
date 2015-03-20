@@ -1367,6 +1367,18 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
+- (void)markVideo:(NSString *)uniqueId failedUploadWithMessage:(NSString*) message;
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.markVideoUploadFailed(\"%@\", \"%@\");", uniqueId, message];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)unmarkVideoFailedUpload:(NSString *)uniqueId
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.unmarkVideoUploadFailed(\"%@\");", uniqueId];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
 #pragma mark - URL normalization
 
 - (NSString*)normalizeURL:(NSString*)url
