@@ -2019,6 +2019,12 @@ ZSSField.prototype.handleTapEvent = function(e) {
                 this.sendImageTappedCallback( targetNode );
                 return;
             }
+            
+            // If the image is uploading, or is a local image do not select it.
+            if ( targetNode.dataset.wpid ) {
+                this.sendVideoTappedCallback( targetNode );
+                return;
+            }
 
             // If we're not currently editing just return. No need to apply styles
             // or acknowledge the tap
@@ -2075,6 +2081,23 @@ ZSSField.prototype.sendImageTappedCallback = function( imageNode ) {
     // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
     //
     setTimeout(function() { thisObj.callback('callback-image-tap', joinedArguments);}, 500);
+}
+
+ZSSField.prototype.sendVideoTappedCallback = function( imageNode ) {
+    var videoId = "";
+    if ( imageNode.hasAttribute( 'data-wpid' ) ){
+        videoId = imageNode.getAttribute( 'data-wpid' )
+    }
+    var arguments = ['id=' + encodeURIComponent( videoId ),
+                     'url=' + encodeURIComponent( imageNode.src )];
+    
+    var joinedArguments = arguments.join( defaultCallbackSeparator );
+    
+    var thisObj = this;
+    
+    // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
+    //
+    setTimeout(function() { thisObj.callback('callback-video-tap', joinedArguments);}, 500);
 }
 
 // MARK: - Callback Execution

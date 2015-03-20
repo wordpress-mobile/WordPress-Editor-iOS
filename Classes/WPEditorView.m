@@ -739,6 +739,38 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 /**
+ *	@brief		Handles a image tapped callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleVideoTappedCallback:(NSURL*)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    static NSString *const kTappedUrlParameterName = @"url";
+    static NSString *const kTappedIdParameterName = @"id";
+    
+    __block NSURL *tappedUrl = nil;
+    __block NSString *tappedId = nil;
+    
+    [self parseParametersFromCallbackURL:url
+         andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+     {
+         if ([parameterName isEqualToString:kTappedUrlParameterName]) {
+             tappedUrl = [NSURL URLWithString:[self stringByDecodingURLFormat:parameterValue]];
+         } else if ([parameterName isEqualToString:kTappedIdParameterName]) {
+             tappedId = [self stringByDecodingURLFormat:parameterValue];
+         }
+     } onComplete:^{
+         if ([self.delegate respondsToSelector:@selector(editorView:videoTapped:url:)]) {
+             [self.delegate editorView:self videoTapped:tappedId url:tappedUrl];
+         }
+     }];
+}
+
+
+
+/**
  *	@brief		Handles a image replaced callback.
  *
  *	@param		url		The url with all the callback information.

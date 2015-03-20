@@ -113,6 +113,18 @@
          imageMeta:(WPImageMeta *)imageMeta;
 
 /**
+ * @brief		Received when the user taps on a image in the editor.
+ *
+ * @param		editorView	The editor view.
+ * @param		videoId		The id of image of the image that was tapped.
+ * @param		url			The url of the image that was tapped.
+ *
+ */
+- (void)editorView:(WPEditorView*)editorView
+       videoTapped:(NSString *)imageId
+               url:(NSURL *)url;
+
+/**
  *	@brief		Received when the selection is changed.
  *	@details	Useful to know what styles surround the current selection.
  *

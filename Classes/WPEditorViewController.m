@@ -1648,6 +1648,16 @@ NSInteger const WPLinkAlertViewTag = 92;
     return YES;
 }
 
+- (BOOL)editorView:(WPEditorView*)editorView
+       videoTapped:(NSString *)videoId
+               url:(NSURL *)url
+{
+    if ([self.delegate respondsToSelector:@selector(editorViewController:videoTapped:url:)]) {
+        [self.delegate editorViewController:self videoTapped:videoId url:url];
+    }
+    return YES;
+}
+
 - (void)editorView:(WPEditorView*)editorView
        imageReplaced:(NSString *)imageId
 {
