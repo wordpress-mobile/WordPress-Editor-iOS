@@ -99,4 +99,4 @@ The following projects were used in the WordPress-iOS-Editor codebase:
 
 ## License
 
-WordPress-iOS-Editor is available under the MIT license. See the [LICENSE](https://raw.githubusercontent.com/wordpress-mobile/WordPress-iOS-Editor/develop/LICENSE) file for more info.
+WordPress-iOS-Editor is available under the GPL license. See the [LICENSE](https://raw.githubusercontent.com/wordpress-mobile/WordPress-iOS-Editor/develop/LICENSE) file for more info.
