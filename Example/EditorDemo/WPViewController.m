@@ -117,6 +117,14 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     [self.imagesAdded removeObjectForKey:imageId];
 }
 
+- (void)editorViewController:(WPEditorViewController *)editorViewController videoReplaced:(NSString *)videoId
+{
+    [self.imagesAdded removeObjectForKey:videoId];
+}
+
+
+#pragma mark - Media actions
+
 - (void)showImageDetailsForImageMeta:(WPImageMeta *)imageMeta
 {
     WPImageMetaViewController *controller = [self.storyboard instantiateViewControllerWithIdentifier:@"WPImageMetaViewController"];
@@ -256,11 +264,11 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     if (videoID) {
         [self.editorView setProgress:progress.fractionCompleted onVideo:videoID];
         // Uncomment this code if you need to test a failed video upload
-        if (progress.fractionCompleted >= 0.15) {
-            [progress cancel];
-            [self.editorView markVideo:videoID failedUploadWithMessage:@"Failed"];
-            [timer invalidate];
-        }
+//        if (progress.fractionCompleted >= 0.15) {
+//            [progress cancel];
+//            [self.editorView markVideo:videoID failedUploadWithMessage:@"Failed"];
+//            [timer invalidate];
+//        }
         if (progress.fractionCompleted >= 1) {
             [self.editorView replaceLocalVideoWithId:videoID forRemoteVideo:[[NSURL fileURLWithPath:progress.userInfo[@"url"]] absoluteString]];
             [timer invalidate];

@@ -132,6 +132,16 @@ stylesForCurrentSelection:(NSArray*)styles;
 - (void)editorView:(WPEditorView*)editorView
      imageReplaced:(NSString *)imageId;
 
+/**
+ * @brief		Received when a video local url is replaced by the final remote url.
+ *
+ * @param		editorView	The editor view.
+ * @param		imageId		The id of image of the image that had the local url replaced by remote url.
+ *
+ */
+- (void)editorView:(WPEditorView*)editorView
+     videoReplaced:(NSString *)videoId;
+
 @end
 
 @interface WPEditorView : UIView

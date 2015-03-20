@@ -558,8 +558,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([self isDOMLoadedScheme:scheme]) {
             [self handleDOMLoadedCallback:url];
             handled = YES;
-        }  else if ([self isImageReplacedScheme:scheme]) {
+        } else if ([self isImageReplacedScheme:scheme]) {
             [self handleImageReplacedCallback:url];
+            handled = YES;
+        } else if ([self isVideoReplacedScheme:scheme]) {
+            [self handleVideoReplacedCallback:url];
             handled = YES;
         }
     }
@@ -762,6 +765,32 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 /**
+ *	@brief		Handles a image replaced callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleVideoReplacedCallback:(NSURL*)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    static NSString *const kVideoIdParameterName = @"id";
+    
+    __block NSString *videoId = nil;
+    
+    [self parseParametersFromCallbackURL:url
+         andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+     {
+         if ([parameterName isEqualToString:kVideoIdParameterName]) {
+             videoId = [self stringByDecodingURLFormat:parameterValue];
+         }
+     } onComplete:^{
+         if ([self.delegate respondsToSelector:@selector(editorView:videoReplaced:)]) {
+             [self.delegate editorView:self videoReplaced:videoId];
+         }
+     }];
+}
+
+/**
  *	@brief		Handles a log callback.
  *
  *	@param		url		The url with all the callback information.
@@ -899,6 +928,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              @"We're expecting a non-nil string object here.");
     
     static NSString* const kCallbackScheme = @"callback-image-replaced";
+    
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isVideoReplacedScheme:(NSString*)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
+    static NSString* const kCallbackScheme = @"callback-video-replaced";
     
     return [scheme isEqualToString:kCallbackScheme];
 }

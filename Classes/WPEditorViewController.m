@@ -1656,6 +1656,14 @@ NSInteger const WPLinkAlertViewTag = 92;
     }
 }
 
+- (void)editorView:(WPEditorView*)editorView
+     videoReplaced:(NSString *)videoId
+{
+    if ([self.delegate respondsToSelector:@selector(editorViewController:videoReplaced:)]) {
+        [self.delegate editorViewController:self videoReplaced:videoId];
+    }
+}
+
 
 - (void)editorView:(WPEditorView*)editorView stylesForCurrentSelection:(NSArray*)styles
 {
