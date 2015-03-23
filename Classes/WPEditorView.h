@@ -308,6 +308,8 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 - (void)unmarkVideoFailedUpload:(NSString *)uniqueId;
 
+- (void)removeVideo:(NSString*)uniqueId;
+
 #pragma mark - Links
 
 /**

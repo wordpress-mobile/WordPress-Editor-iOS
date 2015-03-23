@@ -8,13 +8,17 @@
 #import "WPImageMetaViewController.h"
 
 typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
-    WPViewControllerActionSheetUploadStop = 200,
-    WPViewControllerActionSheetUploadRetry = 201
+    WPViewControllerActionSheetImageUploadStop = 200,
+    WPViewControllerActionSheetImageUploadRetry = 201,
+    WPViewControllerActionSheetVideoUploadStop = 202,
+    WPViewControllerActionSheetVideoUploadRetry = 203
+
 };
 
 @interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, WPImageMetaViewControllerDelegate>
 @property(nonatomic, strong) NSMutableDictionary *imagesAdded;
 @property(nonatomic, strong) NSString *selectedImageId;
+@property(nonatomic, strong) NSString *selectedVideoId;
 @end
 
 @implementation WPViewController
@@ -112,6 +116,13 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     }
 }
 
+- (void)editorViewController:(WPEditorViewController*)editorViewController
+                 videoTapped:(NSString *)videoId
+                         url:(NSURL *)url
+{
+    [self showPromptForVideoWithID:videoId];
+}
+
 - (void)editorViewController:(WPEditorViewController *)editorViewController imageReplaced:(NSString *)imageId
 {
     [self.imagesAdded removeObjectForKey:imageId];
@@ -143,13 +154,31 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     if (!progress.cancelled){
         UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
         [actionSheet showInView:self.view];
-        actionSheet.tag = WPViewControllerActionSheetUploadStop;
+        actionSheet.tag = WPViewControllerActionSheetImageUploadStop;
     } else {
         UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Remove Image" otherButtonTitles:@"Retry Upload", nil];
         [actionSheet showInView:self.view];
-        actionSheet.tag = WPViewControllerActionSheetUploadRetry;
+        actionSheet.tag = WPViewControllerActionSheetImageUploadRetry;
     }
     self.selectedImageId = imageId;
+}
+
+- (void)showPromptForVideoWithID:(NSString *)videoId
+{
+    if (videoId.length == 0){
+        return;
+    }
+    NSProgress *progress = self.imagesAdded[videoId];
+    if (!progress.cancelled){
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
+        [actionSheet showInView:self.view];
+        actionSheet.tag = WPViewControllerActionSheetVideoUploadStop;
+    } else {
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Remove Video" otherButtonTitles:@"Retry Upload", nil];
+        [actionSheet showInView:self.view];
+        actionSheet.tag = WPViewControllerActionSheetVideoUploadRetry;
+    }
+    self.selectedVideoId = videoId;
 }
 
 - (void)showPhotoPicker
@@ -292,11 +321,11 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if (actionSheet.tag == WPViewControllerActionSheetUploadStop){
+    if (actionSheet.tag == WPViewControllerActionSheetImageUploadStop){
         if (buttonIndex == actionSheet.destructiveButtonIndex) {
             [self.editorView removeImage:self.selectedImageId];
         }
-    } else if (actionSheet.tag == WPViewControllerActionSheetUploadRetry){
+    } else if (actionSheet.tag == WPViewControllerActionSheetImageUploadRetry){
         if (buttonIndex == actionSheet.destructiveButtonIndex) {
             [self.editorView removeImage:self.selectedImageId];
         } else if (buttonIndex == actionSheet.firstOtherButtonIndex) {
@@ -311,7 +340,27 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
             [self.editorView unmarkImageFailedUpload:self.selectedImageId];
         }
 
+    } else if (actionSheet.tag == WPViewControllerActionSheetVideoUploadStop){
+        if (buttonIndex == actionSheet.destructiveButtonIndex) {
+            [self.editorView removeVideo:self.selectedVideoId];
+        }
+    } else if (actionSheet.tag == WPViewControllerActionSheetVideoUploadRetry){
+        if (buttonIndex == actionSheet.destructiveButtonIndex) {
+            [self.editorView removeVideo:self.selectedVideoId];
+        } else if (buttonIndex == actionSheet.firstOtherButtonIndex) {
+            NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"videoID":self.selectedVideoId}];
+            progress.totalUnitCount = 100;
+            [NSTimer scheduledTimerWithTimeInterval:0.1
+                                             target:self
+                                           selector:@selector(timerFireMethod:)
+                                           userInfo:progress
+                                            repeats:YES];
+            self.imagesAdded[self.selectedVideoId] = progress;
+            [self.editorView unmarkVideoFailedUpload:self.selectedVideoId];
+        }
+        
     }
+
     
     
 }

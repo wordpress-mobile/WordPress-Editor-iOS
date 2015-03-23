@@ -1047,7 +1047,7 @@ function style_html(html_source, options) {
             content:attr(data-failed);
         }
 
-    /* Image editing overlay styles */
+    /* Image and video editing overlay styles */
         .edit-container {
             position: relative;
             display: inline-block;
@@ -1055,6 +1055,12 @@ function style_html(html_source, options) {
             overflow: hidden;
         }
 
+        .edit-container img {
+            -webkit-filter: blur(4px) grayscale(0.3);
+            margin:-1px; /*tiny margin to keep crisp edges when blurring the image*/
+            padding:1px;
+        }
+    
         .edit-container img {
             -webkit-filter: blur(4px) grayscale(0.3);
             margin:-1px; /*tiny margin to keep crisp edges when blurring the image*/

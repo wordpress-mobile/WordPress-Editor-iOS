@@ -543,6 +543,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([self isImageTappedScheme:scheme]) {
             [self handleImageTappedCallback:url];
             handled = YES;
+        } else if ([self isVideoTappedScheme:scheme]) {
+            [self handleVideoTappedCallback:url];
+            handled = YES;
         } else if ([self isLogCallbackScheme:scheme]){
             [self handleLogCallbackScheme:url];
             handled = YES;
@@ -960,6 +963,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              @"We're expecting a non-nil string object here.");
     
     static NSString* const kCallbackScheme = @"callback-image-replaced";
+    
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isVideoTappedScheme:(NSString*)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
+    static NSString* const kCallbackScheme = @"callback-video-tap";
     
     return [scheme isEqualToString:kCallbackScheme];
 }
@@ -1449,6 +1462,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.unmarkVideoUploadFailed(\"%@\");", uniqueId];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
+
+- (void)removeVideo:(NSString*)uniqueId
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.removeVideo(\"%@\");", uniqueId];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    
+}
+
 
 #pragma mark - URL normalization
 
