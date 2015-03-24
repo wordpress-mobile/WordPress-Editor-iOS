@@ -17,8 +17,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
 
 @interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, WPImageMetaViewControllerDelegate>
 @property(nonatomic, strong) NSMutableDictionary *mediaAdded;
-@property(nonatomic, strong) NSString *selectedImageId;
-@property(nonatomic, strong) NSString *selectedVideoId;
+@property(nonatomic, strong) NSString *selectedMediaID;
 @end
 
 @implementation WPViewController
@@ -160,7 +159,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
         [actionSheet showInView:self.view];
         actionSheet.tag = WPViewControllerActionSheetImageUploadRetry;
     }
-    self.selectedImageId = imageId;
+    self.selectedMediaID = imageId;
 }
 
 - (void)showPromptForVideoWithID:(NSString *)videoId
@@ -178,7 +177,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
         [actionSheet showInView:self.view];
         actionSheet.tag = WPViewControllerActionSheetVideoUploadRetry;
     }
-    self.selectedVideoId = videoId;
+    self.selectedMediaID = videoId;
 }
 
 - (void)showPhotoPicker
@@ -323,40 +322,40 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
 {
     if (actionSheet.tag == WPViewControllerActionSheetImageUploadStop){
         if (buttonIndex == actionSheet.destructiveButtonIndex) {
-            [self.editorView removeImage:self.selectedImageId];
+            [self.editorView removeImage:self.selectedMediaID];
         }
     } else if (actionSheet.tag == WPViewControllerActionSheetImageUploadRetry){
         if (buttonIndex == actionSheet.destructiveButtonIndex) {
-            [self.editorView removeImage:self.selectedImageId];
+            [self.editorView removeImage:self.selectedMediaID];
         } else if (buttonIndex == actionSheet.firstOtherButtonIndex) {
-            NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":self.selectedImageId}];
+            NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":self.selectedMediaID}];
             progress.totalUnitCount = 100;
             [NSTimer scheduledTimerWithTimeInterval:0.1
                                              target:self
                                            selector:@selector(timerFireMethod:)
                                            userInfo:progress
                                             repeats:YES];
-            self.mediaAdded[self.selectedImageId] = progress;
-            [self.editorView unmarkImageFailedUpload:self.selectedImageId];
+            self.mediaAdded[self.selectedMediaID] = progress;
+            [self.editorView unmarkImageFailedUpload:self.selectedMediaID];
         }
 
     } else if (actionSheet.tag == WPViewControllerActionSheetVideoUploadStop){
         if (buttonIndex == actionSheet.destructiveButtonIndex) {
-            [self.editorView removeVideo:self.selectedVideoId];
+            [self.editorView removeVideo:self.selectedMediaID];
         }
     } else if (actionSheet.tag == WPViewControllerActionSheetVideoUploadRetry){
         if (buttonIndex == actionSheet.destructiveButtonIndex) {
-            [self.editorView removeVideo:self.selectedVideoId];
+            [self.editorView removeVideo:self.selectedMediaID];
         } else if (buttonIndex == actionSheet.firstOtherButtonIndex) {
-            NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"videoID":self.selectedVideoId}];
+            NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"videoID":self.selectedMediaID}];
             progress.totalUnitCount = 100;
             [NSTimer scheduledTimerWithTimeInterval:0.1
                                              target:self
                                            selector:@selector(timerFireMethod:)
                                            userInfo:progress
                                             repeats:YES];
-            self.mediaAdded[self.selectedVideoId] = progress;
-            [self.editorView unmarkVideoFailedUpload:self.selectedVideoId];
+            self.mediaAdded[self.selectedMediaID] = progress;
+            [self.editorView unmarkVideoFailedUpload:self.selectedMediaID];
         }
         
     }
