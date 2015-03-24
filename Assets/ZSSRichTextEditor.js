@@ -2109,41 +2109,6 @@ ZSSField.prototype.handleTapEvent = function(e) {
                 this.sendVideoTappedCallback( targetNode );
                 return;
             }
-            
-            // If we're not currently editing just return. No need to apply styles
-            // or acknowledge the tap
-            if ( this.wrappedObject.attr('contenteditable') != "true" ) {
-                return;
-            }
-            
-            // Is the tapped image the image we're editing?
-            if ( targetNode == ZSSEditor.currentEditingVideo ) {
-                ZSSEditor.removeVideoSelectionFormatting( targetNode );
-                this.sendVideoTappedCallback( targetNode );
-                return;
-            }
-            
-            // If there is a selected image, deselect it. A different image was tapped.
-            if ( ZSSEditor.currentEditingVideo ) {
-                ZSSEditor.removeVideosSelectionFormatting( ZSSEditor.currentEditingVideo );
-            }
-            
-            // Format and flag the image as selected.
-            ZSSEditor.currentEditingVideo = targetNode;
-            ZSSEditor.applyVideoSelectionFormatting( targetNode );
-            
-            return;
-        }
-        
-        if (targetNode.className.indexOf('edit-overlay') != -1 || targetNode.className.indexOf('edit-content') != -1) {
-            ZSSEditor.removeVideoSelectionFormatting( ZSSEditor.currentEditingVideo );
-            this.sendVideoTappedCallback( ZSSEditor.currentEditingVideo );
-            return;
-        }
-        
-        if ( ZSSEditor.currentEditingVideo ) {
-            ZSSEditor.removeImageSelectionFormatting( ZSSEditor.currentEditingVideo );
-            ZSSEditor.currentEditingVideo = null;
         }
     }
 };
