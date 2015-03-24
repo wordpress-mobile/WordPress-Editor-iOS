@@ -947,7 +947,7 @@ ZSSEditor.insertLocalVideo = function(videoNodeIdentifier, localVideoUrl, poster
     var space = '&nbsp';
     var progressIdentifier = this.getVideoProgressIdentifier(videoNodeIdentifier);
     var videoContainerIdentifier = this.getVideoContainerIdentifier(videoNodeIdentifier);
-    var videoContainerStart = '<span id="' + videoContainerIdentifier + '" class="img_container" data-failed="Tap to try again!">';
+    var videoContainerStart = '<span id="' + videoContainerIdentifier + '" class="img_container">';
     var videoContainerEnd = '</span>';
     var progress = '<progress id="' + progressIdentifier + '" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
     var video = '<video data-wpid="' + videoNodeIdentifier + '" webkit-playsinline poster="' + posterUrl + '"></video>';
