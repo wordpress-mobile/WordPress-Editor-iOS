@@ -2132,9 +2132,9 @@ ZSSField.prototype.sendImageTappedCallback = function( imageNode ) {
     setTimeout(function() { thisObj.callback('callback-image-tap', joinedArguments);}, 500);
 }
 
-ZSSField.prototype.sendVideoTappedCallback = function( imageNode ) {
+ZSSField.prototype.sendVideoTappedCallback = function( videoNode ) {
     var videoId = "";
-    if ( imageNode.hasAttribute( 'data-wpid' ) ){
+    if ( videoNode.hasAttribute( 'data-wpid' ) ){
         videoId = imageNode.getAttribute( 'data-wpid' )
     }
     var arguments = ['id=' + encodeURIComponent( videoId ),
