@@ -2135,10 +2135,10 @@ ZSSField.prototype.sendImageTappedCallback = function( imageNode ) {
 ZSSField.prototype.sendVideoTappedCallback = function( videoNode ) {
     var videoId = "";
     if ( videoNode.hasAttribute( 'data-wpid' ) ){
-        videoId = imageNode.getAttribute( 'data-wpid' )
+        videoId = videoNode.getAttribute( 'data-wpid' )
     }
     var arguments = ['id=' + encodeURIComponent( videoId ),
-                     'url=' + encodeURIComponent( imageNode.src )];
+                     'url=' + encodeURIComponent( videoNode.src )];
     
     var joinedArguments = arguments.join( defaultCallbackSeparator );
     
