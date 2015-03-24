@@ -16,7 +16,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
 };
 
 @interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, WPImageMetaViewControllerDelegate>
-@property(nonatomic, strong) NSMutableDictionary *imagesAdded;
+@property(nonatomic, strong) NSMutableDictionary *mediaAdded;
 @property(nonatomic, strong) NSString *selectedImageId;
 @property(nonatomic, strong) NSString *selectedVideoId;
 @end
@@ -32,7 +32,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
                                                                              style:UIBarButtonItemStyleBordered
                                                                             target:self
                                                                             action:@selector(editTouchedUpInside)];
-    self.imagesAdded = [NSMutableDictionary dictionary];
+    self.mediaAdded = [NSMutableDictionary dictionary];
 }
 
 #pragma mark - Navigation Bar
@@ -125,12 +125,12 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
 
 - (void)editorViewController:(WPEditorViewController *)editorViewController imageReplaced:(NSString *)imageId
 {
-    [self.imagesAdded removeObjectForKey:imageId];
+    [self.mediaAdded removeObjectForKey:imageId];
 }
 
 - (void)editorViewController:(WPEditorViewController *)editorViewController videoReplaced:(NSString *)videoId
 {
-    [self.imagesAdded removeObjectForKey:videoId];
+    [self.mediaAdded removeObjectForKey:videoId];
 }
 
 
@@ -150,7 +150,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     if (imageId.length == 0){
         return;
     }
-    NSProgress *progress = self.imagesAdded[imageId];
+    NSProgress *progress = self.mediaAdded[imageId];
     if (!progress.cancelled){
         UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
         [actionSheet showInView:self.view];
@@ -168,7 +168,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     if (videoId.length == 0){
         return;
     }
-    NSProgress *progress = self.imagesAdded[videoId];
+    NSProgress *progress = self.mediaAdded[videoId];
     if (!progress.cancelled){
         UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
         [actionSheet showInView:self.view];
@@ -213,7 +213,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
                                    selector:@selector(timerFireMethod:)
                                    userInfo:progress
                                     repeats:YES];
-    self.imagesAdded[imageID] = progress;
+    self.mediaAdded[imageID] = progress;
 }
 
 - (void)addVideoAssetToContent:(ALAsset *)originalAsset
@@ -249,7 +249,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
                                            selector:@selector(timerFireMethod:)
                                            userInfo:progress
                                             repeats:YES];
-            self.imagesAdded[videoID] = progress;
+            self.mediaAdded[videoID] = progress;
         });
     }];
 }
@@ -336,7 +336,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
                                            selector:@selector(timerFireMethod:)
                                            userInfo:progress
                                             repeats:YES];
-            self.imagesAdded[self.selectedImageId] = progress;
+            self.mediaAdded[self.selectedImageId] = progress;
             [self.editorView unmarkImageFailedUpload:self.selectedImageId];
         }
 
@@ -355,7 +355,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
                                            selector:@selector(timerFireMethod:)
                                            userInfo:progress
                                             repeats:YES];
-            self.imagesAdded[self.selectedVideoId] = progress;
+            self.mediaAdded[self.selectedVideoId] = progress;
             [self.editorView unmarkVideoFailedUpload:self.selectedVideoId];
         }
         
