@@ -72,6 +72,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 {
     [self stopObservingKeyboardNotifications];
     [self stopObservingWebViewContentSizeChanges];
+    [self stopObservingVideoNotifications];
 }
 
 #pragma mark - UIView
@@ -103,8 +104,10 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 {
     if (!newSuperview) {
         [self stopObservingKeyboardNotifications];
+        [self stopObservingVideoNotifications];
     } else {
         [self startObservingKeyboardNotifications];
+        [self startObservingVideoNotifications];
     }
 }
 
@@ -567,7 +570,14 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([self isVideoReplacedScheme:scheme]) {
             [self handleVideoReplacedCallback:url];
             handled = YES;
+        } else if ([self isVideoFullScreenStartedScheme:scheme]) {
+            [self handleVideoFullScreenStartedCallback:url];
+            handled = YES;
+        }  else if ([self isVideoFullScreenEndedScheme:scheme]) {
+            [self handleVideoFullScreenEndedCallback:url];
+            handled = YES;
         }
+        
     }
 	
 	return handled;
@@ -742,7 +752,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 /**
- *	@brief		Handles a image tapped callback.
+ *	@brief		Handles a video tapped callback.
  *
  *	@param		url		The url with all the callback information.
  */
@@ -769,6 +779,56 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              [self.delegate editorView:self videoTapped:tappedId url:tappedUrl];
          }
      }];
+}
+
+/**
+ *	@brief		Handles a video entered fullscreen callback
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleVideoFullScreenStartedCallback:(NSURL*)aURL
+{
+    NSParameterAssert([aURL isKindOfClass:[NSURL class]]);
+    [self saveSelection];
+    // FIXME: SergioEstevao 2015/03/25 - It looks there is a bug on iOS 8 that makes
+    // the keyboard not to be hidden when a video is made to run in full screen inside a webview.
+    // this workaround searches for the first responder and dismisses it
+    UIView * firstResponder = [self findFirstResponder:self];
+    [firstResponder resignFirstResponder];
+    
+}
+/**
+ *  Finds the first responder in the view hierarchy starting from the currentView
+ *
+ *  @param currentView the view to start looking for the first responder.
+ *
+ *  @return the view that is the current first responder nil if none was found.
+ */
+- (UIView *)findFirstResponder:(UIView *)currentView
+{
+    if (currentView.isFirstResponder) {
+        [currentView resignFirstResponder];
+        return currentView;
+    }
+    for (UIView *subView in currentView.subviews) {
+        UIView * result = [self findFirstResponder:subView];
+        if (result){
+            return result;
+        }
+    }
+    return nil;
+}
+
+/**
+ *	@brief		Handles a video ended fullscreen callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleVideoFullScreenEndedCallback:(NSURL*)aURL
+{
+    NSParameterAssert([aURL isKindOfClass:[NSURL class]]);
+    
+    [self restoreSelection];
 }
 
 
@@ -1017,9 +1077,29 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     return [scheme isEqualToString:kCallbackScheme];
 }
 
+- (BOOL)isVideoFullScreenStartedScheme:(NSString *)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+
+    static NSString *const kCallbackScheme = @"callback-video-fullscreen-started";
+
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isVideoFullScreenEndedScheme:(NSString *)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+
+    static NSString *const kCallbackScheme = @"callback-video-fullscreen-ended";
+
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
 - (BOOL)isSelectionStyleScheme:(NSString*)scheme
 {
-	static NSString* const kCallbackScheme = @"callback-selection-style";
+	static NSString* const kCallbackScheme = @"callback-video-fullscreen";
 
 	return [scheme isEqualToString:kCallbackScheme];
 }
@@ -1470,6 +1550,29 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
 }
 
+- (void)startObservingVideoNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(videoNotifications:)
+                                                 name:nil
+                                               object:nil];
+}
+
+- (void)stopObservingVideoNotifications
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                 name:nil
+                                               object:nil];
+}
+
+- (void)videoNotifications:(NSNotification *)notification
+{
+    if ([[notification name] rangeOfString:@"Movie" options:NSCaseInsensitiveSearch].location != NSNotFound){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSLog(@"Notification %@", notification);
+        });
+    }
+}
 
 #pragma mark - URL normalization
 

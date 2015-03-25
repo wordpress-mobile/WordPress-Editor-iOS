@@ -950,7 +950,7 @@ ZSSEditor.insertLocalVideo = function(videoNodeIdentifier, localVideoUrl, poster
     var videoContainerStart = '<span id="' + videoContainerIdentifier + '" class="img_container">';
     var videoContainerEnd = '</span>';
     var progress = '<progress id="' + progressIdentifier + '" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
-    var video = '<video data-wpid="' + videoNodeIdentifier + '" webkit-playsinline poster="' + posterUrl + '"></video>';
+    var video = '<video data-wpid="' + videoNodeIdentifier + '" webkit-playsinline poster="' + posterUrl + '" contenteditable="false"></video>';
     var html =  space + videoContainerStart + progress + video + videoContainerEnd + space;
     this.insertHTML(html);
     this.sendEnabledStyles();
@@ -998,6 +998,9 @@ ZSSEditor.replaceLocalVideoWithRemoteVideo = function(videoNodeIdentifier, remot
     }
     videoNode.attr('src', remoteVideoUrl);
     videoNode.attr('controls', '');
+    var thisObj = this;
+    videoNode.on('webkitbeginfullscreen', function (event){ thisObj.sendVideoFullScreenStarted(); } );
+    videoNode.on('webkitendfullscreen', function (event){ thisObj.sendVideoFullScreenEnded(); } );
     this.markVideoUploadDone(videoNodeIdentifier);
 };
 
@@ -1051,9 +1054,9 @@ ZSSEditor.markVideoUploadDone = function(videoNodeIdentifier) {
 };
 
 /**
- *  @brief      Callbacks to native that the Video upload as finished and the local url was replaced by the remote url
+ *  @brief      Callbacks to native that the video upload as finished and the local url was replaced by the remote url
  *
- *  @param      VideoNodeIdentifier     The unique Video ID for the uploaded Video
+ *  @param      videoNodeIdentifier    the unique video ID for the uploaded Video
  */
 ZSSEditor.sendVideoReplacedCallback = function( videoNodeIdentifier ) {
     var arguments = ['id=' + encodeURIComponent( videoNodeIdentifier )];
@@ -1062,6 +1065,23 @@ ZSSEditor.sendVideoReplacedCallback = function( videoNodeIdentifier ) {
     
     this.callback("callback-video-replaced", joinedArguments);
 };
+
+/**
+ *  @brief      Callbacks to native that the video entered full screen mode
+ *
+ */
+ZSSEditor.sendVideoFullScreenStarted = function() {
+    this.callback("callback-video-fullscreen-started", "empty");
+};
+
+/**
+ *  @brief      Callbacks to native that the video entered full screen mode
+ *
+ */
+ZSSEditor.sendVideoFullScreenEnded = function() {
+    this.callback("callback-video-fullscreen-ended", "empty");
+};
+
 
 /**
  *  @brief      Marks the Video as failed to upload
@@ -2104,7 +2124,7 @@ ZSSField.prototype.handleTapEvent = function(e) {
         }
         
         if (targetNode.nodeName.toLowerCase() == 'video') {
-            // If the image is uploading, or is a local image do not select it.
+//             If the video is uploading, or is a local image do not select it.
             if ( targetNode.dataset.wpid ) {
                 this.sendVideoTappedCallback( targetNode );
                 return;
