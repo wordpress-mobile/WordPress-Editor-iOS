@@ -121,7 +121,7 @@
  *
  */
 - (void)editorView:(WPEditorView*)editorView
-       videoTapped:(NSString *)imageId
+       videoTapped:(NSString *)videoID
                url:(NSURL *)url;
 
 /**
@@ -148,7 +148,7 @@ stylesForCurrentSelection:(NSArray*)styles;
  * @brief		Received when a video local url is replaced by the final remote url.
  *
  * @param		editorView	The editor view.
- * @param		imageId		The id of image of the image that had the local url replaced by remote url.
+ * @param		videoId		The id of image of the image that had the local url replaced by remote url.
  *
  */
 - (void)editorView:(WPEditorView*)editorView
@@ -296,18 +296,60 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 #pragma mark - Videos
 
+/**
+ *  Inserts a HTML video element using a poster image to preview it before its fully loaded.
+ *
+ *  @param videoURL       URL for the video file
+ *  @param posterImageURL URL for the poster image to be used before the video is loaded
+ *  @param alt            an alternate description for the video
+ */
 - (void)insertVideo:(NSString *)videoURL posterImage:(NSString *)posterImageURL alt:(NSString *)alt;
 
+/**
+ *  Inserts a HTML video element that is pointing to a local file on the device using a poster image to preview it before it's fully loaded
+ *
+ *  @param videoURL       URL for the video file, this should be a file URL poiting to a file on the device
+ *  @param posterImageURL URL for a image file to show while the video is being loaded.
+ *  @param uniqueId       Unique ID to identity the video for progress report and later on to be replaced by the final video.
+ */
 - (void)insertLocalVideo:(NSString *)videoURL posterImage:(NSString *)posterImageURL uniqueId:(NSString *)uniqueId;
 
+/**
+ *  Sets the value of upload progress for a video
+ *
+ *  @param progress amount of progress being made it should be a value between 0 and 1.
+ *  @param uniqueId ID of the video to be updated
+ */
 - (void)setProgress:(double)progress onVideo:(NSString *)uniqueId;
 
+/**
+ *  Replaces the local video url on the video with the ID specified with the final remote video url
+ *
+ *  @param uniqueId ID of video to be updated
+ *  @param url      URL for the final remote video
+ */
 - (void)replaceLocalVideoWithId:(NSString *)uniqueId forRemoteVideo:(NSString *)url;
 
+/**
+ *  Sets the interface of the video with the uniqueId to a failed status with the message specified
+ *
+ *  @param uniqueId ID of the video to be marked as failed
+ *  @param message  Details why the video has failed to upload
+ */
 - (void)markVideo:(NSString *)uniqueId failedUploadWithMessage:(NSString*) message;
 
+/**
+ *  Removes the failed interface on the video with the uniqueID
+ *
+ *  @param uniqueId ID of the video to be updated
+ */
 - (void)unmarkVideoFailedUpload:(NSString *)uniqueId;
 
+/**
+ *  Removed the video with the uniqueID from the HTML
+ *
+ *  @param uniqueId ID of video to be removed
+ */
 - (void)removeVideo:(NSString*)uniqueId;
 
 #pragma mark - Links
