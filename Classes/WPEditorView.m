@@ -756,29 +756,27 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
  *
  *	@param		url		The url with all the callback information.
  */
-- (void)handleVideoTappedCallback:(NSURL*)url
+- (void)handleVideoTappedCallback:(NSURL *)url
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
-    
+
     static NSString *const kTappedUrlParameterName = @"url";
     static NSString *const kTappedIdParameterName = @"id";
-    
+
     __block NSURL *tappedUrl = nil;
     __block NSString *tappedId = nil;
-    
-    [self parseParametersFromCallbackURL:url
-         andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
-     {
+
+    [self parseParametersFromCallbackURL:url andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue) {
          if ([parameterName isEqualToString:kTappedUrlParameterName]) {
              tappedUrl = [NSURL URLWithString:[self stringByDecodingURLFormat:parameterValue]];
          } else if ([parameterName isEqualToString:kTappedIdParameterName]) {
              tappedId = [self stringByDecodingURLFormat:parameterValue];
          }
-     } onComplete:^{
+    } onComplete:^{
          if ([self.delegate respondsToSelector:@selector(editorView:videoTapped:url:)]) {
              [self.delegate editorView:self videoTapped:tappedId url:tappedUrl];
          }
-     }];
+    }];
 }
 
 /**
@@ -786,16 +784,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
  *
  *	@param		url		The url with all the callback information.
  */
-- (void)handleVideoFullScreenStartedCallback:(NSURL*)aURL
+- (void)handleVideoFullScreenStartedCallback:(NSURL *)aURL
 {
     NSParameterAssert([aURL isKindOfClass:[NSURL class]]);
     [self saveSelection];
     // FIXME: SergioEstevao 2015/03/25 - It looks there is a bug on iOS 8 that makes
     // the keyboard not to be hidden when a video is made to run in full screen inside a webview.
     // this workaround searches for the first responder and dismisses it
-    UIView * firstResponder = [self findFirstResponder:self];
+    UIView *firstResponder = [self findFirstResponder:self];
     [firstResponder resignFirstResponder];
-    
 }
 /**
  *  Finds the first responder in the view hierarchy starting from the currentView
@@ -811,8 +808,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         return currentView;
     }
     for (UIView *subView in currentView.subviews) {
-        UIView * result = [self findFirstResponder:subView];
-        if (result){
+        UIView *result = [self findFirstResponder:subView];
+        if (result) {
             return result;
         }
     }
@@ -824,10 +821,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
  *
  *	@param		url		The url with all the callback information.
  */
-- (void)handleVideoFullScreenEndedCallback:(NSURL*)aURL
+- (void)handleVideoFullScreenEndedCallback:(NSURL *)aURL
 {
     NSParameterAssert([aURL isKindOfClass:[NSURL class]]);
-    
+
     [self restoreSelection];
 }
 
@@ -864,25 +861,24 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
  *
  *	@param		url		The url with all the callback information.
  */
-- (void)handleVideoReplacedCallback:(NSURL*)url
+- (void)handleVideoReplacedCallback:(NSURL *)url
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
-    
+
     static NSString *const kVideoIdParameterName = @"id";
-    
+
     __block NSString *videoId = nil;
-    
-    [self parseParametersFromCallbackURL:url
-         andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
-     {
+
+    [self parseParametersFromCallbackURL:url andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+    {
          if ([parameterName isEqualToString:kVideoIdParameterName]) {
              videoId = [self stringByDecodingURLFormat:parameterValue];
          }
-     } onComplete:^{
+    } onComplete:^{
          if ([self.delegate respondsToSelector:@selector(editorView:videoReplaced:)]) {
              [self.delegate editorView:self videoReplaced:videoId];
          }
-     }];
+    }];
 }
 
 /**
