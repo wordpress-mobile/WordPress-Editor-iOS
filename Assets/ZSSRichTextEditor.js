@@ -1159,50 +1159,6 @@ ZSSEditor.removeVideo = function(videoNodeIdentifier) {
     }
 };
 
-ZSSEditor.applyVideoSelectionFormatting = function( imageNode ) {
-    var node = ZSSEditor.findImageCaptionNode( imageNode );
-    
-    var sizeClass = "";
-    if ( imageNode.width < 100 || imageNode.height < 100 ) {
-        sizeClass = " small";
-    }
-    
-    var overlay = '<span class="edit-overlay"><span class="edit-content">Edit</span></span>';
-    var html = '<span class="edit-container' + sizeClass + '">' + overlay + '</span>';
-   	node.insertAdjacentHTML( 'beforebegin', html );
-    var selectionNode = node.previousSibling;
-    selectionNode.appendChild( node );
-}
-
-ZSSEditor.removeVideoSelectionFormatting = function( imageNode ) {
-    var node = ZSSEditor.findImageCaptionNode( imageNode );
-    if ( !node.parentNode || node.parentNode.className.indexOf( "edit-container" ) == -1 ) {
-        return;
-    }
-    
-    var parentNode = node.parentNode;
-    var container = parentNode.parentNode;
-    container.insertBefore( node, parentNode );
-    parentNode.remove();
-}
-
-ZSSEditor.removeVideoSelectionFormattingFromHTML = function( html ) {
-    var tmp = document.createElement( "div" );
-    var tmpDom = $( tmp ).html( html );
-    
-    var matches = tmpDom.find( "span.edit-container video" );
-    if ( matches.length == 0 ) {
-        return html;
-    }
-    
-    for ( var i = 0; i < matches.length; i++ ) {
-        ZSSEditor.removeImageSelectionFormatting( matches[i] );
-    }
-    
-    return tmpDom.html();
-}
-
-
 /**
  *  @brief      Updates the currently selected image, replacing its markup with
  *  new markup based on the specified meta data string.
