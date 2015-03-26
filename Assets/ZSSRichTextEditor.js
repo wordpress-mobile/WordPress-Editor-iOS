@@ -2125,6 +2125,22 @@ ZSSField.prototype.sendVideoTappedCallback = function( videoNode ) {
     setTimeout(function() { thisObj.callback('callback-video-tap', joinedArguments);}, 500);
 }
 
+/**
+ *  @brief      Callbacks to native that the video entered full screen mode
+ *
+ */
+ZSSField.prototype.sendVideoFullScreenStarted = function() {
+    this.callback("callback-video-fullscreen-started", "empty");
+};
+
+/**
+ *  @brief      Callbacks to native that the video entered full screen mode
+ *
+ */
+ZSSField.prototype.sendVideoFullScreenEnded = function() {
+    this.callback("callback-video-fullscreen-ended", "empty");
+};
+
 // MARK: - Callback Execution
 
 ZSSField.prototype.callback = function(callbackScheme, callbackPath) {
@@ -2245,6 +2261,10 @@ ZSSField.prototype.setHTML = function(html) {
     var mutatedHTML = wp.loadText(html);
     mutatedHTML = ZSSEditor.applyVisualFormatting(mutatedHTML);
     this.wrappedObject.html(mutatedHTML);
+    var thisObj = this;
+    //bind events to any video present on the html.
+    $('video').on('webkitbeginfullscreen', function (event){ thisObj.sendVideoFullScreenStarted();});
+    $('video').on('webkitendfullscreen', function (event){ thisObj.sendVideoFullScreenEnded();});
     this.refreshPlaceholderColor();
 };
 
