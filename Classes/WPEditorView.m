@@ -1509,9 +1509,10 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)insertLocalVideo:(NSString *)videoURL posterImage:(NSString *)posterImageURL uniqueId:(NSString *)uniqueId
+- (void)insertInProgressVideoWithID:(NSString *)uniqueId
+                   usingPosterImage:(NSString *)posterImageURL
 {
-    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertLocalVideo(\"%@\", \"%@\", \"%@\");", uniqueId, videoURL, posterImageURL];
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertInProgressVideoWithIDUsingPosterImage(\"%@\", \"%@\");", uniqueId, posterImageURL];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 

@@ -931,26 +931,24 @@ ZSSEditor.insertVideo = function(videoURL, posterURL, alt) {
 };
 
 /**
- *  @brief      Inserts a local video URL.  Useful for videos that need to be uploaded.
- *  @details    By inserting a local video URL, we can make sure the video is shown to the user
+ *  @brief      Inserts a video tag marked with a identifier using only a poster image.  Useful for videos that need to be uploaded.
+ *  @details    By inserting a video with only a porter URL, we can make sure the video element is shown to the user
  *              as soon as it's selected for uploading.  Once the video is successfully uploaded
  *              the application should call replaceLocalVideoWithRemoteVideo().
  *
  *  @param      videoNodeIdentifier     This is a unique ID provided by the caller.  It exists as
  *                                      a mechanism to update the video node with the remote URL
  *                                      when replaceLocalVideoWithRemoteVideo() is called.
- *  @param      localVideoUrl           The URL of the local video to display.  Please keep in mind
- *                                      that a remote URL can be used here too, since this method
- *                                      does not check for that.  It would be a mistake.
+ *  @param      posterURL               The URL of a poster image to display while the video is being uploaded.
  */
-ZSSEditor.insertLocalVideo = function(videoNodeIdentifier, localVideoUrl, posterUrl) {
+ZSSEditor.insertInProgressVideoWithIDUsingPosterImage = function(videoNodeIdentifier, posterURL) {
     var space = '&nbsp';
     var progressIdentifier = this.getVideoProgressIdentifier(videoNodeIdentifier);
     var videoContainerIdentifier = this.getVideoContainerIdentifier(videoNodeIdentifier);
     var videoContainerStart = '<span id="' + videoContainerIdentifier + '" class="img_container">';
     var videoContainerEnd = '</span>';
     var progress = '<progress id="' + progressIdentifier + '" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
-    var video = '<video data-wpid="' + videoNodeIdentifier + '" webkit-playsinline poster="' + posterUrl + '" contenteditable="false" onclick=""></video>';
+    var video = '<video data-wpid="' + videoNodeIdentifier + '" webkit-playsinline poster="' + posterURL + '" contenteditable="false" onclick=""></video>';
     var html =  space + videoContainerStart + progress + video + videoContainerEnd + space;
     this.insertHTML(html);
     this.sendEnabledStyles();

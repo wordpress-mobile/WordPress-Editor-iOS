@@ -306,13 +306,14 @@ stylesForCurrentSelection:(NSArray*)styles;
 - (void)insertVideo:(NSString *)videoURL posterImage:(NSString *)posterImageURL alt:(NSString *)alt;
 
 /**
- *  Inserts a HTML video element that is pointing to a local file on the device using a poster image to preview it before it's fully loaded
+ *  Inserts a HTML video element that is using a poster image to preview it before it's fully loaded
  *
- *  @param videoURL       URL for the video file, this should be a file URL poiting to a file on the device
- *  @param posterImageURL URL for a image file to show while the video is being loaded.
  *  @param uniqueId       Unique ID to identity the video for progress report and later on to be replaced by the final video.
+ *  @param posterImageURL URL for a image file to show while the video is being loaded.
+
  */
-- (void)insertLocalVideo:(NSString *)videoURL posterImage:(NSString *)posterImageURL uniqueId:(NSString *)uniqueId;
+- (void)insertInProgressVideoWithID:(NSString *)uniqueId
+                   usingPosterImage:(NSString *)posterImageURL;
 
 /**
  *  Sets the value of upload progress for a video

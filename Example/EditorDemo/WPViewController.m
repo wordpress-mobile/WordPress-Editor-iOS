@@ -236,9 +236,8 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
             return;
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.editorView insertLocalVideo:[[NSURL fileURLWithPath:videoPath] absoluteString]
-                             posterImage:[[NSURL fileURLWithPath:posterImagePath] absoluteString]
-                                     uniqueId:videoID];
+            [self.editorView insertInProgressVideoWithID:videoID
+                                        usingPosterImage:[[NSURL fileURLWithPath:posterImagePath] absoluteString]];
             NSProgress *progress = [[NSProgress alloc] initWithParent:nil userInfo:@{ @"videoID": videoID,
                                                                                       @"url": videoPath }];
             progress.cancellable = YES;
