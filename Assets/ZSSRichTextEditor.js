@@ -922,6 +922,14 @@ ZSSEditor.removeImage = function(imageNodeIdentifier) {
     }
 };
 
+/**
+ *  @brief Inserts a video tag using the videoURL as source and posterURL as the image to show while video is loading.
+ *
+ *  @param videoURL  the url of the video to present
+ *  @param posterURL the url of an image to show while the video is loading
+ *  @param alt       the alt descriptuon when the video is not supported.
+ *
+ */
 ZSSEditor.insertVideo = function(videoURL, posterURL, alt) {
     var html = '<video controls webkit-playsinline poster="' + posterURL+ '"><source src="'
     + videoURL + '" type="video/mp4"/>' + alt + '</video>';
