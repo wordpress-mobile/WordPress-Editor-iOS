@@ -956,7 +956,7 @@ ZSSEditor.insertInProgressVideoWithIDUsingPosterImage = function(videoNodeIdenti
     var videoContainerStart = '<span id="' + videoContainerIdentifier + '" class="img_container">';
     var videoContainerEnd = '</span>';
     var progress = '<progress id="' + progressIdentifier + '" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
-    var video = '<video data-wpid="' + videoNodeIdentifier + '" webkit-playsinline poster="' + posterURL + '" contenteditable="false" onclick=""></video>';
+    var video = '<video data-wpid="' + videoNodeIdentifier + '" webkit-playsinline poster="' + posterURL + '" onclick=""></video>';
     var html =  space + videoContainerStart + progress + video + videoContainerEnd + space;
     this.insertHTML(html);
     this.sendEnabledStyles();
@@ -984,7 +984,7 @@ ZSSEditor.getVideoContainerNodeWithIdentifier = function(videoNodeIdentifier) {
 
 
 /**
- *  @brief      Replaces a local Video URL with a remote Video URL.  Useful for Videos that have
+ *  @brief      Replaces a local Video URL with a remote Video URL.  Useful for videos that have
  *              just finished uploading.
  *  @details    The remote Video can be available after a while, when uploading Videos.  This method
  *              allows for the remote URL to be loaded once the upload completes.
@@ -993,8 +993,10 @@ ZSSEditor.getVideoContainerNodeWithIdentifier = function(videoNodeIdentifier) {
  *                                      a mechanism to update the Video node with the remote URL
  *                                      when replaceLocalVideoWithRemoteVideo() is called.
  *  @param      remoteVideoUrl          The URL of the remote Video to display.
+ *  @param      remotePosterUrl         The URL of thre remote poster image to display
+ *  @param      videopressID          VideoPress Guid of the video if any
  */
-ZSSEditor.replaceLocalVideoWithRemoteVideo = function(videoNodeIdentifier, remoteVideoUrl) {
+ZSSEditor.replaceLocalVideoWithRemoteVideo = function(videoNodeIdentifier, remoteVideoUrl, remotePosterUrl, videopressID) {
     var videoNode = this.getVideoNodeWithIdentifier(videoNodeIdentifier);
     
     if (videoNode.length == 0) {
@@ -1004,6 +1006,11 @@ ZSSEditor.replaceLocalVideoWithRemoteVideo = function(videoNodeIdentifier, remot
     }
     videoNode.attr('src', remoteVideoUrl);
     videoNode.attr('controls', '');
+    if (videopressID != '') {
+        videoNode.attr('data-wpvideopress', videopressID);
+    }
+    videoNode.attr('poster', remotePosterUrl);
+    videoNode.removeAttr('poster');
     var thisObj = this;
     videoNode.on('webkitbeginfullscreen', function (event){ thisObj.sendVideoFullScreenStarted(); } );
     videoNode.on('webkitendfullscreen', function (event){ thisObj.sendVideoFullScreenEnded(); } );
@@ -1165,6 +1172,19 @@ ZSSEditor.removeVideo = function(videoNodeIdentifier) {
         videoContainerNode.remove();
     }
 };
+
+ZSSEditor.replaceVideoPressVideosForShortcode = function ( html) {
+    // call methods to restore any transformed content from its visual presentation to its source code.
+    var regex = /<video[^>]*data-wpvideopress="([\s\S]+?)"[^>]*>*<\/video>/g;
+    var str = html.replace( regex, ZSSEditor.removeVideoVisualFormattingCallback );
+
+    return str;
+}
+
+ZSSEditor.removeVideoVisualFormattingCallback = function( match, content ) {
+    
+    return "[wpvideo " + content + "]";
+}
 
 /**
  *  @brief      Updates the currently selected image, replacing its markup with
@@ -1642,6 +1662,7 @@ ZSSEditor.removeVisualFormatting = function( html ) {
     var str = html;
     str = ZSSEditor.removeImageSelectionFormattingFromHTML( str );
     str = ZSSEditor.removeCaptionFormatting( str );
+    str = ZSSEditor.replaceVideoPressVideosForShortcode( str );
     return str;
 }
 

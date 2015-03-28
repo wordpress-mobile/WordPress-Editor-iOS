@@ -326,10 +326,15 @@ stylesForCurrentSelection:(NSArray*)styles;
 /**
  *  Replaces the local video url on the video with the ID specified with the final remote video url
  *
- *  @param uniqueId ID of video to be updated
- *  @param url      URL for the final remote video
+ *  @param uniqueID  ID of video to be updated
+ *  @param videoURL  URL for the remote video
+ *  @param posterURL URL for the remote poster image
+ *  @param videoPressID ID for videoPress if applicable, nil if it isnt a videopress video
  */
-- (void)replaceLocalVideoWithId:(NSString *)uniqueId forRemoteVideo:(NSString *)url;
+- (void)replaceLocalVideoWithID:(NSString *)uniqueID
+                 forRemoteVideo:(NSString *)videoURL
+                   remotePoster:(NSString *)posterURL
+                     videoPress:(NSString *)videoPressID;
 
 /**
  *  Sets the interface of the video with the uniqueId to a failed status with the message specified

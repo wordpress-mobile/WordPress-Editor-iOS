@@ -297,7 +297,10 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
 //            [timer invalidate];
 //        }
         if (progress.fractionCompleted >= 1) {
-            [self.editorView replaceLocalVideoWithId:videoID forRemoteVideo:[[NSURL fileURLWithPath:progress.userInfo[@"url"]] absoluteString]];
+            [self.editorView replaceLocalVideoWithID:videoID
+                                      forRemoteVideo:[[NSURL fileURLWithPath:progress.userInfo[@"url"]] absoluteString]
+                                        remotePoster:@"ABCDE"
+                                          videoPress:nil];
             [timer invalidate];
         }
         return;
