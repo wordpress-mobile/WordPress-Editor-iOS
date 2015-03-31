@@ -72,7 +72,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 {
     [self stopObservingKeyboardNotifications];
     [self stopObservingWebViewContentSizeChanges];
-    [self stopObservingVideoNotifications];
 }
 
 #pragma mark - UIView
@@ -104,10 +103,8 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 {
     if (!newSuperview) {
         [self stopObservingKeyboardNotifications];
-        [self stopObservingVideoNotifications];
     } else {
         [self startObservingKeyboardNotifications];
-        [self startObservingVideoNotifications];
     }
 }
 
@@ -1592,31 +1589,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.setVideoPressLinks(\"%@\", \"%@\", \"%@\");", videoPressID, videoURL, posterURL];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
     
-}
-
-
-- (void)startObservingVideoNotifications
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(videoNotifications:)
-                                                 name:nil
-                                               object:nil];
-}
-
-- (void)stopObservingVideoNotifications
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                 name:nil
-                                               object:nil];
-}
-
-- (void)videoNotifications:(NSNotification *)notification
-{
-    if ([[notification name] rangeOfString:@"Movie" options:NSCaseInsensitiveSearch].location != NSNotFound){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            NSLog(@"Notification %@", notification);
-        });
-    }
 }
 
 #pragma mark - URL normalization
