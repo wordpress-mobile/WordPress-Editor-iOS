@@ -2193,11 +2193,7 @@ ZSSField.prototype.sendVideoTappedCallback = function( videoNode ) {
     
     var joinedArguments = arguments.join( defaultCallbackSeparator );
     
-    var thisObj = this;
-    
-    // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
-    //
-    setTimeout(function() { thisObj.callback('callback-video-tap', joinedArguments);}, 500);
+    this.callback('callback-video-tap', joinedArguments);
 }
 
 /**
