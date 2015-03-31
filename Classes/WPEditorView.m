@@ -573,8 +573,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([self isVideoFullScreenStartedScheme:scheme]) {
             [self handleVideoFullScreenStartedCallback:url];
             handled = YES;
-        }  else if ([self isVideoFullScreenEndedScheme:scheme]) {
+        } else if ([self isVideoFullScreenEndedScheme:scheme]) {
             [self handleVideoFullScreenEndedCallback:url];
+            handled = YES;
+        } else if ([self isVideoPressInfoRequestScheme:scheme]) {
+            [self handleVideoPressInfoRequestCallback:url];
             handled = YES;
         }
         
@@ -857,7 +860,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 /**
- *	@brief		Handles a image replaced callback.
+ *	@brief		Handles a video replaced callback.
  *
  *	@param		url		The url with all the callback information.
  */
@@ -879,6 +882,27 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              [self.delegate editorView:self videoReplaced:videoId];
          }
     }];
+}
+
+- (void)handleVideoPressInfoRequestCallback:(NSURL *)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    static NSString *const kVideoIdParameterName = @"id";
+    
+    __block NSString *videoId = nil;
+    
+    [self parseParametersFromCallbackURL:url andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+     {
+         if ([parameterName isEqualToString:kVideoIdParameterName]) {
+             videoId = [self stringByDecodingURLFormat:parameterValue];
+         }
+     } onComplete:^{
+         if ([self.delegate respondsToSelector:@selector(editorView:videoPressInfoRequest:)]) {
+             [self.delegate editorView:self videoPressInfoRequest:videoId];
+         }
+     }];
+
 }
 
 /**
@@ -1090,6 +1114,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
     static NSString *const kCallbackScheme = @"callback-video-fullscreen-ended";
 
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isVideoPressInfoRequestScheme:(NSString *)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
+    static NSString *const kCallbackScheme = @"callback-videopress-info-request";
+    
     return [scheme isEqualToString:kCallbackScheme];
 }
 
@@ -1551,8 +1585,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.removeVideo(\"%@\");", uniqueId];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setVideoPress:(NSString *)videoPressID source:(NSString *)videoURL poster:(NSString *)posterURL
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.setVideoPressLinks(\"%@\", \"%@\", \"%@\");", videoPressID, videoURL, posterURL];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
     
 }
+
 
 - (void)startObservingVideoNotifications
 {

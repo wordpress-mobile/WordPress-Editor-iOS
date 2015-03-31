@@ -148,11 +148,20 @@ stylesForCurrentSelection:(NSArray*)styles;
  * @brief		Received when a video local url is replaced by the final remote url.
  *
  * @param		editorView	The editor view.
- * @param		videoId		The id of image of the image that had the local url replaced by remote url.
+ * @param		videoId		The unique id of the video that had the local url replaced by remote url.
  *
  */
 - (void)editorView:(WPEditorView*)editorView
-     videoReplaced:(NSString *)videoId;
+     videoReplaced:(NSString *)videoID;
+
+/**
+ * @brief		Received when a the editor request the url for a videopress shortcode.
+ *
+ * @param		editorView	 The editor view.
+ * @param		videoPressID The VidePress ID that the editor needs information about.
+ *
+ */
+- (void)editorView:(WPEditorView *)editorView videoPressInfoRequest:(NSString *)videoPressID;
 
 @end
 
@@ -357,6 +366,18 @@ stylesForCurrentSelection:(NSArray*)styles;
  *  @param uniqueId ID of video to be removed
  */
 - (void)removeVideo:(NSString*)uniqueId;
+
+/**
+ *  @brief      Set video element, identified with a videoPressID, source and poster urls.
+ *
+ *  @param videoPressID identifier of Video Press element
+ *  @param videoURL     url for videopress video source
+ *  @param posterURL    url for the poster image for video
+ */
+- (void)setVideoPress:(NSString *)videoPressID
+               source:(NSString *)videoURL
+               poster:(NSString *)posterURL;
+
 
 #pragma mark - Links
 

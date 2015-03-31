@@ -1010,7 +1010,6 @@ ZSSEditor.replaceLocalVideoWithRemoteVideo = function(videoNodeIdentifier, remot
         videoNode.attr('data-wpvideopress', videopressID);
     }
     videoNode.attr('poster', remotePosterUrl);
-    videoNode.removeAttr('poster');
     var thisObj = this;
     videoNode.on('webkitbeginfullscreen', function (event){ thisObj.sendVideoFullScreenStarted(); } );
     videoNode.on('webkitendfullscreen', function (event){ thisObj.sendVideoFullScreenEnded(); } );
@@ -1094,6 +1093,19 @@ ZSSEditor.sendVideoFullScreenStarted = function() {
  */
 ZSSEditor.sendVideoFullScreenEnded = function() {
     this.callback("callback-video-fullscreen-ended", "empty");
+};
+
+/**
+ *  @brief      Callbacks to native that the video upload as finished and the local url was replaced by the remote url
+ *
+ *  @param      videoNodeIdentifier    the unique video ID for the uploaded Video
+ */
+ZSSEditor.sendVideoPressInfoRequest = function( videoPressID ) {
+    var arguments = ['id=' + encodeURIComponent( videoPressID )];
+    
+    var joinedArguments = arguments.join( defaultCallbackSeparator );
+    
+    this.callback("callback-videopress-info-request", joinedArguments);
 };
 
 
@@ -1182,9 +1194,43 @@ ZSSEditor.replaceVideoPressVideosForShortcode = function ( html) {
 }
 
 ZSSEditor.removeVideoVisualFormattingCallback = function( match, content ) {
-    
     return "[wpvideo " + content + "]";
 }
+
+ZSSEditor.applyVideoFormattingCallback = function( match ) {    
+    if (match.attrs.numeric.lenght == 0) {
+        return match.content;
+    }
+    var videopressID = match.attrs.numeric[0];
+    // The empty 'onclick' is important. It prevents the cursor jumping to the end
+    // of the content body when `-webkit-user-select: none` is set and the video is tapped.
+    var out = '<video data-wpvideopress="' + videopressID + '" webkit-playsinline src="videopress.mp4" onclick="" onerror="ZSSEditor.sendVideoPressInfoRequest(\'' + videopressID +'\');"></video>';
+    
+    return out;
+}
+
+/**
+ *  @brief      Sets the VidoPress video URL and poster URL on a video tag.
+ *  @details    When switching between source and visual the wpvideo shortcode are replace by a video tag. Unfortunaly there 
+ *              is no way to infer the video url from the shortcode so we need to find this information and then set it on the video tag.
+ *
+ *  @param      videopressID      videopress identifier of the video.
+ *  @param      videoURL          URL of the video file to display.
+ *  @param      posterURL         URL of the poster image to display
+ */
+ZSSEditor.setVideoPressLinks = function(videopressID, videoURL, posterURL ) {
+    var videoNode = $('video[data-wpvideopress="' + videopressID+'"]');
+    if (videoNode.length == 0) {
+        return;
+    }
+    videoNode.attr('src', videoURL);
+    videoNode.attr('controls', '');
+    videoNode.attr('poster', posterURL);
+    var thisObj = this;
+    videoNode.on('webkitbeginfullscreen', function (event){ thisObj.sendVideoFullScreenStarted(); } );
+    videoNode.on('webkitendfullscreen', function (event){ thisObj.sendVideoFullScreenEnded(); } );
+    videoNode.on('error', function(event) { videoNode.load()} );
+};
 
 /**
  *  @brief      Updates the currently selected image, replacing its markup with
@@ -1647,7 +1693,7 @@ ZSSEditor.removeCaptionFormattingCallback = function( match, content ) {
  */
 ZSSEditor.applyVisualFormatting  = function( html ) {
     var str = wp.shortcode.replace( 'caption', html, ZSSEditor.applyCaptionFormatting );
-
+    str = wp.shortcode.replace( 'wpvideo', str, ZSSEditor.applyVideoFormattingCallback );
     return str;
 }
 

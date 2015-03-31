@@ -7,6 +7,8 @@
 #import "WPEditorView.h"
 #import "WPImageMetaViewController.h"
 
+static NSString * const VideoPressTestGUID = @"ABCDE";
+
 typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     WPViewControllerActionSheetImageUploadStop = 200,
     WPViewControllerActionSheetImageUploadRetry = 201,
@@ -18,6 +20,8 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
 @interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, WPImageMetaViewControllerDelegate>
 @property(nonatomic, strong) NSMutableDictionary *mediaAdded;
 @property(nonatomic, strong) NSString *selectedMediaID;
+@property(nonatomic, strong) NSCache *videoPressCache;
+
 @end
 
 @implementation WPViewController
@@ -32,6 +36,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
                                                                             target:self
                                                                             action:@selector(editTouchedUpInside)];
     self.mediaAdded = [NSMutableDictionary dictionary];
+    self.videoPressCache = [[NSCache alloc] init];
 }
 
 #pragma mark - Navigation Bar
@@ -132,6 +137,15 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     [self.mediaAdded removeObjectForKey:videoId];
 }
 
+- (void)editorViewController:(WPEditorViewController *)editorViewController videoPressInfoRequest:(NSString *)videoID
+{
+    NSDictionary * videoPressInfo = [self.videoPressCache objectForKey:videoID];
+    NSString * videoURL = videoPressInfo[@"source"];
+    NSString * posterURL = videoPressInfo[@"poster"];
+    if (videoURL) {
+        [self.editorView setVideoPress:videoID source:videoURL poster:posterURL];
+    }
+}
 
 #pragma mark - Media actions
 
@@ -238,8 +252,8 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.editorView insertInProgressVideoWithID:videoID
                                         usingPosterImage:[[NSURL fileURLWithPath:posterImagePath] absoluteString]];
-            NSProgress *progress = [[NSProgress alloc] initWithParent:nil userInfo:@{ @"videoID": videoID,
-                                                                                      @"url": videoPath }];
+            NSProgress *progress = [[NSProgress alloc] initWithParent:nil
+                                                             userInfo:@{@"videoID": videoID, @"url": videoPath, @"poster": posterImagePath }];
             progress.cancellable = YES;
             progress.totalUnitCount = 100;
             [NSTimer scheduledTimerWithTimeInterval:0.1
@@ -297,10 +311,13 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
 //            [timer invalidate];
 //        }
         if (progress.fractionCompleted >= 1) {
+            NSString * videoURL = [[NSURL fileURLWithPath:progress.userInfo[@"url"]] absoluteString];
+            NSString * posterURL = [[NSURL fileURLWithPath:progress.userInfo[@"poster"]] absoluteString];
             [self.editorView replaceLocalVideoWithID:videoID
-                                      forRemoteVideo:[[NSURL fileURLWithPath:progress.userInfo[@"url"]] absoluteString]
-                                        remotePoster:@"ABCDE"
-                                          videoPress:nil];
+                                      forRemoteVideo:videoURL
+                                        remotePoster:posterURL
+                                          videoPress:VideoPressTestGUID];
+            [self.videoPressCache setObject:@ {@"source":videoURL, @"poster":posterURL} forKey:VideoPressTestGUID];
             [timer invalidate];
         }
         return;

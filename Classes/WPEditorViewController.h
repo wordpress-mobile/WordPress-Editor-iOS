@@ -83,13 +83,23 @@ WPEditorViewControllerMode;
                imageReplaced:(NSString *)imageId;
 
 /**
- *	@brief		Received when the local image url is replace by the final image in the editor.
+ *	@brief		Received when the local video url is replace by the final video in the editor.
  *
  *	@param		editorView	The editor view.
  *	@param		videoID		The id of video that was tapped.
  */
 - (void)editorViewController:(WPEditorViewController*)editorViewController
                videoReplaced:(NSString *)videoID;
+
+/**
+ *	@brief		Received when the editor requests information about a videopress video.
+ *
+ *	@param		editorView	The editor view.
+ *	@param		videoID		The id of video that was tapped.
+ */
+- (void)editorViewController:(WPEditorViewController *)editorViewController
+       videoPressInfoRequest:(NSString *)videoID;
+
 @end
 
 @class ZSSBarButtonItem;
