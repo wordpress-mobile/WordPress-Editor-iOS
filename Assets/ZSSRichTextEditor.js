@@ -31,7 +31,7 @@ ZSSEditor.currentSelection;
 // The current editing image
 ZSSEditor.currentEditingImage;
 
-// The current editing image
+// The current editing video
 ZSSEditor.currentEditingVideo;
 
 // The current editing link
@@ -923,11 +923,12 @@ ZSSEditor.removeImage = function(imageNodeIdentifier) {
 };
 
 /**
- *  @brief Inserts a video tag using the videoURL as source and posterURL as the image to show while video is loading.
+ *  @brief Inserts a video tag using the videoURL as source and posterURL as the 
+ *  image to show while video is loading.
  *
  *  @param videoURL  the url of the video to present
  *  @param posterURL the url of an image to show while the video is loading
- *  @param alt       the alt descriptuon when the video is not supported.
+ *  @param alt       the alt description when the video is not supported.
  *
  */
 ZSSEditor.insertVideo = function(videoURL, posterURL, alt) {
