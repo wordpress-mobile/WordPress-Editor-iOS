@@ -235,10 +235,11 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     NSData *data = UIImageJPEGRepresentation(image, 0.7);
     NSString *posterImagePath = [NSString stringWithFormat:@"%@/%@.jpg", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
     [data writeToFile:posterImagePath atomically:YES];
-
+    NSString *videoID = [[NSUUID UUID] UUIDString];
+    [self.editorView insertInProgressVideoWithID:videoID
+                                usingPosterImage:[[NSURL fileURLWithPath:posterImagePath] absoluteString]];
     ALAssetRepresentation *representation = originalAsset.defaultRepresentation;
     AVAsset *asset = [AVURLAsset URLAssetWithURL:representation.url options:nil];
-    NSString *videoID = [[NSUUID UUID] UUIDString];
     NSString *videoPath = [NSString stringWithFormat:@"%@%@.mov", NSTemporaryDirectory(), videoID];
     NSString *presetName = AVAssetExportPresetPassthrough;
     AVAssetExportSession *session = [AVAssetExportSession exportSessionWithAsset:asset presetName:presetName];
@@ -250,8 +251,6 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
             return;
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.editorView insertInProgressVideoWithID:videoID
-                                        usingPosterImage:[[NSURL fileURLWithPath:posterImagePath] absoluteString]];
             NSProgress *progress = [[NSProgress alloc] initWithParent:nil
                                                              userInfo:@{@"videoID": videoID, @"url": videoPath, @"poster": posterImagePath }];
             progress.cancellable = YES;

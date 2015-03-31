@@ -956,7 +956,7 @@ ZSSEditor.insertInProgressVideoWithIDUsingPosterImage = function(videoNodeIdenti
     var videoContainerStart = '<span id="' + videoContainerIdentifier + '" class="img_container">';
     var videoContainerEnd = '</span>';
     var progress = '<progress id="' + progressIdentifier + '" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
-    var video = '<video data-wpid="' + videoNodeIdentifier + '" webkit-playsinline poster="' + posterURL + '" onclick=""></video>';
+    var video = '<video data-wpid="' + videoNodeIdentifier + '" webkit-playsinline poster="' + posterURL + '" onclick="" class="uploading"></video>';
     var html =  space + videoContainerStart + progress + video + videoContainerEnd + space;
     this.insertHTML(html);
     this.sendEnabledStyles();
