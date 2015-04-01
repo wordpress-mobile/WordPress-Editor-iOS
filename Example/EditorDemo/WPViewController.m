@@ -7,8 +7,6 @@
 #import "WPEditorView.h"
 #import "WPImageMetaViewController.h"
 
-static NSString * const VideoPressTestGUID = @"ABCDE";
-
 typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     WPViewControllerActionSheetImageUploadStop = 200,
     WPViewControllerActionSheetImageUploadRetry = 201,
@@ -316,8 +314,8 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
             [self.editorView replaceLocalVideoWithID:videoID
                                       forRemoteVideo:videoURL
                                         remotePoster:posterURL
-                                          videoPress:VideoPressTestGUID];
-            [self.videoPressCache setObject:@ {@"source":videoURL, @"poster":posterURL} forKey:VideoPressTestGUID];
+                                          videoPress:videoID];
+            [self.videoPressCache setObject:@ {@"source":videoURL, @"poster":posterURL} forKey:videoID];
             [timer invalidate];
         }
         return;
