@@ -378,6 +378,11 @@ stylesForCurrentSelection:(NSArray*)styles;
                source:(NSString *)videoURL
                poster:(NSString *)posterURL;
 
+/**
+ *  Pauses all the videos on the editor
+ */
+- (void)pauseAllVideos;
+
 
 #pragma mark - Links
 

@@ -1234,6 +1234,16 @@ ZSSEditor.setVideoPressLinks = function(videopressID, videoURL, posterURL ) {
 };
 
 /**
+ *  @brief  Stops all video of playing
+ *
+ */
+ZSSEditor.pauseAllVideos = function () {
+    $('video').each(function() {
+        this.pause();
+    });
+}
+
+/**
  *  @brief      Updates the currently selected image, replacing its markup with
  *  new markup based on the specified meta data string.
  *

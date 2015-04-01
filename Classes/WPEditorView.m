@@ -1591,6 +1591,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
 }
 
+- (void)pauseAllVideos
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.pauseAllVideos();"];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
 #pragma mark - URL normalization
 
 - (NSString*)normalizeURL:(NSString*)url

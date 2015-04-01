@@ -83,6 +83,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
 
 - (BOOL)editorShouldDisplaySourceView:(WPEditorViewController *)editorController
 {
+    [self.editorView pauseAllVideos];
     return YES;
 }
 
