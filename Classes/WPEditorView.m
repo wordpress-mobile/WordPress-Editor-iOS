@@ -205,7 +205,8 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
         __strong typeof(weakSelf) strongSelf = weakSelf;
 
         if (strongSelf) {
-            [strongSelf.webView loadHTMLString:htmlEditor baseURL:nil];
+            NSURL * baseURL = [[NSBundle mainBundle] bundleURL];
+            [strongSelf.webView loadHTMLString:htmlEditor baseURL:baseURL];
         }
     }];
 	

@@ -1203,9 +1203,10 @@ ZSSEditor.applyVideoFormattingCallback = function( match ) {
         return match.content;
     }
     var videopressID = match.attrs.numeric[0];
+    var posterSVG = '"wpposter.svg"';
     // The empty 'onclick' is important. It prevents the cursor jumping to the end
     // of the content body when `-webkit-user-select: none` is set and the video is tapped.
-    var out = '<video data-wpvideopress="' + videopressID + '" webkit-playsinline src="videopress.mp4" onclick="" onerror="ZSSEditor.sendVideoPressInfoRequest(\'' + videopressID +'\');"></video>';
+    var out = '<video data-wpvideopress="' + videopressID + '" webkit-playsinline src="videopress.mp4" poster=' + posterSVG +' onclick="" onerror="ZSSEditor.sendVideoPressInfoRequest(\'' + videopressID +'\');"></video>';
     
     return out;
 }
