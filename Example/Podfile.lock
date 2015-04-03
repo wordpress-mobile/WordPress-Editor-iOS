@@ -1,23 +1,23 @@
 PODS:
-  - AFNetworking (2.5.1):
-    - AFNetworking/NSURLConnection (= 2.5.1)
-    - AFNetworking/NSURLSession (= 2.5.1)
-    - AFNetworking/Reachability (= 2.5.1)
-    - AFNetworking/Security (= 2.5.1)
-    - AFNetworking/Serialization (= 2.5.1)
-    - AFNetworking/UIKit (= 2.5.1)
-  - AFNetworking/NSURLConnection (2.5.1):
+  - AFNetworking (2.5.2):
+    - AFNetworking/NSURLConnection (= 2.5.2)
+    - AFNetworking/NSURLSession (= 2.5.2)
+    - AFNetworking/Reachability (= 2.5.2)
+    - AFNetworking/Security (= 2.5.2)
+    - AFNetworking/Serialization (= 2.5.2)
+    - AFNetworking/UIKit (= 2.5.2)
+  - AFNetworking/NSURLConnection (2.5.2):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/NSURLSession (2.5.1):
+  - AFNetworking/NSURLSession (2.5.2):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (2.5.1)
-  - AFNetworking/Security (2.5.1)
-  - AFNetworking/Serialization (2.5.1)
-  - AFNetworking/UIKit (2.5.1):
+  - AFNetworking/Reachability (2.5.2)
+  - AFNetworking/Security (2.5.2)
+  - AFNetworking/Serialization (2.5.2)
+  - AFNetworking/UIKit (2.5.2):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - CocoaLumberjack (1.9.2):
@@ -27,7 +27,7 @@ PODS:
     - CocoaLumberjack/Core
   - NSObject-SafeExpectations (0.0.2)
   - UIAlertView+Blocks (0.8.1)
-  - WordPress-iOS-Editor (0.4):
+  - WordPress-iOS-Editor (0.5):
     - CocoaLumberjack (~> 1.9)
     - NSObject-SafeExpectations (~> 0.0.2)
     - UIAlertView+Blocks
@@ -36,7 +36,7 @@ PODS:
   - WordPress-iOS-Shared (0.3):
     - AFNetworking (~> 2.5.1)
     - CocoaLumberjack (~> 1.9)
-  - WordPressCom-Analytics-iOS (0.0.25)
+  - WordPressCom-Analytics-iOS (0.0.30)
 
 DEPENDENCIES:
   - CocoaLumberjack (~> 1.9)
@@ -50,12 +50,12 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  AFNetworking: 8bee59492a6ff15d69130efa4d0dc67e0094a52a
-  CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
-  NSObject-SafeExpectations: c31276ef7209016849fc4e5c8ed5ae5453e1e208
-  UIAlertView+Blocks: 0b749f1f7bd5131ff2233b30a406c1585a7171b2
-  WordPress-iOS-Editor: 290906db721813721b34ff1bdab80e4dce2b29e4
-  WordPress-iOS-Shared: a26de91a692932fa27e6d5f3f5dd7705ea628c61
-  WordPressCom-Analytics-iOS: fe220ad59ce9118b15e0e5550717d5c487ebc31e
+  AFNetworking: fefbce9660acb17f48ae0011292d4da0f457bf36
+  CocoaLumberjack: 628fca2e88ef06f7cf6817309aa405f325d9a6fa
+  NSObject-SafeExpectations: 7d7f48df90df4e11da7cfe86b64f45eff7a7f521
+  UIAlertView+Blocks: 45c3d3b7194906702d3e9a14c7ece5581505646d
+  WordPress-iOS-Editor: e04a4a2b251e9bf973bc388d4674be2ee42fe914
+  WordPress-iOS-Shared: 0f5281492166bb89ea09d8ab5011e871ba4f6709
+  WordPressCom-Analytics-iOS: c1338756ca3f889e5a115fb73343b6bd2e7bfa0f
 
 COCOAPODS: 0.35.0

@@ -144,7 +144,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
         CGFloat lineWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset);
         _sourceContentDividerView = [[UIView alloc] initWithFrame:CGRectMake(UITextFieldLeftRightInset, CGRectGetMaxY(frame), lineWidth, CGRectGetHeight(frame))];
     }
-    _sourceContentDividerView.backgroundColor = [WPStyleGuide readGrey];
+    _sourceContentDividerView.backgroundColor = [WPStyleGuide greyLighten30];
     _sourceContentDividerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     _sourceContentDividerView.hidden = YES;
 
