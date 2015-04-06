@@ -1227,7 +1227,11 @@ ZSSEditor.setVideoPressLinks = function(videopressID, videoURL, posterURL ) {
     }
     videoNode.attr('src', videoURL);
     videoNode.attr('controls', '');
-    videoNode.attr('poster', posterURL);
+    if (posterURL.length == 0) {
+        videoNode.attr('poster', 'wpposter.svg');
+    } else {
+        videoNode.attr('poster', posterURL);
+    }
     var thisObj = this;
     videoNode.on('webkitbeginfullscreen', function (event){ thisObj.sendVideoFullScreenStarted(); } );
     videoNode.on('webkitendfullscreen', function (event){ thisObj.sendVideoFullScreenEnded(); } );
