@@ -1199,7 +1199,7 @@ ZSSEditor.removeVideoVisualFormattingCallback = function( match, content ) {
 }
 
 ZSSEditor.applyVideoFormattingCallback = function( match ) {    
-    if (match.attrs.numeric.lenght == 0) {
+    if (match.attrs.numeric.length == 0) {
         return match.content;
     }
     var videopressID = match.attrs.numeric[0];
