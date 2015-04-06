@@ -62,6 +62,18 @@ WPEditorViewControllerMode;
                    imageMeta:(WPImageMeta *)imageMeta;
 
 /**
+ *	@brief		Received when the user taps on a image in the editor.
+ *
+ *	@param		editorView	The editor view.
+ *	@param		videoID		The id of the video that was tapped.
+ *	@param		url			The url of the video that was tapped.
+ *
+ */
+- (void)editorViewController:(WPEditorViewController*)editorViewController
+                 videoTapped:(NSString *)videoID
+                         url:(NSURL *)url;
+
+/**
  *	@brief		Received when the local image url is replace by the final image in the editor.
  *
  *	@param		editorView	The editor view.
@@ -69,6 +81,25 @@ WPEditorViewControllerMode;
  */
 - (void)editorViewController:(WPEditorViewController*)editorViewController
                imageReplaced:(NSString *)imageId;
+
+/**
+ *	@brief		Received when the local video url is replace by the final video in the editor.
+ *
+ *	@param		editorView	The editor view.
+ *	@param		videoID		The id of video that was tapped.
+ */
+- (void)editorViewController:(WPEditorViewController*)editorViewController
+               videoReplaced:(NSString *)videoID;
+
+/**
+ *	@brief		Received when the editor requests information about a videopress video.
+ *
+ *	@param		editorView	The editor view.
+ *	@param		videoID		The id of video that was tapped.
+ */
+- (void)editorViewController:(WPEditorViewController *)editorViewController
+       videoPressInfoRequest:(NSString *)videoID;
+
 @end
 
 @class ZSSBarButtonItem;

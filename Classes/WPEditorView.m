@@ -184,7 +184,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     _webView.usesGUIFixes = YES;
     _webView.keyboardDisplayRequiresUserAction = NO;
     _webView.scrollView.bounces = YES;
-
+    _webView.allowsInlineMediaPlayback = YES;
     [self startObservingWebViewContentSizeChanges];
     
 	[self addSubview:_webView];
@@ -205,7 +205,8 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
         __strong typeof(weakSelf) strongSelf = weakSelf;
 
         if (strongSelf) {
-            [strongSelf.webView loadHTMLString:htmlEditor baseURL:nil];
+            NSURL * baseURL = [[NSBundle mainBundle] bundleURL];
+            [strongSelf.webView loadHTMLString:htmlEditor baseURL:baseURL];
         }
     }];
 	
@@ -543,6 +544,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([self isImageTappedScheme:scheme]) {
             [self handleImageTappedCallback:url];
             handled = YES;
+        } else if ([self isVideoTappedScheme:scheme]) {
+            [self handleVideoTappedCallback:url];
+            handled = YES;
         } else if ([self isLogCallbackScheme:scheme]){
             [self handleLogCallbackScheme:url];
             handled = YES;
@@ -558,10 +562,23 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([self isDOMLoadedScheme:scheme]) {
             [self handleDOMLoadedCallback:url];
             handled = YES;
-        }  else if ([self isImageReplacedScheme:scheme]) {
+        } else if ([self isImageReplacedScheme:scheme]) {
             [self handleImageReplacedCallback:url];
             handled = YES;
+        } else if ([self isVideoReplacedScheme:scheme]) {
+            [self handleVideoReplacedCallback:url];
+            handled = YES;
+        } else if ([self isVideoFullScreenStartedScheme:scheme]) {
+            [self handleVideoFullScreenStartedCallback:url];
+            handled = YES;
+        } else if ([self isVideoFullScreenEndedScheme:scheme]) {
+            [self handleVideoFullScreenEndedCallback:url];
+            handled = YES;
+        } else if ([self isVideoPressInfoRequestScheme:scheme]) {
+            [self handleVideoPressInfoRequestCallback:url];
+            handled = YES;
         }
+        
     }
 	
 	return handled;
@@ -736,6 +753,85 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 /**
+ *	@brief		Handles a video tapped callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleVideoTappedCallback:(NSURL *)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+
+    static NSString *const kTappedUrlParameterName = @"url";
+    static NSString *const kTappedIdParameterName = @"id";
+
+    __block NSURL *tappedUrl = nil;
+    __block NSString *tappedId = nil;
+
+    [self parseParametersFromCallbackURL:url andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue) {
+         if ([parameterName isEqualToString:kTappedUrlParameterName]) {
+             tappedUrl = [NSURL URLWithString:[self stringByDecodingURLFormat:parameterValue]];
+         } else if ([parameterName isEqualToString:kTappedIdParameterName]) {
+             tappedId = [self stringByDecodingURLFormat:parameterValue];
+         }
+    } onComplete:^{
+         if ([self.delegate respondsToSelector:@selector(editorView:videoTapped:url:)]) {
+             [self.delegate editorView:self videoTapped:tappedId url:tappedUrl];
+         }
+    }];
+}
+
+/**
+ *	@brief		Handles a video entered fullscreen callback
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleVideoFullScreenStartedCallback:(NSURL *)aURL
+{
+    NSParameterAssert([aURL isKindOfClass:[NSURL class]]);
+    [self saveSelection];
+    // FIXME: SergioEstevao 2015/03/25 - It looks there is a bug on iOS 8 that makes
+    // the keyboard not to be hidden when a video is made to run in full screen inside a webview.
+    // this workaround searches for the first responder and dismisses it
+    UIView *firstResponder = [self findFirstResponder:self];
+    [firstResponder resignFirstResponder];
+}
+/**
+ *  Finds the first responder in the view hierarchy starting from the currentView
+ *
+ *  @param currentView the view to start looking for the first responder.
+ *
+ *  @return the view that is the current first responder nil if none was found.
+ */
+- (UIView *)findFirstResponder:(UIView *)currentView
+{
+    if (currentView.isFirstResponder) {
+        [currentView resignFirstResponder];
+        return currentView;
+    }
+    for (UIView *subView in currentView.subviews) {
+        UIView *result = [self findFirstResponder:subView];
+        if (result) {
+            return result;
+        }
+    }
+    return nil;
+}
+
+/**
+ *	@brief		Handles a video ended fullscreen callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleVideoFullScreenEndedCallback:(NSURL *)aURL
+{
+    NSParameterAssert([aURL isKindOfClass:[NSURL class]]);
+
+    [self restoreSelection];
+}
+
+
+
+/**
  *	@brief		Handles a image replaced callback.
  *
  *	@param		url		The url with all the callback information.
@@ -759,6 +855,52 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              [self.delegate editorView:self imageReplaced:imageId];
          }
      }];
+}
+
+/**
+ *	@brief		Handles a video replaced callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleVideoReplacedCallback:(NSURL *)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+
+    static NSString *const kVideoIdParameterName = @"id";
+
+    __block NSString *videoId = nil;
+
+    [self parseParametersFromCallbackURL:url andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+    {
+         if ([parameterName isEqualToString:kVideoIdParameterName]) {
+             videoId = [self stringByDecodingURLFormat:parameterValue];
+         }
+    } onComplete:^{
+         if ([self.delegate respondsToSelector:@selector(editorView:videoReplaced:)]) {
+             [self.delegate editorView:self videoReplaced:videoId];
+         }
+    }];
+}
+
+- (void)handleVideoPressInfoRequestCallback:(NSURL *)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    static NSString *const kVideoIdParameterName = @"id";
+    
+    __block NSString *videoId = nil;
+    
+    [self parseParametersFromCallbackURL:url andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+     {
+         if ([parameterName isEqualToString:kVideoIdParameterName]) {
+             videoId = [self stringByDecodingURLFormat:parameterValue];
+         }
+     } onComplete:^{
+         if ([self.delegate respondsToSelector:@selector(editorView:videoPressInfoRequest:)]) {
+             [self.delegate editorView:self videoPressInfoRequest:videoId];
+         }
+     }];
+
 }
 
 /**
@@ -903,6 +1045,26 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     return [scheme isEqualToString:kCallbackScheme];
 }
 
+- (BOOL)isVideoTappedScheme:(NSString*)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
+    static NSString* const kCallbackScheme = @"callback-video-tap";
+    
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isVideoReplacedScheme:(NSString*)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
+    static NSString* const kCallbackScheme = @"callback-video-replaced";
+    
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
 - (BOOL)isLogCallbackScheme:(NSString*)scheme
 {
     NSAssert([scheme isKindOfClass:[NSString class]],
@@ -933,9 +1095,39 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     return [scheme isEqualToString:kCallbackScheme];
 }
 
+- (BOOL)isVideoFullScreenStartedScheme:(NSString *)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+
+    static NSString *const kCallbackScheme = @"callback-video-fullscreen-started";
+
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isVideoFullScreenEndedScheme:(NSString *)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+
+    static NSString *const kCallbackScheme = @"callback-video-fullscreen-ended";
+
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isVideoPressInfoRequestScheme:(NSString *)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
+    static NSString *const kCallbackScheme = @"callback-videopress-info-request";
+    
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
 - (BOOL)isSelectionStyleScheme:(NSString*)scheme
 {
-	static NSString* const kCallbackScheme = @"callback-selection-style";
+	static NSString* const kCallbackScheme = @"callback-video-fullscreen";
 
 	return [scheme isEqualToString:kCallbackScheme];
 }
@@ -1339,6 +1531,71 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.removeImage(\"%@\");", uniqueId];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 
+}
+
+#pragma mark - Videos
+
+- (void)insertVideo:(NSString *)videoURL posterImage:(NSString *)posterImageURL alt:(NSString *)alt
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertVideo(\"%@\", \"%@\", \"%@\");", videoURL, posterImageURL, alt];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)insertInProgressVideoWithID:(NSString *)uniqueId
+                   usingPosterImage:(NSString *)posterImageURL
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.insertInProgressVideoWithIDUsingPosterImage(\"%@\", \"%@\");", uniqueId, posterImageURL];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setProgress:(double)progress onVideo:(NSString *)uniqueId
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.setProgressOnVideo(\"%@\", %f);", uniqueId, progress];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)replaceLocalVideoWithID:(NSString *)uniqueID
+                 forRemoteVideo:(NSString *)videoURL
+                   remotePoster:(NSString *)posterURL
+                     videoPress:(NSString *)videoPressID
+{
+    NSString * videoPressSafeID = videoPressID;
+    if (!videoPressSafeID) {
+        videoPressSafeID = @"";
+    }
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.replaceLocalVideoWithRemoteVideo(\"%@\", \"%@\", \"%@\", \"%@\");", uniqueID, videoURL, posterURL, videoPressSafeID];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)markVideo:(NSString *)uniqueId failedUploadWithMessage:(NSString*) message;
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.markVideoUploadFailed(\"%@\", \"%@\");", uniqueId, message];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)unmarkVideoFailedUpload:(NSString *)uniqueId
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.unmarkVideoUploadFailed(\"%@\");", uniqueId];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)removeVideo:(NSString*)uniqueId
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.removeVideo(\"%@\");", uniqueId];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setVideoPress:(NSString *)videoPressID source:(NSString *)videoURL poster:(NSString *)posterURL
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.setVideoPressLinks(\"%@\", \"%@\", \"%@\");", videoPressID, videoURL, posterURL];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
+    
+}
+
+- (void)pauseAllVideos
+{
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.pauseAllVideos();"];
+    [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
 #pragma mark - URL normalization

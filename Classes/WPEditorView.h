@@ -113,6 +113,18 @@
          imageMeta:(WPImageMeta *)imageMeta;
 
 /**
+ * @brief		Received when the user taps on a image in the editor.
+ *
+ * @param		editorView	The editor view.
+ * @param		videoId		The id of image of the image that was tapped.
+ * @param		url			The url of the image that was tapped.
+ *
+ */
+- (void)editorView:(WPEditorView*)editorView
+       videoTapped:(NSString *)videoID
+               url:(NSURL *)url;
+
+/**
  *	@brief		Received when the selection is changed.
  *	@details	Useful to know what styles surround the current selection.
  *
@@ -131,6 +143,25 @@ stylesForCurrentSelection:(NSArray*)styles;
  */
 - (void)editorView:(WPEditorView*)editorView
      imageReplaced:(NSString *)imageId;
+
+/**
+ * @brief		Received when a video local url is replaced by the final remote url.
+ *
+ * @param		editorView	The editor view.
+ * @param		videoId		The unique id of the video that had the local url replaced by remote url.
+ *
+ */
+- (void)editorView:(WPEditorView*)editorView
+     videoReplaced:(NSString *)videoID;
+
+/**
+ * @brief		Received when a the editor request the url for a videopress shortcode.
+ *
+ * @param		editorView	 The editor view.
+ * @param		videoPressID The VidePress ID that the editor needs information about.
+ *
+ */
+- (void)editorView:(WPEditorView *)editorView videoPressInfoRequest:(NSString *)videoPressID;
 
 @end
 
@@ -271,6 +302,88 @@ stylesForCurrentSelection:(NSArray*)styles;
 - (void)unmarkImageFailedUpload:(NSString *)uniqueId;
 
 - (void)removeImage:(NSString*)uniqueId;
+
+#pragma mark - Videos
+
+/**
+ *  Inserts a HTML video element using a poster image to preview it before its fully loaded.
+ *
+ *  @param videoURL       URL for the video file
+ *  @param posterImageURL URL for the poster image to be used before the video is loaded
+ *  @param alt            an alternate description for the video
+ */
+- (void)insertVideo:(NSString *)videoURL posterImage:(NSString *)posterImageURL alt:(NSString *)alt;
+
+/**
+ *  Inserts a HTML video element that is using a poster image to preview it before it's fully loaded
+ *
+ *  @param uniqueId       Unique ID to identity the video for progress report and later on to be replaced by the final video.
+ *  @param posterImageURL URL for a image file to show while the video is being loaded.
+
+ */
+- (void)insertInProgressVideoWithID:(NSString *)uniqueId
+                   usingPosterImage:(NSString *)posterImageURL;
+
+/**
+ *  Sets the value of upload progress for a video
+ *
+ *  @param progress amount of progress being made it should be a value between 0 and 1.
+ *  @param uniqueId ID of the video to be updated
+ */
+- (void)setProgress:(double)progress onVideo:(NSString *)uniqueId;
+
+/**
+ *  Replaces the local video url on the video with the ID specified with the final remote video url
+ *
+ *  @param uniqueID  ID of video to be updated
+ *  @param videoURL  URL for the remote video
+ *  @param posterURL URL for the remote poster image
+ *  @param videoPressID ID for videoPress if applicable, nil if it isnt a videopress video
+ */
+- (void)replaceLocalVideoWithID:(NSString *)uniqueID
+                 forRemoteVideo:(NSString *)videoURL
+                   remotePoster:(NSString *)posterURL
+                     videoPress:(NSString *)videoPressID;
+
+/**
+ *  Sets the interface of the video with the uniqueId to a failed status with the message specified
+ *
+ *  @param uniqueId ID of the video to be marked as failed
+ *  @param message  Details why the video has failed to upload
+ */
+- (void)markVideo:(NSString *)uniqueId failedUploadWithMessage:(NSString*) message;
+
+/**
+ *  Removes the failed interface on the video with the uniqueID
+ *
+ *  @param uniqueId ID of the video to be updated
+ */
+- (void)unmarkVideoFailedUpload:(NSString *)uniqueId;
+
+/**
+ *  Removed the video with the uniqueID from the HTML
+ *
+ *  @param uniqueId ID of video to be removed
+ */
+- (void)removeVideo:(NSString*)uniqueId;
+
+/**
+ *  @brief      Set video element, identified with a videoPressID, source and poster urls.
+ *
+ *  @param videoPressID identifier of Video Press element
+ *  @param videoURL     url for videopress video source
+ *  @param posterURL    url for the poster image for video
+ */
+- (void)setVideoPress:(NSString *)videoPressID
+               source:(NSString *)videoURL
+               poster:(NSString *)posterURL;
+
+/**
+ *  Pauses all the videos on the editor
+ */
+- (void)pauseAllVideos;
+
+
 #pragma mark - Links
 
 /**
