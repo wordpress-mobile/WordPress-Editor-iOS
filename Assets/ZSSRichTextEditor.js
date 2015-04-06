@@ -1235,7 +1235,7 @@ ZSSEditor.setVideoPressLinks = function(videopressID, videoURL, posterURL ) {
     var thisObj = this;
     videoNode.on('webkitbeginfullscreen', function (event){ thisObj.sendVideoFullScreenStarted(); } );
     videoNode.on('webkitendfullscreen', function (event){ thisObj.sendVideoFullScreenEnded(); } );
-    videoNode.on('error', function(event) { videoNode.load()} );
+    videoNode.load();
 };
 
 /**
