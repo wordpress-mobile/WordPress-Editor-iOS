@@ -1127,7 +1127,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (BOOL)isSelectionStyleScheme:(NSString*)scheme
 {
-	static NSString* const kCallbackScheme = @"callback-video-fullscreen";
+	static NSString* const kCallbackScheme = @"callback-selection-style";
 
 	return [scheme isEqualToString:kCallbackScheme];
 }
