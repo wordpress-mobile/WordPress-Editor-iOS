@@ -52,10 +52,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 @property (nonatomic, strong, readwrite) ZSSTextView *sourceView;
 @property (nonatomic, strong, readonly) UIWebView* webView;
 
-
-#pragma mark - Operation queues
-@property (nonatomic, strong, readwrite) NSOperationQueue* editorInteractionQueue;
-
 #pragma mark - Editor loading support
 @property (nonatomic, copy, readwrite) NSString* preloadedHTML;
 
@@ -192,54 +188,9 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
 - (void)setupHTMLEditor
 {
-	_editorInteractionQueue = [[NSOperationQueue alloc] init];
-	
-	__block NSString* htmlEditor = nil;
-	__weak typeof(self) weakSelf = self;
-	
-	NSBlockOperation* loadEditorOperation = [NSBlockOperation blockOperationWithBlock:^{
-		htmlEditor = [self editorHTML];
-	}];
-	
-    NSBlockOperation* editorDidLoadOperation = [NSBlockOperation blockOperationWithBlock:^{
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-
-        if (strongSelf) {
-            NSURL * baseURL = [[NSBundle mainBundle] bundleURL];
-            [strongSelf.webView loadHTMLString:htmlEditor baseURL:baseURL];
-        }
-    }];
-	
-	[loadEditorOperation setCompletionBlock:^{
-		
-		[[NSOperationQueue mainQueue] addOperation:editorDidLoadOperation];
-	}];
-	
-	[_editorInteractionQueue addOperation:loadEditorOperation];
-}
-
-- (NSString*)editorRawHTML
-{
-    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"editor" ofType:@"html"];
-    NSData *fileContentData = [NSData dataWithContentsOfFile:filePath];
-    NSString *fileContentString = [[NSString alloc] initWithData:fileContentData encoding:NSUTF8StringEncoding];
-    
-    return fileContentString;
-}
-
-- (NSString *)javascriptFromBundleResourceNamed:(NSString *)filename
-{
-    NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:@"js"];
-    NSData *data = [NSData dataWithContentsOfFile:path];
-    NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-
-    return content;
-}
-
-- (NSString*)editorHTML
-{
-    NSString *fileContentString = [self editorRawHTML];
-	return fileContentString;
+    NSBundle * bundle = [NSBundle bundleForClass:[WPEditorView class]];
+    NSURL * editorURL = [bundle URLForResource:@"editor" withExtension:@"html"];
+    [self.webView loadRequest:[NSURLRequest requestWithURL:editorURL]];
 }
 
 #pragma mark - KVO
@@ -561,7 +512,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
-    self.editorInteractionQueue = nil;
+//    self.editorInteractionQueue = nil;
     
     [self.titleField handleDOMLoaded];
     [self.contentField handleDOMLoaded];
@@ -1095,7 +1046,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (BOOL)isSelectionStyleScheme:(NSString*)scheme
 {
-	static NSString* const kCallbackScheme = @"callback-video-fullscreen";
+	static NSString* const kCallbackScheme = @"callback-selection-style";
 
 	return [scheme isEqualToString:kCallbackScheme];
 }
