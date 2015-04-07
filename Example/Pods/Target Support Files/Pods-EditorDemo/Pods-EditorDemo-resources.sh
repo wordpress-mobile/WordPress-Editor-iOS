@@ -185,6 +185,7 @@ install_resource()
                     install_resource "../../Assets/wpsave.js"
                     install_resource "../../Assets/ZSSRichTextEditor.js"
                     install_resource "../../Assets/wpposter.svg"
+                    install_resource "../../Assets/editor.css"
                     install_resource "${BUILT_PRODUCTS_DIR}/WordPress-iOS-Shared.bundle"
           
 rsync -avr --copy-links --no-relative --exclude '*/.svn/*' --files-from="$RESOURCES_TO_COPY" / "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
