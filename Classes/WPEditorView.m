@@ -239,38 +239,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 - (NSString*)editorHTML
 {
     NSString *fileContentString = [self editorRawHTML];
-    NSString *jQueryMobileEventsContentsString = [self javascriptFromBundleResourceNamed:@"jquery.mobile-events.min"];
-    NSString *editorJavascriptContentsString = [self javascriptFromBundleResourceNamed:@"ZSSRichTextEditor"];
-    NSString *shortcodeJavascriptContentString = [self javascriptFromBundleResourceNamed:@"shortcode"];
-    NSString *underscoreJavascriptContentString = [self javascriptFromBundleResourceNamed:@"underscore-min"];
-    NSString *rangyCoreContentString = [self javascriptFromBundleResourceNamed:@"rangy-core"];
-    NSString *rangyCssClassApplierContentString = [self javascriptFromBundleResourceNamed:@"rangy-cssclassapplier"];
-    NSString *rangySelectionSaveRestoreContentString = [self javascriptFromBundleResourceNamed:@"rangy-selectionsaverestore"];
-    NSString *rangySerializerContentString = [self javascriptFromBundleResourceNamed:@"rangy-serializer"];
-    NSString *wpLoadTextString = [self javascriptFromBundleResourceNamed:@"wpload"];
-    NSString *wpSaveTextString = [self javascriptFromBundleResourceNamed:@"wpsave"];
-
-	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--jquery-mobile-events-->"
-                                                                     withString:jQueryMobileEventsContentsString];
-	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--editor-->"
-                                                                     withString:editorJavascriptContentsString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--underscore-->"
-                                                                     withString:underscoreJavascriptContentString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--shortcode-->"
-                                                                     withString:shortcodeJavascriptContentString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-core-->"
-                                                                     withString:rangyCoreContentString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-cssclassapplier-->"
-                                                                     withString:rangyCssClassApplierContentString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-selectionsaverestore-->"
-                                                                     withString:rangySelectionSaveRestoreContentString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-serializer-->"
-                                                                     withString:rangySerializerContentString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--wp-load-->"
-                                                                     withString:wpLoadTextString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--wp-save-->"
-                                                                     withString:wpSaveTextString];
-
 	return fileContentString;
 }
 
