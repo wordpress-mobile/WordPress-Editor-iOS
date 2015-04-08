@@ -63,6 +63,7 @@ ZSSEditor.init = function() {
     
     document.execCommand('insertBrOnReturn', false, false);
     document.execCommand('defaultParagraphSeparator', false, this.defaultParagraphSeparator);
+    document.execCommand('styleWithCSS', false, false);
     
     var editor = $('div.field').each(function() {
         var editableField = new ZSSField($(this));
@@ -122,27 +123,13 @@ ZSSEditor.focusFirstEditableField = function() {
     $('div[contenteditable=true]:first').focus();
 };
 
-ZSSEditor.formatNewLine = function(e) {
+ZSSEditor.handleEnterKeyDownEvent = function(e) {
     
     var currentField = this.getFocusedField();
     
-    if (currentField.isMultiline()) {
-        var parentBlockQuoteNode = ZSSEditor.closerParentNodeWithName('blockquote');
-        
-        if (parentBlockQuoteNode) {
-            this.formatNewLineInsideBlockquote(e);
-        } else if (!ZSSEditor.isCommandEnabled('insertOrderedList')
-                   && !ZSSEditor.isCommandEnabled('insertUnorderedList')) {
-            document.execCommand('formatBlock', false, 'p');
-        }
-    } else {
+    if (!currentField.isMultiline()) {
         e.preventDefault();
     }
-};
-
-ZSSEditor.formatNewLineInsideBlockquote = function(e) {
-    this.insertBreakTagAtCaretPosition();
-    e.preventDefault();
 };
 
 ZSSEditor.getField = function(fieldId) {
@@ -457,23 +444,53 @@ ZSSEditor.setUnderline = function() {
 	ZSSEditor.sendEnabledStyles();
 };
 
+/**
+ *  @brief      Turns blockquote ON or OFF for the current selection.
+ *  @details    This method makes sure that the contents of the blockquotes are surrounded by the
+ *              defaultParagraphSeparatorTag (by default '<p>').  This ensures parity with the web
+ *              editor.  It's also important to note that turning OFF the blockquote refers to the
+ *              closest paragraph only, meaning that the paragraph should be extracted from the
+ *              parent blockquote if it contains more paragraphs.
+ */
 ZSSEditor.setBlockquote = function() {
-	var formatTag = "blockquote";
-	var formatBlock = document.queryCommandValue('formatBlock');
-	 
-	if (formatBlock.length > 0 && formatBlock.toLowerCase() == formatTag) {
-        document.execCommand('formatBlock', false, this.defaultParagraphSeparatorTag());
-	} else {
-        var blockquoteNode = this.closerParentNodeWithName(formatTag);
+    
+    var formatTag = "blockquote";
+    var blockquoteNode = this.closerParentNodeWithName(formatTag);
+    
+    if (blockquoteNode) {
+        this.turnBlockquoteOff(blockquoteNode);
         
-        if (blockquoteNode) {
-            this.unwrapNode(blockquoteNode);
-        } else {
-            document.execCommand('formatBlock', false, '<' + formatTag + '>');
-        }
-	}
+    } else {
+        this.turnBlockquoteOn();
+    }
 
-	 ZSSEditor.sendEnabledStyles();
+    ZSSEditor.sendEnabledStyles();
+};
+
+ZSSEditor.turnBlockquoteOff = function(blockquoteNode) {
+    
+    document.execCommand('formatBlock',
+                         false,
+                         this.defaultParagraphSeparatorTag());
+    
+    var closerParentNode = this.closerParentNode();
+    
+    if (closerParentNode != blockquoteNode) {
+        var savedSelection = rangy.saveSelection();
+        
+        this.extractNodeFromAncestorNode(closerParentNode, blockquoteNode);
+        
+        rangy.restoreSelection(savedSelection);
+    }
+};
+
+ZSSEditor.turnBlockquoteOn = function() {
+    
+    var formatTag = "blockquote";
+    document.execCommand('formatBlock', false, '<' + formatTag + '>');
+    
+    var closerParentNode = this.closerParentNode();
+    this.surroundNodeContentsWithAParagraphNode(closerParentNode);
 };
 
 ZSSEditor.removeFormating = function() {
@@ -615,21 +632,30 @@ ZSSEditor.updateLink = function(url, title) {
 };
 
 ZSSEditor.unlink = function() {
-	var savedSelection = rangy.saveSelection();
     
 	var currentLinkNode = ZSSEditor.closerParentNodeWithName('a');
     
 	if (currentLinkNode) {
-		ZSSEditor.unwrapNode(currentLinkNode);
+		this.unwrapNode(currentLinkNode);
 	}
-    
-    rangy.restoreSelection(savedSelection);
 	
 	ZSSEditor.sendEnabledStyles();
 };
 
 ZSSEditor.unwrapNode = function(node) {
+    var savedSelection = rangy.saveSelection();
+    
     $(node).contents().unwrap();
+    
+    rangy.restoreSelection(savedSelection);
+};
+
+ZSSEditor.wrapNode = function(node) {
+    var savedSelection = rangy.saveSelection();
+    
+    $(node).contents().wrap("<p></p>");
+    
+    rangy.restoreSelection(savedSelection);
 };
 
 ZSSEditor.quickLink = function() {
@@ -1378,7 +1404,7 @@ ZSSEditor.removeCaptionFormattingCallback = function( match, content ) {
  *
  *  @return     Returns the string with the visual formatting applied.
  */
-ZSSEditor.applyVisualFormatting  = function( html ) {
+ZSSEditor.applyVisualFormatting = function( html ) {
     var str = wp.shortcode.replace( 'caption', html, ZSSEditor.applyCaptionFormatting );
 
     return str;
@@ -1531,26 +1557,81 @@ ZSSEditor.sendEnabledStyles = function(e) {
             }
         }
     }
-	
+
 	ZSSEditor.stylesCallback(items);
 };
 
-// MARK: - Commands: High Level Editing
+// MARK: - Advanced Node Manipulation
 
 /**
- *  @brief      Inserts a br tag at the caret position.
+ *  @brief      Extracts a node from a parent node, and from all nodes in between the two.
  */
-ZSSEditor.insertBreakTagAtCaretPosition = function() {
-    // iOS IMPORTANT: we were adding <br> tags with range.insertNode() before using
-    // this method.  Unfortunately this was causing issues with the first <br> tag
-    // being completely ignored under iOS:
-    //
-    // https://bugs.webkit.org/show_bug.cgi?id=23474
-    //
-    // The following line seems to work fine under iOS, so please be careful if this
-    // needs to be changed for any reason.
-    //
-    document.execCommand("insertLineBreak");
+ZSSEditor.extractNodeFromAncestorNode = function(descendant, ancestor) {
+    
+    while (ancestor.contains(descendant)) {
+        
+        this.extractNodeFromParent(descendant);
+        break;
+    }
+};
+
+/**
+ *  @brief      Extract the specified node from its direct parent node.
+ *  @details    If the node has siblings, before or after it, the parent node is split accordingly
+ *              into two new clones of it.
+ */
+ZSSEditor.extractNodeFromParent = function(node) {
+
+    var parentNode = node.parentNode;
+    var grandParentNode = parentNode.parentNode;
+    var clonedParentForPreviousSiblings = null;
+    var clonedParentForNextSiblings = null;
+    
+    if (node.previousSibling != null) {
+        var clonedParentForPreviousSiblings = parentNode.cloneNode();
+        
+        while (parentNode.firstChild != node) {
+            clonedParentForPreviousSiblings.appendChild(parentNode.firstChild);
+        }
+    }
+    
+    if (node.nextSibling != null) {
+        var clonedParentForNextSiblings = parentNode.cloneNode();
+        
+        while (node.nextSibling != null) {
+            clonedParentForNextSiblings.appendChild(node.nextSibling);
+        }
+    }
+    
+    if (clonedParentForPreviousSiblings) {
+        grandParentNode.insertBefore(clonedParentForPreviousSiblings, parentNode);
+    }
+    
+    grandParentNode.insertBefore(node, parentNode);
+    
+    if (clonedParentForNextSiblings) {
+        grandParentNode.insertBefore(clonedParentForNextSiblings, parentNode);
+    }
+    
+    grandParentNode.removeChild(parentNode);
+};
+
+/**
+ *  @brief      Surrounds a node's contents with a paragraph node.
+ *  @details    When creating new nodes that should force paragraphs inside of them, this method
+ *              should be called.
+ */
+ZSSEditor.surroundNodeContentsWithAParagraphNode = function(node) {
+    
+    var range = document.createRange();
+    var paragraph = document.createElement(this.defaultParagraphSeparator);
+    
+    var savedSelection = rangy.saveSelection();
+    
+    range.selectNodeContents(node);
+    range.surroundContents(paragraph);
+    
+    rangy.restoreSelection(savedSelection);
 };
 
 // MARK: - Parent nodes & tags
@@ -1629,6 +1710,10 @@ ZSSEditor.closerParentNodeWithName = function(nodeName) {
     }
     
     return parentNode;
+};
+
+ZSSEditor.isCloserParentNodeABlockquote = function() {
+  return this.closerParentNode().nodeName == "BLOCKQUOTE";
 };
 
 ZSSEditor.parentTags = function() {
@@ -1737,17 +1822,41 @@ ZSSField.prototype.handleFocusEvent = function(e) {
 };
 
 ZSSField.prototype.handleKeyDownEvent = function(e) {
-
+    
     var wasEnterPressed = (e.keyCode == '13');
     
     if (this.isComposing) {
         e.stopPropagation();
-    } else if (wasEnterPressed) {
-        ZSSEditor.formatNewLine(e);
-    } else if (ZSSEditor.closerParentNode() == this.wrappedDomNode()) {
-        // IMPORTANT: without this code, we can have text written outside of paragraphs...
-        //
-        document.execCommand('formatBlock', false, 'p');
+    } else {
+        if (wasEnterPressed) {
+            ZSSEditor.handleEnterKeyDownEvent(e);
+        }
+    
+        var closerParentNode = ZSSEditor.closerParentNode();
+        var parentNodeShouldBeParagraph = (closerParentNode == this.wrappedDomNode()
+                                           || closerParentNode.nodeName == 'BLOCKQUOTE');
+        
+        if (parentNodeShouldBeParagraph) {
+            /*
+            formatBlock
+            */
+            var selection = window.getSelection();
+            var range = selection.getRangeAt(0);
+            var paragraph = document.createElement("p");
+            
+            range.insertNode(document.createTextNode("&#x200b;"));
+            range.surroundContents(paragraph);
+            //            range.collapse(false);
+            
+            //paragraph.innerHTML = "";
+            
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            // IMPORTANT: without this code, we can have text written outside of paragraphs...
+            //
+            //document.execCommand('formatBlock', false, 'p');
+        }
     }
 };
 
