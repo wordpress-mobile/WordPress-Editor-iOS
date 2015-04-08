@@ -512,8 +512,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
     
-//    self.editorInteractionQueue = nil;
-    
     [self.titleField handleDOMLoaded];
     [self.contentField handleDOMLoaded];
     
