@@ -52,10 +52,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 @property (nonatomic, strong, readwrite) ZSSTextView *sourceView;
 @property (nonatomic, strong, readonly) UIWebView* webView;
 
-
-#pragma mark - Operation queues
-@property (nonatomic, strong, readwrite) NSOperationQueue* editorInteractionQueue;
-
 #pragma mark - Editor loading support
 @property (nonatomic, copy, readwrite) NSString* preloadedHTML;
 
@@ -192,86 +188,9 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
 - (void)setupHTMLEditor
 {
-	_editorInteractionQueue = [[NSOperationQueue alloc] init];
-	
-	__block NSString* htmlEditor = nil;
-	__weak typeof(self) weakSelf = self;
-	
-	NSBlockOperation* loadEditorOperation = [NSBlockOperation blockOperationWithBlock:^{
-		htmlEditor = [self editorHTML];
-	}];
-	
-    NSBlockOperation* editorDidLoadOperation = [NSBlockOperation blockOperationWithBlock:^{
-        __strong typeof(weakSelf) strongSelf = weakSelf;
-
-        if (strongSelf) {
-            NSURL * baseURL = [[NSBundle mainBundle] bundleURL];
-            [strongSelf.webView loadHTMLString:htmlEditor baseURL:baseURL];
-        }
-    }];
-	
-	[loadEditorOperation setCompletionBlock:^{
-		
-		[[NSOperationQueue mainQueue] addOperation:editorDidLoadOperation];
-	}];
-	
-	[_editorInteractionQueue addOperation:loadEditorOperation];
-}
-
-- (NSString*)editorRawHTML
-{
-    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"editor" ofType:@"html"];
-    NSData *fileContentData = [NSData dataWithContentsOfFile:filePath];
-    NSString *fileContentString = [[NSString alloc] initWithData:fileContentData encoding:NSUTF8StringEncoding];
-    
-    return fileContentString;
-}
-
-- (NSString *)javascriptFromBundleResourceNamed:(NSString *)filename
-{
-    NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:@"js"];
-    NSData *data = [NSData dataWithContentsOfFile:path];
-    NSString *content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-
-    return content;
-}
-
-- (NSString*)editorHTML
-{
-    NSString *fileContentString = [self editorRawHTML];
-    NSString *jQueryMobileEventsContentsString = [self javascriptFromBundleResourceNamed:@"jquery.mobile-events.min"];
-    NSString *editorJavascriptContentsString = [self javascriptFromBundleResourceNamed:@"ZSSRichTextEditor"];
-    NSString *shortcodeJavascriptContentString = [self javascriptFromBundleResourceNamed:@"shortcode"];
-    NSString *underscoreJavascriptContentString = [self javascriptFromBundleResourceNamed:@"underscore-min"];
-    NSString *rangyCoreContentString = [self javascriptFromBundleResourceNamed:@"rangy-core"];
-    NSString *rangyCssClassApplierContentString = [self javascriptFromBundleResourceNamed:@"rangy-cssclassapplier"];
-    NSString *rangySelectionSaveRestoreContentString = [self javascriptFromBundleResourceNamed:@"rangy-selectionsaverestore"];
-    NSString *rangySerializerContentString = [self javascriptFromBundleResourceNamed:@"rangy-serializer"];
-    NSString *wpLoadTextString = [self javascriptFromBundleResourceNamed:@"wpload"];
-    NSString *wpSaveTextString = [self javascriptFromBundleResourceNamed:@"wpsave"];
-
-	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--jquery-mobile-events-->"
-                                                                     withString:jQueryMobileEventsContentsString];
-	fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--editor-->"
-                                                                     withString:editorJavascriptContentsString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--underscore-->"
-                                                                     withString:underscoreJavascriptContentString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--shortcode-->"
-                                                                     withString:shortcodeJavascriptContentString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-core-->"
-                                                                     withString:rangyCoreContentString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-cssclassapplier-->"
-                                                                     withString:rangyCssClassApplierContentString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-selectionsaverestore-->"
-                                                                     withString:rangySelectionSaveRestoreContentString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-serializer-->"
-                                                                     withString:rangySerializerContentString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--wp-load-->"
-                                                                     withString:wpLoadTextString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--wp-save-->"
-                                                                     withString:wpSaveTextString];
-
-	return fileContentString;
+    NSBundle * bundle = [NSBundle bundleForClass:[WPEditorView class]];
+    NSURL * editorURL = [bundle URLForResource:@"editor" withExtension:@"html"];
+    [self.webView loadRequest:[NSURLRequest requestWithURL:editorURL]];
 }
 
 #pragma mark - KVO
@@ -592,8 +511,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (void)handleDOMLoadedCallback:(NSURL*)url
 {
     NSParameterAssert([url isKindOfClass:[NSURL class]]);
-    
-    self.editorInteractionQueue = nil;
     
     [self.titleField handleDOMLoaded];
     [self.contentField handleDOMLoaded];

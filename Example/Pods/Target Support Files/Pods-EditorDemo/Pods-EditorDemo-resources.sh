@@ -172,7 +172,9 @@ install_resource()
                     install_resource "../../Assets/ZSSundo.png"
                     install_resource "../../Assets/ZSSundo@2x.png"
                     install_resource "../../Assets/editor.html"
+                    install_resource "../../Assets/jquery.js"
                     install_resource "../../Assets/jquery.mobile-events.min.js"
+                    install_resource "../../Assets/js-beautifier.js"
                     install_resource "../../Assets/rangy-core.js"
                     install_resource "../../Assets/rangy-cssclassapplier.js"
                     install_resource "../../Assets/rangy-selectionsaverestore.js"
@@ -183,6 +185,7 @@ install_resource()
                     install_resource "../../Assets/wpsave.js"
                     install_resource "../../Assets/ZSSRichTextEditor.js"
                     install_resource "../../Assets/wpposter.svg"
+                    install_resource "../../Assets/editor.css"
                     install_resource "${BUILT_PRODUCTS_DIR}/WordPress-iOS-Shared.bundle"
           
 rsync -avr --copy-links --no-relative --exclude '*/.svn/*' --files-from="$RESOURCES_TO_COPY" / "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
