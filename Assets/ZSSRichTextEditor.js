@@ -1973,25 +1973,16 @@ ZSSField.prototype.handleKeyDownEvent = function(e) {
                                            || closerParentNode.nodeName == 'BLOCKQUOTE');
         
         if (parentNodeShouldBeParagraph) {
-            /*
-            formatBlock
-            */
+            
             var selection = window.getSelection();
             var range = selection.getRangeAt(0);
             var paragraph = document.createElement("p");
             
             range.insertNode(document.createTextNode("&#x200b;"));
             range.surroundContents(paragraph);
-            //            range.collapse(false);
-            
-            //paragraph.innerHTML = "";
             
             selection.removeAllRanges();
             selection.addRange(range);
-            
-            // IMPORTANT: without this code, we can have text written outside of paragraphs...
-            //
-            //document.execCommand('formatBlock', false, 'p');
         }
     }
 };
