@@ -498,25 +498,50 @@ ZSSEditor.turnBlockquoteOff = function(blockquoteNode) {
     }
 };
 
+/**
+ *  @brief      Turns blockquote ON for the current selection.
+ *  @details    Turning blockquote ON for a selection means going one by one the element nodes that
+ *              intersect the selection and calling turnBlockquoteOnForNode().
+ */
 ZSSEditor.turnBlockquoteOn = function() {
     
-    var closerParentNode = this.closerParentNode();
     var savedSelection = rangy.saveSelection();
-    var couldJoinBlockquotes = this.joinAdjacentSiblingOrAncestorBlockquotes(closerParentNode);
+    
+    var range = document.getSelection().getRangeAt(0);
+    var startContainer = range.startContainer;
+    var endContainer = range.endContainer;
+    
+    while (startContainer.nodeType != Node.ELEMENT_NODE) {
+        startContainer = startContainer.parentNode;
+    }
+    
+    while (endContainer.nodeType != Node.ELEMENT_NODE) {
+        endContainer = endContainer.parentNode;
+    }
+    
+    var currentChild = null;
+    var nextChild = startContainer;
+    
+    do {
+        currentChild = nextChild;
+        nextChild = currentChild.nextSibling;
+        
+        ZSSEditor.turnBlockquoteOnForNode(currentChild);
+        
+    } while (currentChild != endContainer);
     
     rangy.restoreSelection(savedSelection);
+};
+
+ZSSEditor.turnBlockquoteOnForNode = function(node) {
+    var couldJoinBlockquotes = this.joinAdjacentSiblingsOrAncestorBlockquotes(node);
     
     if (!couldJoinBlockquotes) {
         var formatTag = "blockquote";
-        document.execCommand('formatBlock', false, '<' + formatTag + '>');
+        var blockquote = document.createElement(formatTag);
         
-        // The execCommand call above forces us to call this again.
-        //
-        closerParentNode = this.closerParentNode();
-        
-        savedSelection = rangy.saveSelection();
-        this.surroundNodeContentsWithAParagraphNode(closerParentNode);
-        rangy.restoreSelection(savedSelection);
+        node.parentNode.insertBefore(blockquote, node);
+        blockquote.appendChild(node);
     }
 };
 
@@ -1646,12 +1671,12 @@ ZSSEditor.extractNodeFromParent = function(node) {
 
 /**
  *  @brief      Joins any adjacent blockquote siblings.
- *  @details    You probably want to call joinAdjacentSiblingOrAncestorBlockquotes() instead of
+ *  @details    You probably want to call joinAdjacentSiblingsOrAncestorBlockquotes() instead of
  *              this.
  *
  *  @returns    true if a sibling was joined.  false otherwise.
  */
-ZSSEditor.joinAdjacentSiblingBlockquotes = function(node) {
+ZSSEditor.joinAdjacentSiblingsBlockquotes = function(node) {
     
     var shouldJoinToPreviousSibling = this.hasPreviousSiblingWithName(node, "BLOCKQUOTE");
     var shouldJoinToNextSibling = this.hasNextSiblingWithName(node, "BLOCKQUOTE");
@@ -1684,7 +1709,7 @@ ZSSEditor.joinAdjacentSiblingBlockquotes = function(node) {
  *
  *  @returns    true if a sibling or ancestor sibling was joined.  false otherwise.
  */
-ZSSEditor.joinAdjacentSiblingOrAncestorBlockquotes = function(node) {
+ZSSEditor.joinAdjacentSiblingsOrAncestorBlockquotes = function(node) {
     
     var currentNode = node;
     var rootNode = this.getFocusedField().wrappedDomNode();
@@ -1693,7 +1718,7 @@ ZSSEditor.joinAdjacentSiblingOrAncestorBlockquotes = function(node) {
     while (currentNode != rootNode
            && !joined) {
     
-        joined = this.joinAdjacentSiblingBlockquotes(currentNode);
+        joined = this.joinAdjacentSiblingsBlockquotes(currentNode);
         currentNode = currentNode.parentNode;
     };
     
