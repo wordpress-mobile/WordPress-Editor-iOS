@@ -458,7 +458,7 @@ ZSSEditor.setBlockquote = function() {
     var blockquoteNode = this.closerParentNodeWithName(formatTag);
     
     if (blockquoteNode) {
-        this.turnBlockquoteOff(blockquoteNode);
+        this.turnBlockquoteOff();
         
     } else {
         this.turnBlockquoteOn();
@@ -475,27 +475,21 @@ ZSSEditor.setBlockquote = function() {
  *              - If the closest parent node is not the blockquote node, the code will look for the
  *              node that's closest to the blockquote and extract that node from the blockquote.
  */
-ZSSEditor.turnBlockquoteOff = function(blockquoteNode) {
+ZSSEditor.turnBlockquoteOff = function() {
     
-    var closerParentNode = this.closerParentNode();
+    this.turnBlockquote(false);
+};
+
+ZSSEditor.turnBlockquoteOffForNode = function(node, blockquoteNode) {
     
-    if (closerParentNode == blockquoteNode) {
-        
-        document.execCommand('formatBlock', false, this.defaultParagraphSeparatorTag());
-    } else {
-        var currentChild = blockquoteNode.firstChild;
-        
-        while (currentChild != closerParentNode
-               && !currentChild.contains(closerParentNode)) {
-            currentChild = currentChild.nextSibling;
-        }
-        
-        var savedSelection = rangy.saveSelection();
-        
-        this.extractNodeFromAncestorNode(currentChild, blockquoteNode);
-        
-        rangy.restoreSelection(savedSelection);
+    var currentChild = blockquoteNode.firstChild;
+    
+    while (currentChild != node
+           && !currentChild.contains(node)) {
+        currentChild = currentChild.nextSibling;
     }
+    
+    this.extractNodeFromAncestorNode(currentChild, blockquoteNode);
 };
 
 /**
@@ -505,6 +499,23 @@ ZSSEditor.turnBlockquoteOff = function(blockquoteNode) {
  */
 ZSSEditor.turnBlockquoteOn = function() {
     
+    this.turnBlockquote(true);
+};
+
+ZSSEditor.turnBlockquoteOnForNode = function(node) {
+    var couldJoinBlockquotes = this.joinAdjacentSiblingsOrAncestorBlockquotes(node);
+    
+    if (!couldJoinBlockquotes) {
+        var formatTag = "blockquote";
+        var blockquote = document.createElement(formatTag);
+        
+        node.parentNode.insertBefore(blockquote, node);
+        blockquote.appendChild(node);
+    }
+};
+
+ZSSEditor.turnBlockquote = function(turnOn) {
+
     var savedSelection = rangy.saveSelection();
     
     var range = document.getSelection().getRangeAt(0);
@@ -526,23 +537,21 @@ ZSSEditor.turnBlockquoteOn = function() {
         currentChild = nextChild;
         nextChild = currentChild.nextSibling;
         
-        ZSSEditor.turnBlockquoteOnForNode(currentChild);
+        if (turnOn) {
+            ZSSEditor.turnBlockquoteOnForNode(currentChild);
+        } else {
+            // It's important to retrieve the parent blockquote node each time, because the method
+            // turnBlockquoteOffForNode() basically destroys the blockquote each time for technical
+            // reasons.  We can't refer to the same blockquote node each time.
+            //
+            var blockquoteNode = this.closerParentNodeWithNameRelativeToNode("BLOCKQUOTE", currentChild);
+            
+            ZSSEditor.turnBlockquoteOffForNode(currentChild, blockquoteNode);
+        }
         
     } while (currentChild != endContainer);
     
     rangy.restoreSelection(savedSelection);
-};
-
-ZSSEditor.turnBlockquoteOnForNode = function(node) {
-    var couldJoinBlockquotes = this.joinAdjacentSiblingsOrAncestorBlockquotes(node);
-    
-    if (!couldJoinBlockquotes) {
-        var formatTag = "blockquote";
-        var blockquote = document.createElement(formatTag);
-        
-        node.parentNode.insertBefore(blockquote, node);
-        blockquote.appendChild(node);
-    }
 };
 
 ZSSEditor.removeFormating = function() {
@@ -1804,13 +1813,21 @@ ZSSEditor.closerParentNodeStartingAtNode = function(nodeName, startingNode) {
 
 ZSSEditor.closerParentNodeWithName = function(nodeName) {
     
-    nodeName = nodeName.toLowerCase();
-    
     var parentNode = null;
     var selection = window.getSelection();
     var range = selection.getRangeAt(0).cloneRange();
     
-    var currentNode = range.commonAncestorContainer;
+    var referenceNode = range.commonAncestorContainer;
+    
+    return this.closerParentNodeWithNameRelativeToNode(nodeName, referenceNode);
+};
+
+ZSSEditor.closerParentNodeWithNameRelativeToNode = function(nodeName, referenceNode) {
+    
+    nodeName = nodeName.toUpperCase();
+    
+    var parentNode = null;
+    var currentNode = referenceNode;
     
     while (currentNode) {
         
@@ -1818,7 +1835,7 @@ ZSSEditor.closerParentNodeWithName = function(nodeName) {
             break;
         }
         
-        if (currentNode.nodeName.toLowerCase() == nodeName
+        if (currentNode.nodeName == nodeName
             && currentNode.nodeType == document.ELEMENT_NODE) {
             parentNode = currentNode;
             
