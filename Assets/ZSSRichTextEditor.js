@@ -467,18 +467,32 @@ ZSSEditor.setBlockquote = function() {
     ZSSEditor.sendEnabledStyles();
 };
 
+/**
+ *  @brief      Turns off blockquotes for the current caret position.
+ *  @details    Turning off blockquotes may mean different things depending on the context:
+ *              - If the closest parent node is the blockquote node, we call "formatBlock" to make
+ *              sure the inconsistency is fixed (this shouldn't ever happen ideally).
+ *              - If the closest parent node is not the blockquote node, the code will look for the
+ *              node that's closest to the blockquote and extract that node from the blockquote.
+ */
 ZSSEditor.turnBlockquoteOff = function(blockquoteNode) {
-    
-    document.execCommand('formatBlock',
-                         false,
-                         this.defaultParagraphSeparatorTag());
     
     var closerParentNode = this.closerParentNode();
     
-    if (closerParentNode != blockquoteNode) {
+    if (closerParentNode == blockquoteNode) {
+        
+        document.execCommand('formatBlock', false, this.defaultParagraphSeparatorTag());
+    } else {
+        var currentChild = blockquoteNode.firstChild;
+        
+        while (currentChild != closerParentNode
+               && !currentChild.contains(closerParentNode)) {
+            currentChild = currentChild.nextSibling;
+        }
+        
         var savedSelection = rangy.saveSelection();
         
-        this.extractNodeFromAncestorNode(closerParentNode, blockquoteNode);
+        this.extractNodeFromAncestorNode(currentChild, blockquoteNode);
         
         rangy.restoreSelection(savedSelection);
     }
@@ -486,11 +500,24 @@ ZSSEditor.turnBlockquoteOff = function(blockquoteNode) {
 
 ZSSEditor.turnBlockquoteOn = function() {
     
-    var formatTag = "blockquote";
-    document.execCommand('formatBlock', false, '<' + formatTag + '>');
-    
     var closerParentNode = this.closerParentNode();
-    this.surroundNodeContentsWithAParagraphNode(closerParentNode);
+    var savedSelection = rangy.saveSelection();
+    var couldJoinBlockquotes = this.joinAdjacentSiblingOrAncestorBlockquotes(closerParentNode);
+    
+    rangy.restoreSelection(savedSelection);
+    
+    if (!couldJoinBlockquotes) {
+        var formatTag = "blockquote";
+        document.execCommand('formatBlock', false, '<' + formatTag + '>');
+        
+        // The execCommand call above forces us to call this again.
+        //
+        closerParentNode = this.closerParentNode();
+        
+        savedSelection = rangy.saveSelection();
+        this.surroundNodeContentsWithAParagraphNode(closerParentNode);
+        rangy.restoreSelection(savedSelection);
+    }
 };
 
 ZSSEditor.removeFormating = function() {
@@ -1425,6 +1452,7 @@ ZSSEditor.removeVisualFormatting = function( html ) {
 }
 
 ZSSEditor.insertHTML = function(html) {
+
 	document.execCommand('insertHTML', false, html);
 	this.sendEnabledStyles();
 };
@@ -1617,21 +1645,87 @@ ZSSEditor.extractNodeFromParent = function(node) {
 };
 
 /**
+ *  @brief      Joins any adjacent blockquote siblings.
+ *  @details    You probably want to call joinAdjacentSiblingOrAncestorBlockquotes() instead of
+ *              this.
+ *
+ *  @returns    true if a sibling was joined.  false otherwise.
+ */
+ZSSEditor.joinAdjacentSiblingBlockquotes = function(node) {
+    
+    var shouldJoinToPreviousSibling = this.hasPreviousSiblingWithName(node, "BLOCKQUOTE");
+    var shouldJoinToNextSibling = this.hasNextSiblingWithName(node, "BLOCKQUOTE");
+    var joinedASibling = (shouldJoinToPreviousSibling || shouldJoinToNextSibling);
+    
+    var previousSibling = node.previousSibling;
+    var nextSibling = node.nextSibling;
+    
+    if (shouldJoinToPreviousSibling) {
+        
+        previousSibling.appendChild(node);
+        
+        if (shouldJoinToNextSibling) {
+            
+            previousSibling.appendChild(nextSibling.firstChild);
+            nextSibling.parentNode.removeChild(nextSibling);
+        }
+    } else if (shouldJoinToNextSibling) {
+        
+        nextSibling.insertBefore(node, nextSibling.firstChild);
+    }
+    
+    return joinedASibling;
+};
+
+/**
+ *  @brief      Joins any adjacent blockquote siblings, or the blockquote siblings of any ancestor.
+ *  @details    When turning blockquotes back on, this method makes sure that we attach new
+ *              blockquotes to exiting ones.
+ *
+ *  @returns    true if a sibling or ancestor sibling was joined.  false otherwise.
+ */
+ZSSEditor.joinAdjacentSiblingOrAncestorBlockquotes = function(node) {
+    
+    var currentNode = node;
+    var rootNode = this.getFocusedField().wrappedDomNode();
+    var joined = false;
+    
+    while (currentNode != rootNode
+           && !joined) {
+    
+        joined = this.joinAdjacentSiblingBlockquotes(currentNode);
+        currentNode = currentNode.parentNode;
+    };
+    
+    return joined;
+};
+
+/**
  *  @brief      Surrounds a node's contents with a paragraph node.
  *  @details    When creating new nodes that should force paragraphs inside of them, this method
  *              should be called.
+ *
+ *  @returns    The paragraph node.
  */
 ZSSEditor.surroundNodeContentsWithAParagraphNode = function(node) {
     
     var range = document.createRange();
     var paragraph = document.createElement(this.defaultParagraphSeparator);
     
-    var savedSelection = rangy.saveSelection();
-    
     range.selectNodeContents(node);
     range.surroundContents(paragraph);
     
-    rangy.restoreSelection(savedSelection);
+    return paragraph;
+};
+
+// MARK: - Sibling nodes
+
+ZSSEditor.hasNextSiblingWithName = function(node, siblingNodeName) {
+    return node.nextSibling && node.nextSibling.nodeName == siblingNodeName;
+};
+
+ZSSEditor.hasPreviousSiblingWithName = function(node, siblingNodeName) {
+    return node.previousSibling && node.previousSibling.nodeName == siblingNodeName;
 };
 
 // MARK: - Parent nodes & tags
