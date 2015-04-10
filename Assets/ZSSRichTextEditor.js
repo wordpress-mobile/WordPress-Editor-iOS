@@ -1047,23 +1047,19 @@ ZSSEditor.setProgressOnVideo = function(videoNodeIdentifier, progress) {
  */
 ZSSEditor.markVideoUploadDone = function(videoNodeIdentifier) {    
     var videoNode = this.getVideoNodeWithIdentifier(videoNodeIdentifier);
-    if (videoNode.length == 0){
-        var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
-        ZSSEditor.callback("callback-input", joinedArguments);
-        this.sendVideoReplacedCallback(videoNodeIdentifier);
-        return;
-    }
-    
-    // remove identifier attributed from Video
-    videoNode.removeAttr('data-wpid');
-    
-    // remove uploading style
-    videoNode.removeClass("uploading");
-    videoNode.removeAttr("class");
-    
-    // Remove all extra formatting nodes for progress
-    if (videoNode.parent().attr("id") == this.getVideoContainerIdentifier(videoNodeIdentifier)) {
-        videoNode.parent().replaceWith(videoNode);
+    if (videoNode.length > 0) {
+        
+        // remove identifier attributed from Video
+        videoNode.removeAttr('data-wpid');
+        
+        // remove uploading style
+        videoNode.removeClass("uploading");
+        videoNode.removeAttr("class");
+        
+        // Remove all extra formatting nodes for progress
+        if (videoNode.parent().attr("id") == this.getVideoContainerIdentifier(videoNodeIdentifier)) {
+            videoNode.parent().replaceWith(videoNode);
+        }
     }
     var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
     ZSSEditor.callback("callback-input", joinedArguments);
