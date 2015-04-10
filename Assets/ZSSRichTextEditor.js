@@ -1046,7 +1046,6 @@ ZSSEditor.setProgressOnVideo = function(videoNodeIdentifier, progress) {
  *  @param      VideoNodeIdentifier     The unique Video ID for the uploaded Video
  */
 ZSSEditor.markVideoUploadDone = function(videoNodeIdentifier) {
-    this.sendVideoReplacedCallback(videoNodeIdentifier);
     var videoNode = this.getVideoNodeWithIdentifier(videoNodeIdentifier);
     if (videoNode.length > 0) {
         
@@ -1064,6 +1063,8 @@ ZSSEditor.markVideoUploadDone = function(videoNodeIdentifier) {
     }
     var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
     ZSSEditor.callback("callback-input", joinedArguments);
+    var thisObj = this;
+    setTimeout(function() { thisObj.sendVideoReplacedCallback(videoNodeIdentifier);}, 500);
 };
 
 /**
