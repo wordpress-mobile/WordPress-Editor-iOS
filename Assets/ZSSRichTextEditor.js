@@ -1046,25 +1046,24 @@ ZSSEditor.setProgressOnVideo = function(videoNodeIdentifier, progress) {
  *  @param      VideoNodeIdentifier     The unique Video ID for the uploaded Video
  */
 ZSSEditor.markVideoUploadDone = function(videoNodeIdentifier) {    
-    this.sendVideoReplacedCallback(videoNodeIdentifier);
-    
     var videoNode = this.getVideoNodeWithIdentifier(videoNodeIdentifier);
-    if (videoNode.length == 0){
-        return;
+    if (videoNode.length > 0) {
+        
+        // remove identifier attributed from Video
+        videoNode.removeAttr('data-wpid');
+        
+        // remove uploading style
+        videoNode.removeClass("uploading");
+        videoNode.removeAttr("class");
+        
+        // Remove all extra formatting nodes for progress
+        if (videoNode.parent().attr("id") == this.getVideoContainerIdentifier(videoNodeIdentifier)) {
+            videoNode.parent().replaceWith(videoNode);
+        }
     }
-    
-    // remove identifier attributed from Video
-    videoNode.removeAttr('data-wpid');
-    
-    // remove uploading style
-    videoNode.removeClass("uploading");
-    videoNode.removeAttr("class");
-    
-    // Remove all extra formatting nodes for progress
-    if (videoNode.parent().attr("id") == this.getVideoContainerIdentifier(videoNodeIdentifier)) {
-        videoNode.parent().replaceWith(videoNode);
-    }
-    videoNode.wrap(linkTag);
+    var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
+    ZSSEditor.callback("callback-input", joinedArguments);
+    this.sendVideoReplacedCallback(videoNodeIdentifier);
 };
 
 /**
