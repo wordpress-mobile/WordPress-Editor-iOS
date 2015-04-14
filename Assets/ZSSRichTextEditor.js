@@ -1045,7 +1045,7 @@ ZSSEditor.setProgressOnVideo = function(videoNodeIdentifier, progress) {
  *
  *  @param      VideoNodeIdentifier     The unique Video ID for the uploaded Video
  */
-ZSSEditor.markVideoUploadDone = function(videoNodeIdentifier) {    
+ZSSEditor.markVideoUploadDone = function(videoNodeIdentifier) {
     var videoNode = this.getVideoNodeWithIdentifier(videoNodeIdentifier);
     if (videoNode.length > 0) {
         
@@ -1063,7 +1063,10 @@ ZSSEditor.markVideoUploadDone = function(videoNodeIdentifier) {
     }
     var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
     ZSSEditor.callback("callback-input", joinedArguments);
-    this.sendVideoReplacedCallback(videoNodeIdentifier);
+    // We invoke the sendVideoReplacedCallback with a delay to avoid for
+    // it to be ignored by the webview because of the previous callback being done.
+    var thisObj = this;
+    setTimeout(function() { thisObj.sendVideoReplacedCallback(videoNodeIdentifier);}, 500);
 };
 
 /**
