@@ -242,10 +242,12 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     NSString *editorJavascriptContentsString = [self javascriptFromBundleResourceNamed:@"ZSSRichTextEditor"];
     NSString *shortcodeJavascriptContentString = [self javascriptFromBundleResourceNamed:@"shortcode"];
     NSString *underscoreJavascriptContentString = [self javascriptFromBundleResourceNamed:@"underscore-min"];
+    NSString *rangyClassApplierContentString = [self javascriptFromBundleResourceNamed:@"rangy-classapplier"];
     NSString *rangyCoreContentString = [self javascriptFromBundleResourceNamed:@"rangy-core"];
-    NSString *rangyCssClassApplierContentString = [self javascriptFromBundleResourceNamed:@"rangy-cssclassapplier"];
+    NSString *rangyHighlighterContentString = [self javascriptFromBundleResourceNamed:@"rangy-highlighter"];
     NSString *rangySelectionSaveRestoreContentString = [self javascriptFromBundleResourceNamed:@"rangy-selectionsaverestore"];
     NSString *rangySerializerContentString = [self javascriptFromBundleResourceNamed:@"rangy-serializer"];
+    NSString *rangyTextRangeContentString = [self javascriptFromBundleResourceNamed:@"rangy-textrange"];
     NSString *wpLoadTextString = [self javascriptFromBundleResourceNamed:@"wpload"];
     NSString *wpSaveTextString = [self javascriptFromBundleResourceNamed:@"wpsave"];
 
@@ -257,14 +259,18 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
                                                                      withString:underscoreJavascriptContentString];
     fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--shortcode-->"
                                                                      withString:shortcodeJavascriptContentString];
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-classapplier-->"
+                                                                     withString:rangyClassApplierContentString];
     fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-core-->"
                                                                      withString:rangyCoreContentString];
-    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-cssclassapplier-->"
-                                                                     withString:rangyCssClassApplierContentString];
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-highlighter-->"
+                                                                     withString:rangyHighlighterContentString];
     fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-selectionsaverestore-->"
                                                                      withString:rangySelectionSaveRestoreContentString];
     fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-serializer-->"
                                                                      withString:rangySerializerContentString];
+    fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--rangy-textrange-->"
+                                                                     withString:rangyTextRangeContentString];
     fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--wp-load-->"
                                                                      withString:wpLoadTextString];
     fileContentString = [fileContentString stringByReplacingOccurrencesOfString:@"<!--wp-save-->"

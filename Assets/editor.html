@@ -785,10 +785,13 @@ function style_html(html_source, options) {
     <script><!--editor--></script>
     <script><!--wp-load--></script>
     <script><!--wp-save--></script>
+    <!-- Remember to load rangy-core first.  The order of the rest of rangy's libs doesn't matter. -->
     <script><!--rangy-core--></script>
-    <script><!--rangy-cssclassapplier--></script>
+    <script><!--rangy-classapplier--></script>
+    <script><!--rangy-highlighter--></script>
     <script><!--rangy-selectionsaverestore--></script>
     <script><!--rangy-serializer--></script>
+    <script><!--rangy-textrange--></script>
 	<script>
 		// DRM: onLoad does not get called when offline, if there's remote content in the editor
 		// (such as remote images).  We use the 'ready' event for this reason.

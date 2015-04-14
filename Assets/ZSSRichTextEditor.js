@@ -453,7 +453,66 @@ ZSSEditor.setUnderline = function() {
  *              parent blockquote if it contains more paragraphs.
  */
 ZSSEditor.setBlockquote = function() {
+    /*
+    var savedSelection = rangy.saveSelection();
+    var range = document.getSelection().getRangeAt(0).cloneRange();
     
+    alert(range.getNodes);
+    alert(rangy.getNodes);
+    var nodes = range.getNodes([document.ELEMENT_NODE]); // this.getNodesIntersectingRange(range);
+    alert(nodes.length);
+     */
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0);
+    var allWithinRangeParent = range.commonAncestorContainer.getElementsByTagName("*");
+    
+    alert("1");
+    
+    var nodes = [];
+    
+    for (var i=0, el; el = allWithinRangeParent[i]; i++) {
+        
+        if (selection.containsNode(el, true)) {
+            nodes.push(el);
+        }
+    }
+    
+    alert("2");
+    alert(nodes.length);
+    
+    /*
+    var startContainer = range.startContainer;
+    var endContainer = range.endContainer;
+    
+    while (startContainer.nodeType != Node.ELEMENT_NODE) {
+        startContainer = startContainer.parentNode;
+    }
+    
+    while (endContainer.nodeType != Node.ELEMENT_NODE) {
+        endContainer = endContainer.parentNode;
+    }
+    */
+    
+    // If the first container is quoted, the quote will be turned off for the whole selection.
+    // If the first container is not quoted, the quote will be turned on for the whole selection.
+    //
+    // - Following the web editor's behaviour as of 2015/04/10
+    //
+    var toggleOn = (this.closerParentNodeWithNameRelativeToNode("BLOCKQUOTE", nodes[0]) == null);
+    
+    for (var counter = 0; counter < nodes.length; counter++) {
+
+        this.toggleBlockquoteForNode(nodes[counter], toggleOn);
+        
+    } while (currentChild != endContainer);
+    
+    alert("fin");
+    
+    rangy.restoreSelection(savedSelection);
+    
+    ZSSEditor.sendEnabledStyles();
+    
+    /*
     var formatTag = "blockquote";
     var blockquoteNode = this.closerParentNodeWithName(formatTag);
     
@@ -465,6 +524,24 @@ ZSSEditor.setBlockquote = function() {
     }
 
     ZSSEditor.sendEnabledStyles();
+     */
+};
+
+ZSSEditor.toggleBlockquoteForNode = function(node, toggleOn) {
+    
+    var blockquoteNode = this.closerParentNodeWithNameRelativeToNode("BLOCKQUOTE", node);
+    //alert("Blockquote: " + blockquoteNode);
+    //    alert("Toggle: " + toggleOn);
+    
+    if (!toggleOn && blockquoteNode) {
+        
+        this.turnBlockquoteOffForNode(node, blockquoteNode);
+        
+    } else if (toggleOn && blockquoteNode == null) {
+        this.turnBlockquoteOnForNode(node);
+    }
+    
+    //alert("s");
 };
 
 /**
@@ -475,7 +552,7 @@ ZSSEditor.setBlockquote = function() {
  *              - If the closest parent node is not the blockquote node, the code will look for the
  *              node that's closest to the blockquote and extract that node from the blockquote.
  */
-ZSSEditor.turnBlockquoteOff = function() {
+ZSSEditor.turnBlockquoteOff = function(node) {
     
     this.turnBlockquote(false);
 };
@@ -1678,6 +1755,46 @@ ZSSEditor.extractNodeFromParent = function(node) {
     grandParentNode.removeChild(parentNode);
 };
 
+ZSSEditor.getNodesIntersectingRange = function(range) {
+    
+    var nodes = new Array();
+    var commonAncestor = range.commonAncestorContainer;
+    
+    if (commonAncestor.nodeType != document.ELEMENT_NODE) {
+        commonAncestor = this.closerParentElementRelativeToNode(commonAncestor);
+    }
+    
+    var currentNode = commonAncestor.firstChild;
+    var pushNodes = false;
+    var exit = false;
+    
+    do {
+        alert(currentNode);
+        alert(range.startContainer);
+        
+        if (currentNode == range.startContainer
+            || currentNode.contains(range.startContainer)) {
+            
+            alert("1");
+            pushNodes = true;
+        }
+        alert("2");
+        
+        if (pushNodes) {
+            nodes.push(currentNode);
+            alert("3");
+        }
+        alert("4");
+        
+        currentNode = currentNode.nextSibling;
+        
+    } while(currentNode != range.endContainer
+            && !currentNode.contains(range.endContainer));
+    alert("5");
+    
+    return nodes;
+};
+
 /**
  *  @brief      Joins any adjacent blockquote siblings.
  *  @details    You probably want to call joinAdjacentSiblingsOrAncestorBlockquotes() instead of
@@ -1771,6 +1888,24 @@ ZSSEditor.closerParentNode = function() {
     var range = selection.getRangeAt(0).cloneRange();
     
     var currentNode = range.commonAncestorContainer;
+    
+    while (currentNode) {
+        if (currentNode.nodeType == document.ELEMENT_NODE) {
+            parentNode = currentNode;
+            
+            break;
+        }
+        
+        currentNode = currentNode.parentElement;
+    }
+    
+    return parentNode;
+};
+
+ZSSEditor.closerParentElementRelativeToNode = function(node) {
+    
+    var parentNode = null;
+    var currentNode = node.parentNode;
     
     while (currentNode) {
         if (currentNode.nodeType == document.ELEMENT_NODE) {
