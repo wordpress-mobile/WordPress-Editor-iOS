@@ -8,6 +8,8 @@
 	<script src="underscore-min.js"></script>
     <script src="shortcode.js"></script>
     <script src="jquery.mobile-events.min.js"></script>
+    <script src="WPHybridCallbacker.js"></script>
+    <script src="WPHybridLogger.js"></script>
     <script src="ZSSRichTextEditor.js"></script>
     <script src="wpload.js"></script>
     <script src="wpsave.js"></script>
@@ -16,12 +18,48 @@
     <script src="rangy-selectionsaverestore.js"></script>
     <script src="rangy-serializer.js"></script>
 	<script>
+        var callbackedAndLoggerInstantiated = false;
+        var callbacker = null;
+        var logger = null
+
+        function canLog() {
+            return (callbackedAndLoggerInstantiated
+                    && callbacker
+                    && logger);
+        }
+
+        window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
+            if (canLog()) {
+                logger.logError(errorMsg, url, lineNumber);
+            }
+            
+            return false;
+        }
+
+        window.onload = function() {
+            // If the logger is not instantiated for any reason, we'll throw an alert to be loud
+            // and noisy about it.  That is not supposed to happen at all.
+            //
+            if (!canLog()) {
+                alert("The callbacker and/or logger has failed to initialize. "
+                      + "This probably means there's a syntax error in one of the js sources.");
+            }
+        }
+    
+        callbacker = new WPHybridCallbacker();
+        logger = new WPHybridLogger(callbacker, '~');
+        
+        // If the classes above have errors that interrupt the execution of our javascript code
+        // this flag will never be set to true... this is useful for our function myErrorHandler
+        // to know that a noisy alert should be used instead of the logger
+        //
+        callbackedAndLoggerInstantiated = true;
+    
 		// DRM: onLoad does not get called when offline, if there's remote content in the editor
 		// (such as remote images).  We use the 'ready' event for this reason.
 		//
 		$(document).ready(function() {
-            ZSSEditor.init();
-            ZSSEditor.domLoadedCallback();
+            ZSSEditor.init(callbacker, logger);
 		});
 	</script>
     <link rel="stylesheet" type="text/css" href="editor.css">

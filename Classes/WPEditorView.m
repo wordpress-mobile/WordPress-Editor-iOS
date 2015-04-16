@@ -469,6 +469,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([self isLogCallbackScheme:scheme]){
             [self handleLogCallbackScheme:url];
             handled = YES;
+        } else if ([self isLogErrorCallbackScheme:scheme]){
+            [self handleLogErrorCallbackScheme:url];
+            handled = YES;
         } else if ([self isNewFieldCallbackScheme:scheme]) {
             [self handleNewFieldCallback:url];
             handled = YES;
@@ -841,6 +844,40 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 }
 
 /**
+ *	@brief		Handles a log error callback.
+ *
+ *	@param		url		The url with all the callback information.
+ */
+- (void)handleLogErrorCallbackScheme:(NSURL*)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    static NSString* const kLineParameterName = @"line";
+    static NSString* const kMessageParameterName = @"msg";
+    static NSString* const kURLParameterName = @"url";
+    
+    __block NSString *line = nil;
+    __block NSString *message = nil;
+    __block NSString *errorUrl = nil;
+    
+    [self parseParametersFromCallbackURL:url
+         andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+     {
+         if ([parameterName isEqualToString:kLineParameterName]) {
+             line = [self stringByDecodingURLFormat:parameterValue];
+         } else if ([parameterName isEqualToString:kMessageParameterName]) {
+             message = [self stringByDecodingURLFormat:parameterValue];
+         } else if ([parameterName isEqualToString:kURLParameterName]) {
+             errorUrl = [self stringByDecodingURLFormat:parameterValue];
+         }
+     } onComplete:^{
+         static NSString* const ErrorFormat = @"WebEditor error:\r\n  In file: %@\r\n  In line: %@\r\n  %@";
+         
+         DDLogError(ErrorFormat, errorUrl, line, message);
+     }];
+}
+
+/**
  *	@brief		Handles a new field callback.
  *
  *	@param		url		The url with all the callback information.
@@ -988,6 +1025,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              @"We're expecting a non-nil string object here.");
     
     static NSString* const kCallbackScheme = @"callback-log";
+    
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isLogErrorCallbackScheme:(NSString*)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
+    static NSString* const kCallbackScheme = @"callback-log-error";
     
     return [scheme isEqualToString:kCallbackScheme];
 }

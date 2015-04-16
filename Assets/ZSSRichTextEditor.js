@@ -52,7 +52,10 @@ ZSSEditor.defaultParagraphSeparator = 'p';
 /**
  * The initializer function that must be called onLoad
  */
-ZSSEditor.init = function() {
+ZSSEditor.init = function(callbacker, logger) {
+    
+    ZSSEditor.callbacker = callbacker;
+    ZSSEditor.logger = logger;
     
     rangy.init();
     
@@ -90,8 +93,44 @@ ZSSEditor.init = function() {
 			}
 		}
 	}, false);
+    
+    this.domLoadedCallback();
 
 }; //end
+
+// MARK: - Callbacks
+
+ZSSEditor.callback = function(callbackScheme, callbackPath) {
+    this.callbacker.callback(callbackScheme, callbackPath);
+};
+
+ZSSEditor.domLoadedCallback = function() {
+    this.callback("callback-dom-loaded");
+};
+
+ZSSEditor.selectionChangedCallback = function () {
+    var joinedArguments = this.getJoinedFocusedFieldIdAndCaretArguments();
+    
+    this.callback('callback-selection-changed', joinedArguments);
+    this.callback("callback-input", joinedArguments);
+};
+
+ZSSEditor.stylesCallback = function(stylesArray) {
+    
+    var stylesString = '';
+    
+    if (stylesArray.length > 0) {
+        stylesString = stylesArray.join(defaultCallbackSeparator);
+    }
+    
+    this.callback("callback-selection-style", stylesString);
+};
+
+// MARK: - Logging
+
+ZSSEditor.log = function(msg) {
+    this.logger.log(msg);
+};
 
 // MARK: - Debugging logs
 
@@ -167,78 +206,6 @@ ZSSEditor.getFocusedField = function() {
     }
     
     return this.editableFields[currentFieldId];
-};
-
-// MARK: - Logging
-
-ZSSEditor.log = function(msg) {
-	ZSSEditor.callback('callback-log', 'msg=' + msg);
-};
-
-// MARK: - Callbacks
-
-ZSSEditor.domLoadedCallback = function() {
-	
-	ZSSEditor.callback("callback-dom-loaded");
-};
-
-ZSSEditor.selectionChangedCallback = function () {
-    
-    var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
-    
-    ZSSEditor.callback('callback-selection-changed', joinedArguments);
-    this.callback("callback-input", joinedArguments);
-};
-
-ZSSEditor.callback = function(callbackScheme, callbackPath) {
-    
-	var url =  callbackScheme + ":";
- 
-	if (callbackPath) {
-		url = url + callbackPath;
-	}
-	
-	if (isUsingiOS) {
-        ZSSEditor.callbackThroughIFrame(url);
-	} else {
-		console.log(url);
-	}
-};
-
-/**
- *  @brief      Executes a callback by loading it into an IFrame.
- *  @details    The reason why we're using this instead of window.location is that window.location
- *              can sometimes fail silently when called multiple times in rapid succession.
- *              Found here:
- *              http://stackoverflow.com/questions/10010342/clicking-on-a-link-inside-a-webview-that-will-trigger-a-native-ios-screen-with/10080969#10080969
- *
- *  @param      url     The callback URL.
- */
-ZSSEditor.callbackThroughIFrame = function(url) {
-    var iframe = document.createElement("IFRAME");
-    iframe.setAttribute("src", url);
-    
-    // IMPORTANT: the IFrame was showing up as a black box below our text.  By setting its borders
-    // to be 0px transparent we make sure it's not shown at all.
-    //
-    // REF BUG: https://github.com/wordpress-mobile/WordPress-iOS-Editor/issues/318
-    //
-    iframe.style.cssText = "border: 0px transparent;";
-    
-    document.documentElement.appendChild(iframe);
-    iframe.parentNode.removeChild(iframe);
-    iframe = null;
-};
-
-ZSSEditor.stylesCallback = function(stylesArray) {
-
-	var stylesString = '';
-	
-	if (stylesArray.length > 0) {
-		stylesString = stylesArray.join(defaultCallbackSeparator);
-	}
-
-	ZSSEditor.callback("callback-selection-style", stylesString);
 };
 
 // MARK: - Selection
@@ -2232,20 +2199,14 @@ ZSSField.prototype.sendVideoFullScreenEnded = function() {
 // MARK: - Callback Execution
 
 ZSSField.prototype.callback = function(callbackScheme, callbackPath) {
-
-    var url = callbackScheme + ":";
-
-    url = url + "id=" + this.getNodeId();
-
-    if (callbackPath) {
-        url = url + defaultCallbackSeparator + callbackPath;
+    
+    var finalPath = "id=" + this.getNodeId();
+    
+    if (callbackPath && callbackPath.length > 0) {
+        finalPath = finalPath + callbackPath;
     }
     
-    if (isUsingiOS) {
-        ZSSEditor.callbackThroughIFrame(url);
-    } else {
-        console.log(url);
-    }
+    ZSSEditor.callback(callbackScheme, finalPath);
 };
 
 // MARK: - Focus
