@@ -18,9 +18,9 @@ Pod::Spec.new do |s|
   s.prefix_header_file = "Classes/WordPress-iOS-Editor-Prefix.pch"
   s.exclude_files = 'Classes/exclude'
   s.requires_arc = true
-  s.dependency 'CocoaLumberjack', '~>1.9'
+  s.dependency 'CocoaLumberjack', '~>2.0'
   s.dependency 'UIAlertView+Blocks', '~>0.8.1'
-  s.dependency 'WordPress-iOS-Shared', '~>0.3.0'
+  s.dependency 'WordPress-iOS-Shared', '~>0.3'
   s.dependency 'WordPressCom-Analytics-iOS', '~>0.0.30'
   s.dependency 'NSObject-SafeExpectations', '~>0.0.2'
 end
