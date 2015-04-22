@@ -1649,11 +1649,36 @@ NSInteger const WPLinkAlertViewTag = 92;
 }
 
 - (void)editorView:(WPEditorView*)editorView
+       videoTapped:(NSString *)videoId
+               url:(NSURL *)url
+{
+    if ([self.delegate respondsToSelector:@selector(editorViewController:videoTapped:url:)]) {
+        [self.delegate editorViewController:self videoTapped:videoId url:url];
+    }
+}
+
+- (void)editorView:(WPEditorView*)editorView
        imageReplaced:(NSString *)imageId
 {
     if ([self.delegate respondsToSelector:@selector(editorViewController:imageReplaced:)]) {
         [self.delegate editorViewController:self imageReplaced:imageId];
     }
+}
+
+- (void)editorView:(WPEditorView*)editorView
+     videoReplaced:(NSString *)videoId
+{
+    if ([self.delegate respondsToSelector:@selector(editorViewController:videoReplaced:)]) {
+        [self.delegate editorViewController:self videoReplaced:videoId];
+    }
+}
+
+- (void)editorView:(WPEditorView *)editorView videoPressInfoRequest:(NSString *)videoPressID
+{
+    if ([self.delegate respondsToSelector:@selector(editorViewController:videoPressInfoRequest:)]) {
+        [self.delegate editorViewController:self videoPressInfoRequest:videoPressID];
+    }
+
 }
 
 
