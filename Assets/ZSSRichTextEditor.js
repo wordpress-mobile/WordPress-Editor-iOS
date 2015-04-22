@@ -2410,13 +2410,16 @@ ZSSField.prototype.handleKeyDownEvent = function(e) {
             
             var selection = window.getSelection();
             var range = selection.getRangeAt(0);
-            var paragraph = document.createElement("p");
             
-            range.insertNode(document.createTextNode("&#x200b;"));
-            range.surroundContents(paragraph);
-            
-            selection.removeAllRanges();
-            selection.addRange(range);
+            if (range.startContainer == range.endContainer) {
+                var paragraph = document.createElement("p");
+                
+                range.insertNode(document.createTextNode("&#x200b;"));
+                range.surroundContents(paragraph);
+                
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
         }
     }
 };
