@@ -1,8 +1,6 @@
 #import "WPFontManager.h"
 #import <CoreText/CoreText.h>
 
-static int ddLogLevel = LOG_LEVEL_INFO;
-
 @implementation WPFontManager
 
 static NSString * const kBundle = @"WordPress-iOS-Shared.bundle";
@@ -172,7 +170,7 @@ static NSString * const kBundle = @"WordPress-iOS-Shared.bundle";
 + (void)dynamicallyLoadFontResourceNamed:(NSString *)name
 {
     NSString *resourceName = [NSString stringWithFormat:@"%@/%@", kBundle, name];
-    NSURL *url = [[NSBundle mainBundle] URLForResource:resourceName withExtension:@"ttf"];
+    NSURL *url = [[NSBundle bundleForClass:self] URLForResource:resourceName withExtension:@"ttf"];
     NSData *fontData = [NSData dataWithContentsOfURL:url];
     
     if (fontData) {

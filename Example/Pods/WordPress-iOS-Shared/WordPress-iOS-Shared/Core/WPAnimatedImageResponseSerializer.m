@@ -1,6 +1,5 @@
 #import "WPAnimatedImageResponseSerializer.h"
 
-
 @implementation WPAnimatedImageResponseSerializer
 
 #pragma mark - AFImageResponseSerializer
