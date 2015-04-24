@@ -94,6 +94,13 @@ ZSSEditor.init = function(callbacker, logger) {
 		}
 	}, false);
     
+    $('[contenteditable]').on('paste',function(e) {
+        // Ensure we only insert plaintext from the pasteboard
+        e.preventDefault();
+        var plainText = (e.originalEvent || e).clipboardData.getData('text/plain');
+        document.execCommand('insertText', false, plainText);
+    });
+
     this.domLoadedCallback();
 
 }; //end
