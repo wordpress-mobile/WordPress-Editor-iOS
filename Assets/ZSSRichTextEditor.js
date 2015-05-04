@@ -736,9 +736,6 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remot
     image.onload = function () {
         imageNode.attr('src', image.src);
         ZSSEditor.markImageUploadDone(imageNodeIdentifier);
-        var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
-        ZSSEditor.callback("callback-input", joinedArguments);
-        
     }
     
     image.onerror = function () {
@@ -747,9 +744,6 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remot
         //
         imageNode.attr('src', image.src);
         ZSSEditor.markImageUploadDone(imageNodeIdentifier);
-        var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
-        ZSSEditor.callback("callback-input", joinedArguments);
-        
     }
     
     image.src = remoteImageUrl;
@@ -783,28 +777,30 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
  *  @param      imageNodeIdentifier     The unique image ID for the uploaded image
  */
 ZSSEditor.markImageUploadDone = function(imageNodeIdentifier) {
-    
-    this.sendImageReplacedCallback(imageNodeIdentifier);
-    
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
-    if (imageNode.length == 0){
-        return;
+    if (imageNode.length > 0){
+        // remove identifier attributed from image
+        imageNode.removeAttr('data-wpid');
+        
+        // remove uploading style
+        imageNode.removeClass("uploading");
+        imageNode.removeAttr("class");
+        
+        // Remove all extra formatting nodes for progress
+        if (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)) {
+            imageNode.parent().replaceWith(imageNode);
+        }
+        // Wrap link around image
+        var linkTag = '<a href="' + imageNode.attr("src") + '"></a>';
+        imageNode.wrap(linkTag);
     }
     
-    // remove identifier attributed from image
-    imageNode.removeAttr('data-wpid');
-    
-    // remove uploading style
-    imageNode.removeClass("uploading");
-    imageNode.removeAttr("class");
-    
-    // Remove all extra formatting nodes for progress
-    if (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)) {
-        imageNode.parent().replaceWith(imageNode);
-    }
-    // Wrap link around image
-    var linkTag = '<a href="' + imageNode.attr("src") + '"></a>';
-    imageNode.wrap(linkTag);
+    var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
+    ZSSEditor.callback("callback-input", joinedArguments);
+    // We invoke the sendImageReplacedCallback with a delay to avoid for
+    // it to be ignored by the webview because of the previous callback being done.
+    var thisObj = this;
+    setTimeout(function() { thisObj.sendImageReplacedCallback(imageNodeIdentifier);}, 500);
 };
 
 /**
