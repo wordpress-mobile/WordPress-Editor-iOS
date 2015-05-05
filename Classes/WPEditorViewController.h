@@ -107,7 +107,7 @@ WPEditorViewControllerMode;
  *	@param		mediaID		The id of the media that was removed.
  */
 - (void)editorViewController:(WPEditorViewController *)editorViewController
-       mediaRemoved:(NSString *)mediaID;
+                mediaRemoved:(NSString *)mediaID;
 
 @end
 

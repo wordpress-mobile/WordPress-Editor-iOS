@@ -764,7 +764,6 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remot
         ZSSEditor.markImageUploadDone(imageNodeIdentifier);
         var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
         ZSSEditor.callback("callback-input", joinedArguments);
-        
     }
     
     image.src = remoteImageUrl;
@@ -919,11 +918,9 @@ ZSSEditor.removeImage = function(imageNodeIdentifier) {
  *
  *  @param      mediaNodeIdentifier     The unique media ID
  */
-ZSSEditor.sendMediaRemovedCallback = function( mediaNodeIdentifier ) {
-    var arguments = ['id=' + encodeURIComponent( mediaNodeIdentifier )];
-    
-    var joinedArguments = arguments.join( defaultCallbackSeparator );
-    
+ZSSEditor.sendMediaRemovedCallback = function(mediaNodeIdentifier) {
+    var arguments = ['id=' + encodeURIComponent(mediaNodeIdentifier)];
+    var joinedArguments = arguments.join(defaultCallbackSeparator);
     this.callback("callback-media-removed", joinedArguments);
 };
 
