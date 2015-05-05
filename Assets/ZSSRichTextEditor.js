@@ -720,9 +720,7 @@ ZSSEditor.isMediaContainerNode = function(node) {
 ZSSEditor.extractMediaIdentifier = function(node) {
     if (node.id.search("img_container_") == 0) {
         return node.id.replace("img_container_", "");
-    }
-    
-    if (node.id.search("video_container_") == 0) {
+    } else if (node.id.search("video_container_") == 0) {
         return node.id.replace("video_container_", "");
     }
     return "";
