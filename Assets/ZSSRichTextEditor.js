@@ -2023,28 +2023,30 @@ ZSSField.prototype.bindListeners = function() {
     this.wrappedObject.bind('input', function(e) { thisObj.handleInputEvent(e); });
     this.wrappedObject.bind('compositionstart', function(e) { thisObj.handleCompositionStartEvent(e); });
     this.wrappedObject.bind('compositionend', function(e) { thisObj.handleCompositionEndEvent(e); });
-    
+    this.bindMutationObserver();
+};
+
+ZSSField.prototype.bindMutationObserver = function () {
     var target = this.wrappedObject[0];
     // create an observer instance
     var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            for (var i = 0; i < mutation.removedNodes.length; i++) {
-                var removedNode = mutation.removedNodes[i];
-                if ( ZSSEditor.isMediaContainerNode(removedNode) ) {
-                    var mediaIdentifier = ZSSEditor.extractMediaIdentifier(removedNode);
-                    ZSSEditor.sendMediaRemovedCallback(mediaIdentifier);                    
-                }
-            }
-        });
-    });
+                                        mutations.forEach(function(mutation) {
+                                                          for (var i = 0; i < mutation.removedNodes.length; i++) {
+                                                          var removedNode = mutation.removedNodes[i];
+                                                          if ( ZSSEditor.isMediaContainerNode(removedNode) ) {
+                                                          var mediaIdentifier = ZSSEditor.extractMediaIdentifier(removedNode);
+                                                          ZSSEditor.sendMediaRemovedCallback(mediaIdentifier);
+                                                          }
+                                                          }
+                                                          });
+                                        });
     
     // configuration of the observer:
     var config = { attributes: false, childList: true, characterData: false };
     
     // pass in the target node, as well as the observer options
     observer.observe(target, config);
-    
-};
+}
 
 // MARK: - Emptying the field when it should be, well... empty (HTML madness)
 
