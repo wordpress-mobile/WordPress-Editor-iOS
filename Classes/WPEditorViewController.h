@@ -100,6 +100,15 @@ WPEditorViewControllerMode;
 - (void)editorViewController:(WPEditorViewController *)editorViewController
        videoPressInfoRequest:(NSString *)videoID;
 
+/**
+ *	@brief		Received when the editor removed an uploading media.
+ *
+ *	@param		editorView	The editor view.
+ *	@param		mediaID		The id of the media that was removed.
+ */
+- (void)editorViewController:(WPEditorViewController *)editorViewController
+                mediaRemoved:(NSString *)mediaID;
+
 @end
 
 @class ZSSBarButtonItem;

@@ -1681,6 +1681,13 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 }
 
+- (void)editorView:(WPEditorView *)editorView mediaRemoved:(NSString *)mediaID
+{
+    if ([self.delegate respondsToSelector:@selector(editorViewController:mediaRemoved:)]) {
+        [self.delegate editorViewController:self mediaRemoved:mediaID];
+    }
+    
+}
 
 - (void)editorView:(WPEditorView*)editorView stylesForCurrentSelection:(NSArray*)styles
 {
