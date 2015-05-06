@@ -146,6 +146,12 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     }
 }
 
+- (void)editorViewController:(WPEditorViewController *)editorViewController mediaRemoved:(NSString *)mediaID
+{
+    NSProgress * progress = self.mediaAdded[mediaID];
+    [progress cancel];
+}
+
 #pragma mark - Media actions
 
 - (void)showImageDetailsForImageMeta:(WPImageMeta *)imageMeta
@@ -220,11 +226,14 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
                                                                               @"url": path }];
     progress.cancellable = YES;
     progress.totalUnitCount = 100;
-    [NSTimer scheduledTimerWithTimeInterval:0.1
+    NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
                                      target:self
                                    selector:@selector(timerFireMethod:)
                                    userInfo:progress
                                     repeats:YES];
+    [progress setCancellationHandler:^{
+        [timer invalidate];
+    }];
     self.mediaAdded[imageID] = progress;
 }
 
