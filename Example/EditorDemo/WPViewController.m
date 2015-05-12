@@ -111,7 +111,6 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
                          url:(NSURL *)url
                    imageMeta:(WPImageMeta *)imageMeta
 {
-
     if (imageId.length == 0) {
         [self showImageDetailsForImageMeta:imageMeta];
     } else {
