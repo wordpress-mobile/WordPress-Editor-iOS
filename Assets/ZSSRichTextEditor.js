@@ -640,6 +640,24 @@ ZSSEditor.quickLink = function() {
 
 // MARK: - Blockquotes
 
+/**
+ *  @brief      This method toggles blockquote for the specified child nodes.  This is useful since
+ *              we can toggle blockquote either for some or ALL of the child nodes, depending on
+ *              what we need to achieve.
+ *  @details    CASE 1: If the parent node is a blockquote node, the child nodes will be extracted
+ *              from it leaving the remaining siblings untouched (by splitting the parent blockquote
+ *              node in two if necessary).
+ *              CASE 2: If the parent node is NOT a blockquote node, but the first child is, the
+ *              method will make sure all child nodes that are blockquote nodes will be toggled to
+ *              non-blockquote nodes.
+ *              CASE 3: If both the parent node and the first node are non-blockquote nodes, this
+ *              method will turn all child nodes into blockquote nodes.
+ *
+ *  @param      parentNode      The parent node.  Can be either a blockquote or non-blockquote node.    
+ *                              Cannot be null.
+ *  @param      nodes           The child nodes.  Can be any combination of blockquote and
+ *                              non-blockquote nodes.  Cannot be null.
+ */
 ZSSEditor.toggleBlockquoteForSpecificChildNodes = function(parentNode, nodes) {
 
     if (nodes && nodes.length > 0) {
