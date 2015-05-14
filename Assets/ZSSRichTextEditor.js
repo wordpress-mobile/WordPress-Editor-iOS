@@ -2160,24 +2160,6 @@ ZSSEditor.closerParentNode = function() {
     return parentNode;
 };
 
-ZSSEditor.closerParentElementRelativeToNode = function(node) {
-    
-    var parentNode = null;
-    var currentNode = node.parentNode;
-    
-    while (currentNode) {
-        if (currentNode.nodeType == document.ELEMENT_NODE) {
-            parentNode = currentNode;
-            
-            break;
-        }
-        
-        currentNode = currentNode.parentElement;
-    }
-    
-    return parentNode;
-};
-
 ZSSEditor.closerParentNodeStartingAtNode = function(nodeName, startingNode) {
     
     nodeName = nodeName.toLowerCase();
