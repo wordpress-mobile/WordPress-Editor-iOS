@@ -329,29 +329,6 @@ ZSSEditor.getYCaretInfo = function() {
     return this.caretInfo;
 };
 
-/**
- *  @brief      Whenever this method is called, a check will be performed on the caret position
- *              to figure out if it needs to be wrapped in a paragraph node.
- */
-ZSSEditor.wrapCaretInParagraphIfNecessary = function()
-{
-    var selection = window.getSelection();
-    var range = selection.getRangeAt(0);
-    
-    if (range.startContainer == range.endContainer) {
-        var paragraph = document.createElement("p");
-        var textNode = document.createTextNode("&#x200b;");
-        
-        paragraph.appendChild(textNode);
-        
-        range.insertNode(paragraph);
-        range.selectNode(textNode);
-        
-        selection.removeAllRanges();
-        selection.addRange(range);
-    }
-};
-
 // MARK: - Default paragraph separator
 
 ZSSEditor.defaultParagraphSeparatorTag = function() {
@@ -1790,11 +1767,13 @@ ZSSEditor.removeVisualFormatting = function( html ) {
 
 ZSSEditor.insertHTML = function(html) {
 
+    var currentField = this.getFocusedField();
+    
     // When inserting HTML in the editor (like media), we must make sure the caret is wrapped in a
     // paragraph tag.  By forcing to have all content inside paragraphs we obtain a behavior that's
     // much closer to the one we have in our web editor.
     //
-    this.wrapCaretInParagraphIfNecessary();
+    currentField.wrapCaretInParagraphIfNecessary();
     
 	document.execCommand('insertHTML', false, html);
 	this.sendEnabledStyles();
@@ -2362,14 +2341,8 @@ ZSSField.prototype.handleKeyDownEvent = function(e) {
     } else if (wasEnterPressed
                && !this.isMultiline()) {
         e.preventDefault();
-    } else {
-        var closerParentNode = ZSSEditor.closerParentNode();
-        var parentNodeShouldBeParagraph = (closerParentNode == this.wrappedDomNode()
-                                           || closerParentNode.nodeName == NodeName.BLOCKQUOTE);
-        
-        if (parentNodeShouldBeParagraph) {
-            ZSSEditor.wrapCaretInParagraphIfNecessary();
-        }
+    } else if (this.isMultiline()) {
+        this.wrapCaretInParagraphIfNecessary();
     }
 };
 
@@ -2377,7 +2350,7 @@ ZSSField.prototype.handleInputEvent = function(e) {
     
     // Skip this if we are composing on an IME keyboard
     if (this.isComposing ) { return; }
-
+    
     // IMPORTANT: we want the placeholder to come up if there's no text, so we clear the field if
     // there's no real content in it.  It's important to do this here and not on keyDown or keyUp
     // as the field could become empty because of a cut or paste operation as well as a key press.
@@ -2587,6 +2560,43 @@ ZSSField.prototype.disableEditing = function () {
     this.blur();
     
     this.wrappedObject.attr('contenteditable', false);
+};
+
+// MARK: - Caret
+
+
+/**
+ *  @brief      Whenever this method is called, a check will be performed on the caret position
+ *              to figure out if it needs to be wrapped in a paragraph node.
+ *  @details    A parent paragraph node should be added if the current parent is either the field
+ *              node itself, or a blockquote node.
+ */
+ZSSField.prototype.wrapCaretInParagraphIfNecessary = function()
+{
+    var closerParentNode = ZSSEditor.closerParentNode();
+    var parentNodeShouldBeParagraph = (closerParentNode == this.wrappedDomNode()
+                                       || closerParentNode.nodeName == NodeName.BLOCKQUOTE);
+    
+    if (parentNodeShouldBeParagraph) {
+        var selection = window.getSelection();
+        
+        if (selection) {
+            var range = selection.getRangeAt(0);
+            
+            if (range.startContainer == range.endContainer) {
+                var paragraph = document.createElement("p");
+                var textNode = document.createTextNode("&#x200b;");
+                
+                paragraph.appendChild(textNode);
+                
+                range.insertNode(paragraph);
+                range.selectNode(textNode);
+                
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        }
+    }
 };
 
 // MARK: - i18n
