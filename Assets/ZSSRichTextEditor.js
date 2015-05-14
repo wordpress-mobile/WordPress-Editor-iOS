@@ -706,9 +706,18 @@ ZSSEditor.turnBlockquoteOffForNode = function(node) {
  *  @brief      Turns blockquote on for the specified node.
  *
  *  @param      node    The node to turn blockquote on for.  Will attempt to attach the newly
- *                      created blockquote to sibling or uncle blockquote nodes.
+ *                      created blockquote to sibling or uncle blockquote nodes.  If the node is
+ *                      null or it's parent is null, this method will exit without affecting it
+ *                      (this can actually be caused by this method modifying the surrounding
+ *                      nodes, if those nodes are stored in an array - and thus are not notified
+ *                      of DOM hierarchy changes).
  */
 ZSSEditor.turnBlockquoteOnForNode = function(node) {
+    
+    if (!node || !node.parentNode) {
+        return;
+    }
+    
     var couldJoinBlockquotes = this.joinAdjacentSiblingsOrAncestorBlockquotes(node);
     
     if (!couldJoinBlockquotes) {
@@ -2060,7 +2069,10 @@ ZSSEditor.joinAdjacentSiblingsBlockquotes = function(node) {
         
         if (shouldJoinToNextSibling) {
             
-            previousSibling.appendChild(nextSibling.firstChild);
+            while (nextSibling.firstChild) {
+                previousSibling.appendChild(nextSibling.firstChild);
+            }
+            
             nextSibling.parentNode.removeChild(nextSibling);
         }
     } else if (shouldJoinToNextSibling) {
@@ -2084,7 +2096,8 @@ ZSSEditor.joinAdjacentSiblingsOrAncestorBlockquotes = function(node) {
     var rootNode = this.getFocusedField().wrappedDomNode();
     var joined = false;
     
-    while (currentNode != rootNode
+    while (currentNode
+           && currentNode != rootNode
            && !joined) {
     
         joined = this.joinAdjacentSiblingsBlockquotes(currentNode);
