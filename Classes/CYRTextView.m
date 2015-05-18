@@ -40,6 +40,12 @@
 
 #define RGB(r,g,b) [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:1.0f]
 
+#ifdef CGFLOAT_IS_DOUBLE
+#define CYRAbs fabs
+#else
+#define CYRAbs fabsf
+#endif
+
 static void *CYRTextViewContext = &CYRTextViewContext;
 static const float kCursorVelocity = 1.0f/8.0f;
 
@@ -246,7 +252,7 @@ static const float kCursorVelocity = 1.0f/8.0f;
     if (gestureRecognizer == _singleFingerPanRecognizer || gestureRecognizer == _doubleFingerPanRecognizer)
     {
         CGPoint translation = [gestureRecognizer translationInView:self];
-        return fabsf(translation.x) > fabsf(translation.y);
+        return CYRAbs(translation.x) > CYRAbs(translation.y);
     }
     
     return YES;
@@ -278,11 +284,11 @@ static const float kCursorVelocity = 1.0f/8.0f;
     
     if (cursorLocation > startRange.location)
     {
-        self.selectedRange = NSMakeRange(startRange.location, fabsf(startRange.location - cursorLocation));
+        self.selectedRange = NSMakeRange(startRange.location, CYRAbs(startRange.location - cursorLocation));
     }
     else
     {
-        self.selectedRange = NSMakeRange(cursorLocation, fabsf(startRange.location - cursorLocation));
+        self.selectedRange = NSMakeRange(cursorLocation, CYRAbs(startRange.location - cursorLocation));
     }
 }
 
