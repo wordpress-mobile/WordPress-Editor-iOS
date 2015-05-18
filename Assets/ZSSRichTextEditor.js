@@ -101,6 +101,13 @@ ZSSEditor.init = function(callbacker, logger) {
 		}
 	}, false);
     
+    $('[contenteditable]').on('paste',function(e) {
+        // Ensure we only insert plaintext from the pasteboard
+        e.preventDefault();
+        var plainText = (e.originalEvent || e).clipboardData.getData('text/plain');
+        document.execCommand('insertText', false, plainText);
+    });
+
     this.domLoadedCallback();
 
 }; //end
@@ -707,9 +714,18 @@ ZSSEditor.turnBlockquoteOffForNode = function(node) {
  *  @brief      Turns blockquote on for the specified node.
  *
  *  @param      node    The node to turn blockquote on for.  Will attempt to attach the newly
- *                      created blockquote to sibling or uncle blockquote nodes.
+ *                      created blockquote to sibling or uncle blockquote nodes.  If the node is
+ *                      null or it's parent is null, this method will exit without affecting it
+ *                      (this can actually be caused by this method modifying the surrounding
+ *                      nodes, if those nodes are stored in an array - and thus are not notified
+ *                      of DOM hierarchy changes).
  */
 ZSSEditor.turnBlockquoteOnForNode = function(node) {
+    
+    if (!node || !node.parentNode) {
+        return;
+    }
+    
     var couldJoinBlockquotes = this.joinAdjacentSiblingsOrAncestorBlockquotes(node);
     
     if (!couldJoinBlockquotes) {
@@ -790,6 +806,21 @@ ZSSEditor.getImageContainerNodeWithIdentifier = function(imageNodeIdentifier) {
     return $('#'+this.getImageContainerIdentifier(imageNodeIdentifier));
 };
 
+ZSSEditor.isMediaContainerNode = function(node) {
+    if (node.id === undefined) {
+        return false;
+    }
+    return (node.id.search("img_container_") == 0) || (node.id.search("video_container_") == 0);
+};
+
+ZSSEditor.extractMediaIdentifier = function(node) {
+    if (node.id.search("img_container_") == 0) {
+        return node.id.replace("img_container_", "");
+    } else if (node.id.search("video_container_") == 0) {
+        return node.id.replace("video_container_", "");
+    }
+    return "";
+};
 
 /**
  *  @brief      Replaces a local image URL with a remote image URL.  Useful for images that have
@@ -816,9 +847,6 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remot
     image.onload = function () {
         imageNode.attr('src', image.src);
         ZSSEditor.markImageUploadDone(imageNodeIdentifier);
-        var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
-        ZSSEditor.callback("callback-input", joinedArguments);
-        
     }
     
     image.onerror = function () {
@@ -827,9 +855,6 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remot
         //
         imageNode.attr('src', image.src);
         ZSSEditor.markImageUploadDone(imageNodeIdentifier);
-        var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
-        ZSSEditor.callback("callback-input", joinedArguments);
-        
     }
     
     image.src = remoteImageUrl;
@@ -863,28 +888,32 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
  *  @param      imageNodeIdentifier     The unique image ID for the uploaded image
  */
 ZSSEditor.markImageUploadDone = function(imageNodeIdentifier) {
-    
-    this.sendImageReplacedCallback(imageNodeIdentifier);
-    
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
-    if (imageNode.length == 0){
-        return;
+    if (imageNode.length > 0){
+        // remove identifier attributed from image
+        imageNode.removeAttr('data-wpid');
+        
+        // remove uploading style
+        imageNode.removeClass("uploading");
+        imageNode.removeAttr("class");
+        
+        // Remove all extra formatting nodes for progress
+        if (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)) {
+            // remove id from container to avoid to report a user removal
+            imageNode.parent().attr("id", "");
+            imageNode.parent().replaceWith(imageNode);
+        }
+        // Wrap link around image
+        var linkTag = '<a href="' + imageNode.attr("src") + '"></a>';
+        imageNode.wrap(linkTag);
     }
     
-    // remove identifier attributed from image
-    imageNode.removeAttr('data-wpid');
-    
-    // remove uploading style
-    imageNode.removeClass("uploading");
-    imageNode.removeAttr("class");
-    
-    // Remove all extra formatting nodes for progress
-    if (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)) {
-        imageNode.parent().replaceWith(imageNode);
-    }
-    // Wrap link around image
-    var linkTag = '<a href="' + imageNode.attr("src") + '"></a>';
-    imageNode.wrap(linkTag);
+    var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
+    ZSSEditor.callback("callback-input", joinedArguments);
+    // We invoke the sendImageReplacedCallback with a delay to avoid for
+    // it to be ignored by the webview because of the previous callback being done.
+    var thisObj = this;
+    setTimeout(function() { thisObj.sendImageReplacedCallback(imageNodeIdentifier);}, 500);
 };
 
 /**
@@ -968,12 +997,24 @@ ZSSEditor.removeImage = function(imageNodeIdentifier) {
     if (imageNode.length != 0){
         imageNode.remove();
     }
-
     // if image is inside options container we need to remove the container
     var imageContainerNode = this.getImageContainerNodeWithIdentifier(imageNodeIdentifier);
     if (imageContainerNode.length != 0){
+        //reset id before removal to avoid detection of user removal
+        imageContainerNode.attr("id","");
         imageContainerNode.remove();
     }
+};
+
+/**
+ *  @brief      Callbacks to native that the media container was deleted by the user
+ *
+ *  @param      mediaNodeIdentifier     The unique media ID
+ */
+ZSSEditor.sendMediaRemovedCallback = function(mediaNodeIdentifier) {
+    var arguments = ['id=' + encodeURIComponent(mediaNodeIdentifier)];
+    var joinedArguments = arguments.join(defaultCallbackSeparator);
+    this.callback("callback-media-removed", joinedArguments);
 };
 
 /**
@@ -1112,6 +1153,8 @@ ZSSEditor.markVideoUploadDone = function(videoNodeIdentifier) {
         
         // Remove all extra formatting nodes for progress
         if (videoNode.parent().attr("id") == this.getVideoContainerIdentifier(videoNodeIdentifier)) {
+            // remove id from container to avoid to report a user removal
+            videoNode.parent().attr("id", "");
             videoNode.parent().replaceWith(videoNode);
         }
     }
@@ -1238,6 +1281,8 @@ ZSSEditor.removeVideo = function(videoNodeIdentifier) {
     // if Video is inside options container we need to remove the container
     var videoContainerNode = this.getVideoContainerNodeWithIdentifier(videoNodeIdentifier);
     if (videoContainerNode.length != 0){
+        //reset id before removal to avoid detection of user removal
+        videoContainerNode.attr("id","");
         videoContainerNode.remove();
     }
 };
@@ -2061,7 +2106,10 @@ ZSSEditor.joinAdjacentSiblingsBlockquotes = function(node) {
         
         if (shouldJoinToNextSibling) {
             
-            previousSibling.appendChild(nextSibling.firstChild);
+            while (nextSibling.firstChild) {
+                previousSibling.appendChild(nextSibling.firstChild);
+            }
+            
             nextSibling.parentNode.removeChild(nextSibling);
         }
     } else if (shouldJoinToNextSibling) {
@@ -2085,7 +2133,8 @@ ZSSEditor.joinAdjacentSiblingsOrAncestorBlockquotes = function(node) {
     var rootNode = this.getFocusedField().wrappedDomNode();
     var joined = false;
     
-    while (currentNode != rootNode
+    while (currentNode
+           && currentNode != rootNode
            && !joined) {
     
         joined = this.joinAdjacentSiblingsBlockquotes(currentNode);
@@ -2286,7 +2335,30 @@ ZSSField.prototype.bindListeners = function() {
     this.wrappedObject.bind('input', function(e) { thisObj.handleInputEvent(e); });
     this.wrappedObject.bind('compositionstart', function(e) { thisObj.handleCompositionStartEvent(e); });
     this.wrappedObject.bind('compositionend', function(e) { thisObj.handleCompositionEndEvent(e); });
+    this.bindMutationObserver();
 };
+
+ZSSField.prototype.bindMutationObserver = function () {
+    var target = this.wrappedObject[0];
+    // create an observer instance
+    var observer = new MutationObserver(function(mutations) {
+                                        mutations.forEach(function(mutation) {
+                                                          for (var i = 0; i < mutation.removedNodes.length; i++) {
+                                                          var removedNode = mutation.removedNodes[i];
+                                                          if ( ZSSEditor.isMediaContainerNode(removedNode) ) {
+                                                          var mediaIdentifier = ZSSEditor.extractMediaIdentifier(removedNode);
+                                                          ZSSEditor.sendMediaRemovedCallback(mediaIdentifier);
+                                                          }
+                                                          }
+                                                          });
+                                        });
+    
+    // configuration of the observer:
+    var config = { attributes: false, childList: true, characterData: false };
+    
+    // pass in the target node, as well as the observer options
+    observer.observe(target, config);
+}
 
 // MARK: - Emptying the field when it should be, well... empty (HTML madness)
 
@@ -2466,7 +2538,7 @@ ZSSField.prototype.sendImageTappedCallback = function( imageNode ) {
 
     // WORKAROUND: force the event to become sort of "after-tap" through setTimeout()
     //
-    setTimeout(function() { thisObj.callback('callback-image-tap', joinedArguments);}, 500);
+    setTimeout(function() { ZSSEditor.callback('callback-image-tap', joinedArguments);}, 500);
 }
 
 ZSSField.prototype.sendVideoTappedCallback = function( videoNode ) {
@@ -2479,7 +2551,7 @@ ZSSField.prototype.sendVideoTappedCallback = function( videoNode ) {
     
     var joinedArguments = arguments.join( defaultCallbackSeparator );
     
-    this.callback('callback-video-tap', joinedArguments);
+    ZSSEditor.callback('callback-video-tap', joinedArguments);
 }
 
 /**

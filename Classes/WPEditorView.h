@@ -163,6 +163,15 @@ stylesForCurrentSelection:(NSArray*)styles;
  */
 - (void)editorView:(WPEditorView *)editorView videoPressInfoRequest:(NSString *)videoPressID;
 
+/**
+ * @brief		Received when a the editor detects the removal by the user of a uploading media element.
+ *
+ * @param		editorView	 The editor view.
+ * @param		mediaID The media ID that was removed from the editor
+ *
+ */
+- (void)editorView:(WPEditorView *)editorView mediaRemoved:(NSString *)mediaID;
+
 @end
 
 @interface WPEditorView : UIView

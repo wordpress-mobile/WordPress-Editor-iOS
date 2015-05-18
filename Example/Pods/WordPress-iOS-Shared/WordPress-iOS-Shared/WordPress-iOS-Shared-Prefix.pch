@@ -6,7 +6,7 @@
 
 #ifdef __OBJC__
     #import <UIKit/UIKit.h>
-    #import "DDLog.h"
+    #import <CocoaLumberjack/CocoaLumberjack.h>
 
 #ifndef IS_IPAD
 #define IS_IPAD   ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad)
