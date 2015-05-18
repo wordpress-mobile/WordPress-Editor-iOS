@@ -13,6 +13,11 @@ var isUsingiOS = true;
 // THe default callback parameter separator
 var defaultCallbackSeparator = '~';
 
+const NodeName = {
+    BLOCKQUOTE: "BLOCKQUOTE",
+    PARAGRAPH: "P"
+};
+
 // The editor object
 var ZSSEditor = {};
 
@@ -69,6 +74,7 @@ ZSSEditor.init = function(callbacker, logger) {
     
     document.execCommand('insertBrOnReturn', false, false);
     document.execCommand('defaultParagraphSeparator', false, this.defaultParagraphSeparator);
+    document.execCommand('styleWithCSS', false, false);
     
     var editor = $('div.field').each(function() {
         var editableField = new ZSSField($(this));
@@ -169,29 +175,6 @@ ZSSEditor.refreshVisibleViewportSize = function() {
 
 ZSSEditor.focusFirstEditableField = function() {
     $('div[contenteditable=true]:first').focus();
-};
-
-ZSSEditor.formatNewLine = function(e) {
-    
-    var currentField = this.getFocusedField();
-    
-    if (currentField.isMultiline()) {
-        var parentBlockQuoteNode = ZSSEditor.closerParentNodeWithName('blockquote');
-        
-        if (parentBlockQuoteNode) {
-            this.formatNewLineInsideBlockquote(e);
-        } else if (!ZSSEditor.isCommandEnabled('insertOrderedList')
-                   && !ZSSEditor.isCommandEnabled('insertUnorderedList')) {
-            document.execCommand('formatBlock', false, 'p');
-        }
-    } else {
-        e.preventDefault();
-    }
-};
-
-ZSSEditor.formatNewLineInsideBlockquote = function(e) {
-    this.insertBreakTagAtCaretPosition();
-    e.preventDefault();
 };
 
 ZSSEditor.getField = function(fieldId) {
@@ -434,23 +417,36 @@ ZSSEditor.setUnderline = function() {
 	ZSSEditor.sendEnabledStyles();
 };
 
+/**
+ *  @brief      Turns blockquote ON or OFF for the current selection.
+ *  @details    This method makes sure that the contents of the blockquotes are surrounded by the
+ *              defaultParagraphSeparatorTag (by default '<p>').  This ensures parity with the web
+ *              editor.
+ */
 ZSSEditor.setBlockquote = function() {
-	var formatTag = "blockquote";
-	var formatBlock = document.queryCommandValue('formatBlock');
-	 
-	if (formatBlock.length > 0 && formatBlock.toLowerCase() == formatTag) {
-        document.execCommand('formatBlock', false, this.defaultParagraphSeparatorTag());
-	} else {
-        var blockquoteNode = this.closerParentNodeWithName(formatTag);
-        
-        if (blockquoteNode) {
-            this.unwrapNode(blockquoteNode);
-        } else {
-            document.execCommand('formatBlock', false, '<' + formatTag + '>');
-        }
-	}
 
-	 ZSSEditor.sendEnabledStyles();
+    var savedSelection = rangy.saveSelection();
+    var selection = document.getSelection();
+    var range = selection.getRangeAt(0).cloneRange();
+    var sendStyles = false;
+    
+    var ancestorElement = this.getAncestorElementForSettingBlockquote(range);
+    
+    if (ancestorElement) {
+        sendStyles = true;
+        
+        var childNodes = this.getChildNodesIntersectingRange(ancestorElement, range);
+        
+        if (childNodes && childNodes.length) {
+            this.toggleBlockquoteForSpecificChildNodes(ancestorElement, childNodes);
+        }
+    }
+    
+    rangy.restoreSelection(savedSelection);
+    
+    if (sendStyles) {
+        ZSSEditor.sendEnabledStyles();
+    }
 };
 
 ZSSEditor.removeFormating = function() {
@@ -592,21 +588,30 @@ ZSSEditor.updateLink = function(url, title) {
 };
 
 ZSSEditor.unlink = function() {
-	var savedSelection = rangy.saveSelection();
     
 	var currentLinkNode = ZSSEditor.closerParentNodeWithName('a');
     
 	if (currentLinkNode) {
-		ZSSEditor.unwrapNode(currentLinkNode);
+		this.unwrapNode(currentLinkNode);
 	}
-    
-    rangy.restoreSelection(savedSelection);
 	
 	ZSSEditor.sendEnabledStyles();
 };
 
 ZSSEditor.unwrapNode = function(node) {
+    var savedSelection = rangy.saveSelection();
+    
     $(node).contents().unwrap();
+    
+    rangy.restoreSelection(savedSelection);
+};
+
+ZSSEditor.wrapNode = function(node) {
+    var savedSelection = rangy.saveSelection();
+    
+    $(node).contents().wrap("<p></p>");
+    
+    rangy.restoreSelection(savedSelection);
 };
 
 ZSSEditor.quickLink = function() {
@@ -638,6 +643,96 @@ ZSSEditor.quickLink = function() {
 
 	var html_code = '<a href="' + link_url + '">' + sel + '</a>';
 	ZSSEditor.insertHTML(html_code);
+};
+
+// MARK: - Blockquotes
+
+/**
+ *  @brief      This method toggles blockquote for the specified child nodes.  This is useful since
+ *              we can toggle blockquote either for some or ALL of the child nodes, depending on
+ *              what we need to achieve.
+ *  @details    CASE 1: If the parent node is a blockquote node, the child nodes will be extracted
+ *              from it leaving the remaining siblings untouched (by splitting the parent blockquote
+ *              node in two if necessary).
+ *              CASE 2: If the parent node is NOT a blockquote node, but the first child is, the
+ *              method will make sure all child nodes that are blockquote nodes will be toggled to
+ *              non-blockquote nodes.
+ *              CASE 3: If both the parent node and the first node are non-blockquote nodes, this
+ *              method will turn all child nodes into blockquote nodes.
+ *
+ *  @param      parentNode      The parent node.  Can be either a blockquote or non-blockquote node.    
+ *                              Cannot be null.
+ *  @param      nodes           The child nodes.  Can be any combination of blockquote and
+ *                              non-blockquote nodes.  Cannot be null.
+ */
+ZSSEditor.toggleBlockquoteForSpecificChildNodes = function(parentNode, nodes) {
+
+    if (nodes && nodes.length > 0) {
+        if (parentNode.nodeName == NodeName.BLOCKQUOTE) {
+            for (var counter = 0; counter < nodes.length; counter++) {
+                this.turnBlockquoteOffForNode(nodes[counter]);
+            }
+        } else {
+            
+            var turnOn = (nodes[0].nodeName != NodeName.BLOCKQUOTE);
+            
+            for (var counter = 0; counter < nodes.length; counter++) {
+                if (turnOn) {
+                    this.turnBlockquoteOnForNode(nodes[counter]);
+                } else {
+                    this.turnBlockquoteOffForNode(nodes[counter]);
+                }
+            }
+        }
+    }
+};
+
+
+/**
+ *  @brief      Turns blockquote off for the specified node.
+ *
+ *  @param      node    The node to turn the blockquote off for.  It can either be a blockquote
+ *                      node (in which case it will be removed and all child nodes extracted) or
+ *                      have a parent blockquote node (in which case the node will be extracted
+ *                      from its parent).
+ */
+ZSSEditor.turnBlockquoteOffForNode = function(node) {
+    
+    if (node.nodeName == NodeName.BLOCKQUOTE) {
+        for (var i = 0; i < node.childNodes.length; i++) {
+            this.extractNodeFromAncestorNode(node.childNodes[i], node);
+        }
+    } else {
+        if (node.parentNode.nodeName == NodeName.BLOCKQUOTE) {
+            this.extractNodeFromAncestorNode(node, node.parentNode);
+        }
+    }
+};
+
+/**
+ *  @brief      Turns blockquote on for the specified node.
+ *
+ *  @param      node    The node to turn blockquote on for.  Will attempt to attach the newly
+ *                      created blockquote to sibling or uncle blockquote nodes.  If the node is
+ *                      null or it's parent is null, this method will exit without affecting it
+ *                      (this can actually be caused by this method modifying the surrounding
+ *                      nodes, if those nodes are stored in an array - and thus are not notified
+ *                      of DOM hierarchy changes).
+ */
+ZSSEditor.turnBlockquoteOnForNode = function(node) {
+    
+    if (!node || !node.parentNode) {
+        return;
+    }
+    
+    var couldJoinBlockquotes = this.joinAdjacentSiblingsOrAncestorBlockquotes(node);
+    
+    if (!couldJoinBlockquotes) {
+        var blockquote = document.createElement(NodeName.BLOCKQUOTE);
+        
+        node.parentNode.insertBefore(blockquote, node);
+        blockquote.appendChild(node);
+    }
 };
 
 // MARK: - Images
@@ -1712,7 +1807,7 @@ ZSSEditor.removeCaptionFormattingCallback = function( match, content ) {
  *
  *  @return     Returns the string with the visual formatting applied.
  */
-ZSSEditor.applyVisualFormatting  = function( html ) {
+ZSSEditor.applyVisualFormatting = function( html ) {
     var str = wp.shortcode.replace( 'caption', html, ZSSEditor.applyCaptionFormatting );
     str = wp.shortcode.replace( 'wpvideo', str, ZSSEditor.applyVideoFormattingCallback );
     return str;
@@ -1734,6 +1829,15 @@ ZSSEditor.removeVisualFormatting = function( html ) {
 }
 
 ZSSEditor.insertHTML = function(html) {
+
+    var currentField = this.getFocusedField();
+    
+    // When inserting HTML in the editor (like media), we must make sure the caret is wrapped in a
+    // paragraph tag.  By forcing to have all content inside paragraphs we obtain a behavior that's
+    // much closer to the one we have in our web editor.
+    //
+    currentField.wrapCaretInParagraphIfNecessary();
+    
 	document.execCommand('insertHTML', false, html);
 	this.sendEnabledStyles();
 };
@@ -1763,7 +1867,7 @@ ZSSEditor.sendEnabledStyles = function(e) {
                 
                 items.push('link-title:' + title);
                 items.push('link:' + href);
-            } else if (currentNode.nodeName.toLowerCase() == 'blockquote') {
+            } else if (currentNode.nodeName == NodeName.BLOCKQUOTE) {
                 items.push('blockquote');
             }
         }
@@ -1866,26 +1970,220 @@ ZSSEditor.sendEnabledStyles = function(e) {
             }
         }
     }
-	
+
 	ZSSEditor.stylesCallback(items);
 };
 
-// MARK: - Commands: High Level Editing
+// MARK: - Advanced Node Manipulation
 
 /**
- *  @brief      Inserts a br tag at the caret position.
+ *  @brief      Extracts a node from a parent node, and from all nodes in between the two.
  */
-ZSSEditor.insertBreakTagAtCaretPosition = function() {
-    // iOS IMPORTANT: we were adding <br> tags with range.insertNode() before using
-    // this method.  Unfortunately this was causing issues with the first <br> tag
-    // being completely ignored under iOS:
-    //
-    // https://bugs.webkit.org/show_bug.cgi?id=23474
-    //
-    // The following line seems to work fine under iOS, so please be careful if this
-    // needs to be changed for any reason.
-    //
-    document.execCommand("insertLineBreak");
+ZSSEditor.extractNodeFromAncestorNode = function(descendant, ancestor) {
+    
+    while (ancestor.contains(descendant)) {
+        
+        this.extractNodeFromParent(descendant);
+        break;
+    }
+};
+
+/**
+ *  @brief      Extract the specified node from its direct parent node.
+ *  @details    If the node has siblings, before or after it, the parent node is split accordingly
+ *              into two new clones of it.
+ */
+ZSSEditor.extractNodeFromParent = function(node) {
+
+    var parentNode = node.parentNode;
+    var grandParentNode = parentNode.parentNode;
+    var clonedParentForPreviousSiblings = null;
+    var clonedParentForNextSiblings = null;
+    
+    if (node.previousSibling != null) {
+        var clonedParentForPreviousSiblings = parentNode.cloneNode();
+        
+        while (parentNode.firstChild != node) {
+            clonedParentForPreviousSiblings.appendChild(parentNode.firstChild);
+        }
+    }
+    
+    if (node.nextSibling != null) {
+        var clonedParentForNextSiblings = parentNode.cloneNode();
+        
+        while (node.nextSibling != null) {
+            clonedParentForNextSiblings.appendChild(node.nextSibling);
+        }
+    }
+    
+    if (clonedParentForPreviousSiblings) {
+        grandParentNode.insertBefore(clonedParentForPreviousSiblings, parentNode);
+    }
+    
+    grandParentNode.insertBefore(node, parentNode);
+    
+    if (clonedParentForNextSiblings) {
+        grandParentNode.insertBefore(clonedParentForNextSiblings, parentNode);
+    }
+    
+    grandParentNode.removeChild(parentNode);
+};
+
+ZSSEditor.getChildNodesIntersectingRange = function(parentNode, range) {
+    
+    var nodes = new Array();
+    
+    if (parentNode) {
+        var currentNode = parentNode.firstChild;
+        var pushNodes = false;
+        var exit = false;
+        
+        while (currentNode) {
+            
+            if (range.intersectsNode(currentNode)) {
+                nodes.push(currentNode);
+            }
+            
+            currentNode = currentNode.nextSibling;
+        }
+    }
+    
+    return nodes;
+};
+
+/**
+ *  @brief      Given the specified range, find the ancestor element that  will be used to set the
+ *              blockquote ON or OFF.
+ *
+ *  @param      range       The range we want to set the blockquote ON or OFF for.
+ *
+ *  @returns    If a parent BLOCKQUOTE element is found, it will be return.  Otherwise the closest
+ *              parent non-paragraph element will be returned.
+ */
+ZSSEditor.getAncestorElementForSettingBlockquote = function(range) {
+    
+    var nodes = new Array();
+    var parentElement = range.commonAncestorContainer;
+    
+    while (parentElement
+           && (parentElement.nodeType != document.ELEMENT_NODE
+               || parentElement.nodeName == NodeName.PARAGRAPH)) {
+        parentElement = parentElement.parentNode;
+    }
+    
+    var currentElement = parentElement;
+    
+    while (currentElement
+           && currentElement.nodeName != NodeName.BLOCKQUOTE) {
+        currentElement = currentElement.parentElement;
+    }
+    
+    var result = currentElement ? currentElement : parentElement;
+    
+    return result;
+};
+
+/**
+ *  @brief      Joins any adjacent blockquote siblings.
+ *  @details    You probably want to call joinAdjacentSiblingsOrAncestorBlockquotes() instead of
+ *              this.
+ *
+ *  @returns    true if a sibling was joined.  false otherwise.
+ */
+ZSSEditor.joinAdjacentSiblingsBlockquotes = function(node) {
+    
+    var shouldJoinToPreviousSibling = this.hasPreviousSiblingWithName(node, NodeName.BLOCKQUOTE);
+    var shouldJoinToNextSibling = this.hasNextSiblingWithName(node, NodeName.BLOCKQUOTE);
+    var joinedASibling = (shouldJoinToPreviousSibling || shouldJoinToNextSibling);
+    
+    var previousSibling = node.previousSibling;
+    var nextSibling = node.nextSibling;
+    
+    if (shouldJoinToPreviousSibling) {
+        
+        previousSibling.appendChild(node);
+        
+        if (shouldJoinToNextSibling) {
+            
+            while (nextSibling.firstChild) {
+                previousSibling.appendChild(nextSibling.firstChild);
+            }
+            
+            nextSibling.parentNode.removeChild(nextSibling);
+        }
+    } else if (shouldJoinToNextSibling) {
+        
+        nextSibling.insertBefore(node, nextSibling.firstChild);
+    }
+    
+    return joinedASibling;
+};
+
+/**
+ *  @brief      Joins any adjacent blockquote siblings, or the blockquote siblings of any ancestor.
+ *  @details    When turning blockquotes back on, this method makes sure that we attach new
+ *              blockquotes to exiting ones.
+ *
+ *  @returns    true if a sibling or ancestor sibling was joined.  false otherwise.
+ */
+ZSSEditor.joinAdjacentSiblingsOrAncestorBlockquotes = function(node) {
+    
+    var currentNode = node;
+    var rootNode = this.getFocusedField().wrappedDomNode();
+    var joined = false;
+    
+    while (currentNode
+           && currentNode != rootNode
+           && !joined) {
+    
+        joined = this.joinAdjacentSiblingsBlockquotes(currentNode);
+        currentNode = currentNode.parentNode;
+    };
+    
+    return joined;
+};
+
+/**
+ *  @brief      Surrounds a node's contents into another node
+ *  @details    When creating new nodes that should force paragraphs inside of them, this method
+ *              should be called.
+ *
+ *  @param      node            The node that will have its contents wrapped into a new node.
+ *  @param      wrapperNodeName The nodeName of the node that will created to wrap the contents.
+ *
+ *  @returns    The newly created wrapper node.
+ */
+ZSSEditor.surroundNodeContentsWithNode = function(node, wrapperNodeName) {
+    
+    var range = document.createRange();
+    var wrapperNode = document.createElement(wrapperNodeName);
+    
+    range.selectNodeContents(node);
+    range.surroundContents(wrapperNode);
+    
+    return wrapperNode;
+};
+
+/**
+ *  @brief      Surrounds a node's contents with a paragraph node.
+ *  @details    When creating new nodes that should force paragraphs inside of them, this method
+ *              should be called.
+ *
+ *  @returns    The paragraph node.
+ */
+ZSSEditor.surroundNodeContentsWithAParagraphNode = function(node) {
+    
+    return this.surroundNodeContentsWithNode(node, this.defaultParagraphSeparator);
+};
+
+// MARK: - Sibling nodes
+
+ZSSEditor.hasNextSiblingWithName = function(node, siblingNodeName) {
+    return node.nextSibling && node.nextSibling.nodeName == siblingNodeName;
+};
+
+ZSSEditor.hasPreviousSiblingWithName = function(node, siblingNodeName) {
+    return node.previousSibling && node.previousSibling.nodeName == siblingNodeName;
 };
 
 // MARK: - Parent nodes & tags
@@ -1939,13 +2237,21 @@ ZSSEditor.closerParentNodeStartingAtNode = function(nodeName, startingNode) {
 
 ZSSEditor.closerParentNodeWithName = function(nodeName) {
     
-    nodeName = nodeName.toLowerCase();
-    
     var parentNode = null;
     var selection = window.getSelection();
     var range = selection.getRangeAt(0).cloneRange();
     
-    var currentNode = range.commonAncestorContainer;
+    var referenceNode = range.commonAncestorContainer;
+    
+    return this.closerParentNodeWithNameRelativeToNode(nodeName, referenceNode);
+};
+
+ZSSEditor.closerParentNodeWithNameRelativeToNode = function(nodeName, referenceNode) {
+    
+    nodeName = nodeName.toUpperCase();
+    
+    var parentNode = null;
+    var currentNode = referenceNode;
     
     while (currentNode) {
         
@@ -1953,7 +2259,7 @@ ZSSEditor.closerParentNodeWithName = function(nodeName) {
             break;
         }
         
-        if (currentNode.nodeName.toLowerCase() == nodeName
+        if (currentNode.nodeName == nodeName
             && currentNode.nodeType == document.ELEMENT_NODE) {
             parentNode = currentNode;
             
@@ -1964,6 +2270,10 @@ ZSSEditor.closerParentNodeWithName = function(nodeName) {
     }
     
     return parentNode;
+};
+
+ZSSEditor.isCloserParentNodeABlockquote = function() {
+  return this.closerParentNode().nodeName == NodeName.BLOCKQUOTE;
 };
 
 ZSSEditor.parentTags = function() {
@@ -2095,17 +2405,16 @@ ZSSField.prototype.handleFocusEvent = function(e) {
 };
 
 ZSSField.prototype.handleKeyDownEvent = function(e) {
-
+    
     var wasEnterPressed = (e.keyCode == '13');
     
     if (this.isComposing) {
         e.stopPropagation();
-    } else if (wasEnterPressed) {
-        ZSSEditor.formatNewLine(e);
-    } else if (ZSSEditor.closerParentNode() == this.wrappedDomNode()) {
-        // IMPORTANT: without this code, we can have text written outside of paragraphs...
-        //
-        document.execCommand('formatBlock', false, 'p');
+    } else if (wasEnterPressed
+               && !this.isMultiline()) {
+        e.preventDefault();
+    } else if (this.isMultiline()) {
+        this.wrapCaretInParagraphIfNecessary();
     }
 };
 
@@ -2113,7 +2422,7 @@ ZSSField.prototype.handleInputEvent = function(e) {
     
     // Skip this if we are composing on an IME keyboard
     if (this.isComposing ) { return; }
-
+    
     // IMPORTANT: we want the placeholder to come up if there's no text, so we clear the field if
     // there's no real content in it.  It's important to do this here and not on keyDown or keyUp
     // as the field could become empty because of a cut or paste operation as well as a key press.
@@ -2323,6 +2632,43 @@ ZSSField.prototype.disableEditing = function () {
     this.blur();
     
     this.wrappedObject.attr('contenteditable', false);
+};
+
+// MARK: - Caret
+
+
+/**
+ *  @brief      Whenever this method is called, a check will be performed on the caret position
+ *              to figure out if it needs to be wrapped in a paragraph node.
+ *  @details    A parent paragraph node should be added if the current parent is either the field
+ *              node itself, or a blockquote node.
+ */
+ZSSField.prototype.wrapCaretInParagraphIfNecessary = function()
+{
+    var closerParentNode = ZSSEditor.closerParentNode();
+    var parentNodeShouldBeParagraph = (closerParentNode == this.wrappedDomNode()
+                                       || closerParentNode.nodeName == NodeName.BLOCKQUOTE);
+    
+    if (parentNodeShouldBeParagraph) {
+        var selection = window.getSelection();
+        
+        if (selection) {
+            var range = selection.getRangeAt(0);
+            
+            if (range.startContainer == range.endContainer) {
+                var paragraph = document.createElement("p");
+                var textNode = document.createTextNode("&#x200b;");
+                
+                paragraph.appendChild(textNode);
+                
+                range.insertNode(paragraph);
+                range.selectNode(textNode);
+                
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        }
+    }
 };
 
 // MARK: - i18n
