@@ -499,6 +499,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([self isVideoPressInfoRequestScheme:scheme]) {
             [self handleVideoPressInfoRequestCallback:url];
             handled = YES;
+        } else if ([self isMediaRemovedScheme:scheme]) {
+            [self handleMediaRemovedCallback:url];
+            handled = YES;
         }
         
     }
@@ -823,6 +826,27 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 }
 
+- (void)handleMediaRemovedCallback:(NSURL *)url
+{
+    NSParameterAssert([url isKindOfClass:[NSURL class]]);
+    
+    static NSString *const kMediaIdParameterName = @"id";
+    
+    __block NSString *mediaId = nil;
+    
+    [self parseParametersFromCallbackURL:url andExecuteBlockForEachParameter:^(NSString *parameterName, NSString *parameterValue)
+     {
+         if ([parameterName isEqualToString:kMediaIdParameterName]) {
+             mediaId = [self stringByDecodingURLFormat:parameterValue];
+         }
+     } onComplete:^{
+         if ([self.delegate respondsToSelector:@selector(editorView:mediaRemoved:)]) {
+             [self.delegate editorView:self mediaRemoved:mediaId];
+         }
+     }];
+    
+}
+
 /**
  *	@brief		Handles a log callback.
  *
@@ -1085,6 +1109,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
              @"We're expecting a non-nil string object here.");
     
     static NSString *const kCallbackScheme = @"callback-videopress-info-request";
+    
+    return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isMediaRemovedScheme:(NSString *)scheme
+{
+    NSAssert([scheme isKindOfClass:[NSString class]],
+             @"We're expecting a non-nil string object here.");
+    
+    static NSString *const kCallbackScheme = @"callback-media-removed";
     
     return [scheme isEqualToString:kCallbackScheme];
 }

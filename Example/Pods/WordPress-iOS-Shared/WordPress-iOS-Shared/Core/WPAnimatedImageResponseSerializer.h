@@ -1,4 +1,4 @@
-#import "AFURLResponseSerialization.h"
+#import <AFNetworking/AFURLResponseSerialization.h>
 
 /**
  *	@brief		A custom response serializer to handle GIF animations.

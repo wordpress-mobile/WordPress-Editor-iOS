@@ -3,7 +3,7 @@ This application makes use of the following third party libraries:
 
 ## AFNetworking
 
-Copyright (c) 2013-2015 AFNetworking (http://afnetworking.com/)
+Copyright (c) 2011–2015 Alamofire Software Foundation (http://alamofire.org/)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 Software License Agreement (BSD License)
 
-Copyright (c) 2010, Deusty, LLC
+Copyright (c) 2010-2015, Deusty, LLC
 All rights reserved.
 
 Redistribution and use of this software in source and binary forms,
