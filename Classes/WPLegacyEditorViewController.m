@@ -620,7 +620,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration
 {
     CGRect frame = self.editorToolbar.frame;
-    if (UIDeviceOrientationIsLandscape(interfaceOrientation)) {
+    if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
         if (IS_IPAD) {
             frame.size.height = WPKT_HEIGHT_IPAD_LANDSCAPE;
         } else {

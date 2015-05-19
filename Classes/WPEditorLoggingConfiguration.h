@@ -5,4 +5,4 @@
 #endif
 #define LOG_LEVEL_DEF kEditorLogLevel
 
-extern const int kEditorLogLevel;
+extern const DDLogLevel kEditorLogLevel;
