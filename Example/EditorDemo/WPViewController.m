@@ -2,7 +2,7 @@
 
 @import AssetsLibrary;
 @import AVFoundation;
-#import <CocoaLumberjack/DDLog.h>
+#import <CocoaLumberjack/CocoaLumberjack.h>
 #import "WPEditorField.h"
 #import "WPEditorView.h"
 #import "WPImageMetaViewController.h"

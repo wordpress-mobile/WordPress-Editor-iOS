@@ -1,3 +1,3 @@
 #import "WPEditorDemoLoggingConfiguration.h"
 
-const int ddLogLevel = DDLogLevelError;
+const DDLogLevel ddLogLevel = DDLogLevelError;

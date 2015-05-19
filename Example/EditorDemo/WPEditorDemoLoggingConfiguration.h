@@ -1,3 +1,3 @@
 #import <Foundation/Foundation.h>
 
-extern const int ddLogLevel;
+extern const DDLogLevel ddLogLevel;

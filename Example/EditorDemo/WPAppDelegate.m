@@ -1,8 +1,6 @@
 #import "WPAppDelegate.h"
 
-#import <CocoaLumberjack/DDLog.h>
-#import <CocoaLumberjack/DDASLLogger.h>
-#import <CocoaLumberjack/DDTTYLogger.h>
+#import <CocoaLumberjack/CocoaLumberjack.h>
 #import <WordPress-iOS-Editor/WPEditorViewController.h>
 
 @implementation WPAppDelegate
