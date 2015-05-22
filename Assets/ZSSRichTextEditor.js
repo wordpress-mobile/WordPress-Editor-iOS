@@ -77,7 +77,8 @@ ZSSEditor.init = function(callbacker, logger) {
     document.execCommand('styleWithCSS', false, false);
     
     var editor = $('div.field').each(function() {
-        var editableField = new ZSSField($(this));
+        var editableField = new ZSSField($(this),
+                                         ZSSEditor.callbacker);
         var editableFieldId = editableField.getNodeId();
                                              
         ZSSEditor.editableFields[editableFieldId] = editableField;
@@ -2301,13 +2302,17 @@ ZSSEditor.parentTags = function() {
 
 // MARK: - ZSSField Constructor
 
-function ZSSField(wrappedObject) {
+function ZSSField(wrappedObject,
+                  callbacker) {
+    
+    this.wrappedObject = wrappedObject;
+    this.callbacker = callbacker;
+    
     // When this bool is true, we are going to restrict input and certain callbacks
     // so IME keyboards behave properly when composing.
     this.isComposing = false;
     
     this.multiline = false;
-    this.wrappedObject = wrappedObject;
     this.bodyPlaceholderColor = '#000000';
     
     if (this.wrappedDomNode().hasAttribute('nostyle')) {
@@ -2431,7 +2436,8 @@ ZSSField.prototype.handleInputEvent = function(e) {
     this.emptyFieldIfNoContentsAndRefreshPlaceholderColor();
     
     var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
-    ZSSEditor.callback('callback-selection-changed', joinedArguments);
+
+    this.callback('callback-selection-changed', joinedArguments);
     this.callback("callback-input", joinedArguments);
 };
 
@@ -2574,7 +2580,7 @@ ZSSField.prototype.callback = function(callbackScheme, callbackPath) {
         finalPath = finalPath + callbackPath;
     }
     
-    ZSSEditor.callback(callbackScheme, finalPath);
+    this.callbacker.callback(callbackScheme, finalPath);
 };
 
 // MARK: - Focus
