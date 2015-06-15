@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C1E073E403EB4067B3CE3046"
+               BlueprintIdentifier = "B29DD775AC84AF2BBA9CA0F8"
                BuildableName = "libPods-EditorDemo-WordPress-iOS-Editor.a"
                BlueprintName = "Pods-EditorDemo-WordPress-iOS-Editor"
                ReferencedContainer = "container:Pods.xcodeproj">
