@@ -50,7 +50,7 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   WordPress-iOS-Editor:
-    :path: ../
+    :path: "../"
 
 SPEC CHECKSUMS:
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
@@ -61,4 +61,4 @@ SPEC CHECKSUMS:
   WordPress-iOS-Shared: bd0506db9b824611246f35e774832ecbc18fc45e
   WordPressCom-Analytics-iOS: cfa514e1c2ded6256bf2864d871e0866e38cc668
 
-COCOAPODS: 0.37.1
+COCOAPODS: 0.37.2
