@@ -370,7 +370,6 @@ div.field[contenteditable] {
 }
 
 div.field[placeholderText][contenteditable=true]:empty:before {
-    font-family:OpenSans;
     content: attr(placeholderText);
     transition: 0.2s ease opacity;
 }
