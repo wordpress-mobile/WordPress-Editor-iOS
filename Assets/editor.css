@@ -25,25 +25,25 @@
 }
 @font-face {
     font-family: 'Merriweather';
-    src: local("Merriweather-Light");
+    src: local("Merriweather Light");
     font-weight: normal;
-    font-style: normal;
-}
-@font-face {
-    font-family: 'Merriweather';
-    src: local("Merriweather-LightItalic");
-    font-weight: normal;
-    font-style: italic;
-}
-@font-face {
-    font-family: 'Merriweather';
-    src: local("Merriweather");
-    font-weight: bold;
     font-style: normal;
 }
 @font-face {
     font-family: 'Merriweather';
     src: local("Merriweather-Italic");
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Merriweather';
+    src: local("Merriweather-Bold");
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Merriweather';
+    src: local("Merriweather-BoldItalic");
     font-weight: bold;
     font-style: italic;
 }
@@ -60,7 +60,7 @@ html {
 
 html, body {
     margin:0;
-    font-family:'Merriweather Light', sans-serif;
+    font-family:'Merriweather', sans-serif;
     font-size:1em;
     color:#2D2D2D;
 }
@@ -387,12 +387,15 @@ div.field[placeholderText][contenteditable=true]:empty:focus:before {
 #zss_field_title, #zss_field_title p {
     font-family:'Merriweather', serif;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 24px;
+    line-height: 32px;
     margin-bottom: 0px;
 }
 
 #zss_field_content {
     margin-bottom: 10px;
+    font-size: 16px;
+    line-height: 24px;
 }
 
 .wp-temp[data-wp-temp="caption"] {
@@ -409,13 +412,4 @@ div.field[placeholderText][contenteditable=true]:empty:focus:before {
 .ipad_body {
     padding-left: 80px;
     padding-right: 80px;
-}
-
-.ipad_field_title {
-    font-size: 1.3em;
-}
-
-.ipad_field_content {
-    font-size: 1.125em;
-    line-height: 28px;
 }
