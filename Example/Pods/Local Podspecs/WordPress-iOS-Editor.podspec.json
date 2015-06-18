@@ -1,16 +1,16 @@
 {
   "name": "WordPress-iOS-Editor",
-  "version": "0.7",
+  "version": "0.8",
   "summary": "Reusable component rich text editor for WordPress.com in an iOS application.",
   "description": "                   Reusable component for displaying the WordPress.com post editor in an iOS application\n",
   "homepage": "http://apps.wordpress.org",
-  "license": "MIT",
+  "license": "GPLv2",
   "authors": {
     "Matt Bumgardner": "matt.bumgardner@automattic.com"
   },
   "source": {
     "git": "https://github.com/wordpress-mobile/WordPress-iOS-Editor.git",
-    "tag": "0.7"
+    "tag": "0.8"
   },
   "social_media_url": "http://twitter.com/WordPressiOS",
   "platforms": {

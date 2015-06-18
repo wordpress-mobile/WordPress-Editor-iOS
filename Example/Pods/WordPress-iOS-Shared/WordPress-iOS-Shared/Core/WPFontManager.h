@@ -12,5 +12,10 @@
 + (UIFont *)openSansRegularFontOfSize:(CGFloat)size;
 
 + (UIFont *)merriweatherBoldFontOfSize:(CGFloat)size;
++ (UIFont *)merriweatherBoldItalicFontOfSize:(CGFloat)size;
++ (UIFont *)merriweatherItalicFontOfSize:(CGFloat)size;
++ (UIFont *)merriweatherLightFontOfSize:(CGFloat)size;
++ (UIFont *)merriweatherLightItalicFontOfSize:(CGFloat)size;
++ (UIFont *)merriweatherRegularFontOfSize:(CGFloat)size;
 
 @end

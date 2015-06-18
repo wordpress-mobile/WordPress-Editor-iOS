@@ -30,16 +30,16 @@ PODS:
     - CocoaLumberjack/Default
   - NSObject-SafeExpectations (0.0.2)
   - UIAlertView+Blocks (0.8.1)
-  - WordPress-iOS-Editor (0.7):
+  - WordPress-iOS-Editor (0.8):
     - CocoaLumberjack (~> 2.0)
     - NSObject-SafeExpectations (~> 0.0.2)
     - UIAlertView+Blocks (~> 0.8.1)
     - WordPress-iOS-Shared (~> 0.3)
     - WordPressCom-Analytics-iOS (~> 0.0.30)
-  - WordPress-iOS-Shared (0.3.2):
+  - WordPress-iOS-Shared (0.3.3):
     - AFNetworking (~> 2.5)
     - CocoaLumberjack (~> 2.0)
-  - WordPressCom-Analytics-iOS (0.0.32)
+  - WordPressCom-Analytics-iOS (0.0.33)
 
 DEPENDENCIES:
   - CocoaLumberjack (~> 2.0)
@@ -50,15 +50,15 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   WordPress-iOS-Editor:
-    :path: ../
+    :path: "../"
 
 SPEC CHECKSUMS:
   AFNetworking: 05edc0ac4c4c8cf57bcf4b84be5b0744b6d8e71e
   CocoaLumberjack: a6f77d987d65dc7ba86b0f84db7d0b9084f77bcb
   NSObject-SafeExpectations: 7d7f48df90df4e11da7cfe86b64f45eff7a7f521
   UIAlertView+Blocks: 45c3d3b7194906702d3e9a14c7ece5581505646d
-  WordPress-iOS-Editor: 28eb6e7763e2f277fbdfda6a78cad42d43b25791
-  WordPress-iOS-Shared: bd0506db9b824611246f35e774832ecbc18fc45e
-  WordPressCom-Analytics-iOS: cfa514e1c2ded6256bf2864d871e0866e38cc668
+  WordPress-iOS-Editor: 474d9eefef5df707dca13cf6247fc60fc319f28c
+  WordPress-iOS-Shared: f0a1c534dbe0a4047dac42fb59d1ed4beab6e22d
+  WordPressCom-Analytics-iOS: 69b875d5bc1b053be13c6a33c7233bf6f50949b1
 
-COCOAPODS: 0.37.1
+COCOAPODS: 0.37.2
