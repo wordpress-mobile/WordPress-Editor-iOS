@@ -137,7 +137,11 @@ NSInteger const WPLinkAlertViewTag = 92;
     self.view.backgroundColor = [UIColor whiteColor];
     
     // Calling the fonts we use here so they are availible to the UIWebView
-    [WPFontManager merriweatherBoldFontOfSize:30];
+    [WPFontManager merriweatherBoldFontOfSize:16];
+    [WPFontManager merriweatherBoldItalicFontOfSize:16];
+    [WPFontManager merriweatherItalicFontOfSize:16];
+    [WPFontManager merriweatherLightFontOfSize:16];
+    [WPFontManager merriweatherRegularFontOfSize:16];
     [WPFontManager openSansRegularFontOfSize:16];
     [WPFontManager openSansItalicFontOfSize:16];
     [WPFontManager openSansBoldFontOfSize:16];
