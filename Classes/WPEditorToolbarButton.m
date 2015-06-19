@@ -41,15 +41,6 @@ static const int kBottomLineHeight = 2;
 	return self;
 }
 
-#pragma mark - Memory warnings support
-
-- (void)didReceiveMemoryWarning
-{
-	if (!self.selected) {
-		[self destroyBottomLineView];
-	}
-}
-
 #pragma mark - Animations
 
 - (void)setupAnimations
@@ -92,60 +83,6 @@ static const int kBottomLineHeight = 2;
 	self.selected = !self.selected;
 }
 
-#pragma mark - Bottom line
-
-- (void)createBottomLineView
-{
-	NSAssert(!_bottomLineView, @"The bottom line view should not exist here");
-	
-	CGRect bottomLineFrame = self.frame;
-	bottomLineFrame.origin.x = kBottomLineHMargin;
-	bottomLineFrame.origin.y = bottomLineFrame.size.height;
-	bottomLineFrame.size.width = bottomLineFrame.size.width - kBottomLineHMargin * 2;
-	bottomLineFrame.size.height = kBottomLineHeight;
-	
-	UIView* bottomLineView = [[UIView alloc] initWithFrame:bottomLineFrame];
-	bottomLineView.backgroundColor = self.selectedTintColor;
-	bottomLineView.userInteractionEnabled = NO;
-	
-	[self addSubview:bottomLineView];
-	self.bottomLineView = bottomLineView;
-}
-
-- (void)destroyBottomLineView
-{
-	NSAssert(_bottomLineView, @"The bottom line view should exist here");
-	
-	[self.bottomLineView removeFromSuperview];
-	self.bottomLineView = nil;
-}
-
-- (void)slideInBottomLineView
-{
-	if (!_bottomLineView) {
-		[self createBottomLineView];
-	}
-	
-	CGRect newFrame = self.bottomLineView.frame;
-	newFrame.origin.y -= kBottomLineHeight;
-	
-	[UIView animateWithDuration:kAnimationDurationFast animations:^{
-		self.bottomLineView.frame = newFrame;
-	}];
-}
-
-- (void)slideOutBottomLineView
-{
-	if (self.bottomLineView) {
-		CGRect newFrame = self.bottomLineView.frame;
-		newFrame.origin.y = self.frame.size.height;
-		
-		[UIView animateWithDuration:kAnimationDurationFast animations:^{
-			self.bottomLineView.frame = newFrame;
-		}];
-	}
-}
-
 #pragma mark - UIControl
 
 - (void)setHighlighted:(BOOL)highlighted
@@ -176,10 +113,8 @@ static const int kBottomLineHeight = 2;
 		dispatch_after(dispatchDelay, dispatch_get_main_queue(), ^{
 			if (selected) {
 				self.tintColor = self.selectedTintColor;
-				[self slideInBottomLineView];
 			} else {
 				self.tintColor = self.normalTintColor;
-				[self slideOutBottomLineView];
 			}
 		});
 	}
