@@ -507,6 +507,14 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     for (WPEditorToolbarButton *item in self.leftToolbar.items) {
         item.disabledTintColor = _disabledItemTintColor;
     }
+    
+    if (self.htmlBarButtonItem) {
+        WPEditorToolbarButton* htmlButton = (WPEditorToolbarButton*)self.htmlBarButtonItem.customView;
+        NSAssert([htmlButton isKindOfClass:[WPEditorToolbarButton class]],
+                 @"Expected to have an HTML button of class WPEditorToolbarButton here.");
+        
+        htmlButton.disabledTintColor = _disabledItemTintColor;
+    }
 }
 
 - (void)setSelectedItemTintColor:(UIColor *)selectedItemTintColor

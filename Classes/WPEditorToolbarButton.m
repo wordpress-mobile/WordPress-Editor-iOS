@@ -121,16 +121,12 @@ static const int kBottomLineHeight = 2;
 
 - (void)setEnabled:(BOOL)enabled
 {
-    BOOL hasChangedEnabledStatus = (enabled != self.enabled);
-    
     [super setEnabled:enabled];
     
-    if (hasChangedEnabledStatus) {
-        if (!enabled) {
-            self.tintColor = self.disabledTintColor;
-        } else {
-            self.tintColor = self.normalTintColor;
-        }
+    if (enabled) {
+        self.tintColor = self.normalTintColor;
+    } else {
+        self.tintColor = self.disabledTintColor;
     }
 }
 
