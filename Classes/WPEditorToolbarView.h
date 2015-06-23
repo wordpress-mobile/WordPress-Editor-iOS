@@ -120,6 +120,11 @@ typedef enum
 @property (nonatomic, strong) UIColor *itemTintColor;
 
 /**
+ *  Color to tint the toolbar items when the toolbar is disabled
+ */
+@property (nonatomic, strong) UIColor *disabledItemTintColor;
+
+/**
  *  Color to tint selected items
  */
 @property (nonatomic, strong) UIColor *selectedItemTintColor;

@@ -107,17 +107,31 @@ static const int kBottomLineHeight = 2;
 	[super setSelected:selected];
 	
 	if (hasChangedSelectedStatus) {
-		dispatch_time_t dispatchDelay = dispatch_time(DISPATCH_TIME_NOW,
-													  (int64_t)(0.2 * NSEC_PER_SEC));
-		
-		dispatch_after(dispatchDelay, dispatch_get_main_queue(), ^{
-			if (selected) {
-				self.tintColor = self.selectedTintColor;
-			} else {
-				self.tintColor = self.normalTintColor;
-			}
-		});
+        if (self.enabled) {
+            if (selected) {
+                self.tintColor = self.selectedTintColor;
+            } else {
+                self.tintColor = self.normalTintColor;
+            }
+        } else {
+            self.tintColor = self.disabledTintColor;
+        }
 	}
+}
+
+- (void)setEnabled:(BOOL)enabled
+{
+    BOOL hasChangedEnabledStatus = (enabled != self.enabled);
+    
+    [super setEnabled:enabled];
+    
+    if (hasChangedEnabledStatus) {
+        if (!enabled) {
+            self.tintColor = self.disabledTintColor;
+        } else {
+            self.tintColor = self.normalTintColor;
+        }
+    }
 }
 
 #pragma mark - Tint color
@@ -133,6 +147,16 @@ static const int kBottomLineHeight = 2;
 			self.tintColor = normalTintColor;
 		}
 	}
+}
+
+- (void)setDisabledTintColor:(UIColor *)disabledTintColor
+{
+    if (_disabledTintColor != disabledTintColor) {
+        _disabledTintColor = disabledTintColor;
+        
+        [self setTitleColor:disabledTintColor forState:UIControlStateDisabled];
+        self.tintColor = disabledTintColor;
+    }
 }
 
 - (void)setSelectedTintColor:(UIColor *)selectedTintColor

@@ -252,6 +252,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     [customButton setImage:buttonImage forState:UIControlStateNormal];
     customButton.normalTintColor = self.itemTintColor;
     customButton.selectedTintColor = self.selectedItemTintColor;
+    customButton.disabledTintColor = self.disabledItemTintColor;
     [customButton addTarget:target
                      action:selector
            forControlEvents:UIControlEventTouchUpInside];
@@ -365,6 +366,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
         [customButton setTitle:@"HTML" forState:UIControlStateNormal];
         customButton.normalTintColor = self.itemTintColor;
         customButton.selectedTintColor = self.selectedItemTintColor;
+        customButton.disabledTintColor = self.disabledItemTintColor;
         customButton.reversesTitleShadowWhenHighlighted = YES;
         customButton.titleLabel.font = font;
         [customButton addTarget:self
@@ -486,6 +488,15 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
         
         htmlButton.normalTintColor = itemTintColor;
         self.htmlBarButtonItem.tintColor = itemTintColor;
+    }
+}
+
+- (void)setDisabledItemTintColor:(UIColor *)disabledItemTintColor
+{
+    _disabledItemTintColor = disabledItemTintColor;
+    
+    for (WPEditorToolbarButton *item in self.leftToolbar.items) {
+        item.disabledTintColor = _disabledItemTintColor;
     }
 }
 

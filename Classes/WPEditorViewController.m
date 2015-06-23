@@ -115,9 +115,13 @@ NSInteger const WPLinkAlertViewTag = 92;
     _toolbarView.delegate = self;
     
     _toolbarView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    _toolbarView.backgroundColor = [UIColor whiteColor];
-    _toolbarView.borderColor = [WPStyleGuide readGrey];
-    _toolbarView.itemTintColor = [WPStyleGuide textFieldPlaceholderGrey];
+    // Explicit design decision to use non-standard color. See:
+    // https://github.com/wordpress-mobile/WordPress-Editor-iOS/issues/657#issuecomment-113651034
+    _toolbarView.backgroundColor = [UIColor colorWithHexString:@"F9FBFC"];
+    //
+    _toolbarView.borderColor = [WPStyleGuide greyLighten10];
+    _toolbarView.itemTintColor = [WPStyleGuide greyLighten10];
+    _toolbarView.disabledItemTintColor = [WPStyleGuide greyLighten30];
     _toolbarView.selectedItemTintColor = [WPStyleGuide baseDarkerBlue];
     
     _toolbarView.items = [self itemsForToolbar];
