@@ -179,7 +179,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     UIView* mainToolbarHolderContent = [[UIView alloc] initWithFrame:subviewFrame];
     mainToolbarHolderContent.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
-    subviewFrame.size.height = 1.0f;
+    subviewFrame.size.height = 0.5f;
     
     UIView* mainToolbarHolderTopBorder = [[UIView alloc] initWithFrame:subviewFrame];
     mainToolbarHolderTopBorder.autoresizingMask = UIViewAutoresizingFlexibleWidth;
