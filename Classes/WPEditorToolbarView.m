@@ -16,9 +16,9 @@ static int kNegativeSixPlusRightToolbarPadding = 24;
 static const CGFloat WPEditorToolbarHeightiPad = 49;
 static const CGFloat WPEditorToolbarButtonHeightiPad = 49;
 static const CGFloat WPEditorToolbarButtonWidthiPad = 49;
-static const CGFloat WPEditorToolbarHeight = 40;
-static const CGFloat WPEditorToolbarButtonHeight = 40;
-static const CGFloat WPEditorToolbarButtonWidth = 40;
+static const CGFloat WPEditorToolbarHeight = 44;
+static const CGFloat WPEditorToolbarButtonHeight = 44;
+static const CGFloat WPEditorToolbarButtonWidth = 44;
 static const CGFloat WPEditorToolbarDividerLineHeight = 28;
 static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
 
@@ -198,13 +198,13 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
 {
     NSAssert(_toolbarScroll == nil, @"This is supposed to be called only once.");
     
-    CGFloat scrollviewHeight = CGRectGetWidth(self.frame);
+    CGFloat scrollviewWidth = CGRectGetWidth(self.frame);
     CGRect toolbarScrollFrame;
     if (IS_IPAD) {
-        toolbarScrollFrame = CGRectMake(0, 0, scrollviewHeight, WPEditorToolbarHeightiPad);
+        toolbarScrollFrame = CGRectMake(0, 0, scrollviewWidth, WPEditorToolbarHeightiPad);
     } else {
-        scrollviewHeight -= WPEditorToolbarButtonWidth;
-        toolbarScrollFrame = CGRectMake(0, 0, scrollviewHeight, WPEditorToolbarHeight);
+        scrollviewWidth -= WPEditorToolbarButtonWidth;
+        toolbarScrollFrame = CGRectMake(0, 0, scrollviewWidth, WPEditorToolbarHeight);
     }
     
     UIScrollView* toolbarScroll = [[UIScrollView alloc] initWithFrame:toolbarScrollFrame];
@@ -413,6 +413,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
                                              kNegativeRightToolbarPadding / 2,
                                              WPEditorToolbarHeight);
         UIView *rightSpacer = [[UIView alloc] initWithFrame:rightSpacerFrame];
+        rightSpacer.backgroundColor = self.backgroundColor;
         
         CGRect rightToolbarHolderFrame = CGRectMake(CGRectGetWidth(self.frame) - (WPEditorToolbarButtonWidth + CGRectGetWidth(self.rightToolbarDivider.frame) + CGRectGetWidth(rightSpacer.frame)),
                                                     0.0f,
@@ -421,6 +422,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
         rightToolbarHolder = [[UIView alloc] initWithFrame:rightToolbarHolderFrame];
         rightToolbarHolder.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
         rightToolbarHolder.clipsToBounds = YES;
+        rightToolbarHolder.backgroundColor = self.backgroundColor;
         
         CGRect toolbarFrame = CGRectMake(CGRectGetMaxX(rightSpacer.frame),
                                          0.0f,
@@ -446,6 +448,8 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
         
         toolbar.items = @[negativeSeparator, [self htmlBarButtonItem]];
         toolbar.barTintColor = self.backgroundColor;
+        
+        _rightToolbarHolder = rightToolbarHolder;
     }
     
     return rightToolbarHolder;
@@ -460,6 +464,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
         
         self.leftToolbar.barTintColor = backgroundColor;
         self.rightToolbar.barTintColor = backgroundColor;
+        self.rightToolbarHolder.backgroundColor = backgroundColor;
     }
 }
 
