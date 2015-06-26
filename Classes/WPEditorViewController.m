@@ -113,16 +113,19 @@ NSInteger const WPLinkAlertViewTag = 92;
     
     _toolbarView = [[WPEditorToolbarView alloc] initWithFrame:toolbarFrame];
     _toolbarView.delegate = self;
-    
     _toolbarView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    // Explicit design decision to use non-standard color. See:
-    // https://github.com/wordpress-mobile/WordPress-Editor-iOS/issues/657#issuecomment-113651034
-    _toolbarView.backgroundColor = [UIColor colorWithHexString:@"F9FBFC"];
-    //
     _toolbarView.borderColor = [WPStyleGuide greyLighten10];
     _toolbarView.itemTintColor = [WPStyleGuide greyLighten10];
-    _toolbarView.disabledItemTintColor = [WPStyleGuide greyLighten30];
     _toolbarView.selectedItemTintColor = [WPStyleGuide baseDarkerBlue];
+    
+    // Explicit design decision to use non-standard colors. See:
+    // https://github.com/wordpress-mobile/WordPress-Editor-iOS/issues/657#issuecomment-113651034
+    _toolbarView.backgroundColor = [UIColor colorWithHexString:@"F9FBFC"];
+    _toolbarView.disabledItemTintColor = [UIColor colorWithRed:0.78f
+                                                         green:0.84f
+                                                          blue:0.88f
+                                                         alpha:0.5];
+    /////
     
     _toolbarView.items = [self itemsForToolbar];
 }
