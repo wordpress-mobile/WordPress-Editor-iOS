@@ -2,14 +2,14 @@
 #import <WordPress-iOS-Shared/WPStyleGuide.h>
 
 static NSString* const CircleLayerKey = @"circleLayer";
-static int TouchAnimationCircleRadius = 15;
-static int TouchAnimationCircleRadiusiPad = 17;
-static CGFloat TouchAnimationDuration = 0.4f;
-static CGFloat TouchAnimationInitialOpacity = 0.8f;
+static CGFloat TouchAnimationCircleRadius = 15.0;
+static CGFloat TouchAnimationCircleRadiusiPad = 17.0;
+static CGFloat TouchAnimationDuration = 0.4;
+static CGFloat TouchAnimationInitialOpacity = 0.8;
 
-static CGFloat AnimationDurationNormal = 0.3f;
-static CGFloat HighlightedAlpha = 0.1f;
-static CGFloat NormalAlpha = 1.0f;
+static CGFloat AnimationDurationNormal = 0.3;
+static CGFloat HighlightedAlpha = 0.1;
+static CGFloat NormalAlpha = 1.0;
 
 @interface WPEditorToolbarButton ()
 
@@ -79,25 +79,24 @@ static CGFloat NormalAlpha = 1.0f;
 
 - (void)startAnimation
 {
-    CGFloat circleLineWidth = 1.0f;
-    CGRect circleRect = CGRectInset(self.bounds, circleLineWidth / 2, circleLineWidth / 2);
+    CGFloat circleLineWidth = 1.0;
+    CGRect circleRect = CGRectInset(self.bounds, circleLineWidth / 2.0, circleLineWidth / 2.0);
     CGPoint drawPoint = CGPointMake(CGRectGetMidX(circleRect), CGRectGetMidY(circleRect));
     CAShapeLayer *circleLayer = [CAShapeLayer layer];
-    int radius = IS_IPAD ? TouchAnimationCircleRadiusiPad : TouchAnimationCircleRadius;
+    CGFloat radius = IS_IPAD ? TouchAnimationCircleRadiusiPad : TouchAnimationCircleRadius;
     circleLayer.path = [UIBezierPath bezierPathWithArcCenter:CGPointZero radius:radius startAngle:0 endAngle:M_PI*2 clockwise:NO].CGPath;
     circleLayer.position = drawPoint;
     circleLayer.fillColor =  [[WPStyleGuide greyLighten10] CGColor];
     circleLayer.strokeColor =  [[WPStyleGuide greyLighten10] CGColor];
-    circleLayer.lineWidth = 1.0f;
+    circleLayer.lineWidth = 1.0;
     circleLayer.opacity = TouchAnimationInitialOpacity;
     [self.layer addSublayer:circleLayer];
     
     CAAnimationGroup * group =[CAAnimationGroup animation];
-    group.removedOnCompletion=NO; group.fillMode=kCAFillModeForwards;
+    group.fillMode=kCAFillModeForwards;
     group.animations =[NSArray arrayWithObjects:self.circleScaleAnimation, self.circleOpacityAnimation, nil];
     group.duration = TouchAnimationDuration;
-    group.repeatCount = 0.0f;
-    group.removedOnCompletion = NO;
+    group.repeatCount = 0.0;
     group.delegate = self;
     [group setValue:circleLayer forKey:CircleLayerKey];
     [circleLayer addAnimation:group forKey:@"innerCircleAnimations"];
@@ -117,7 +116,7 @@ static CGFloat NormalAlpha = 1.0f;
 
 - (void)touchDown:(id)sender
 {
-	[self setAlpha:HighlightedAlpha];
+    [self setAlpha:HighlightedAlpha];
     [self startAnimation];
 }
 
@@ -184,7 +183,11 @@ static CGFloat NormalAlpha = 1.0f;
     [super setEnabled:enabled];
     
     if (enabled) {
-        self.tintColor = self.normalTintColor;
+        if (self.selected) {
+            self.tintColor = self.selectedTintColor;
+        } else {
+            self.tintColor = self.normalTintColor;
+        }
     } else {
         self.tintColor = self.disabledTintColor;
     }
@@ -194,38 +197,39 @@ static CGFloat NormalAlpha = 1.0f;
 
 - (void)setNormalTintColor:(UIColor *)normalTintColor
 {
-	if (_normalTintColor != normalTintColor) {
-		_normalTintColor = normalTintColor;
-		
-		[self setTitleColor:normalTintColor forState:UIControlStateNormal];
-		
-		if (!self.selected) {
-			self.tintColor = normalTintColor;
-		}
-	}
+	if (_normalTintColor == normalTintColor) {
+        return;
+    }
+    
+    _normalTintColor = normalTintColor;
+    [self setTitleColor:normalTintColor forState:UIControlStateNormal];
+    if (!self.selected) {
+        self.tintColor = normalTintColor;
+    }
 }
 
 - (void)setDisabledTintColor:(UIColor *)disabledTintColor
 {
-    if (_disabledTintColor != disabledTintColor) {
-        _disabledTintColor = disabledTintColor;
-        
-        [self setTitleColor:disabledTintColor forState:UIControlStateDisabled];
-        self.tintColor = disabledTintColor;
+    if (_disabledTintColor == disabledTintColor) {
+        return;
     }
+    
+    _disabledTintColor = disabledTintColor;
+    [self setTitleColor:disabledTintColor forState:UIControlStateDisabled];
+    self.tintColor = disabledTintColor;
 }
 
 - (void)setSelectedTintColor:(UIColor *)selectedTintColor
 {
-	if (_selectedTintColor != selectedTintColor) {
-		_selectedTintColor = selectedTintColor;
-		
-		[self setTitleColor:selectedTintColor forState:UIControlStateSelected];
-		
-		if (self.selected) {
-			self.tintColor = selectedTintColor;
-		}
-	}
+	if (_selectedTintColor == selectedTintColor) {
+        return;
+    }
+    
+    _selectedTintColor = selectedTintColor;
+    [self setTitleColor:selectedTintColor forState:UIControlStateSelected];
+    if (self.selected) {
+        self.tintColor = selectedTintColor;
+    }
 }
 
 @end

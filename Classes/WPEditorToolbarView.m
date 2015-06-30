@@ -13,14 +13,14 @@ static int kNegativeLeftToolbarLeftPadding = 3;
 static int kNegativeRightToolbarPadding = 20;
 static int kNegativeSixPlusRightToolbarPadding = 24;
 
-static const CGFloat WPEditorToolbarHeightiPad = 49;
-static const CGFloat WPEditorToolbarButtonHeightiPad = 49;
-static const CGFloat WPEditorToolbarButtonWidthiPad = 49;
-static const CGFloat WPEditorToolbarHeight = 44;
-static const CGFloat WPEditorToolbarButtonHeight = 44;
-static const CGFloat WPEditorToolbarButtonWidth = 44;
-static const CGFloat WPEditorToolbarDividerLineHeight = 28;
-static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
+static const CGFloat WPEditorToolbarHeightiPad = 49.0;
+static const CGFloat WPEditorToolbarButtonHeightiPad = 49.0;
+static const CGFloat WPEditorToolbarButtonWidthiPad = 49.0;
+static const CGFloat WPEditorToolbarHeight = 44.0;
+static const CGFloat WPEditorToolbarButtonHeight = 44.0;
+static const CGFloat WPEditorToolbarButtonWidth = 44.0;
+static const CGFloat WPEditorToolbarDividerLineHeight = 28.0;
+static const CGFloat WPEditorToolbarDividerLineWidth = 0.6;
 
 @interface WPEditorToolbarView ()
 
@@ -149,7 +149,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     [items insertObject:flexSpacer atIndex:0];
     [items insertObject:flexSpacer atIndex:items.count];
     self.leftToolbar.items = items;
-    self.leftToolbar.frame = CGRectMake(0, 0, toolbarWidth, WPEditorToolbarHeightiPad);
+    self.leftToolbar.frame = CGRectMake(0.0, 0.0, toolbarWidth, WPEditorToolbarHeightiPad);
     self.toolbarScroll.contentSize = CGSizeMake(CGRectGetWidth(self.leftToolbar.frame), WPEditorToolbarHeightiPad);
 }
 
@@ -201,10 +201,10 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     CGFloat scrollviewWidth = CGRectGetWidth(self.frame);
     CGRect toolbarScrollFrame;
     if (IS_IPAD) {
-        toolbarScrollFrame = CGRectMake(0, 0, scrollviewWidth, WPEditorToolbarHeightiPad);
+        toolbarScrollFrame = CGRectMake(0.0, 0.0, scrollviewWidth, WPEditorToolbarHeightiPad);
     } else {
         scrollviewWidth -= WPEditorToolbarButtonWidth;
-        toolbarScrollFrame = CGRectMake(0, 0, scrollviewWidth, WPEditorToolbarHeight);
+        toolbarScrollFrame = CGRectMake(0.0, 0.0, scrollviewWidth, WPEditorToolbarHeight);
     }
     
     UIScrollView* toolbarScroll = [[UIScrollView alloc] initWithFrame:toolbarScrollFrame];
