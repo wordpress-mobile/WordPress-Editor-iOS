@@ -121,9 +121,9 @@ NSInteger const WPLinkAlertViewTag = 92;
     // Explicit design decision to use non-standard colors. See:
     // https://github.com/wordpress-mobile/WordPress-Editor-iOS/issues/657#issuecomment-113651034
     _toolbarView.backgroundColor = [UIColor colorWithHexString:@"F9FBFC"];
-    _toolbarView.disabledItemTintColor = [UIColor colorWithRed:0.78f
-                                                         green:0.84f
-                                                          blue:0.88f
+    _toolbarView.disabledItemTintColor = [UIColor colorWithRed:0.78
+                                                         green:0.84
+                                                          blue:0.88
                                                          alpha:0.5];
     /////
     
@@ -144,15 +144,15 @@ NSInteger const WPLinkAlertViewTag = 92;
     self.view.backgroundColor = [UIColor whiteColor];
     
     // Calling the fonts we use here so they are availible to the UIWebView
-    [WPFontManager merriweatherBoldFontOfSize:16];
-    [WPFontManager merriweatherBoldItalicFontOfSize:16];
-    [WPFontManager merriweatherItalicFontOfSize:16];
-    [WPFontManager merriweatherLightFontOfSize:16];
-    [WPFontManager merriweatherRegularFontOfSize:16];
-    [WPFontManager openSansRegularFontOfSize:16];
-    [WPFontManager openSansItalicFontOfSize:16];
-    [WPFontManager openSansBoldFontOfSize:16];
-    [WPFontManager openSansBoldItalicFontOfSize:16];
+    [WPFontManager merriweatherBoldFontOfSize:16.0];
+    [WPFontManager merriweatherBoldItalicFontOfSize:16.0];
+    [WPFontManager merriweatherItalicFontOfSize:16.0];
+    [WPFontManager merriweatherLightFontOfSize:16.0];
+    [WPFontManager merriweatherRegularFontOfSize:16.0];
+    [WPFontManager openSansRegularFontOfSize:16.0];
+    [WPFontManager openSansItalicFontOfSize:16.0];
+    [WPFontManager openSansBoldFontOfSize:16.0];
+    [WPFontManager openSansBoldItalicFontOfSize:16.0];
 	
     [self createToolbarView];
     [self buildTextViews];
@@ -962,7 +962,7 @@ NSInteger const WPLinkAlertViewTag = 92;
         CGFloat viewWidth = CGRectGetWidth(self.view.frame);
         UIViewAutoresizing mask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         
-        CGRect frame = CGRectMake(0.0f, 0.0f, viewWidth, CGRectGetHeight(self.view.frame));
+        CGRect frame = CGRectMake(0.0, 0.0, viewWidth, CGRectGetHeight(self.view.frame));
         
         self.editorView = [[WPEditorView alloc] initWithFrame:frame];
         self.editorView.delegate = self;
