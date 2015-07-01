@@ -19,7 +19,7 @@ static const CGFloat WPEditorToolbarButtonWidthiPad = 49.0;
 static const CGFloat WPEditorToolbarHeight = 44.0;
 static const CGFloat WPEditorToolbarButtonHeight = 44.0;
 static const CGFloat WPEditorToolbarButtonWidth = 44.0;
-static const CGFloat WPEditorToolbarDividerLineHeight = 28.0;
+static const CGFloat WPEditorToolbarDividerLineHeight = 34.0;
 static const CGFloat WPEditorToolbarDividerLineWidth = 0.6;
 
 @interface WPEditorToolbarView ()
