@@ -67,8 +67,8 @@ static CGFloat NormalAlpha = 1.0;
 	[self addTarget:self action:@selector(touchDragOutside:) forControlEvents:UIControlEventTouchDragOutside];
     
     self.circleScaleAnimation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
-    self.circleScaleAnimation.fromValue = [NSNumber numberWithFloat:0.5f];
-    self.circleScaleAnimation.toValue = [NSNumber numberWithFloat:1.4f];
+    self.circleScaleAnimation.fromValue = [NSNumber numberWithFloat:0.5];
+    self.circleScaleAnimation.toValue = [NSNumber numberWithFloat:1.4];
     [self.circleScaleAnimation setTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn]];
     
     self.circleOpacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
@@ -152,11 +152,11 @@ static CGFloat NormalAlpha = 1.0;
 	[super setHighlighted:highlighted];
 	
 	if (highlighted) {
-		self.titleLabel.alpha = 0.5f;
-		self.imageView.alpha = 0.5f;
+		self.titleLabel.alpha = 0.5;
+		self.imageView.alpha = 0.5;
 	} else {
-		self.titleLabel.alpha = 1.0f;
-		self.imageView.alpha = 1.0f;
+		self.titleLabel.alpha = 1.0;
+		self.imageView.alpha = 1.0;
 	}
 }
 
