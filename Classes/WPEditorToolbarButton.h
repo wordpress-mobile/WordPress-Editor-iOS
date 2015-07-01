@@ -6,6 +6,7 @@
 
 @property (nonatomic, copy, readwrite) UIColor *normalTintColor;
 @property (nonatomic, copy, readwrite) UIColor *selectedTintColor;
+@property (nonatomic, copy, readwrite) UIColor *disabledTintColor;
 
 #pragma mark - Memory related
 

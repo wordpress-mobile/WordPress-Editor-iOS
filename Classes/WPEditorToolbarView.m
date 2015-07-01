@@ -13,11 +13,14 @@ static int kNegativeLeftToolbarLeftPadding = 3;
 static int kNegativeRightToolbarPadding = 20;
 static int kNegativeSixPlusRightToolbarPadding = 24;
 
-static const CGFloat WPEditorToolbarHeight = 40;
-static const CGFloat WPEditorToolbarButtonHeight = 40;
-static const CGFloat WPEditorToolbarButtonWidth = 40;
-static const CGFloat WPEditorToolbarDividerLineHeight = 28;
-static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
+static const CGFloat WPEditorToolbarHeightiPad = 49.0;
+static const CGFloat WPEditorToolbarButtonHeightiPad = 49.0;
+static const CGFloat WPEditorToolbarButtonWidthiPad = 49.0;
+static const CGFloat WPEditorToolbarHeight = 44.0;
+static const CGFloat WPEditorToolbarButtonHeight = 44.0;
+static const CGFloat WPEditorToolbarButtonWidth = 44.0;
+static const CGFloat WPEditorToolbarDividerLineHeight = 34.0;
+static const CGFloat WPEditorToolbarDividerLineWidth = 0.6;
 
 @interface WPEditorToolbarView ()
 
@@ -86,7 +89,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
 - (void)reloadiPhoneItems
 {
     NSMutableArray *items = [self.items mutableCopy];
-    CGFloat toolbarItemsSeparation = 0.0f;
+    CGFloat toolbarItemsSeparation = 0.0;
     
     if ([WPDeviceIdentification isiPhoneSixPlus]) {
         toolbarItemsSeparation = kNegativeSixPlusToolbarItemPadding;
@@ -96,7 +99,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
         toolbarItemsSeparation = kNegativeToolbarItemPadding;
     }
     
-    CGFloat toolbarWidth = 0.0f;
+    CGFloat toolbarWidth = 0.0;
     NSUInteger numberOfItems = items.count;
     if (numberOfItems > 0) {
         CGFloat finalPaddingBetweenItems = kDefaultToolbarItemPadding - toolbarItemsSeparation;
@@ -123,7 +126,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     negativeSeparatorForToolbar.width = -kNegativeLeftToolbarLeftPadding;
     toolbarWidth += finalToolbarLeftPadding;
     self.leftToolbar.items = items;
-    self.leftToolbar.frame = CGRectMake(0, 0, toolbarWidth, WPEditorToolbarHeight);
+    self.leftToolbar.frame = CGRectMake(0.0, 0.0, toolbarWidth, WPEditorToolbarHeight);
     self.toolbarScroll.contentSize = CGSizeMake(CGRectGetWidth(self.leftToolbar.frame),
                                                 WPEditorToolbarHeight);
 }
@@ -146,9 +149,8 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     [items insertObject:flexSpacer atIndex:0];
     [items insertObject:flexSpacer atIndex:items.count];
     self.leftToolbar.items = items;
-    self.leftToolbar.frame = CGRectMake(0, 0, toolbarWidth, WPEditorToolbarHeight);
-    self.toolbarScroll.contentSize = CGSizeMake(CGRectGetWidth(self.leftToolbar.frame),
-                                                WPEditorToolbarHeight);
+    self.leftToolbar.frame = CGRectMake(0.0, 0.0, toolbarWidth, WPEditorToolbarHeightiPad);
+    self.toolbarScroll.contentSize = CGSizeMake(CGRectGetWidth(self.leftToolbar.frame), WPEditorToolbarHeightiPad);
 }
 
 #pragma mark - Toolbar building helpers
@@ -179,7 +181,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     UIView* mainToolbarHolderContent = [[UIView alloc] initWithFrame:subviewFrame];
     mainToolbarHolderContent.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
-    subviewFrame.size.height = 1.0f;
+    subviewFrame.size.height = 1.0;
     
     UIView* mainToolbarHolderTopBorder = [[UIView alloc] initWithFrame:subviewFrame];
     mainToolbarHolderTopBorder.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -196,16 +198,14 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
 {
     NSAssert(_toolbarScroll == nil, @"This is supposed to be called only once.");
     
-    CGFloat scrollviewHeight = CGRectGetWidth(self.frame);
-    
-    if (!IS_IPAD) {
-        scrollviewHeight -= WPEditorToolbarButtonWidth;
+    CGFloat scrollviewWidth = CGRectGetWidth(self.frame);
+    CGRect toolbarScrollFrame;
+    if (IS_IPAD) {
+        toolbarScrollFrame = CGRectMake(0.0, 0.0, scrollviewWidth, WPEditorToolbarHeightiPad);
+    } else {
+        scrollviewWidth -= WPEditorToolbarButtonWidth;
+        toolbarScrollFrame = CGRectMake(0.0, 0.0, scrollviewWidth, WPEditorToolbarHeight);
     }
-    
-    CGRect toolbarScrollFrame = CGRectMake(0,
-                                           0,
-                                           scrollviewHeight,
-                                           WPEditorToolbarHeight);
     
     UIScrollView* toolbarScroll = [[UIScrollView alloc] initWithFrame:toolbarScrollFrame];
     toolbarScroll.showsHorizontalScrollIndicator = NO;
@@ -223,7 +223,11 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
 
 + (CGFloat)height
 {
-    return WPEditorToolbarHeight;
+    if (IS_IPAD) {
+        return WPEditorToolbarHeightiPad;
+    } else {
+        return WPEditorToolbarHeight;
+    }
 }
 
 #pragma mark - Toolbar buttons
@@ -245,13 +249,17 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
     
     UIImage* buttonImage = [[UIImage imageNamed:imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     
-    WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:CGRectMake(0,
-                                                                                                  0,
-                                                                                                  WPEditorToolbarButtonWidth,
-                                                                                                  WPEditorToolbarButtonHeight)];
+    CGRect buttonSize;
+    if (IS_IPAD) {
+        buttonSize = CGRectMake(0.0, 0.0, WPEditorToolbarButtonWidthiPad, WPEditorToolbarButtonHeightiPad);
+    } else {
+        buttonSize = CGRectMake(0.0, 0.0, WPEditorToolbarButtonWidth, WPEditorToolbarButtonHeight);
+    }
+    WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:buttonSize];
     [customButton setImage:buttonImage forState:UIControlStateNormal];
     customButton.normalTintColor = self.itemTintColor;
     customButton.selectedTintColor = self.selectedItemTintColor;
+    customButton.disabledTintColor = self.disabledItemTintColor;
     [customButton addTarget:target
                      action:selector
            forControlEvents:UIControlEventTouchUpInside];
@@ -350,21 +358,24 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
                                                                               target:nil
                                                                               action:nil];
         
-        UIFont * font = [UIFont boldSystemFontOfSize:10];
+        UIFont * font = [UIFont boldSystemFontOfSize:10.0];
         NSDictionary * attributes = @{NSFontAttributeName: font};
         [htmlBarButtonItem setTitleTextAttributes:attributes forState:UIControlStateNormal];
         htmlBarButtonItem.accessibilityLabel = NSLocalizedString(@"Display HTML",
                                                                  @"Accessibility label for display HTML button on formatting toolbar.");
         
-        CGRect customButtonFrame = CGRectMake(0,
-                                              0,
-                                              WPEditorToolbarButtonWidth,
-                                              WPEditorToolbarButtonHeight);
+        CGRect customButtonFrame;
+        if (IS_IPAD) {
+            customButtonFrame = CGRectMake(0.0, 0.0, WPEditorToolbarButtonWidthiPad, WPEditorToolbarButtonHeightiPad);
+        } else {
+            customButtonFrame = CGRectMake(0.0, 0.0, WPEditorToolbarButtonWidth, WPEditorToolbarButtonHeight);
+        }
         
         WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:customButtonFrame];
         [customButton setTitle:@"HTML" forState:UIControlStateNormal];
         customButton.normalTintColor = self.itemTintColor;
         customButton.selectedTintColor = self.selectedItemTintColor;
+        customButton.disabledTintColor = self.disabledItemTintColor;
         customButton.reversesTitleShadowWhenHighlighted = YES;
         customButton.titleLabel.font = font;
         [customButton addTarget:self
@@ -387,32 +398,34 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
         
         UIView* rightToolbarDivider = _rightToolbarDivider;
         if (!rightToolbarDivider) {
-            CGRect dividerLineFrame = CGRectMake(0.0f,
+            CGRect dividerLineFrame = CGRectMake(0.0,
                                                  floorf((WPEditorToolbarHeight - WPEditorToolbarDividerLineHeight) / 2),
                                                  WPEditorToolbarDividerLineWidth,
                                                  WPEditorToolbarDividerLineHeight);
             rightToolbarDivider = [[UIView alloc] initWithFrame:dividerLineFrame];
             rightToolbarDivider.backgroundColor = self.borderColor;
-            rightToolbarDivider.alpha = 0.7f;
+            rightToolbarDivider.alpha = 0.7;
             _rightToolbarDivider = rightToolbarDivider;
         }
         
         CGRect rightSpacerFrame = CGRectMake(CGRectGetMaxX(self.rightToolbarDivider.frame),
-                                             0.0f,
-                                             kNegativeRightToolbarPadding / 2,
+                                             0.0,
+                                             kNegativeRightToolbarPadding / 2.0,
                                              WPEditorToolbarHeight);
         UIView *rightSpacer = [[UIView alloc] initWithFrame:rightSpacerFrame];
+        rightSpacer.backgroundColor = self.backgroundColor;
         
         CGRect rightToolbarHolderFrame = CGRectMake(CGRectGetWidth(self.frame) - (WPEditorToolbarButtonWidth + CGRectGetWidth(self.rightToolbarDivider.frame) + CGRectGetWidth(rightSpacer.frame)),
-                                                    0.0f,
+                                                    0.0,
                                                     WPEditorToolbarButtonWidth + CGRectGetWidth(self.rightToolbarDivider.frame) + CGRectGetWidth(rightSpacer.frame),
                                                     WPEditorToolbarHeight);
         rightToolbarHolder = [[UIView alloc] initWithFrame:rightToolbarHolderFrame];
         rightToolbarHolder.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
         rightToolbarHolder.clipsToBounds = YES;
+        rightToolbarHolder.backgroundColor = self.backgroundColor;
         
         CGRect toolbarFrame = CGRectMake(CGRectGetMaxX(rightSpacer.frame),
-                                         0.0f,
+                                         0.0,
                                          CGRectGetWidth(rightToolbarHolder.frame),
                                          CGRectGetHeight(rightToolbarHolder.frame));
         
@@ -435,6 +448,8 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
         
         toolbar.items = @[negativeSeparator, [self htmlBarButtonItem]];
         toolbar.barTintColor = self.backgroundColor;
+        
+        _rightToolbarHolder = rightToolbarHolder;
     }
     
     return rightToolbarHolder;
@@ -449,6 +464,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
         
         self.leftToolbar.barTintColor = backgroundColor;
         self.rightToolbar.barTintColor = backgroundColor;
+        self.rightToolbarHolder.backgroundColor = backgroundColor;
     }
 }
 
@@ -486,6 +502,23 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6f;
         
         htmlButton.normalTintColor = itemTintColor;
         self.htmlBarButtonItem.tintColor = itemTintColor;
+    }
+}
+
+- (void)setDisabledItemTintColor:(UIColor *)disabledItemTintColor
+{
+    _disabledItemTintColor = disabledItemTintColor;
+    
+    for (WPEditorToolbarButton *item in self.leftToolbar.items) {
+        item.disabledTintColor = _disabledItemTintColor;
+    }
+    
+    if (self.htmlBarButtonItem) {
+        WPEditorToolbarButton* htmlButton = (WPEditorToolbarButton*)self.htmlBarButtonItem.customView;
+        NSAssert([htmlButton isKindOfClass:[WPEditorToolbarButton class]],
+                 @"Expected to have an HTML button of class WPEditorToolbarButton here.");
+        
+        htmlButton.disabledTintColor = _disabledItemTintColor;
     }
 }
 
