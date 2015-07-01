@@ -4,7 +4,7 @@
 static NSString* const CircleLayerKey = @"circleLayer";
 static CGFloat TouchAnimationCircleRadius = 15.0;
 static CGFloat TouchAnimationCircleRadiusiPad = 17.0;
-static CGFloat TouchAnimationDuration = 0.4;
+static CGFloat TouchAnimationDuration = 0.25;
 static CGFloat TouchAnimationInitialOpacity = 0.8;
 
 static CGFloat AnimationDurationNormal = 0.3;
