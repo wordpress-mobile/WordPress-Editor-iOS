@@ -97,6 +97,7 @@ static CGFloat NormalAlpha = 1.0;
     group.animations =[NSArray arrayWithObjects:self.circleScaleAnimation, self.circleOpacityAnimation, nil];
     group.duration = TouchAnimationDuration;
     group.repeatCount = 0.0;
+    group.removedOnCompletion = NO;
     group.delegate = self;
     [group setValue:circleLayer forKey:CircleLayerKey];
     [circleLayer addAnimation:group forKey:@"innerCircleAnimations"];
