@@ -2579,7 +2579,7 @@ ZSSField.prototype.callback = function(callbackScheme, callbackPath) {
     var finalPath = "id=" + this.getNodeId();
     
     if (callbackPath && callbackPath.length > 0) {
-        finalPath = finalPath + callbackPath;
+        finalPath = finalPath + defaultCallbackSeparator + callbackPath;
     }
     
     this.callbacker.callback(callbackScheme, finalPath);
