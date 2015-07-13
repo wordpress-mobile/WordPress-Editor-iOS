@@ -103,6 +103,10 @@ typedef enum
  */
 @interface WPEditorToolbarView : UIView
 
+#pragma mark - Properties: toolbar scrollview
+
+@property (nonatomic, weak) UIScrollView *toolbarScroll;
+
 #pragma mark - Properties: toolbar items
 
 @property (nonatomic, copy, readwrite) NSArray* items;
