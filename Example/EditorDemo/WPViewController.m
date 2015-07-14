@@ -151,6 +151,12 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     [progress cancel];
 }
 
+- (void)editorFormatBarStatusChanged:(WPEditorViewController *)editorController
+                             enabled:(BOOL)isEnabled
+{
+    DDLogInfo(@"Editor format bar status is now %@.", (isEnabled ? @"enabled" : @"disabled"));
+}
+
 #pragma mark - Media actions
 
 - (void)showImageDetailsForImageMeta:(WPImageMeta *)imageMeta

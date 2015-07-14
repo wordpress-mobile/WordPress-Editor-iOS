@@ -1610,8 +1610,10 @@ NSInteger const WPLinkAlertViewTag = 92;
 {
     if (field == self.editorView.titleField) {
         [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
+        [self tellOurDelegateFormatBarStatusHasChanged:NO];
     } else if (field == self.editorView.contentField) {
         [self.toolbarView enableToolbarItems:YES shouldShowSourceButton:YES];
+        [self tellOurDelegateFormatBarStatusHasChanged:YES];
     }
 }
 
@@ -1791,6 +1793,13 @@ didFailLoadWithError:(NSError *)error
         return [self.delegate editorShouldDisplaySourceView:self];
     }
     return YES;
+}
+
+- (void)tellOurDelegateFormatBarStatusHasChanged:(BOOL)isEnabled
+{
+    if ([self.delegate respondsToSelector:@selector(editorFormatBarStatusChanged:enabled:)]) {
+        [self.delegate editorFormatBarStatusChanged:self enabled:isEnabled];
+    }
 }
 
 @end
