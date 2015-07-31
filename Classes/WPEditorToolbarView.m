@@ -4,11 +4,11 @@
 #import "ZSSBarButtonItem.h"
 
 static int kDefaultToolbarItemPadding = 10;
-static int kDefaultToolbarLeftPadding = 10;
+static int kDefaultToolbarLeftPadding = 5;
 
-static int kNegativeToolbarItemPadding = 12;
-static int kNegativeSixToolbarItemPadding = 6;
-static int kNegativeSixPlusToolbarItemPadding = 2;
+static int kNegativeToolbarItemPadding = 16;
+static int kNegativeSixToolbarItemPadding = 10;
+static int kNegativeSixPlusToolbarItemPadding = 6;
 static int kNegativeLeftToolbarLeftPadding = 3;
 static int kNegativeRightToolbarPadding = 20;
 static int kNegativeSixPlusRightToolbarPadding = 24;
@@ -117,12 +117,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6;
         [items insertObject:negativeSeparator atIndex:i];
     }
     
-    UIBarButtonItem *negativeSeparatorForToolbar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                                                                                 target:nil
-                                                                                                 action:nil];
     CGFloat finalToolbarLeftPadding = kDefaultToolbarLeftPadding - kNegativeLeftToolbarLeftPadding;
-    
-    negativeSeparatorForToolbar.width = -kNegativeLeftToolbarLeftPadding;
     toolbarWidth += finalToolbarLeftPadding;
     self.leftToolbar.items = items;
     self.leftToolbar.frame = CGRectMake(0.0, 0.0, toolbarWidth, WPEditorToolbarHeight);
