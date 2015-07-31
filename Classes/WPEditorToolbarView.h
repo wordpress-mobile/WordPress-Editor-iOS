@@ -71,6 +71,7 @@ typedef enum
     kWPEditorViewControllerElementRemoveFormatBarButton,
     kWPEditorViewControllerElementRemoveLinkBarButton,
     kWPEditorViewControllerElementShowSourceBarButton,
+    kWPEditorViewControllerElementiPhoneShowSourceBarButton,
     kWPEditorViewControllerElementStrikeThroughBarButton,
     kWPEditorViewControllerElementSubscriptBarButton,
     kWPEditorViewControllerElementSuperscriptBarButton,

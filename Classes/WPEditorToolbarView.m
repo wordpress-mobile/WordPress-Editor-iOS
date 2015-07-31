@@ -347,38 +347,16 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6;
 - (UIBarButtonItem*)htmlBarButtonItem
 {
     if (!_htmlBarButtonItem) {
-        UIBarButtonItem* htmlBarButtonItem =  [[UIBarButtonItem alloc] initWithTitle:@"HTML"
-                                                                               style:UIBarButtonItemStylePlain
-                                                                              target:nil
-                                                                              action:nil];
+        NSString* accessibilityLabel = NSLocalizedString(@"Display HTML",
+                                                         @"Accessibility label for display HTML button on formatting toolbar.");
         
-        UIFont * font = [UIFont boldSystemFontOfSize:10.0];
-        NSDictionary * attributes = @{NSFontAttributeName: font};
-        [htmlBarButtonItem setTitleTextAttributes:attributes forState:UIControlStateNormal];
-        htmlBarButtonItem.accessibilityLabel = NSLocalizedString(@"Display HTML",
-                                                                 @"Accessibility label for display HTML button on formatting toolbar.");
-        
-        CGRect customButtonFrame;
-        if (IS_IPAD) {
-            customButtonFrame = CGRectMake(0.0, 0.0, WPEditorToolbarButtonWidthiPad, WPEditorToolbarButtonHeightiPad);
-        } else {
-            customButtonFrame = CGRectMake(0.0, 0.0, WPEditorToolbarButtonWidth, WPEditorToolbarButtonHeight);
-        }
-        
-        WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:customButtonFrame];
-        [customButton setTitle:@"HTML" forState:UIControlStateNormal];
-        customButton.normalTintColor = self.itemTintColor;
-        customButton.selectedTintColor = self.selectedItemTintColor;
-        customButton.disabledTintColor = self.disabledItemTintColor;
-        customButton.reversesTitleShadowWhenHighlighted = YES;
-        customButton.titleLabel.font = font;
-        [customButton addTarget:self
-                         action:@selector(showHTMLSource:)
-               forControlEvents:UIControlEventTouchUpInside];
-        
-        htmlBarButtonItem.customView = customButton;
-        
-        _htmlBarButtonItem = htmlBarButtonItem;
+        ZSSBarButtonItem *htmlButton = [self barButtonItemWithTag:kWPEditorViewControllerElementiPhoneShowSourceBarButton
+                                                        htmlProperty:@""
+                                                           imageName:@"icon_format_html"
+                                                              target:self
+                                                            selector:@selector(showHTMLSource:)
+                                                  accessibilityLabel:accessibilityLabel];
+        _htmlBarButtonItem = htmlButton;
     }
     
     return _htmlBarButtonItem;
@@ -505,14 +483,6 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6;
     
     for (WPEditorToolbarButton *item in self.leftToolbar.items) {
         item.disabledTintColor = _disabledItemTintColor;
-    }
-    
-    if (self.htmlBarButtonItem) {
-        WPEditorToolbarButton* htmlButton = (WPEditorToolbarButton*)self.htmlBarButtonItem.customView;
-        NSAssert([htmlButton isKindOfClass:[WPEditorToolbarButton class]],
-                 @"Expected to have an HTML button of class WPEditorToolbarButton here.");
-        
-        htmlButton.disabledTintColor = _disabledItemTintColor;
     }
 }
 
