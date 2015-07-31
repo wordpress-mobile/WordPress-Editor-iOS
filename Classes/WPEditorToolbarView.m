@@ -4,11 +4,11 @@
 #import "ZSSBarButtonItem.h"
 
 static int kDefaultToolbarItemPadding = 10;
-static int kDefaultToolbarLeftPadding = 10;
+static int kDefaultToolbarLeftPadding = 5;
 
-static int kNegativeToolbarItemPadding = 12;
-static int kNegativeSixToolbarItemPadding = 6;
-static int kNegativeSixPlusToolbarItemPadding = 2;
+static int kNegativeToolbarItemPadding = 16;
+static int kNegativeSixToolbarItemPadding = 10;
+static int kNegativeSixPlusToolbarItemPadding = 6;
 static int kNegativeLeftToolbarLeftPadding = 3;
 static int kNegativeRightToolbarPadding = 20;
 static int kNegativeSixPlusRightToolbarPadding = 24;
@@ -117,12 +117,7 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6;
         [items insertObject:negativeSeparator atIndex:i];
     }
     
-    UIBarButtonItem *negativeSeparatorForToolbar = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                                                                                 target:nil
-                                                                                                 action:nil];
     CGFloat finalToolbarLeftPadding = kDefaultToolbarLeftPadding - kNegativeLeftToolbarLeftPadding;
-    
-    negativeSeparatorForToolbar.width = -kNegativeLeftToolbarLeftPadding;
     toolbarWidth += finalToolbarLeftPadding;
     self.leftToolbar.items = items;
     self.leftToolbar.frame = CGRectMake(0.0, 0.0, toolbarWidth, WPEditorToolbarHeight);
@@ -352,38 +347,16 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6;
 - (UIBarButtonItem*)htmlBarButtonItem
 {
     if (!_htmlBarButtonItem) {
-        UIBarButtonItem* htmlBarButtonItem =  [[UIBarButtonItem alloc] initWithTitle:@"HTML"
-                                                                               style:UIBarButtonItemStylePlain
-                                                                              target:nil
-                                                                              action:nil];
+        NSString* accessibilityLabel = NSLocalizedString(@"Display HTML",
+                                                         @"Accessibility label for display HTML button on formatting toolbar.");
         
-        UIFont * font = [UIFont boldSystemFontOfSize:10.0];
-        NSDictionary * attributes = @{NSFontAttributeName: font};
-        [htmlBarButtonItem setTitleTextAttributes:attributes forState:UIControlStateNormal];
-        htmlBarButtonItem.accessibilityLabel = NSLocalizedString(@"Display HTML",
-                                                                 @"Accessibility label for display HTML button on formatting toolbar.");
-        
-        CGRect customButtonFrame;
-        if (IS_IPAD) {
-            customButtonFrame = CGRectMake(0.0, 0.0, WPEditorToolbarButtonWidthiPad, WPEditorToolbarButtonHeightiPad);
-        } else {
-            customButtonFrame = CGRectMake(0.0, 0.0, WPEditorToolbarButtonWidth, WPEditorToolbarButtonHeight);
-        }
-        
-        WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:customButtonFrame];
-        [customButton setTitle:@"HTML" forState:UIControlStateNormal];
-        customButton.normalTintColor = self.itemTintColor;
-        customButton.selectedTintColor = self.selectedItemTintColor;
-        customButton.disabledTintColor = self.disabledItemTintColor;
-        customButton.reversesTitleShadowWhenHighlighted = YES;
-        customButton.titleLabel.font = font;
-        [customButton addTarget:self
-                         action:@selector(showHTMLSource:)
-               forControlEvents:UIControlEventTouchUpInside];
-        
-        htmlBarButtonItem.customView = customButton;
-        
-        _htmlBarButtonItem = htmlBarButtonItem;
+        ZSSBarButtonItem *htmlButton = [self barButtonItemWithTag:kWPEditorViewControllerElementiPhoneShowSourceBarButton
+                                                        htmlProperty:@""
+                                                           imageName:@"icon_format_html"
+                                                              target:self
+                                                            selector:@selector(showHTMLSource:)
+                                                  accessibilityLabel:accessibilityLabel];
+        _htmlBarButtonItem = htmlButton;
     }
     
     return _htmlBarButtonItem;
@@ -510,14 +483,6 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6;
     
     for (WPEditorToolbarButton *item in self.leftToolbar.items) {
         item.disabledTintColor = _disabledItemTintColor;
-    }
-    
-    if (self.htmlBarButtonItem) {
-        WPEditorToolbarButton* htmlButton = (WPEditorToolbarButton*)self.htmlBarButtonItem.customView;
-        NSAssert([htmlButton isKindOfClass:[WPEditorToolbarButton class]],
-                 @"Expected to have an HTML button of class WPEditorToolbarButton here.");
-        
-        htmlButton.disabledTintColor = _disabledItemTintColor;
     }
 }
 
