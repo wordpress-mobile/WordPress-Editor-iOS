@@ -1636,6 +1636,8 @@ NSInteger const WPLinkAlertViewTag = 92;
 	if (self.isEditing) {
         [self showInsertLinkDialogWithLink:url.absoluteString
                                      title:title];
+	} else {
+		[[UIApplication sharedApplication] openURL:url];
 	}
 	
 	return YES;
