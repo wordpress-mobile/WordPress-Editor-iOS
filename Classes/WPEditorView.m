@@ -1563,7 +1563,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     if (!videoPressSafeID) {
         videoPressSafeID = @"";
     }
-    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.replaceLocalVideoWithRemoteVideo(\"%@\", \"%@\", \"%@\", \"%@\");", uniqueID, videoURL, posterURL, videoPressSafeID];
+    NSString *posterURLSafe = posterURL;
+    if (!posterURLSafe) {
+        posterURLSafe = @"";
+    }
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.replaceLocalVideoWithRemoteVideo(\"%@\", \"%@\", \"%@\", \"%@\");", uniqueID, videoURL, posterURLSafe, videoPressSafeID];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
