@@ -1102,6 +1102,7 @@ ZSSEditor.replaceLocalVideoWithRemoteVideo = function(videoNodeIdentifier, remot
     }
     videoNode.attr('src', remoteVideoUrl);
     videoNode.attr('controls', '');
+    videoNode.attr('preload', 'none');
     if (videopressID != '') {
         videoNode.attr('data-wpvideopress', videopressID);
     }
