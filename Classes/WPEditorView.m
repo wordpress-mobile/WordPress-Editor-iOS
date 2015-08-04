@@ -1559,7 +1559,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                    remotePoster:(NSString *)posterURL
                      videoPress:(NSString *)videoPressID
 {
-    NSString * videoPressSafeID = videoPressID;
+    NSString *videoPressSafeID = videoPressID;
     if (!videoPressSafeID) {
         videoPressSafeID = @"";
     }
