@@ -771,7 +771,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (UIBarButtonItem*)orderedListBarButton
 {
 	NSString* accessibilityLabel = NSLocalizedString(@"Ordered List",
-													 @"Accessibility label for ordered list button on formatting toolbar.");;
+													 @"Accessibility label for ordered list button on formatting toolbar.");
 	
 	ZSSBarButtonItem *barButtonItem = [self barButtonItemWithTag:kWPEditorViewControllerElementOrderedListBarButton
 													htmlProperty:@"orderedList"
