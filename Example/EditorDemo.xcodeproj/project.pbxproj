@@ -11,6 +11,7 @@
 		59F15AD219E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 59F15AD119E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.m */; };
 		5D24FEF91A3C9E8B009E1932 /* WPImageMetaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D24FEF81A3C9E8B009E1932 /* WPImageMetaViewController.m */; };
 		74291D0A1940C859004230D4 /* content.html in Resources */ = {isa = PBXBuildFile; fileRef = 74291D091940C859004230D4 /* content.html */; };
+		745433B71B976EF300F3D759 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 745433B61B976EF300F3D759 /* LaunchScreen.storyboard */; settings = {ASSET_TAGS = (); }; };
 		74587C59193E652B0001052D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 74587C58193E652B0001052D /* QuartzCore.framework */; };
 		748D2A89193E516000D5ACC8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748D2A88193E516000D5ACC8 /* Foundation.framework */; };
 		748D2A8B193E516000D5ACC8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748D2A8A193E516000D5ACC8 /* CoreGraphics.framework */; };
@@ -48,6 +49,7 @@
 		5D24FEF81A3C9E8B009E1932 /* WPImageMetaViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPImageMetaViewController.m; sourceTree = "<group>"; };
 		6267F76F7565480932E34016 /* Pods-EditorDemoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EditorDemoTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-EditorDemoTests/Pods-EditorDemoTests.release.xcconfig"; sourceTree = "<group>"; };
 		74291D091940C859004230D4 /* content.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = content.html; sourceTree = "<group>"; };
+		745433B61B976EF300F3D759 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		74587C58193E652B0001052D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		748D2A85193E516000D5ACC8 /* EditorDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EditorDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		748D2A88193E516000D5ACC8 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -153,16 +155,17 @@
 				748D2A97193E516000D5ACC8 /* WPAppDelegate.h */,
 				748D2A98193E516000D5ACC8 /* WPAppDelegate.m */,
 				59F15AD019E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.h */,
-				59F15AD119E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.m */,
 				5D24FEF71A3C9E8B009E1932 /* WPImageMetaViewController.h */,
 				5D24FEF81A3C9E8B009E1932 /* WPImageMetaViewController.m */,
 				748D2AA0193E516000D5ACC8 /* WPViewController.h */,
 				748D2AA1193E516000D5ACC8 /* WPViewController.m */,
+				59F15AD119E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.m */,
 				748D2A9A193E516000D5ACC8 /* Main_iPhone.storyboard */,
 				748D2A9D193E516000D5ACC8 /* Main_iPad.storyboard */,
 				74291D091940C859004230D4 /* content.html */,
 				748D2AA3193E516000D5ACC8 /* Images.xcassets */,
 				748D2A8F193E516000D5ACC8 /* Supporting Files */,
+				745433B61B976EF300F3D759 /* LaunchScreen.storyboard */,
 			);
 			path = EditorDemo;
 			sourceTree = "<group>";
@@ -283,6 +286,7 @@
 				748D2A9F193E516000D5ACC8 /* Main_iPad.storyboard in Resources */,
 				74291D0A1940C859004230D4 /* content.html in Resources */,
 				748D2AA4193E516000D5ACC8 /* Images.xcassets in Resources */,
+				745433B71B976EF300F3D759 /* LaunchScreen.storyboard in Resources */,
 				748D2A9C193E516000D5ACC8 /* Main_iPhone.storyboard in Resources */,
 				748D2A93193E516000D5ACC8 /* InfoPlist.strings in Resources */,
 			);
@@ -505,7 +509,6 @@
 			baseConfigurationReference = A92C5705CA55DA4FE6C241C2 /* Pods-EditorDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -521,7 +524,6 @@
 			baseConfigurationReference = 7DB5B4BB7BD920939EF39DA4 /* Pods-EditorDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
