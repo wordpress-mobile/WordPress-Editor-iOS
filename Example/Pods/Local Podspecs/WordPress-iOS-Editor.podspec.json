@@ -22,7 +22,9 @@
     "Assets/*.html",
     "Assets/*.js",
     "Assets/*.svg",
-    "Assets/*.css"
+    "Assets/*.css",
+    "Assets/*.storyboard",
+    "Assets/*.xib"
   ],
   "prefix_header_file": "Classes/WordPress-iOS-Editor-Prefix.pch",
   "exclude_files": "Classes/exclude",
