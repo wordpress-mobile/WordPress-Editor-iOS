@@ -7,6 +7,7 @@
 
 @property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *leftToolbar;
 @property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *rightToolbar;
+@property (unsafe_unretained, nonatomic) IBOutlet UIView *verticalBorder;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *horizontalBorder;
 
 @property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *imageButton;
@@ -75,10 +76,11 @@
 
 - (void)buildBorders
 {
+    self.verticalBorder.backgroundColor = self.borderColor;
     self.horizontalBorder.backgroundColor = self.borderColor;
     
-    if (self.horizontalBorder) {
-        self.horizontalBorder.alpha = 0.7;
+    if (self.verticalBorder) {
+        self.verticalBorder.alpha = 0.7;
     }
 }
 
@@ -97,6 +99,7 @@
 {
     if (_borderColor != borderColor) {
         _borderColor = borderColor;
+        self.verticalBorder.backgroundColor = borderColor;
         self.horizontalBorder.backgroundColor = borderColor;
     }
 }
