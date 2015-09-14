@@ -150,7 +150,7 @@
                 <constraint firstAttribute="trailing" secondItem="hzl-cy-vzk" secondAttribute="trailing" id="3Cf-0J-TmW"/>
                 <constraint firstAttribute="trailing" secondItem="5oj-N8-CBI" secondAttribute="trailing" id="3Qa-Uv-8nO"/>
                 <constraint firstItem="M8W-oh-aYr" firstAttribute="trailing" secondItem="XJV-EP-mqd" secondAttribute="trailing" id="4BO-2J-FOZ">
-                    <variation key="widthClass=compact" constant="-45"/>
+                    <variation key="widthClass=compact" constant="-47"/>
                 </constraint>
                 <constraint firstItem="hzl-cy-vzk" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="4b9-4h-eWO"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="top" secondItem="n1r-fs-i80" secondAttribute="top" id="6Tf-q4-W6W"/>
@@ -165,13 +165,15 @@
                 <constraint firstItem="M8W-oh-aYr" firstAttribute="centerX" secondItem="XJV-EP-mqd" secondAttribute="centerX" id="ZmW-6k-Qgu"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="trailing" secondItem="hzl-cy-vzk" secondAttribute="trailing" id="b1S-cy-zck"/>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="bgz-Id-sCL"/>
-                <constraint firstAttribute="trailing" secondItem="XJV-EP-mqd" secondAttribute="trailing" id="diD-pb-FBl"/>
+                <constraint firstAttribute="trailing" secondItem="XJV-EP-mqd" secondAttribute="trailing" id="diD-pb-FBl">
+                    <variation key="widthClass=compact" constant="2"/>
+                </constraint>
                 <constraint firstItem="XJV-EP-mqd" firstAttribute="leading" secondItem="M8W-oh-aYr" secondAttribute="leading" id="f3O-K1-x1S"/>
                 <constraint firstItem="M8W-oh-aYr" firstAttribute="trailing" secondItem="XJV-EP-mqd" secondAttribute="trailing" id="faw-bo-h93"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="hKN-cF-AOT"/>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="trailing" secondItem="M8W-oh-aYr" secondAttribute="leading" id="jVy-Uw-SXt"/>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="trailing" secondItem="M8W-oh-aYr" secondAttribute="trailing" id="rQq-EG-ABf">
-                    <variation key="widthClass=compact" constant="-1"/>
+                    <variation key="widthClass=compact" constant="3"/>
                 </constraint>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
@@ -192,25 +194,25 @@
                     <exclude reference="Yy0-zn-p1N"/>
                     <exclude reference="diD-pb-FBl"/>
                     <exclude reference="f3O-K1-x1S"/>
+                    <exclude reference="3Cf-0J-TmW"/>
+                    <exclude reference="4b9-4h-eWO"/>
+                    <exclude reference="NZc-BN-ZZf"/>
                     <exclude reference="1Gr-P3-NlC"/>
                     <exclude reference="EUE-8c-G6g"/>
                     <exclude reference="Mdr-sD-lns"/>
                     <exclude reference="bgz-Id-sCL"/>
                     <exclude reference="jVy-Uw-SXt"/>
                     <exclude reference="rQq-EG-ABf"/>
-                    <exclude reference="4BO-2J-FOZ"/>
-                    <exclude reference="Xxu-n3-9eb"/>
-                    <exclude reference="ZmW-6k-Qgu"/>
-                    <exclude reference="faw-bo-h93"/>
                     <exclude reference="3Qa-Uv-8nO"/>
                     <exclude reference="6Tf-q4-W6W"/>
                     <exclude reference="9Gh-oq-DQO"/>
                     <exclude reference="UKa-Zb-mDK"/>
                     <exclude reference="b1S-cy-zck"/>
                     <exclude reference="hKN-cF-AOT"/>
-                    <exclude reference="3Cf-0J-TmW"/>
-                    <exclude reference="4b9-4h-eWO"/>
-                    <exclude reference="NZc-BN-ZZf"/>
+                    <exclude reference="4BO-2J-FOZ"/>
+                    <exclude reference="Xxu-n3-9eb"/>
+                    <exclude reference="ZmW-6k-Qgu"/>
+                    <exclude reference="faw-bo-h93"/>
                 </mask>
             </variation>
             <variation key="widthClass=compact">
@@ -232,13 +234,13 @@
                     <include reference="bgz-Id-sCL"/>
                     <exclude reference="jVy-Uw-SXt"/>
                     <include reference="rQq-EG-ABf"/>
+                    <include reference="3Qa-Uv-8nO"/>
+                    <include reference="6Tf-q4-W6W"/>
+                    <include reference="hKN-cF-AOT"/>
                     <include reference="4BO-2J-FOZ"/>
                     <include reference="Xxu-n3-9eb"/>
                     <exclude reference="ZmW-6k-Qgu"/>
                     <exclude reference="faw-bo-h93"/>
-                    <include reference="3Qa-Uv-8nO"/>
-                    <include reference="6Tf-q4-W6W"/>
-                    <include reference="hKN-cF-AOT"/>
                 </mask>
             </variation>
             <variation key="widthClass=regular">
@@ -247,14 +249,14 @@
                     <include reference="5oj-N8-CBI"/>
                 </mask>
                 <mask key="constraints">
+                    <include reference="3Cf-0J-TmW"/>
+                    <include reference="4b9-4h-eWO"/>
+                    <include reference="NZc-BN-ZZf"/>
                     <exclude reference="6Tf-q4-W6W"/>
                     <include reference="9Gh-oq-DQO"/>
                     <include reference="UKa-Zb-mDK"/>
                     <include reference="b1S-cy-zck"/>
                     <exclude reference="hKN-cF-AOT"/>
-                    <include reference="3Cf-0J-TmW"/>
-                    <include reference="4b9-4h-eWO"/>
-                    <include reference="NZc-BN-ZZf"/>
                 </mask>
             </variation>
             <connections>
@@ -281,7 +283,7 @@
                 <outlet property="unorderedRegularListButton" destination="npM-g4-LTt" id="R4Q-G4-yNS"/>
                 <outlet property="verticalBorder" destination="M8W-oh-aYr" id="3nU-EM-VrM"/>
             </connections>
-            <point key="canvasLocation" x="36" y="478"/>
+            <point key="canvasLocation" x="-226" y="83"/>
         </view>
     </objects>
 </document>
