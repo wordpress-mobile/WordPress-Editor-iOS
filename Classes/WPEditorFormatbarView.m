@@ -3,13 +3,17 @@
 #import "WPEditorToolbarButton.h"
 #import "ZSSBarButtonItem.h"
 
+static const CGFloat VerticalBorderAlpha = 0.7;
+
 @interface WPEditorFormatbarView ()
 
 @property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *leftToolbar;
 @property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *rightToolbar;
+@property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *regularToolbar;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *verticalBorder;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *horizontalBorder;
 
+// Compact size class bar button items
 @property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *imageButton;
 @property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *boldButton;
 @property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *italicButton;
@@ -18,6 +22,17 @@
 @property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *orderedListButton;
 @property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *linkButton;
 @property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *htmlButton;
+
+// Regular size class bar button items
+@property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *imageRegularButton;
+@property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *boldRegularButton;
+@property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *italicRegularButton;
+@property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *strikeRegularButton;
+@property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *linkRegularButton;
+@property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *unorderedRegularListButton;
+@property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *orderedRegularListButton;
+@property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *quoteRegularButton;
+@property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *htmlRegularButton;
 
 @end
 
@@ -39,22 +54,26 @@
 
 - (void)baseInit
 {
-    [self buildLeftToolbar];
-    [self buildRightToolbar];
+    [self buildToolbars];
     [self buildBorders];
 }
 
 #pragma mark - Toolbar building helpers
 
-- (void)buildLeftToolbar
+- (void)buildToolbars
 {
     self.leftToolbar.barTintColor = self.backgroundColor;
     self.leftToolbar.translucent = NO;
-    
-    // We had some issues with the left toolbar not resizing properly - and we didn't realize
-    // immediately.  Clipping to bounds is a good way to realize sooner and not later.
-    //
     self.leftToolbar.clipsToBounds = YES;
+    
+    self.rightToolbar.barTintColor = self.backgroundColor;
+    self.rightToolbar.translucent = NO;
+    self.rightToolbar.clipsToBounds = YES;
+    
+    self.regularToolbar.barTintColor = self.backgroundColor;
+    self.regularToolbar.translucent = NO;
+    self.regularToolbar.clipsToBounds = YES;
+    
     [self initBlockQuoteBarButton];
     [self initBoldBarButton];
     [self initImageBarButton];
@@ -62,16 +81,8 @@
     [self initItalicBarButton];
     [self initOrderedListBarButton];
     [self initUnorderedListBarButton];
-}
-
-- (void)buildRightToolbar
-{
-    if (self.rightToolbar) {
-        self.leftToolbar.barTintColor = self.backgroundColor;
-        self.leftToolbar.translucent = NO;
-        self.rightToolbar.clipsToBounds = YES;
-        [self initShowSourceBarButton];
-    }
+    [self initStrikeThroughBarButton];
+    [self initShowSourceBarButton];
 }
 
 - (void)buildBorders
@@ -80,7 +91,7 @@
     self.horizontalBorder.backgroundColor = self.borderColor;
     
     if (self.verticalBorder) {
-        self.verticalBorder.alpha = 0.7;
+        self.verticalBorder.alpha = VerticalBorderAlpha;
     }
 }
 
@@ -92,6 +103,7 @@
         super.backgroundColor = backgroundColor;
         self.leftToolbar.barTintColor = backgroundColor;
         self.rightToolbar.barTintColor = backgroundColor;
+        self.regularToolbar.barTintColor = backgroundColor;
     }
 }
 
@@ -109,6 +121,13 @@
     _itemTintColor = itemTintColor;
     
     for (UIBarButtonItem *item in self.leftToolbar.items) {
+        if ([item isKindOfClass:[ZSSBarButtonItem class]]) {
+            WPEditorToolbarButton *wpButton = (WPEditorToolbarButton*)item.customView;
+            wpButton.normalTintColor = _itemTintColor;
+        }
+    }
+    
+    for (UIBarButtonItem *item in self.regularToolbar.items) {
         if ([item isKindOfClass:[ZSSBarButtonItem class]]) {
             WPEditorToolbarButton *wpButton = (WPEditorToolbarButton*)item.customView;
             wpButton.normalTintColor = _itemTintColor;
@@ -135,6 +154,14 @@
             wpButton.disabledTintColor = _disabledItemTintColor;
         }
     }
+    
+    for (UIBarButtonItem *item in self.regularToolbar.items) {
+        if ([item isKindOfClass:[ZSSBarButtonItem class]]
+                && item.tag != kWPEditorViewControllerElementShowSourceBarButton) {
+            WPEditorToolbarButton *wpButton = (WPEditorToolbarButton*)item.customView;
+            wpButton.disabledTintColor = _disabledItemTintColor;
+        }
+    }
 }
 
 - (void)setSelectedItemTintColor:(UIColor *)selectedItemTintColor
@@ -142,6 +169,13 @@
     _selectedItemTintColor = selectedItemTintColor;
     
     for (UIBarButtonItem *item in self.leftToolbar.items) {
+        if ([item isKindOfClass:[ZSSBarButtonItem class]]) {
+            WPEditorToolbarButton *wpButton = (WPEditorToolbarButton*)item.customView;
+            wpButton.selectedTintColor = _selectedItemTintColor;
+        }
+    }
+    
+    for (UIBarButtonItem *item in self.regularToolbar.items) {
         if ([item isKindOfClass:[ZSSBarButtonItem class]]) {
             WPEditorToolbarButton *wpButton = (WPEditorToolbarButton*)item.customView;
             wpButton.selectedTintColor = _selectedItemTintColor;
@@ -162,9 +196,19 @@
 - (void)enableToolbarItems:(BOOL)enable
     shouldShowSourceButton:(BOOL)showSource
 {
-    NSArray *items = self.leftToolbar.items;
+    for (ZSSBarButtonItem *item in self.leftToolbar.items) {
+        if (item.tag == kWPEditorViewControllerElementShowSourceBarButton) {
+            item.enabled = showSource;
+        } else {
+            item.enabled = enable;
+            
+            if (!enable) {
+                [item setSelected:NO];
+            }
+        }
+    }
     
-    for (ZSSBarButtonItem *item in items) {
+    for (ZSSBarButtonItem *item in self.regularToolbar.items) {
         if (item.tag == kWPEditorViewControllerElementShowSourceBarButton) {
             item.enabled = showSource;
         } else {
@@ -184,16 +228,29 @@
             [item setSelected:NO];
         }
     }
+    
+    for (ZSSBarButtonItem *item in self.regularToolbar.items) {
+        if (item.tag != kWPEditorViewControllerElementShowSourceBarButton) {
+            [item setSelected:NO];
+        }
+    }
 }
 
 - (void)selectToolbarItemsForStyles:(NSArray*)styles
 {
-    NSArray *items = self.leftToolbar.items;
+    for (UIBarButtonItem *item in self.leftToolbar.items) {
+        if ([item isKindOfClass:[ZSSBarButtonItem class]]) {
+            ZSSBarButtonItem* zssItem = (ZSSBarButtonItem*)item;
+            
+            if ([styles containsObject:zssItem.htmlProperty]) {
+                zssItem.selected = YES;
+            } else {
+                zssItem.selected = NO;
+            }
+        }
+    }
     
-    for (UIBarButtonItem *item in items) {
-        // Since we're using UIBarItem as negative separators, we need to make sure we don't try to
-        // use those here.
-        //
+    for (UIBarButtonItem *item in self.regularToolbar.items) {
         if ([item isKindOfClass:[ZSSBarButtonItem class]]) {
             ZSSBarButtonItem* zssItem = (ZSSBarButtonItem*)item;
             
@@ -247,6 +304,14 @@
                      target:self
                    selector:@selector(setBlockquote:)
          accessibilityLabel:accessibilityLabel];
+    
+    [self initBarButtonItem:self.quoteRegularButton
+                    withTag:kWPEditorViewControllerElementTagBlockQuoteBarButton
+               htmlProperty:@"blockquote"
+                  imageName:@"icon_format_quote"
+                     target:self
+                   selector:@selector(setBlockquote:)
+         accessibilityLabel:accessibilityLabel];
 }
 
 - (void)initBoldBarButton
@@ -255,6 +320,14 @@
                                                      @"Accessibility label for bold button on formatting toolbar.");
 
     [self initBarButtonItem:self.boldButton
+                    withTag:kWPEditorViewControllerElementTagBoldBarButton
+               htmlProperty:@"bold"
+                  imageName:@"icon_format_bold"
+                     target:self
+                   selector:@selector(setBold:)
+         accessibilityLabel:accessibilityLabel];
+    
+    [self initBarButtonItem:self.boldRegularButton
                     withTag:kWPEditorViewControllerElementTagBoldBarButton
                htmlProperty:@"bold"
                   imageName:@"icon_format_bold"
@@ -275,6 +348,14 @@
                      target:self
                    selector:@selector(insertImage:)
          accessibilityLabel:accessibilityLabel];
+    
+    [self initBarButtonItem:self.imageRegularButton
+                    withTag:kWPEditorViewControllerElementTagInsertImageBarButton
+               htmlProperty:@"image"
+                  imageName:@"icon_format_media"
+                     target:self
+                   selector:@selector(insertImage:)
+         accessibilityLabel:accessibilityLabel];
 }
 
 - (void)initLinkBarButton
@@ -283,6 +364,14 @@
                                                      @"Accessibility label for insert link button on formatting toolbar.");
     
     [self initBarButtonItem:self.linkButton
+                    withTag:kWPEditorViewControllerElementTagInsertLinkBarButton
+               htmlProperty:@"link"
+                  imageName:@"icon_format_link"
+                     target:self
+                   selector:@selector(insertLink:)
+         accessibilityLabel:accessibilityLabel];
+    
+    [self initBarButtonItem:self.linkRegularButton
                     withTag:kWPEditorViewControllerElementTagInsertLinkBarButton
                htmlProperty:@"link"
                   imageName:@"icon_format_link"
@@ -303,6 +392,14 @@
                      target:self
                    selector:@selector(setItalic:)
          accessibilityLabel:accessibilityLabel];
+    
+    [self initBarButtonItem:self.italicRegularButton
+                    withTag:kWPEditorViewControllerElementTagItalicBarButton
+               htmlProperty:@"italic"
+                  imageName:@"icon_format_italic"
+                     target:self
+                   selector:@selector(setItalic:)
+         accessibilityLabel:accessibilityLabel];
 }
 
 - (void)initOrderedListBarButton
@@ -311,6 +408,14 @@
                                                      @"Accessibility label for ordered list button on formatting toolbar.");
     
     [self initBarButtonItem:self.orderedListButton
+                    withTag:kWPEditorViewControllerElementOrderedListBarButton
+               htmlProperty:@"orderedList"
+                  imageName:@"icon_format_ol"
+                     target:self
+                   selector:@selector(setOrderedList:)
+         accessibilityLabel:accessibilityLabel];
+    
+    [self initBarButtonItem:self.orderedRegularListButton
                     withTag:kWPEditorViewControllerElementOrderedListBarButton
                htmlProperty:@"orderedList"
                   imageName:@"icon_format_ol"
@@ -331,6 +436,14 @@
                      target:self
                    selector:@selector(setUnorderedList:)
          accessibilityLabel:accessibilityLabel];
+    
+    [self initBarButtonItem:self.unorderedRegularListButton
+                    withTag:kWPEditorViewControllerElementUnorderedListBarButton
+               htmlProperty:@"unorderedList"
+                  imageName:@"icon_format_ul"
+                     target:self
+                   selector:@selector(setUnorderedList:)
+         accessibilityLabel:accessibilityLabel];
 }
 
 - (void)initShowSourceBarButton
@@ -345,20 +458,28 @@
                      target:self
                    selector:@selector(showHTML:)
          accessibilityLabel:accessibilityLabel];
+    
+    [self initBarButtonItem:self.htmlRegularButton
+                    withTag:kWPEditorViewControllerElementShowSourceBarButton
+               htmlProperty:@"source"
+                  imageName:@"icon_format_html"
+                     target:self
+                   selector:@selector(showHTML:)
+         accessibilityLabel:accessibilityLabel];
 }
 
 - (void)initStrikeThroughBarButton
 {
-//    NSString* accessibilityLabel = NSLocalizedString(@"Strike Through",
-//                                                     @"Accessibility label for strikethrough button on formatting toolbar.");
-//
-//   [self initBarButtonItem:self.strikethroughButton
-//                    withTag:kWPEditorViewControllerElementStrikeThroughBarButton
-//               htmlProperty:@"strikeThrough"
-//                  imageName:@"icon_format_strikethrough"
-//                     target:self
-//                   selector:@selector(setStrikeThrough:)
-//         accessibilityLabel:accessibilityLabel];
+    NSString* accessibilityLabel = NSLocalizedString(@"Strike Through",
+                                                     @"Accessibility label for strikethrough button on formatting toolbar.");
+
+   [self initBarButtonItem:self.strikeRegularButton
+                    withTag:kWPEditorViewControllerElementStrikeThroughBarButton
+               htmlProperty:@"strikeThrough"
+                  imageName:@"icon_format_strikethrough"
+                     target:self
+                   selector:@selector(setStrikeThrough:)
+         accessibilityLabel:accessibilityLabel];
 }
 
 #pragma mark - Required Delegate Calls
@@ -396,6 +517,11 @@
 - (void)insertLink:(UIBarButtonItem *)barButtonItem
 {
     [self.delegate editorToolbarView:self insertLink:barButtonItem];
+}
+
+- (void)setStrikeThrough:(UIBarButtonItem *)barButtonItem
+{
+    [self.delegate editorToolbarView:self setStrikeThrough:barButtonItem];
 }
 
 - (void)showHTML:(UIBarButtonItem *)barButtonItem

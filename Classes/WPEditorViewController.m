@@ -428,6 +428,12 @@ NSInteger const WPLinkAlertViewTag = 92;
 }
 
 - (void)editorToolbarView:(WPEditorFormatbarView*)editorToolbarView
+           setStrikeThrough:(UIBarButtonItem *)barButtonItem
+{
+    [self setStrikethrough];
+}
+
+- (void)editorToolbarView:(WPEditorFormatbarView*)editorToolbarView
                insertLink:(UIBarButtonItem *)barButtonItem
 {
     [self linkBarButtonTapped];

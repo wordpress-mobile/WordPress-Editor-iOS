@@ -103,6 +103,15 @@ typedef enum
            insertLink:(UIBarButtonItem *)barButtonItem;
 
 /**
+ *  @brief      Tell the delegate the strikethrough button was pressed.
+ *
+ *  @param      editorToolbarView       The toolbar view calling this method.  Will never be nil.
+ *  @param      barButtonItem           The pressed bar button item.  Will never be nil.
+ */
+- (void)editorToolbarView:(WPEditorFormatbarView*)editorToolbarView
+            setStrikeThrough:(UIBarButtonItem *)barButtonItem;
+
+/**
  *  @brief      Tell the delegate the HTML button was pressed.
  *
  *  @param      editorToolbarView       The toolbar view calling this method.  Will never be nil.
