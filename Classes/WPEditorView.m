@@ -19,12 +19,12 @@ static NSString* const kWPEditorViewFieldTitleId = @"zss_field_title";
 static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 
 static const CGFloat UITextFieldLeftRightInset = 15.5;
-static const CGFloat iPadUITextFieldLeftRightInset = 90.0;
+static const CGFloat iPadUITextFieldLeftRightInset = 45.0;
 static const CGFloat UITextFieldFieldHeight = 55.0;
 static const CGFloat SourceTitleTextFieldYOffset = 4.0;
 static const CGFloat HTMLViewTopInset = 15.0;
 static const CGFloat HTMLViewLeftRightInset = 10.0;
-static const CGFloat iPadHTMLViewLeftRightInset = 85.0;
+static const CGFloat iPadHTMLViewLeftRightInset = 42.5;
 
 static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
