@@ -29,7 +29,7 @@
                         <barButtonItem title="OL" width="44" id="kfx-Aq-jgM" customClass="ZSSBarButtonItem"/>
                         <barButtonItem title="Qu" width="44" id="e8U-7y-KIf" customClass="ZSSBarButtonItem"/>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="lEj-Ro-ZKf"/>
-                        <barButtonItem title="HTML" width="66" id="xVr-Zr-pE2" customClass="ZSSBarButtonItem"/>
+                        <barButtonItem title="HTML" width="44" id="xVr-Zr-pE2" customClass="ZSSBarButtonItem"/>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="f0U-5E-Lnh"/>
                     </items>
                     <variation key="default">
@@ -61,7 +61,7 @@
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="AxR-HN-bG5"/>
                         <barButtonItem title="Li" width="44" style="plain" id="9hH-p8-Ocr" customClass="ZSSBarButtonItem"/>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="bqO-yZ-MVf"/>
-                        <barButtonItem title="HTML" width="66" style="plain" id="tE5-OT-rCk" customClass="ZSSBarButtonItem"/>
+                        <barButtonItem title="HTML" width="44" style="plain" id="tE5-OT-rCk" customClass="ZSSBarButtonItem"/>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="KpA-gG-9xb"/>
                     </items>
                 </toolbar>
@@ -96,8 +96,12 @@
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="leading" secondItem="hzl-cy-vzk" secondAttribute="leading" id="9Gh-oq-DQO"/>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="KLa-wT-1Gc"/>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="top" secondItem="5oj-N8-CBI" secondAttribute="top" id="MY8-Yb-Zho"/>
-                <constraint firstAttribute="bottom" secondItem="hzl-cy-vzk" secondAttribute="bottom" id="NZc-BN-ZZf"/>
-                <constraint firstItem="5oj-N8-CBI" firstAttribute="top" secondItem="hzl-cy-vzk" secondAttribute="top" id="UKa-Zb-mDK"/>
+                <constraint firstAttribute="bottom" secondItem="hzl-cy-vzk" secondAttribute="bottom" id="NZc-BN-ZZf">
+                    <variation key="widthClass=regular" constant="-2"/>
+                </constraint>
+                <constraint firstItem="5oj-N8-CBI" firstAttribute="top" secondItem="hzl-cy-vzk" secondAttribute="top" id="UKa-Zb-mDK">
+                    <variation key="widthClass=regular" constant="-2"/>
+                </constraint>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="leading" secondItem="5oj-N8-CBI" secondAttribute="leading" id="Yfe-DH-K5f"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="trailing" secondItem="hzl-cy-vzk" secondAttribute="trailing" id="b1S-cy-zck"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="hKN-cF-AOT"/>
@@ -117,15 +121,15 @@
                     <exclude reference="3Cf-0J-TmW"/>
                     <exclude reference="4b9-4h-eWO"/>
                     <exclude reference="NZc-BN-ZZf"/>
+                    <exclude reference="KLa-wT-1Gc"/>
+                    <exclude reference="MY8-Yb-Zho"/>
+                    <exclude reference="Yfe-DH-K5f"/>
+                    <exclude reference="kVg-01-4Kx"/>
                     <exclude reference="3Qa-Uv-8nO"/>
                     <exclude reference="9Gh-oq-DQO"/>
                     <exclude reference="UKa-Zb-mDK"/>
                     <exclude reference="b1S-cy-zck"/>
                     <exclude reference="hKN-cF-AOT"/>
-                    <exclude reference="KLa-wT-1Gc"/>
-                    <exclude reference="MY8-Yb-Zho"/>
-                    <exclude reference="Yfe-DH-K5f"/>
-                    <exclude reference="kVg-01-4Kx"/>
                 </mask>
             </variation>
             <variation key="widthClass=compact">
@@ -134,12 +138,12 @@
                     <include reference="5oj-N8-CBI"/>
                 </mask>
                 <mask key="constraints">
-                    <include reference="3Qa-Uv-8nO"/>
-                    <include reference="hKN-cF-AOT"/>
                     <include reference="KLa-wT-1Gc"/>
                     <include reference="MY8-Yb-Zho"/>
                     <include reference="Yfe-DH-K5f"/>
                     <include reference="kVg-01-4Kx"/>
+                    <include reference="3Qa-Uv-8nO"/>
+                    <include reference="hKN-cF-AOT"/>
                 </mask>
             </variation>
             <variation key="widthClass=regular">
