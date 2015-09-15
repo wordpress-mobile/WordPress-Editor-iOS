@@ -1,3 +1,5 @@
+before_install:
+  - gem install cocoapods -v '0.37.2'
 osx_image: xcode7
 language: objective-c
 xcode_workspace: ./Example/EditorDemo.xcworkspace
@@ -5,6 +7,4 @@ xcode_scheme: EditorDemo
 xcode_sdk: iphonesimulator8.4
 notifications:
   email: true
-install:
-- gem install cocoapods -v 0.37.2 && pod install
 sudo: false
