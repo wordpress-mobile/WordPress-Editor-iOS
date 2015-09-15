@@ -8,9 +8,7 @@ static const CGFloat VerticalBorderAlpha = 0.7;
 @interface WPEditorFormatbarView ()
 
 @property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *leftToolbar;
-@property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *rightToolbar;
 @property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *regularToolbar;
-@property (unsafe_unretained, nonatomic) IBOutlet UIView *verticalBorder;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *horizontalBorder;
 
 // Compact size class bar button items
@@ -66,10 +64,6 @@ static const CGFloat VerticalBorderAlpha = 0.7;
     self.leftToolbar.translucent = NO;
     self.leftToolbar.clipsToBounds = YES;
     
-    self.rightToolbar.barTintColor = self.backgroundColor;
-    self.rightToolbar.translucent = NO;
-    self.rightToolbar.clipsToBounds = YES;
-    
     self.regularToolbar.barTintColor = self.backgroundColor;
     self.regularToolbar.translucent = NO;
     self.regularToolbar.clipsToBounds = YES;
@@ -87,12 +81,7 @@ static const CGFloat VerticalBorderAlpha = 0.7;
 
 - (void)buildBorders
 {
-    self.verticalBorder.backgroundColor = self.borderColor;
-    self.horizontalBorder.backgroundColor = self.borderColor;
-    
-    if (self.verticalBorder) {
-        self.verticalBorder.alpha = VerticalBorderAlpha;
-    }
+    self.horizontalBorder.backgroundColor = self.borderColor;    
 }
 
 #pragma mark - Setters
@@ -102,7 +91,6 @@ static const CGFloat VerticalBorderAlpha = 0.7;
     if (self.backgroundColor != backgroundColor) {
         super.backgroundColor = backgroundColor;
         self.leftToolbar.barTintColor = backgroundColor;
-        self.rightToolbar.barTintColor = backgroundColor;
         self.regularToolbar.barTintColor = backgroundColor;
     }
 }
@@ -111,7 +99,6 @@ static const CGFloat VerticalBorderAlpha = 0.7;
 {
     if (_borderColor != borderColor) {
         _borderColor = borderColor;
-        self.verticalBorder.backgroundColor = borderColor;
         self.horizontalBorder.backgroundColor = borderColor;
     }
 }
