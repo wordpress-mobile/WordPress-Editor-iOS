@@ -777,10 +777,11 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)editorView:(WPEditorView*)editorView
       fieldFocused:(WPEditorField*)field
 {
+    [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
     if (field == self.editorView.titleField) {
         [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
         [self tellOurDelegateFormatBarStatusHasChanged:NO];
-    } else if (field == self.editorView.contentField) {
+    } else {
         [self.toolbarView enableToolbarItems:YES shouldShowSourceButton:YES];
         [self tellOurDelegateFormatBarStatusHasChanged:YES];
     }
@@ -788,13 +789,10 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (void)editorView:(WPEditorView*)editorView sourceFieldFocused:(UIView*)view
 {
-    [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
-    
-    // Enable the toolbar if the HTML editor has focus
-    if (view == self.editorView.sourceView) {
-        [self.toolbarView enableToolbarItems:YES shouldShowSourceButton:YES];
-    } else {
+    if (view == self.editorView.sourceViewTitleField) {
         [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
+    } else {
+        [self.toolbarView enableToolbarItems:YES shouldShowSourceButton:YES];
     }
 }
 

@@ -136,7 +136,8 @@ static const CGFloat VerticalBorderAlpha = 0.7;
     _disabledItemTintColor = disabledItemTintColor;
     
     for (UIBarButtonItem *item in self.leftToolbar.items) {
-        if ([item isKindOfClass:[ZSSBarButtonItem class]]) {
+        if ([item isKindOfClass:[ZSSBarButtonItem class]]
+                && item.tag != kWPEditorViewControllerElementShowSourceBarButton) {
             WPEditorToolbarButton *wpButton = (WPEditorToolbarButton*)item.customView;
             wpButton.disabledTintColor = _disabledItemTintColor;
         }
