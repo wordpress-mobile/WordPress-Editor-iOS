@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="15A282b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
     </dependencies>
@@ -12,6 +12,7 @@
             <subviews>
                 <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hzl-cy-vzk">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                    <animations/>
                     <constraints>
                         <constraint firstAttribute="height" constant="44" id="2hQ-8w-6RU"/>
                     </constraints>
@@ -37,7 +38,8 @@
                             <exclude reference="2hQ-8w-6RU"/>
                         </mask>
                     </variation>
-                    <variation key="widthClass=regular">
+                    <variation key="widthClass=regular" misplaced="YES">
+                        <rect key="frame" x="0.0" y="0.0" width="482" height="44"/>
                         <mask key="constraints">
                             <include reference="2hQ-8w-6RU"/>
                         </mask>
@@ -45,6 +47,7 @@
                 </toolbar>
                 <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="n1r-fs-i80">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                    <animations/>
                     <items>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="dUc-fD-xmY"/>
                         <barButtonItem title="Img" width="44" style="plain" id="IvH-tE-Dmv" customClass="ZSSBarButtonItem"/>
@@ -67,6 +70,7 @@
                 </toolbar>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5oj-N8-CBI">
                     <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                    <animations/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="1" id="DQc-We-xJ8"/>
@@ -81,27 +85,25 @@
                             <include reference="DQc-We-xJ8"/>
                         </mask>
                     </variation>
-                    <variation key="widthClass=regular">
+                    <variation key="widthClass=regular" misplaced="YES">
+                        <rect key="frame" x="0.0" y="-2" width="482" height="1"/>
                         <mask key="constraints">
                             <include reference="DQc-We-xJ8"/>
                         </mask>
                     </variation>
                 </view>
             </subviews>
+            <animations/>
             <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="hzl-cy-vzk" secondAttribute="trailing" id="3Cf-0J-TmW"/>
                 <constraint firstAttribute="trailing" secondItem="5oj-N8-CBI" secondAttribute="trailing" id="3Qa-Uv-8nO"/>
                 <constraint firstItem="hzl-cy-vzk" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="4b9-4h-eWO"/>
+                <constraint firstItem="hzl-cy-vzk" firstAttribute="top" secondItem="5oj-N8-CBI" secondAttribute="bottom" id="98w-GC-dOE"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="leading" secondItem="hzl-cy-vzk" secondAttribute="leading" id="9Gh-oq-DQO"/>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="KLa-wT-1Gc"/>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="top" secondItem="5oj-N8-CBI" secondAttribute="top" id="MY8-Yb-Zho"/>
-                <constraint firstAttribute="bottom" secondItem="hzl-cy-vzk" secondAttribute="bottom" id="NZc-BN-ZZf">
-                    <variation key="widthClass=regular" constant="-2"/>
-                </constraint>
-                <constraint firstItem="5oj-N8-CBI" firstAttribute="top" secondItem="hzl-cy-vzk" secondAttribute="top" id="UKa-Zb-mDK">
-                    <variation key="widthClass=regular" constant="-2"/>
-                </constraint>
+                <constraint firstAttribute="bottom" secondItem="hzl-cy-vzk" secondAttribute="bottom" id="NZc-BN-ZZf"/>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="leading" secondItem="5oj-N8-CBI" secondAttribute="leading" id="Yfe-DH-K5f"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="trailing" secondItem="hzl-cy-vzk" secondAttribute="trailing" id="b1S-cy-zck"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="hKN-cF-AOT"/>
@@ -118,16 +120,16 @@
                     <exclude reference="5oj-N8-CBI"/>
                 </mask>
                 <mask key="constraints">
-                    <exclude reference="3Cf-0J-TmW"/>
-                    <exclude reference="4b9-4h-eWO"/>
-                    <exclude reference="NZc-BN-ZZf"/>
                     <exclude reference="KLa-wT-1Gc"/>
                     <exclude reference="MY8-Yb-Zho"/>
                     <exclude reference="Yfe-DH-K5f"/>
                     <exclude reference="kVg-01-4Kx"/>
+                    <exclude reference="3Cf-0J-TmW"/>
+                    <exclude reference="4b9-4h-eWO"/>
+                    <exclude reference="98w-GC-dOE"/>
+                    <exclude reference="NZc-BN-ZZf"/>
                     <exclude reference="3Qa-Uv-8nO"/>
                     <exclude reference="9Gh-oq-DQO"/>
-                    <exclude reference="UKa-Zb-mDK"/>
                     <exclude reference="b1S-cy-zck"/>
                     <exclude reference="hKN-cF-AOT"/>
                 </mask>
@@ -154,9 +156,9 @@
                 <mask key="constraints">
                     <include reference="3Cf-0J-TmW"/>
                     <include reference="4b9-4h-eWO"/>
+                    <include reference="98w-GC-dOE"/>
                     <include reference="NZc-BN-ZZf"/>
                     <include reference="9Gh-oq-DQO"/>
-                    <include reference="UKa-Zb-mDK"/>
                     <include reference="b1S-cy-zck"/>
                     <exclude reference="hKN-cF-AOT"/>
                 </mask>
