@@ -57,8 +57,8 @@ SPEC CHECKSUMS:
   CocoaLumberjack: a6f77d987d65dc7ba86b0f84db7d0b9084f77bcb
   NSObject-SafeExpectations: 7d7f48df90df4e11da7cfe86b64f45eff7a7f521
   UIAlertView+Blocks: 45c3d3b7194906702d3e9a14c7ece5581505646d
-  WordPress-iOS-Editor: edc30df7342325ea3c12873e8418f4e450e73cc7
+  WordPress-iOS-Editor: e80434cf70b18f8edb77c02e56babbbddbb65f1d
   WordPress-iOS-Shared: 155109cd666b8416ce0d2bdb2b8f6f6f6ec2ac50
   WordPressCom-Analytics-iOS: 85c1609bbcdc2cec25dddc633568c8970811b9d2
 
-COCOAPODS: 0.37.2
+COCOAPODS: 0.38.2

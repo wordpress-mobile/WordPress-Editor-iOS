@@ -1,5 +1,6 @@
 #import "WPEditorView.h"
 
+#import "UIView+SizeClass.h"
 #import "UIWebView+GUIFixes.h"
 #import "HRColorUtil.h"
 #import "WPEditorField.h"
@@ -112,7 +113,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     NSAssert(!_sourceViewTitleField, @"The source view title field must not exist when this method is called!");	
 
     CGRect titleFrame;
-    if (IS_IPAD) {
+    if (!self.isViewHorizontallyCompact) {
         CGFloat textWidth = CGRectGetWidth(frame) - (2 * iPadUITextFieldLeftRightInset);
         titleFrame = CGRectMake(iPadUITextFieldLeftRightInset, SourceTitleTextFieldYOffset, textWidth, UITextFieldFieldHeight);
     } else {
@@ -135,7 +136,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 {
     NSAssert(!_sourceContentDividerView, @"The source divider view must not exist when this method is called!");
     
-    if (IS_IPAD) {
+    if (!self.isViewHorizontallyCompact) {
         CGFloat lineWidth = CGRectGetWidth(frame) - (2 * iPadUITextFieldLeftRightInset);
         _sourceContentDividerView = [[UIView alloc] initWithFrame:CGRectMake(iPadUITextFieldLeftRightInset, CGRectGetMaxY(frame), lineWidth, CGRectGetHeight(frame))];
     } else {
@@ -158,7 +159,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     _sourceView.autocorrectionType = UITextAutocorrectionTypeNo;
     _sourceView.autoresizingMask =  UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _sourceView.autoresizesSubviews = YES;
-    if (IS_IPAD) {
+    if (!self.isViewHorizontallyCompact) {
         _sourceView.textContainerInset = UIEdgeInsetsMake(HTMLViewTopInset, iPadHTMLViewLeftRightInset, 0, iPadHTMLViewLeftRightInset);
     } else {
         _sourceView.textContainerInset = UIEdgeInsetsMake(HTMLViewTopInset, HTMLViewLeftRightInset, 0.0f, HTMLViewLeftRightInset);

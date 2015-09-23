@@ -1,9 +1,9 @@
 #import "WPEditorFormatbarView.h"
+
+#import <CocoaLumberjack/CocoaLumberjack.h>
 #import "WPDeviceIdentification.h"
 #import "WPEditorToolbarButton.h"
 #import "ZSSBarButtonItem.h"
-
-static const CGFloat VerticalBorderAlpha = 0.7;
 
 @interface WPEditorFormatbarView ()
 
@@ -82,6 +82,14 @@ static const CGFloat VerticalBorderAlpha = 0.7;
 - (void)buildBorders
 {
     self.horizontalBorder.backgroundColor = self.borderColor;    
+}
+
+#pragma mark - UITraitEnvironment methods
+
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+    [super traitCollectionDidChange:previousTraitCollection];
+    DDLogInfo(@"Format bar trait collection did change from: %@", previousTraitCollection);
 }
 
 #pragma mark - Setters
