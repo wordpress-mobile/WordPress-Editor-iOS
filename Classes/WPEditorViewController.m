@@ -190,6 +190,12 @@ NSInteger const WPLinkAlertViewTag = 92;
     [self saveEditSelection];
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    [self.toolbarView setNeedsDisplay];
+}
+
 #pragma mark - Toolbar: helper methods
 
 - (void)clearToolbar
