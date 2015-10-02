@@ -18,12 +18,13 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 static NSString* const kWPEditorViewFieldTitleId = @"zss_field_title";
 static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 
-static const CGFloat UITextFieldLeftRightInset = 15.5f;
-static const CGFloat iPadUITextFieldLeftRightInset = 90.0f;
-static const CGFloat UITextFieldFieldHeight = 44.0f;
-static const CGFloat HTMLViewTopInset = 15.0f;
-static const CGFloat HTMLViewLeftRightInset = 10.0f;
-static const CGFloat iPadHTMLViewLeftRightInset = 85.0f;
+static const CGFloat UITextFieldLeftRightInset = 15.5;
+static const CGFloat iPadUITextFieldLeftRightInset = 90.0;
+static const CGFloat UITextFieldFieldHeight = 55.0;
+static const CGFloat SourceTitleTextFieldYOffset = 4.0;
+static const CGFloat HTMLViewTopInset = 15.0;
+static const CGFloat HTMLViewLeftRightInset = 10.0;
+static const CGFloat iPadHTMLViewLeftRightInset = 85.0;
 
 static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
@@ -109,17 +110,18 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 - (void)createSourceTitleViewWithFrame:(CGRect)frame
 {
     NSAssert(!_sourceViewTitleField, @"The source view title field must not exist when this method is called!");	
-    
+
+    CGRect titleFrame;
     if (IS_IPAD) {
         CGFloat textWidth = CGRectGetWidth(frame) - (2 * iPadUITextFieldLeftRightInset);
-        _sourceViewTitleField = [[UITextField alloc] initWithFrame:CGRectMake(iPadUITextFieldLeftRightInset, 5.0f, textWidth, UITextFieldFieldHeight)];
+        titleFrame = CGRectMake(iPadUITextFieldLeftRightInset, SourceTitleTextFieldYOffset, textWidth, UITextFieldFieldHeight);
     } else {
         CGFloat textWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset);
-        _sourceViewTitleField = [[UITextField alloc] initWithFrame:CGRectMake(UITextFieldLeftRightInset, 5.0f, textWidth, UITextFieldFieldHeight)];
+        titleFrame = CGRectMake(UITextFieldLeftRightInset, SourceTitleTextFieldYOffset, textWidth, UITextFieldFieldHeight);
     }
-    
+    _sourceViewTitleField = [[UITextField alloc] initWithFrame:titleFrame];
     _sourceViewTitleField.hidden = YES;
-    _sourceViewTitleField.font = [WPFontManager merriweatherBoldFontOfSize:18.0f];
+    _sourceViewTitleField.font = [WPFontManager merriweatherBoldFontOfSize:24.0];
     _sourceViewTitleField.autocapitalizationType = UITextAutocapitalizationTypeWords;
     _sourceViewTitleField.autocorrectionType = UITextAutocorrectionTypeYes;
     _sourceViewTitleField.autoresizingMask =  UIViewAutoresizingFlexibleWidth;
@@ -1557,11 +1559,15 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
                    remotePoster:(NSString *)posterURL
                      videoPress:(NSString *)videoPressID
 {
-    NSString * videoPressSafeID = videoPressID;
+    NSString *videoPressSafeID = videoPressID;
     if (!videoPressSafeID) {
         videoPressSafeID = @"";
     }
-    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.replaceLocalVideoWithRemoteVideo(\"%@\", \"%@\", \"%@\", \"%@\");", uniqueID, videoURL, posterURL, videoPressSafeID];
+    NSString *posterURLSafe = posterURL;
+    if (!posterURLSafe) {
+        posterURLSafe = @"";
+    }
+    NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.replaceLocalVideoWithRemoteVideo(\"%@\", \"%@\", \"%@\", \"%@\");", uniqueID, videoURL, posterURLSafe, videoPressSafeID];
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 

@@ -71,6 +71,7 @@ typedef enum
     kWPEditorViewControllerElementRemoveFormatBarButton,
     kWPEditorViewControllerElementRemoveLinkBarButton,
     kWPEditorViewControllerElementShowSourceBarButton,
+    kWPEditorViewControllerElementiPhoneShowSourceBarButton,
     kWPEditorViewControllerElementStrikeThroughBarButton,
     kWPEditorViewControllerElementSubscriptBarButton,
     kWPEditorViewControllerElementSuperscriptBarButton,
@@ -103,6 +104,10 @@ typedef enum
  */
 @interface WPEditorToolbarView : UIView
 
+#pragma mark - Properties: toolbar scrollview
+
+@property (nonatomic, weak) UIScrollView *toolbarScroll;
+
 #pragma mark - Properties: toolbar items
 
 @property (nonatomic, copy, readwrite) NSArray* items;
@@ -118,6 +123,11 @@ typedef enum
  *  Color to tint the toolbar items
  */
 @property (nonatomic, strong) UIColor *itemTintColor;
+
+/**
+ *  Color to tint the toolbar items when the toolbar is disabled
+ */
+@property (nonatomic, strong) UIColor *disabledItemTintColor;
 
 /**
  *  Color to tint selected items

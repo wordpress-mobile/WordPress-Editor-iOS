@@ -26,6 +26,14 @@ WPEditorViewControllerMode;
 
 
 /**
+ *	@brief		Received when the format bar enabled status has changed.
+ *	@param		editorController    The editor view.
+ *	@param		enabled             BOOL describing the new state of the format bar
+ */
+- (void)editorFormatBarStatusChanged:(WPEditorViewController *)editorController
+                             enabled:(BOOL)isEnabled;
+
+/**
  *	@brief		Received when the field is created and can be used.
  *  @details    The editor fields will be nil before this method is called.  This is because editor
  *              fields are created as part of the process of loading the HTML.

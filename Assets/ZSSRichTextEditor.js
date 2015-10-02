@@ -1102,6 +1102,7 @@ ZSSEditor.replaceLocalVideoWithRemoteVideo = function(videoNodeIdentifier, remot
     }
     videoNode.attr('src', remoteVideoUrl);
     videoNode.attr('controls', '');
+    videoNode.attr('preload', 'metadata');
     if (videopressID != '') {
         videoNode.attr('data-wpvideopress', videopressID);
     }
@@ -1307,7 +1308,7 @@ ZSSEditor.applyVideoFormattingCallback = function( match ) {
     var posterSVG = '"wpposter.svg"';
     // The empty 'onclick' is important. It prevents the cursor jumping to the end
     // of the content body when `-webkit-user-select: none` is set and the video is tapped.
-    var out = '<video data-wpvideopress="' + videopressID + '" webkit-playsinline src="videopress.mp4" poster=' + posterSVG +' onclick="" onerror="ZSSEditor.sendVideoPressInfoRequest(\'' + videopressID +'\');"></video>';
+    var out = '<video data-wpvideopress="' + videopressID + '" webkit-playsinline src="videopress.mp4" preload="metadata" poster=' + posterSVG +' onclick="" onerror="ZSSEditor.sendVideoPressInfoRequest(\'' + videopressID +'\');"></video>';
     
     return out;
 }
@@ -2579,7 +2580,7 @@ ZSSField.prototype.callback = function(callbackScheme, callbackPath) {
     var finalPath = "id=" + this.getNodeId();
     
     if (callbackPath && callbackPath.length > 0) {
-        finalPath = finalPath + callbackPath;
+        finalPath = finalPath + defaultCallbackSeparator + callbackPath;
     }
     
     this.callbacker.callback(callbackScheme, finalPath);
