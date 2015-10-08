@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/wordpress-mobile/WordPress-iOS-Shared.svg?branch=develop)](https://travis-ci.org/wordpress-mobile/WordPress-iOS-Shared)
+[![Build Status](https://travis-ci.org/wordpress-mobile/WordPress-Shared-iOS.svg?branch=develop)](https://travis-ci.org/wordpress-mobile/WordPress-Shared-iOS)
+
 WordPress-iOS-Shared
 ======================
 
