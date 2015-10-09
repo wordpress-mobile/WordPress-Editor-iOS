@@ -31,9 +31,6 @@
     "CocoaLumberjack": [
       "2.0.0"
     ],
-    "UIAlertView+Blocks": [
-      "~>0.8.1"
-    ],
     "WordPress-iOS-Shared": [
       "~>0.4.4"
     ],

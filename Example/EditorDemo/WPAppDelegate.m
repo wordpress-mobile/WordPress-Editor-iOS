@@ -8,8 +8,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     //Default to white
-    [[UIToolbar appearanceWhenContainedIn:[WPEditorViewController class], nil] setBarTintColor:[UIColor whiteColor]];
-    
+    [[UIToolbar appearanceWhenContainedInInstancesOfClasses:@[[WPEditorViewController class]]] setBarTintColor:[UIColor whiteColor]];
     [DDLog addLogger:[DDASLLogger sharedInstance]];
     [DDLog addLogger:[DDTTYLogger sharedInstance]];
     
