@@ -1333,7 +1333,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 - (NSString *)stringByDecodingURLFormat:(NSString *)string
 {
     NSString *result = [string stringByReplacingOccurrencesOfString:@"+" withString:@" "];
-    result = [result stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    result = [result stringByRemovingPercentEncoding];
     return result;
 }
 
