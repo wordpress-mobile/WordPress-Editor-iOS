@@ -167,11 +167,18 @@
     }
     
     __weak __typeof(self)weakSelf = self;
+    UITraitCollection *traits = self.navigationController.traitCollection;
     NSProgress *progress = self.mediaAdded[imageId];
-    UIAlertController *alertController = [UIAlertController
-                                          alertControllerWithTitle:nil
-                                          message:nil
-                                          preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *alertController;
+    if (traits.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        alertController = [UIAlertController alertControllerWithTitle:nil
+                                                              message:nil
+                                                       preferredStyle:UIAlertControllerStyleAlert];
+    } else {
+        alertController = [UIAlertController alertControllerWithTitle:nil
+                                                              message:nil
+                                                       preferredStyle:UIAlertControllerStyleActionSheet];
+    }
     
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
                                                            style:UIAlertActionStyleCancel
@@ -219,11 +226,18 @@
         return;
     }
     __weak __typeof(self)weakSelf = self;
+    UITraitCollection *traits = self.navigationController.traitCollection;
     NSProgress *progress = self.mediaAdded[videoId];
-    UIAlertController *alertController = [UIAlertController
-                                          alertControllerWithTitle:nil
-                                          message:nil
-                                          preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertController *alertController;
+    if (traits.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        alertController = [UIAlertController alertControllerWithTitle:nil
+                                                              message:nil
+                                                       preferredStyle:UIAlertControllerStyleAlert];
+    } else {
+        alertController = [UIAlertController alertControllerWithTitle:nil
+                                                              message:nil
+                                                       preferredStyle:UIAlertControllerStyleActionSheet];
+    }
     
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
                                                            style:UIAlertActionStyleCancel
