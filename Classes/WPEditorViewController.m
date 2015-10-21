@@ -190,10 +190,26 @@ NSInteger const WPLinkAlertViewTag = 92;
     [self saveEditSelection];
 }
 
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+- (void)traitCollectionDidChange:(UITraitCollection *) previousTraitCollection
 {
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    [self.toolbarView setNeedsDisplay];
+    [super traitCollectionDidChange: previousTraitCollection];
+    CGFloat screenWidth = self.view.bounds.size.width;
+    CGFloat toolbarWidth = self.toolbarView.bounds.size.width;
+    if (toolbarWidth != screenWidth) {
+        // Important: This is a complete and utter hack that compensates for the input accessory view
+        // not properly changing size classes (resizing) when the rest of the views in the editor VC do.
+        // Toggling the HTML button on the input bar quickly does not affect the view and forces the
+        // input accessory view (the format bar) to update itself. Before you ask, setNeedsDisplay
+        // and setNeedsLayout do NOT work.
+        [self showHTMLSource:nil];
+        [self showHTMLSource:nil];
+    }
+}
+
+- (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
+    [self.toolbarView setNeedsLayout];
 }
 
 #pragma mark - Toolbar: helper methods
