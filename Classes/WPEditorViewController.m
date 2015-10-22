@@ -195,14 +195,19 @@ NSInteger const WPLinkAlertViewTag = 92;
     [super traitCollectionDidChange: previousTraitCollection];
     CGFloat screenWidth = self.view.bounds.size.width;
     CGFloat toolbarWidth = self.toolbarView.bounds.size.width;
-    if (toolbarWidth != screenWidth) {
+    if (self.isFirstSetupComplete && self.isEditingEnabled && (toolbarWidth != screenWidth)) {
         // Important: This is a complete and utter hack that compensates for the input accessory view
         // not properly changing size classes (resizing) when the rest of the views in the editor VC do.
         // Toggling the HTML button on the input bar quickly does not affect the view and forces the
-        // input accessory view (the format bar) to update itself. Before you ask, setNeedsDisplay
-        // and setNeedsLayout do NOT work.
-        [self showHTMLSource:nil];
-        [self showHTMLSource:nil];
+        // input accessory view (the format bar) to update itself. FWIW, setNeedsDisplay and
+        // setNeedsLayout do NOT work.
+        if ([self.editorView isInVisualMode]) {
+            [self.editorView showHTMLSource];
+            [self.editorView showVisualEditor];
+        } else {
+            [self.editorView showHTMLSource];
+            [self.editorView showVisualEditor];
+        }
     }
 }
 
