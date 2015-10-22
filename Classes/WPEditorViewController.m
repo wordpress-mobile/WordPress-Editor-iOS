@@ -1038,7 +1038,7 @@ CGFloat const EPVCStandardOffset = 10.0;
                                                                        message:message
                                                                 preferredStyle:UIAlertControllerStyleAlert];
         
-        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"Label text to dismiss an alert view.") style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
             [weakSelf clearToolbar];
         }];
         
