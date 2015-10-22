@@ -2,7 +2,7 @@
   "name": "WordPress-iOS-Editor",
   "version": "0.8.1",
   "summary": "Reusable component rich text editor for WordPress.com in an iOS application.",
-  "description": "                   Reusable component for displaying the WordPress.com post editor in an iOS application\n",
+  "description": "Reusable component for displaying the WordPress.com post editor in an iOS application",
   "homepage": "http://apps.wordpress.org",
   "license": "GPLv2",
   "authors": {
@@ -22,7 +22,9 @@
     "Assets/*.html",
     "Assets/*.js",
     "Assets/*.svg",
-    "Assets/*.css"
+    "Assets/*.css",
+    "Assets/*.storyboard",
+    "Assets/*.xib"
   ],
   "prefix_header_file": "Classes/WordPress-iOS-Editor-Prefix.pch",
   "exclude_files": "Classes/exclude",

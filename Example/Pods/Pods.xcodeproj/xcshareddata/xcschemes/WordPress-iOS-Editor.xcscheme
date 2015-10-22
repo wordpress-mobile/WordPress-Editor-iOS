@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "748D2A84193E516000D5ACC8"
-               BuildableName = "EditorDemo.app"
-               BlueprintName = "EditorDemo"
-               ReferencedContainer = "container:EditorDemo.xcodeproj">
+               BlueprintIdentifier = "B90882865E92118099C9F100FBE5BBE0"
+               BuildableName = "libWordPress-iOS-Editor.a"
+               BlueprintName = "WordPress-iOS-Editor"
+               ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -28,26 +28,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "748D2AA8193E516000D5ACC8"
-               BuildableName = "EditorDemoTests.xctest"
-               BlueprintName = "EditorDemoTests"
-               ReferencedContainer = "container:EditorDemo.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "748D2A84193E516000D5ACC8"
-            BuildableName = "EditorDemo.app"
-            BlueprintName = "EditorDemo"
-            ReferencedContainer = "container:EditorDemo.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -61,16 +42,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "748D2A84193E516000D5ACC8"
-            BuildableName = "EditorDemo.app"
-            BlueprintName = "EditorDemo"
-            ReferencedContainer = "container:EditorDemo.xcodeproj">
+            BlueprintIdentifier = "B90882865E92118099C9F100FBE5BBE0"
+            BuildableName = "libWordPress-iOS-Editor.a"
+            BlueprintName = "WordPress-iOS-Editor"
+            ReferencedContainer = "container:Pods.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -80,16 +60,6 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "748D2A84193E516000D5ACC8"
-            BuildableName = "EditorDemo.app"
-            BlueprintName = "EditorDemo"
-            ReferencedContainer = "container:EditorDemo.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
