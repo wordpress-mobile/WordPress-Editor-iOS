@@ -5,7 +5,6 @@
 #import <WordPress-iOS-Shared/WPStyleGuide.h>
 #import <WordPress-iOS-Shared/WPTableViewCell.h>
 #import <WordPress-iOS-Shared/UIImage+Util.h>
-#import <UIAlertView+Blocks/UIAlertView+Blocks.h>
 
 CGFloat const WPLegacyEPVCTextfieldHeight = 44.0f;
 CGFloat const WPLegacyEPVCOptionsHeight = 44.0f;
@@ -16,7 +15,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 @interface WPLegacyEditorViewController ()<UITextFieldDelegate, UITextViewDelegate, WPLegacyKeyboardToolbarDelegate>
 @property (nonatomic) CGPoint scrollOffsetRestorePoint;
-@property (nonatomic, strong) UIAlertView *alertView;
 @property (nonatomic, strong) UIButton *optionsButton;
 @property (nonatomic, strong) UILabel *tapToStartWritingLabel;
 @property (nonatomic, strong) UITextField *titleTextField;
@@ -383,6 +381,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 - (void)showLinkView
 {
+    __weak __typeof(self)weakSelf = self;
     NSRange range = self.textView.selectedRange;
     [self.textView resignFirstResponder];
     
@@ -399,77 +398,83 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     NSString *insertButtonTitle = NSLocalizedString(@"Insert", @"Insert content (link, media) button");
     NSString *cancelButtonTitle = NSLocalizedString(@"Cancel", @"Cancel button");
     
-    self.alertView = [[UIAlertView alloc] initWithTitle:alertViewTitle
-                                            message:nil
-                                           delegate:nil
-                                  cancelButtonTitle:cancelButtonTitle
-                                  otherButtonTitles:insertButtonTitle, nil];
-    self.alertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
-    self.alertView.tag = 99;
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:insertButtonTitle
+                                                                             message:nil
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
     
-    UITextField *alt = [self.alertView textFieldAtIndex:1];
-    alt.secureTextEntry = NO;
-    alt.placeholder = NSLocalizedString(@"Text to be linked", @"Popup to aid in creating a Link in the Post Editor.");
-    alt.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    alt.keyboardAppearance = UIKeyboardAppearanceAlert;
-    alt.keyboardType = UIKeyboardTypeDefault;
-    if (infoText) {
-        alt.text = infoText;
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = NSLocalizedString(@"Link URL", @"Popup to aid in creating a Link in the Post Editor, URL field (where you can type or paste a URL that the text should link.");
+        textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+        textField.keyboardAppearance = UIKeyboardAppearanceAlert;
+        textField.keyboardType = UIKeyboardTypeURL;
+        textField.autocorrectionType = UITextAutocorrectionTypeNo;
+        
+        [textField addTarget:weakSelf
+                      action:@selector(alertTextFieldDidChange:)
+            forControlEvents:UIControlEventEditingChanged];
+    }];
+    
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.secureTextEntry = NO;
+        textField.placeholder = NSLocalizedString(@"Text to be linked", @"Popup to aid in creating a Link in the Post Editor.");
+        textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+        textField.keyboardAppearance = UIKeyboardAppearanceAlert;
+        textField.keyboardType = UIKeyboardTypeDefault;
+        
+        if (infoText) {
+            textField.text = infoText;
+        }
+    }];
+    
+    UIAlertAction* insertAction = [UIAlertAction actionWithTitle:insertButtonTitle
+                                                           style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction * action) {
+                                                             
+                                                             // Insert link
+                                                             UITextField *urlField = alertController.textFields.firstObject;
+                                                             UITextField *infoText = alertController.textFields.lastObject;
+                                                             
+                                                             if ((urlField.text == nil) || ([urlField.text isEqualToString:@""])) {
+                                                                 return;
+                                                             }
+                                                             
+                                                             if ((infoText.text == nil) || ([infoText.text isEqualToString:@""])) {
+                                                                 infoText.text = urlField.text;
+                                                             }
+                                                             
+                                                             [weakSelf.textView becomeFirstResponder];
+                                                             weakSelf.textView.selectedRange = range;
+                                                             
+                                                             NSString *urlString = [weakSelf validateNewLinkInfo:[urlField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
+                                                             NSString *aTagText = [NSString stringWithFormat:@"<a href=\"%@\">%@</a>", urlString, infoText.text];
+                                                             
+                                                             [weakSelf.textView insertText:aTagText];
+                                                             [weakSelf textViewDidChange:weakSelf.textView];
+                                                         }];
+
+    UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:cancelButtonTitle
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction * action) {}];
+
+    [alertController addAction:insertAction];
+    [alertController addAction:cancelAction];
+    
+    // Disabled until url is entered into field
+     insertAction.enabled = NO;
+    [self presentViewController:alertController
+                       animated:YES
+                     completion:nil];
+}
+
+- (void)alertTextFieldDidChange:(UITextField *)sender
+{
+    UIAlertController *alertController = (UIAlertController *)self.presentedViewController;
+    if (alertController)
+    {
+        UITextField *urlField = alertController.textFields.firstObject;
+        UIAlertAction *insertAction = alertController.actions.firstObject;
+        insertAction.enabled = urlField.text.length > 0;
     }
-    
-    UITextField *linkURL = [self.alertView textFieldAtIndex:0];
-    linkURL.placeholder = NSLocalizedString(@"Link URL", @"Popup to aid in creating a Link in the Post Editor, URL field (where you can type or paste a URL that the text should link.");
-    linkURL.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    linkURL.keyboardAppearance = UIKeyboardAppearanceAlert;
-    linkURL.keyboardType = UIKeyboardTypeURL;
-    linkURL.autocorrectionType = UITextAutocorrectionTypeNo;
-    __weak __typeof(self)weakSelf = self;
-    self.alertView.didDismissBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
-        if (alertView.tag == 99) {
-            if (buttonIndex == 1) {
-                // Insert link
-                UITextField *urlField = [alertView textFieldAtIndex:0];
-                UITextField *infoText = [alertView textFieldAtIndex:1];
-                
-                if ((urlField.text == nil) || ([urlField.text isEqualToString:@""])) {
-                    return;
-                }
-                
-                if ((infoText.text == nil) || ([infoText.text isEqualToString:@""])) {
-                    infoText.text = urlField.text;
-                }
-                
-                [weakSelf.textView becomeFirstResponder];
-                weakSelf.textView.selectedRange = range;
-                
-                NSString *urlString = [weakSelf validateNewLinkInfo:[urlField.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
-                NSString *aTagText = [NSString stringWithFormat:@"<a href=\"%@\">%@</a>", urlString, infoText.text];
-
-                [weakSelf.textView insertText:aTagText];
-                [weakSelf textViewDidChange:weakSelf.textView];
-            }
-            
-            // Don't dismiss the keyboard
-            // Hack from http://stackoverflow.com/a/7601631
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if([weakSelf.textView resignFirstResponder] || [weakSelf.titleTextField resignFirstResponder]){
-                    [weakSelf.textView becomeFirstResponder];
-                }
-            });
-        }
-    };
-    
-    self.alertView.shouldEnableFirstOtherButtonBlock = ^BOOL(UIAlertView *alertView) {
-        if (alertView.tag == 99) {
-            UITextField *textField = [alertView textFieldAtIndex:0];
-            if ([textField.text length] == 0) {
-                return NO;
-            }
-        }
-        return YES;
-    };
-
-    [self.alertView show];
 }
 
 // Appends http:// if protocol part is not there as part of urlText.
@@ -638,6 +643,18 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     self.titleToolbar.frame = frame; // Frames match, no need to re-calc.
 }
 
+#pragma mark - Status bar management
+
+- (BOOL)prefersStatusBarHidden
+{
+    return self.isShowingKeyboard;
+}
+
+- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation
+{
+    return UIStatusBarAnimationFade;
+}
+
 #pragma mark - Keyboard management
 
 - (void)keyboardWillShow:(NSNotification *)notification
@@ -645,7 +662,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 	self.isShowingKeyboard = YES;
     
     if ([self shouldHideToolbarsWhileTyping]) {
-        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+        [self setNeedsStatusBarAppearanceUpdate];
         [self.navigationController setNavigationBarHidden:YES animated:YES];
         [self.navigationController setToolbarHidden:YES animated:NO];
     }
@@ -665,7 +682,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 - (void)keyboardWillHide:(NSNotification *)notification
 {
 	self.isShowingKeyboard = NO;
-    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    [self setNeedsStatusBarAppearanceUpdate];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     [self.navigationController setToolbarHidden:NO animated:NO];
     [self positionTextView:notification];

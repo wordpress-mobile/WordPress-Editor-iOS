@@ -1,5 +1,10 @@
 #import "WPAnalytics.h"
 
+NSString *const WPAnalyticsStatEditorPublishedPostPropertyCategory = @"with_categories";
+NSString *const WPAnalyticsStatEditorPublishedPostPropertyPhoto = @"with_photos";
+NSString *const WPAnalyticsStatEditorPublishedPostPropertyTag = @"with_tags";
+NSString *const WPAnalyticsStatEditorPublishedPostPropertyVideo = @"with_videos";
+
 @implementation WPAnalytics
 
 + (NSMutableArray *)trackers

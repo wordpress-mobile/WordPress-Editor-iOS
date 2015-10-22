@@ -7,15 +7,7 @@
 #import "WPEditorView.h"
 #import "WPImageMetaViewController.h"
 
-typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
-    WPViewControllerActionSheetImageUploadStop = 200,
-    WPViewControllerActionSheetImageUploadRetry = 201,
-    WPViewControllerActionSheetVideoUploadStop = 202,
-    WPViewControllerActionSheetVideoUploadRetry = 203
-
-};
-
-@interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, WPImageMetaViewControllerDelegate>
+@interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, WPImageMetaViewControllerDelegate>
 @property(nonatomic, strong) NSMutableDictionary *mediaAdded;
 @property(nonatomic, strong) NSString *selectedMediaID;
 @property(nonatomic, strong) NSCache *videoPressCache;
@@ -30,7 +22,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     
     self.delegate = self;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Edit"
-                                                                             style:UIBarButtonItemStyleBordered
+                                                                             style:UIBarButtonItemStylePlain
                                                                             target:self
                                                                             action:@selector(editTouchedUpInside)];
     self.mediaAdded = [NSMutableDictionary dictionary];
@@ -173,17 +165,59 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     if (imageId.length == 0){
         return;
     }
+    
+    __weak __typeof(self)weakSelf = self;
+    UITraitCollection *traits = self.navigationController.traitCollection;
     NSProgress *progress = self.mediaAdded[imageId];
-    if (!progress.cancelled){
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
-        [actionSheet showInView:self.view];
-        actionSheet.tag = WPViewControllerActionSheetImageUploadStop;
+    UIAlertController *alertController;
+    if (traits.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        alertController = [UIAlertController alertControllerWithTitle:nil
+                                                              message:nil
+                                                       preferredStyle:UIAlertControllerStyleAlert];
     } else {
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Remove Image" otherButtonTitles:@"Retry Upload", nil];
-        [actionSheet showInView:self.view];
-        actionSheet.tag = WPViewControllerActionSheetImageUploadRetry;
+        alertController = [UIAlertController alertControllerWithTitle:nil
+                                                              message:nil
+                                                       preferredStyle:UIAlertControllerStyleActionSheet];
     }
+    
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction *action){}];
+    [alertController addAction:cancelAction];
+    
+    if (!progress.cancelled){
+        UIAlertAction *stopAction = [UIAlertAction actionWithTitle:@"Stop Upload"
+                                                               style:UIAlertActionStyleDestructive
+                                                             handler:^(UIAlertAction *action){
+                                                                 [weakSelf.editorView removeImage:weakSelf.selectedMediaID];
+                                                             }];
+        [alertController addAction:stopAction];
+    } else {
+        UIAlertAction *removeAction = [UIAlertAction actionWithTitle:@"Remove Image"
+                                                             style:UIAlertActionStyleDestructive
+                                                           handler:^(UIAlertAction *action){
+                                                               [weakSelf.editorView removeImage:weakSelf.selectedMediaID];
+                                                           }];
+        
+        UIAlertAction *retryAction = [UIAlertAction actionWithTitle:@"Retry Upload"
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction *action){
+                                                                NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":self.selectedMediaID}];
+                                                                progress.totalUnitCount = 100;
+                                                                [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                                                                 target:self
+                                                                                               selector:@selector(timerFireMethod:)
+                                                                                               userInfo:progress
+                                                                                                repeats:YES];
+                                                                weakSelf.mediaAdded[weakSelf.selectedMediaID] = progress;
+                                                                [weakSelf.editorView unmarkImageFailedUpload:weakSelf.selectedMediaID];
+                                                            }];
+        [alertController addAction:removeAction];
+        [alertController addAction:retryAction];
+    }
+    
     self.selectedMediaID = imageId;
+    [self.navigationController presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)showPromptForVideoWithID:(NSString *)videoId
@@ -191,17 +225,57 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     if (videoId.length == 0){
         return;
     }
+    __weak __typeof(self)weakSelf = self;
+    UITraitCollection *traits = self.navigationController.traitCollection;
     NSProgress *progress = self.mediaAdded[videoId];
-    if (!progress.cancelled){
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
-        [actionSheet showInView:self.view];
-        actionSheet.tag = WPViewControllerActionSheetVideoUploadStop;
+    UIAlertController *alertController;
+    if (traits.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        alertController = [UIAlertController alertControllerWithTitle:nil
+                                                              message:nil
+                                                       preferredStyle:UIAlertControllerStyleAlert];
     } else {
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Remove Video" otherButtonTitles:@"Retry Upload", nil];
-        [actionSheet showInView:self.view];
-        actionSheet.tag = WPViewControllerActionSheetVideoUploadRetry;
+        alertController = [UIAlertController alertControllerWithTitle:nil
+                                                              message:nil
+                                                       preferredStyle:UIAlertControllerStyleActionSheet];
+    }
+    
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction *action){}];
+    [alertController addAction:cancelAction];
+    
+    if (!progress.cancelled){
+        UIAlertAction *stopAction = [UIAlertAction actionWithTitle:@"Stop Upload"
+                                                             style:UIAlertActionStyleDestructive
+                                                           handler:^(UIAlertAction *action){
+                                                               [weakSelf.editorView removeVideo:weakSelf.selectedMediaID];
+                                                           }];
+        [alertController addAction:stopAction];
+    } else {
+        UIAlertAction *removeAction = [UIAlertAction actionWithTitle:@"Remove Video"
+                                                               style:UIAlertActionStyleDestructive
+                                                             handler:^(UIAlertAction *action){
+                                                                 [weakSelf.editorView removeVideo:weakSelf.selectedMediaID];
+                                                             }];
+        
+        UIAlertAction *retryAction = [UIAlertAction actionWithTitle:@"Retry Upload"
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction *action){
+                                                                NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"videoID":weakSelf.selectedMediaID}];
+                                                                progress.totalUnitCount = 100;
+                                                                [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                                                                 target:self
+                                                                                               selector:@selector(timerFireMethod:)
+                                                                                               userInfo:progress
+                                                                                                repeats:YES];
+                                                                weakSelf.mediaAdded[self.selectedMediaID] = progress;
+                                                                [weakSelf.editorView unmarkVideoFailedUpload:weakSelf.selectedMediaID];
+                                                            }];
+        [alertController addAction:removeAction];
+        [alertController addAction:retryAction];
     }
     self.selectedMediaID = videoId;
+    [self.navigationController presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)showPhotoPicker
@@ -344,54 +418,6 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
         NSURL *assetURL = info[UIImagePickerControllerReferenceURL];
         [self addAssetToContent:assetURL];
     }];
-    
-}
-
-#pragma mark - UIActionSheetDelegate
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (actionSheet.tag == WPViewControllerActionSheetImageUploadStop){
-        if (buttonIndex == actionSheet.destructiveButtonIndex) {
-            [self.editorView removeImage:self.selectedMediaID];
-        }
-    } else if (actionSheet.tag == WPViewControllerActionSheetImageUploadRetry){
-        if (buttonIndex == actionSheet.destructiveButtonIndex) {
-            [self.editorView removeImage:self.selectedMediaID];
-        } else if (buttonIndex == actionSheet.firstOtherButtonIndex) {
-            NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":self.selectedMediaID}];
-            progress.totalUnitCount = 100;
-            [NSTimer scheduledTimerWithTimeInterval:0.1
-                                             target:self
-                                           selector:@selector(timerFireMethod:)
-                                           userInfo:progress
-                                            repeats:YES];
-            self.mediaAdded[self.selectedMediaID] = progress;
-            [self.editorView unmarkImageFailedUpload:self.selectedMediaID];
-        }
-
-    } else if (actionSheet.tag == WPViewControllerActionSheetVideoUploadStop){
-        if (buttonIndex == actionSheet.destructiveButtonIndex) {
-            [self.editorView removeVideo:self.selectedMediaID];
-        }
-    } else if (actionSheet.tag == WPViewControllerActionSheetVideoUploadRetry){
-        if (buttonIndex == actionSheet.destructiveButtonIndex) {
-            [self.editorView removeVideo:self.selectedMediaID];
-        } else if (buttonIndex == actionSheet.firstOtherButtonIndex) {
-            NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"videoID":self.selectedMediaID}];
-            progress.totalUnitCount = 100;
-            [NSTimer scheduledTimerWithTimeInterval:0.1
-                                             target:self
-                                           selector:@selector(timerFireMethod:)
-                                           userInfo:progress
-                                            repeats:YES];
-            self.mediaAdded[self.selectedMediaID] = progress;
-            [self.editorView unmarkVideoFailedUpload:self.selectedMediaID];
-        }
-        
-    }
-
-    
     
 }
 

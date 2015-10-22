@@ -1,1 +1,0 @@
-../../../WordPress-iOS-Shared/WordPress-iOS-Shared/Core/WPTableViewSectionFooterView.h

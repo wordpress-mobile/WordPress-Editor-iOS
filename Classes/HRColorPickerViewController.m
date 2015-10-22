@@ -74,7 +74,7 @@
 
 - (void)loadView
 {
-    CGRect frame = [[UIScreen mainScreen] applicationFrame];
+    CGRect frame = [UIApplication sharedApplication].keyWindow.bounds;
     frame.size.height -= 44.f;
     
     self.view = [[UIView alloc] initWithFrame:frame];
