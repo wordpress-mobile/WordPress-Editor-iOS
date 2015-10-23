@@ -1,6 +1,5 @@
 #import "WPEditorViewController.h"
 #import <MobileCoreServices/MobileCoreServices.h>
-#import <UIAlertView+Blocks/UIAlertView+Blocks.h>
 #import <UIKit/UIKit.h>
 #import <WordPressCom-Analytics-iOS/WPAnalytics.h>
 #import <WordPress-iOS-Shared/WPFontManager.h>
@@ -22,11 +21,10 @@ CGFloat const EPVCStandardOffset = 10.0;
 NSInteger const WPImageAlertViewTag = 91;
 NSInteger const WPLinkAlertViewTag = 92;
 
-@interface WPEditorViewController () <HRColorPickerViewControllerDelegate, UIAlertViewDelegate, WPEditorToolbarViewDelegate, WPEditorViewDelegate>
+@interface WPEditorViewController () <HRColorPickerViewControllerDelegate, WPEditorToolbarViewDelegate, WPEditorViewDelegate>
 
 @property (nonatomic, strong) NSString *htmlString;
 @property (nonatomic, strong) NSArray *editorItemsEnabled;
-@property (nonatomic, strong) UIAlertView *alertView;
 @property (nonatomic, strong) NSString *selectedImageURL;
 @property (nonatomic, strong) NSString *selectedImageAlt;
 @property (nonatomic) BOOL didFinishLoadingEditor;
@@ -1034,14 +1032,22 @@ NSInteger const WPLinkAlertViewTag = 92;
     } else {
         // Do not allow users to insert images in HTML mode for now
         __weak __typeof(self)weakSelf = self;
-        [UIAlertView showWithTitle:NSLocalizedString(@"Unable to insert image", @"Title of dialog notifing user they cannot insert an image in the editor's HTML mode.")
-                           message:NSLocalizedString(@"You cannot insert images while editing HTML directly. Please switch back to visual mode.", @"Body of dialog notifing user they cannot insert an image in the editor's HTML mode.")
-                 cancelButtonTitle:NSLocalizedString(@"OK", @"OK")
-                 otherButtonTitles:nil
-                          tapBlock:^(UIAlertView *alertView, NSInteger buttonIndex) {
-                              [weakSelf clearToolbar];
-                          }
-         ];
+        NSString *title = NSLocalizedString(@"Unable to insert image",
+                                            @"Title of dialog notifing user they cannot insert an image in the editor's HTML mode.");
+        NSString *message = NSLocalizedString(@"You cannot insert images while editing HTML directly. Please switch back to visual mode.",
+                                              @"Body of dialog notifing user they cannot insert an image in the editor's HTML mode.");
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
+                                                                                 message:message
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"Label text to dismiss an alert view.") style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+            [weakSelf clearToolbar];
+        }];
+        
+        [alertController addAction:defaultAction];
+        [self presentViewController:alertController
+                           animated:YES
+                         completion:nil];
     }
     [WPAnalytics track:WPAnalyticsStatEditorTappedImage];
 }
@@ -1351,94 +1357,106 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)showInsertLinkDialogWithLink:(NSString*)url
 							   title:(NSString*)title
 {
-    
-	BOOL isInsertingNewLink = (url == nil);
-	
-	if (!url) {
-		NSURL* pasteboardUrl = [self urlFromPasteboard];
-		
-		url = [pasteboardUrl absoluteString];
-	}
-	
-	NSString *insertButtonTitle = isInsertingNewLink ? NSLocalizedString(@"Insert", nil) : NSLocalizedString(@"Update", nil);
-	NSString *removeButtonTitle = isInsertingNewLink ? nil : NSLocalizedString(@"Remove Link", nil);
-	
-	self.alertView = [[UIAlertView alloc] initWithTitle:insertButtonTitle
-												message:nil
-											   delegate:self
-									  cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
-									  otherButtonTitles:insertButtonTitle, removeButtonTitle, nil];
-	
-	// The reason why we're setting a login & password style, is that it's the only style that
-	// supports having two edit fields.  We'll customize the password field to behave as we want.
-	//
-    self.alertView.alertViewStyle = UIAlertViewStyleLoginAndPasswordInput;
-    self.alertView.tag = WPLinkAlertViewTag;
-	
-	UITextField *linkURL = [self.alertView textFieldAtIndex:0];
-	
-	linkURL.clearButtonMode = UITextFieldViewModeAlways;
-	linkURL.placeholder = NSLocalizedString(@"URL", nil);
-	
-    if (url) {
-        linkURL.text = url;
-    }
-	
-	UITextField *linkNameTextField = [self.alertView textFieldAtIndex:1];
-	
-	linkNameTextField.clearButtonMode = UITextFieldViewModeAlways;
-	linkNameTextField.placeholder = NSLocalizedString(@"Link Name", nil);
-	linkNameTextField.secureTextEntry = NO;
-	linkNameTextField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
-	linkNameTextField.autocorrectionType = UITextAutocorrectionTypeDefault;
-	linkNameTextField.spellCheckingType = UITextSpellCheckingTypeDefault;
-	
-	if (title) {
-		linkNameTextField.text = title;
-	}
-	
     __weak __typeof(self) weakSelf = self;
-
-    self.alertView.willPresentBlock = ^(UIAlertView* alertView) {
-        
-        [weakSelf.editorView saveSelection];
-        [weakSelf.editorView endEditing];
-    };
-	
-	self.alertView.didDismissBlock = ^(UIAlertView *alertView, NSInteger buttonIndex) {
-		[weakSelf.editorView restoreSelection];
-		
-		if (alertView.tag == WPLinkAlertViewTag) {
-			if (buttonIndex == 1) {
-				NSString *linkURL = [alertView textFieldAtIndex:0].text;
-				NSString *linkTitle = [alertView textFieldAtIndex:1].text;
-                
-				if ([linkTitle length] == 0) {
-					linkTitle = linkURL;
-				}
-                
-				if (isInsertingNewLink) {
-					[weakSelf insertLink:linkURL title:linkTitle];
-				} else {
-					[weakSelf updateLink:linkURL title:linkTitle];
-				}
-			} else if (buttonIndex == 2) {
-				[weakSelf removeLink];
-			}
-		}
-    };
-	
-    self.alertView.shouldEnableFirstOtherButtonBlock = ^BOOL(UIAlertView *alertView) {
-		if (alertView.tag == WPLinkAlertViewTag) {
-            UITextField *textField = [alertView textFieldAtIndex:0];
-            if ([textField.text length] == 0) {
-                return NO;
-            }
-        }
-        return YES;
-    };
+    BOOL isInsertingNewLink = (url == nil);
     
-    [self.alertView show];
+    if (!url) {
+        NSURL* pasteboardUrl = [self urlFromPasteboard];
+        url = [pasteboardUrl absoluteString];
+    }
+    
+    NSString *insertButtonTitle = isInsertingNewLink ? NSLocalizedString(@"Insert", nil) : NSLocalizedString(@"Update", nil);
+    NSString *removeButtonTitle = NSLocalizedString(@"Remove Link", nil);
+    NSString *cancelButtonTitle = NSLocalizedString(@"Cancel", @"Cancel button");
+    
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:insertButtonTitle
+                                                                             message:nil
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.clearButtonMode = UITextFieldViewModeAlways;
+        textField.placeholder = NSLocalizedString(@"URL", @"URL text field placeholder");
+        
+        if (url) {
+            textField.text = url;
+        }
+        
+        [textField addTarget:weakSelf
+                      action:@selector(alertTextFieldDidChange:)
+            forControlEvents:UIControlEventEditingChanged];
+    }];
+    
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.clearButtonMode = UITextFieldViewModeAlways;
+        textField.placeholder = NSLocalizedString(@"Link Name", @"Link name field placeholder");
+        textField.secureTextEntry = NO;
+        textField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
+        textField.autocorrectionType = UITextAutocorrectionTypeDefault;
+        textField.spellCheckingType = UITextSpellCheckingTypeDefault;
+        
+        if (title) {
+            textField.text = title;
+        }
+    }];
+    
+    UIAlertAction* insertAction = [UIAlertAction actionWithTitle:insertButtonTitle
+                                                           style:UIAlertActionStyleDefault
+                                                         handler:^(UIAlertAction * action) {
+                                                             [weakSelf.editorView restoreSelection];
+                                                             
+                                                             NSString *linkURL = alertController.textFields.firstObject.text;
+                                                             NSString *linkTitle = alertController.textFields.lastObject.text;
+                                                             
+                                                             if ([linkTitle length] == 0) {
+                                                                 linkTitle = linkURL;
+                                                             }
+                                                             
+                                                             if (isInsertingNewLink) {
+                                                                 [weakSelf insertLink:linkURL title:linkTitle];
+                                                             } else {
+                                                                 [weakSelf updateLink:linkURL title:linkTitle];
+                                                             }
+                                                         }];
+    
+    UIAlertAction* removeAction = [UIAlertAction actionWithTitle:removeButtonTitle
+                                                           style:UIAlertActionStyleDestructive
+                                                         handler:^(UIAlertAction * action) {
+                                                             [weakSelf.editorView restoreSelection];
+                                                             [weakSelf removeLink];
+                                                         }];
+    
+    UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:cancelButtonTitle
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction * action) {
+                                                             [weakSelf.editorView restoreSelection];
+                                                         }];
+    
+    [alertController addAction:insertAction];
+    if (!isInsertingNewLink) {
+        [alertController addAction:removeAction];
+    }
+    [alertController addAction:cancelAction];
+    
+    // Disabled until url is entered into field
+    UITextField *urlField = alertController.textFields.firstObject;
+    insertAction.enabled = urlField.text.length > 0;
+    
+    [self.editorView saveSelection];
+    [self.editorView endEditing];
+    [self presentViewController:alertController
+                       animated:YES
+                     completion:nil];
+}
+
+- (void)alertTextFieldDidChange:(UITextField *)sender
+{
+    UIAlertController *alertController = (UIAlertController *)self.presentedViewController;
+    if (alertController)
+    {
+        UITextField *urlField = alertController.textFields.firstObject;
+        UIAlertAction *insertAction = alertController.actions.firstObject;
+        insertAction.enabled = urlField.text.length > 0;
+    }
 }
 
 - (void)insertLink:(NSString *)url
@@ -1451,11 +1469,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 			 title:(NSString*)title
 {
 	[self.editorView updateLink:url title:title];
-}
-
-- (void)dismissAlertView
-{
-    [self.alertView dismissWithClickedButtonIndex:self.alertView.cancelButtonIndex animated:YES];
 }
 
 - (void)removeLink

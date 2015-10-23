@@ -1,17 +1,16 @@
-platform :ios, '7.0'
+platform :ios, '9.0'
 # Don't inhibit all warnings for all pods… do it individually.  We need the editor
 # POD to show all warnings.
 
 target 'EditorDemo' do
   pod 'WordPress-iOS-Editor', :path => '../'
-  pod 'CocoaLumberjack', '~>2.0', :inhibit_warnings => true
-  pod 'UIAlertView+Blocks', '~>0.8.1', :inhibit_warnings => true
-  pod 'WordPress-iOS-Shared', '~>0.3', :inhibit_warnings => true
-  pod 'WordPressCom-Analytics-iOS', '~>0.0.4', :inhibit_warnings => true
+  pod 'CocoaLumberjack', '~>2.0.0', :inhibit_warnings => true
+  pod 'WordPress-iOS-Shared', '~>0.4.4', :inhibit_warnings => true
+  pod 'WordPressCom-Analytics-iOS', '~>0.0.38', :inhibit_warnings => true
 end
 
-target "EditorDemoTests" do
+target 'EditorDemoTests' do
 #   pod 'Expecta'
-  pod 'CocoaLumberjack', '~>2.0', :inhibit_warnings => true
+  pod 'CocoaLumberjack', '~>2.0.0', :inhibit_warnings => true
 end
 
