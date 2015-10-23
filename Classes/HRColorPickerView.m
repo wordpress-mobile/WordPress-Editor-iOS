@@ -59,7 +59,7 @@
 
 + (HRColorPickerStyle)fitScreenStyle
 {
-    CGSize defaultSize = [[UIScreen mainScreen] applicationFrame].size;
+    CGSize defaultSize = [UIApplication sharedApplication].keyWindow.bounds.size;
     defaultSize.height -= 44.f;
     
     HRColorPickerStyle style = [HRColorPickerView defaultStyle];
