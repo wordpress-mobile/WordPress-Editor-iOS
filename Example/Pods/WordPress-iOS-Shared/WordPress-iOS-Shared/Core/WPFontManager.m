@@ -79,20 +79,20 @@ static NSString * const FontTypeOTF = @"otf";
 {
     NSString *resourceName = @"Merriweather-BoldItalic";
     NSString *fontName = @"Merriweather-BoldItalic";
-    return [self fontNamed:fontName resourceName:resourceName fontType:FontTypeOTF size:size];
+    return [self fontNamed:fontName resourceName:resourceName fontType:FontTypeTTF size:size];
 }
 
 + (UIFont *)merriweatherItalicFontOfSize:(CGFloat)size;
 {
     NSString *resourceName = @"Merriweather-Italic";
     NSString *fontName = @"Merriweather-Italic";
-    return [self fontNamed:fontName resourceName:resourceName fontType:FontTypeOTF size:size];
+    return [self fontNamed:fontName resourceName:resourceName fontType:FontTypeTTF size:size];
 }
 
 + (UIFont *)merriweatherLightFontOfSize:(CGFloat)size;
 {
     NSString *resourceName = @"Merriweather-Light";
-    NSString *fontName = @"Merriweather Light";
+    NSString *fontName = @"Merriweather-Light";
     return [self fontNamed:fontName resourceName:resourceName fontType:FontTypeTTF size:size];
 }
 
@@ -100,7 +100,7 @@ static NSString * const FontTypeOTF = @"otf";
 {
     NSString *resourceName = @"Merriweather-LightItalic";
     NSString *fontName = @"Merriweather-LightItalic";
-    return [self fontNamed:fontName resourceName:resourceName fontType:FontTypeOTF size:size];
+    return [self fontNamed:fontName resourceName:resourceName fontType:FontTypeTTF size:size];
 }
 
 + (UIFont *)merriweatherRegularFontOfSize:(CGFloat)size
