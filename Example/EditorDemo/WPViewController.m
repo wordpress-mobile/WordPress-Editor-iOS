@@ -30,7 +30,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     
     self.delegate = self;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Edit"
-                                                                             style:UIBarButtonItemStyleBordered
+                                                                             style:UIBarButtonItemStylePlain
                                                                             target:self
                                                                             action:@selector(editTouchedUpInside)];
     self.mediaAdded = [NSMutableDictionary dictionary];
