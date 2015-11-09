@@ -3,23 +3,6 @@
 @class WPEditorFormatbarView;
 @class ZSSBarButtonItem;
 
-/**
- *  The types of toolbar items that can be added
- */
-typedef NS_ENUM(NSInteger, ZSSRichTextEditorToolbar) {
-    ZSSRichTextEditorToolbarBold = 1,
-    ZSSRichTextEditorToolbarItalic = 1 << 0,
-    ZSSRichTextEditorToolbarStrikeThrough = 1 << 1,
-    ZSSRichTextEditorToolbarUnorderedList = 1 << 2,
-    ZSSRichTextEditorToolbarOrderedList = 1 << 3,
-    ZSSRichTextEditorToolbarInsertImage = 1 << 4,
-    ZSSRichTextEditorToolbarInsertLink = 1 << 5,
-    ZSSRichTextEditorToolbarViewSource = 1 << 6,
-    ZSSRichTextEditorToolbarBlockQuote = 1 << 7,
-    ZSSRichTextEditorToolbarAll = 1 << 8,
-    ZSSRichTextEditorToolbarNone = 1 << 9,
-};
-
 typedef enum
 {
     kWPEditorViewControllerElementTagUnknown = -1,
