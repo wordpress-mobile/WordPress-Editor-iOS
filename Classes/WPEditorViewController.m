@@ -7,6 +7,7 @@
 #import <WordPress-iOS-Shared/WPTableViewCell.h>
 #import <WordPress-iOS-Shared/UIImage+Util.h>
 #import <WordPress-iOS-Shared/UIColor+Helpers.h>
+#import <WordPress-iOS-Shared/WPDeviceIdentification.h>
 
 #import "WPEditorField.h"
 #import "WPEditorToolbarButton.h"
@@ -14,8 +15,6 @@
 #import "WPEditorView.h"
 #import "WPImageMeta.h"
 #import "ZSSBarButtonItem.h"
-
-#import "WPDeviceIdentification.h"
 
 CGFloat const EPVCStandardOffset = 10.0;
 NSInteger const WPImageAlertViewTag = 91;
