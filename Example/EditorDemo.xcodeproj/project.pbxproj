@@ -27,6 +27,7 @@
 		748D2AAD193E516000D5ACC8 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748D2A8C193E516000D5ACC8 /* UIKit.framework */; };
 		748D2AB5193E516000D5ACC8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 748D2AB3193E516000D5ACC8 /* InfoPlist.strings */; };
 		748D2AB7193E516000D5ACC8 /* EditorDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 748D2AB6193E516000D5ACC8 /* EditorDemoTests.m */; };
+		74991B601BF10E7500AFA57B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74991B5F1BF10E7500AFA57B /* LaunchScreen.storyboard */; };
 		B1341A871FF54DCCAEE52D3A /* libPods-EditorDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 986CDAC2D08B4B22A292BF20 /* libPods-EditorDemo.a */; };
 /* End PBXBuildFile section */
 
@@ -69,6 +70,7 @@
 		748D2AB2193E516000D5ACC8 /* EditorDemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "EditorDemoTests-Info.plist"; sourceTree = "<group>"; };
 		748D2AB4193E516000D5ACC8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		748D2AB6193E516000D5ACC8 /* EditorDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditorDemoTests.m; sourceTree = "<group>"; };
+		74991B5F1BF10E7500AFA57B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7DB5B4BB7BD920939EF39DA4 /* Pods-EditorDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EditorDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-EditorDemo/Pods-EditorDemo.release.xcconfig"; sourceTree = "<group>"; };
 		986CDAC2D08B4B22A292BF20 /* libPods-EditorDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EditorDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A92C5705CA55DA4FE6C241C2 /* Pods-EditorDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EditorDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EditorDemo/Pods-EditorDemo.debug.xcconfig"; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 		748D2A8E193E516000D5ACC8 /* EditorDemo */ = {
 			isa = PBXGroup;
 			children = (
+				74991B5F1BF10E7500AFA57B /* LaunchScreen.storyboard */,
 				748D2A97193E516000D5ACC8 /* WPAppDelegate.h */,
 				748D2A98193E516000D5ACC8 /* WPAppDelegate.m */,
 				59F15AD019E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.h */,
@@ -285,6 +288,7 @@
 				748D2A9F193E516000D5ACC8 /* Main_iPad.storyboard in Resources */,
 				74291D0A1940C859004230D4 /* content.html in Resources */,
 				748D2AA4193E516000D5ACC8 /* Images.xcassets in Resources */,
+				74991B601BF10E7500AFA57B /* LaunchScreen.storyboard in Resources */,
 				748D2A9C193E516000D5ACC8 /* Main_iPhone.storyboard in Resources */,
 				748D2A93193E516000D5ACC8 /* InfoPlist.strings in Resources */,
 			);
@@ -538,7 +542,6 @@
 			baseConfigurationReference = A92C5705CA55DA4FE6C241C2 /* Pods-EditorDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -555,7 +558,6 @@
 			baseConfigurationReference = 7DB5B4BB7BD920939EF39DA4 /* Pods-EditorDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
