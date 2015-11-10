@@ -1,7 +1,8 @@
 #import "WPViewController.h"
 
-@import AssetsLibrary;
+@import Photos;
 @import AVFoundation;
+@import MobileCoreServices;
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import "WPEditorField.h"
 #import "WPEditorView.h"
@@ -290,16 +291,24 @@
     [self.navigationController presentViewController:picker animated:YES completion:nil];
 }
 
-- (void)addImageAssetToContent:(ALAsset *)asset
+- (void)addImageAssetToContent:(PHAsset *)asset
 {
-    UIImage *image = [UIImage imageWithCGImage:asset.defaultRepresentation.fullScreenImage];
-    NSData *data = UIImageJPEGRepresentation(image, 0.7);
+    PHImageRequestOptions *options = [PHImageRequestOptions new];
+    options.synchronous = NO;
+    options.networkAccessAllowed = YES;
+    options.resizeMode = PHImageRequestOptionsResizeModeExact;
+    options.version = PHImageRequestOptionsVersionCurrent;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
     NSString *imageID = [[NSUUID UUID] UUIDString];
     NSString *path = [NSString stringWithFormat:@"%@/%@.jpg", NSTemporaryDirectory(), imageID];
-    [data writeToFile:path atomically:YES];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
-    });
+    [[PHImageManager defaultManager] requestImageDataForAsset:asset
+                                                      options:options
+                                                resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+        [imageData writeToFile:path atomically:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
+        });
+    }];
 
     NSProgress *progress = [[NSProgress alloc] initWithParent:nil userInfo:@{ @"imageID": imageID,
                                                                               @"url": path }];
@@ -316,55 +325,72 @@
     self.mediaAdded[imageID] = progress;
 }
 
-- (void)addVideoAssetToContent:(ALAsset *)originalAsset
+- (void)addVideoAssetToContent:(PHAsset *)originalAsset
 {
-    UIImage *image = [UIImage imageWithCGImage:originalAsset.defaultRepresentation.fullScreenImage];
-    NSData *data = UIImageJPEGRepresentation(image, 0.7);
-    NSString *posterImagePath = [NSString stringWithFormat:@"%@/%@.jpg", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
-    [data writeToFile:posterImagePath atomically:YES];
+    PHImageRequestOptions *options = [PHImageRequestOptions new];
+    options.synchronous = NO;
+    options.networkAccessAllowed = YES;
+    options.resizeMode = PHImageRequestOptionsResizeModeFast;
+    options.version = PHImageRequestOptionsVersionCurrent;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
     NSString *videoID = [[NSUUID UUID] UUIDString];
-    [self.editorView insertInProgressVideoWithID:videoID
-                                usingPosterImage:[[NSURL fileURLWithPath:posterImagePath] absoluteString]];
-    ALAssetRepresentation *representation = originalAsset.defaultRepresentation;
-    AVAsset *asset = [AVURLAsset URLAssetWithURL:representation.url options:nil];
     NSString *videoPath = [NSString stringWithFormat:@"%@%@.mov", NSTemporaryDirectory(), videoID];
-    NSString *presetName = AVAssetExportPresetPassthrough;
-    AVAssetExportSession *session = [AVAssetExportSession exportSessionWithAsset:asset presetName:presetName];
-    session.outputFileType = representation.UTI;
-    session.shouldOptimizeForNetworkUse = YES;
-    session.outputURL = [NSURL fileURLWithPath:videoPath];
-    [session exportAsynchronouslyWithCompletionHandler:^{
-        if (session.status != AVAssetExportSessionStatusCompleted) {
-            return;
-        }
+    [[PHImageManager defaultManager] requestImageForAsset:originalAsset
+                                               targetSize:[UIScreen mainScreen].bounds.size
+                                              contentMode:PHImageContentModeAspectFit
+                                                  options:options
+                                            resultHandler:^(UIImage *image, NSDictionary * _Nullable info) {
+        NSData *data = UIImageJPEGRepresentation(image, 0.7);
+        NSString *posterImagePath = [NSString stringWithFormat:@"%@/%@.jpg", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
+        [data writeToFile:posterImagePath atomically:YES];
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSProgress *progress = [[NSProgress alloc] initWithParent:nil
-                                                             userInfo:@{@"videoID": videoID, @"url": videoPath, @"poster": posterImagePath }];
-            progress.cancellable = YES;
-            progress.totalUnitCount = 100;
-            [NSTimer scheduledTimerWithTimeInterval:0.1
-                                             target:self
-                                           selector:@selector(timerFireMethod:)
-                                           userInfo:progress
-                                            repeats:YES];
-            self.mediaAdded[videoID] = progress;
+            [self.editorView insertInProgressVideoWithID:videoID
+                                        usingPosterImage:[[NSURL fileURLWithPath:posterImagePath] absoluteString]];
         });
+        PHVideoRequestOptions *videoOptions = [PHVideoRequestOptions new];
+        videoOptions.networkAccessAllowed = YES;
+        [[PHImageManager defaultManager] requestExportSessionForVideo:originalAsset
+                                                              options:videoOptions
+                                                         exportPreset:AVAssetExportPresetPassthrough
+                                                        resultHandler:^(AVAssetExportSession * _Nullable exportSession, NSDictionary * _Nullable info) {
+                                                            exportSession.outputFileType = (__bridge NSString*)kUTTypeQuickTimeMovie;
+                                                            exportSession.shouldOptimizeForNetworkUse = YES;
+                                                            exportSession.outputURL = [NSURL fileURLWithPath:videoPath];
+                                                            [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                                                                if (exportSession.status != AVAssetExportSessionStatusCompleted) {
+                                                                    return;
+                                                                }
+                                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                                    NSProgress *progress = [[NSProgress alloc] initWithParent:nil
+                                                                                                                     userInfo:@{@"videoID": videoID, @"url": videoPath, @"poster": posterImagePath }];
+                                                                    progress.cancellable = YES;
+                                                                    progress.totalUnitCount = 100;
+                                                                    [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                                                                     target:self
+                                                                                                   selector:@selector(timerFireMethod:)
+                                                                                                   userInfo:progress
+                                                                                                    repeats:YES];
+                                                                    self.mediaAdded[videoID] = progress;
+                                                                });
+                                                            }];
+            
+        }];
     }];
 }
 
 - (void)addAssetToContent:(NSURL *)assetURL
 {
-    ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
-    [assetsLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset) {
+    PHFetchResult *assets = [PHAsset fetchAssetsWithALAssetURLs:@[assetURL] options:nil];
+    if (assets.count < 1) {
+        return;
+    }
+    PHAsset *asset = [assets firstObject];
         
-        if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypeVideo) {
-            [self addVideoAssetToContent:asset];
-        } if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypePhoto) {
-            [self addImageAssetToContent:asset];
-        }
-    } failureBlock:^(NSError *error) {
-        DDLogInfo(@"Failed to insert media: %@", [error localizedDescription]);
-    }];
+    if (asset.mediaType == PHAssetMediaTypeVideo) {
+        [self addVideoAssetToContent:asset];
+    } if (asset.mediaType == PHAssetMediaTypeImage) {
+        [self addImageAssetToContent:asset];
+    }
 }
 
 - (void)timerFireMethod:(NSTimer *)timer
