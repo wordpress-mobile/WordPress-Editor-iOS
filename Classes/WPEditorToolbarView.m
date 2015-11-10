@@ -1,4 +1,4 @@
-#import <WordPress-iOS-Shared/WPDeviceIdentification.h>
+#import <WordPressShared/WPDeviceIdentification.h>
 #import "WPEditorToolbarView.h"
 #import "WPEditorToolbarButton.h"
 #import "ZSSBarButtonItem.h"

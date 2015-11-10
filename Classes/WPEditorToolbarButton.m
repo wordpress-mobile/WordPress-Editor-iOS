@@ -1,5 +1,5 @@
 #import "WPEditorToolbarButton.h"
-#import <WordPress-iOS-Shared/WPStyleGuide.h>
+#import <WordPressShared/WPStyleGuide.h>
 
 static NSString* const CircleLayerKey = @"circleLayer";
 static CGFloat TouchAnimationCircleRadius = 15.0;
