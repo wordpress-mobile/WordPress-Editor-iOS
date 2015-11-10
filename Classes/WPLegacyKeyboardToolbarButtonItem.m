@@ -1,6 +1,6 @@
 #import "WPLegacyKeyboardToolbarButtonItem.h"
 #import <QuartzCore/QuartzCore.h>
-#import <WordPress-iOS-Shared/WPStyleGuide.h>
+#import <WordPressShared/WPStyleGuide.h>
 
 @implementation WPLegacyKeyboardToolbarButtonItem
 @synthesize actionTag, actionName;

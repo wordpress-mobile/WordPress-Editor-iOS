@@ -1,7 +1,7 @@
 #import "WPEditorFormatbarView.h"
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
-#import "WPDeviceIdentification.h"
+#import <WordPressShared/WPDeviceIdentification.h>
 #import "WPEditorToolbarButton.h"
 #import "ZSSBarButtonItem.h"
 

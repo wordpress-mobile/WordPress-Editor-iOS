@@ -1,10 +1,10 @@
 #import "WPLegacyEditorViewController.h"
 #import "WPLegacyKeyboardToolbarBase.h"
 #import "WPLegacyKeyboardToolbarDone.h"
-#import <WordPressCom-Analytics-iOS/WPAnalytics.h>
-#import <WordPress-iOS-Shared/WPStyleGuide.h>
-#import <WordPress-iOS-Shared/WPTableViewCell.h>
-#import <WordPress-iOS-Shared/UIImage+Util.h>
+#import <WordPressComAnalytics/WPAnalytics.h>
+#import <WordPressShared/WPStyleGuide.h>
+#import <WordPressShared/WPTableViewCell.h>
+#import <WordPressShared/UIImage+Util.h>
 
 CGFloat const WPLegacyEPVCTextfieldHeight = 44.0f;
 CGFloat const WPLegacyEPVCOptionsHeight = 44.0f;
