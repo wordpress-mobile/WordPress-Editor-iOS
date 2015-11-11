@@ -190,22 +190,12 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)traitCollectionDidChange:(UITraitCollection *) previousTraitCollection
 {
     [super traitCollectionDidChange: previousTraitCollection];
-    CGFloat screenWidth = self.view.bounds.size.width;
-    CGFloat toolbarWidth = self.toolbarView.bounds.size.width;
-    if (self.isFirstSetupComplete && self.isEditingEnabled && (toolbarWidth != screenWidth)) {
-        // Important: This is a complete and utter hack that compensates for the input accessory view
-        // not properly changing size classes (resizing) when the rest of the views in the editor VC do.
-        // Toggling the HTML button on the input bar quickly does not affect the view and forces the
-        // input accessory view (the format bar) to update itself. FWIW, setNeedsDisplay and
-        // setNeedsLayout do NOT work.
-        if ([self.editorView isInVisualMode]) {
-            [self.editorView showHTMLSource];
-            [self.editorView showVisualEditor];
-        } else {
-            [self.editorView showHTMLSource];
-            [self.editorView showVisualEditor];
-        }
-    }
+    [self recoverFromViewSizeChange];
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [self recoverFromViewSizeChange];
 }
 
 - (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
@@ -1065,6 +1055,24 @@ didFailLoadWithError:(NSError *)error
 }
 
 #pragma mark - Utilities
+
+- (void)recoverFromViewSizeChange
+{
+    if (self.isFirstSetupComplete) {
+        // Important: This is a complete and utter hack that compensates for the input accessory view
+        // not properly changing size classes (resizing) when the rest of the views in the editor VC do.
+        // Toggling the HTML button on the input bar quickly does not affect the view and forces the
+        // input accessory view (the format bar) to update itself. FWIW, setNeedsDisplay and
+        // setNeedsLayout do NOT work.
+        if ([self.editorView isInVisualMode]) {
+            [self.editorView showHTMLSource];
+            [self.editorView showVisualEditor];
+        } else {
+            [self.editorView showHTMLSource];
+            [self.editorView showVisualEditor];
+        }
+    }
+}
 
 - (UIColor *)barButtonItemDefaultColor
 {
