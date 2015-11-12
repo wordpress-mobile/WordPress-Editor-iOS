@@ -1,23 +1,23 @@
 PODS:
-  - AFNetworking (2.6.1):
-    - AFNetworking/NSURLConnection (= 2.6.1)
-    - AFNetworking/NSURLSession (= 2.6.1)
-    - AFNetworking/Reachability (= 2.6.1)
-    - AFNetworking/Security (= 2.6.1)
-    - AFNetworking/Serialization (= 2.6.1)
-    - AFNetworking/UIKit (= 2.6.1)
-  - AFNetworking/NSURLConnection (2.6.1):
+  - AFNetworking (2.6.2):
+    - AFNetworking/NSURLConnection (= 2.6.2)
+    - AFNetworking/NSURLSession (= 2.6.2)
+    - AFNetworking/Reachability (= 2.6.2)
+    - AFNetworking/Security (= 2.6.2)
+    - AFNetworking/Serialization (= 2.6.2)
+    - AFNetworking/UIKit (= 2.6.2)
+  - AFNetworking/NSURLConnection (2.6.2):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/NSURLSession (2.6.1):
+  - AFNetworking/NSURLSession (2.6.2):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (2.6.1)
-  - AFNetworking/Security (2.6.1)
-  - AFNetworking/Serialization (2.6.1)
-  - AFNetworking/UIKit (2.6.1):
+  - AFNetworking/Reachability (2.6.2)
+  - AFNetworking/Security (2.6.2)
+  - AFNetworking/Serialization (2.6.2)
+  - AFNetworking/UIKit (2.6.2):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - CocoaLumberjack (2.0.0):
@@ -37,7 +37,7 @@ PODS:
   - WordPress-iOS-Shared (0.4.4):
     - AFNetworking (~> 2.5)
     - CocoaLumberjack (= 2.0.0)
-  - WordPressCom-Analytics-iOS (0.0.38)
+  - WordPressCom-Analytics-iOS (0.0.39)
 
 DEPENDENCIES:
   - CocoaLumberjack (~> 2.0.0)
@@ -50,11 +50,11 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  AFNetworking: 8e4e60500beb8bec644cf575beee72990a76d399
+  AFNetworking: 7f317038a9710cabfa43ec56396b307b45df72ab
   CocoaLumberjack: a6f77d987d65dc7ba86b0f84db7d0b9084f77bcb
   NSObject-SafeExpectations: 7d7f48df90df4e11da7cfe86b64f45eff7a7f521
-  WordPress-iOS-Editor: 5077745deb77e472cae796a6b38d1abcd627709c
+  WordPress-iOS-Editor: 5d9939949c36613c7ab97451c921cf62af212baa
   WordPress-iOS-Shared: 345f7c1c49d298114353c3856c53317f0d826078
-  WordPressCom-Analytics-iOS: 79bb95bf36a152caea98c0ad9cef6fa679174524
+  WordPressCom-Analytics-iOS: 5628c4ad2d4a9d49b290e076b7f593d632492dcc
 
-COCOAPODS: 0.38.2
+COCOAPODS: 0.39.0

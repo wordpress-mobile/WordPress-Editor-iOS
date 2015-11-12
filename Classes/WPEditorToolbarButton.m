@@ -1,4 +1,5 @@
 #import "WPEditorToolbarButton.h"
+#import "UIView+SizeClass.h"
 #import <WordPress-iOS-Shared/WPStyleGuide.h>
 
 static NSString* const CircleLayerKey = @"circleLayer";
@@ -83,7 +84,7 @@ static CGFloat NormalAlpha = 1.0;
     CGRect circleRect = CGRectInset(self.bounds, circleLineWidth / 2.0, circleLineWidth / 2.0);
     CGPoint drawPoint = CGPointMake(CGRectGetMidX(circleRect), CGRectGetMidY(circleRect));
     CAShapeLayer *circleLayer = [CAShapeLayer layer];
-    CGFloat radius = IS_IPAD ? TouchAnimationCircleRadiusiPad : TouchAnimationCircleRadius;
+    CGFloat radius = !self.isViewHorizontallyCompact ? TouchAnimationCircleRadiusiPad : TouchAnimationCircleRadius;
     circleLayer.path = [UIBezierPath bezierPathWithArcCenter:CGPointZero radius:radius startAngle:0 endAngle:M_PI*2 clockwise:NO].CGPath;
     circleLayer.position = drawPoint;
     circleLayer.fillColor =  [[WPStyleGuide greyLighten10] CGColor];
