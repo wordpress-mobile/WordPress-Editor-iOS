@@ -240,8 +240,10 @@ static const CGFloat WPEditorToolbarDividerLineWidth = 0.6;
     barButtonItem.tag = tag;
     barButtonItem.htmlProperty = htmlProperty;
     barButtonItem.accessibilityLabel = accessibilityLabel;
-    
-    UIImage* buttonImage = [[UIImage imageNamed:imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
+    NSBundle* editorBundle = [NSBundle bundleForClass:[self class]];
+    UIImage* image = [UIImage imageNamed:imageName inBundle:editorBundle compatibleWithTraitCollection:nil];
+    UIImage* buttonImage = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     
     CGRect buttonSize;
     if (IS_IPAD) {
