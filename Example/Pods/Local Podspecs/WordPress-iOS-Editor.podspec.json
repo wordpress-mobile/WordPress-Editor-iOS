@@ -1,6 +1,6 @@
 {
   "name": "WordPress-iOS-Editor",
-  "version": "1.0",
+  "version": "1.1",
   "summary": "Reusable component rich text editor for WordPress.com in an iOS application.",
   "description": "Reusable component for displaying the WordPress.com post editor in an iOS application",
   "homepage": "http://apps.wordpress.org",
@@ -10,7 +10,7 @@
   },
   "source": {
     "git": "https://github.com/wordpress-mobile/WordPress-iOS-Editor.git",
-    "tag": "1.0"
+    "tag": "1.1"
   },
   "social_media_url": "http://twitter.com/WordPressiOS",
   "platforms": {
@@ -32,13 +32,14 @@
       "2.0.0"
     ],
     "WordPress-iOS-Shared": [
-      "~>0.4.4"
+      "~>0.5.0"
     ],
     "WordPressCom-Analytics-iOS": [
-      "~>0.0.38"
+      "~>0.0.40"
     ],
     "NSObject-SafeExpectations": [
       "~>0.0.2"
     ]
-  }
+  },
+  "header_dir": "WordPressEditor"
 }
