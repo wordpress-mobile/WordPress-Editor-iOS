@@ -133,6 +133,11 @@ typedef NS_ENUM(NSUInteger, WPAnalyticsStat) {
     WPAnalyticsStatSharedItemViaSMS,
     WPAnalyticsStatSharedItemViaTwitter,
     WPAnalyticsStatSharedItemViaWeibo,
+    WPAnalyticsStatShortcutLogIn,
+    WPAnalyticsStatShortcutNewPost,
+    WPAnalyticsStatShortcutNewPhotoPost,
+    WPAnalyticsStatShortcutStats,
+    WPAnalyticsStatShortcutNotifications,
     WPAnalyticsStatSignedIn,
     WPAnalyticsStatSignedInToJetpack,
     WPAnalyticsStatSkippedConnectingToJetpack,
@@ -156,11 +161,6 @@ typedef NS_ENUM(NSUInteger, WPAnalyticsStat) {
     WPAnalyticsStatThemesChangedTheme,
     WPAnalyticsStatTwoFactorCodeRequested,
     WPAnalyticsStatTwoFactorSentSMS,
-    WPAnalyticsStat3DTouchShortcutLogIn,
-    WPAnalyticsStat3DTouchShortcutNewPost,
-    WPAnalyticsStat3DTouchShortcutNewPhotoPost,
-    WPAnalyticsStat3DTouchShortcutStats,
-    WPAnalyticsStat3DTouchShortcutNotifications,
     WPAnalyticsStatMaxValue
 };
 
