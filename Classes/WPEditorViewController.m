@@ -1,13 +1,13 @@
 #import "WPEditorViewController.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
-#import <WordPressCom-Analytics-iOS/WPAnalytics.h>
-#import <WordPress-iOS-Shared/WPFontManager.h>
-#import <WordPress-iOS-Shared/WPStyleGuide.h>
-#import <WordPress-iOS-Shared/WPTableViewCell.h>
-#import <WordPress-iOS-Shared/UIImage+Util.h>
-#import <WordPress-iOS-Shared/UIColor+Helpers.h>
-#import <WordPress-iOS-Shared/WPDeviceIdentification.h>
+#import <WordPressComAnalytics/WPAnalytics.h>
+#import <WordPressShared/WPFontManager.h>
+#import <WordPressShared/WPStyleGuide.h>
+#import <WordPressShared/WPTableViewCell.h>
+#import <WordPressShared/UIImage+Util.h>
+#import <WordPressShared/UIColor+Helpers.h>
+#import <WordPressShared/WPDeviceIdentification.h>
 
 #import "WPEditorField.h"
 #import "WPEditorToolbarButton.h"

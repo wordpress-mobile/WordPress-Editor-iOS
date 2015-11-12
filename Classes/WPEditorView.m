@@ -5,9 +5,9 @@
 #import "WPEditorField.h"
 #import "WPImageMeta.h"
 #import "ZSSTextView.h"
-#import <WordPress-iOS-Shared/WPDeviceIdentification.h>
-#import <WordPress-iOS-Shared/WPFontManager.h>
-#import <WordPress-iOS-Shared/WPStyleGuide.h>
+#import <WordPressShared/WPDeviceIdentification.h>
+#import <WordPressShared/WPFontManager.h>
+#import <WordPressShared/WPStyleGuide.h>
 
 typedef void(^WPEditorViewCallbackParameterProcessingBlock)(NSString* parameterName, NSString* parameterValue);
 typedef void(^WPEditorViewNoParamsCompletionBlock)();
