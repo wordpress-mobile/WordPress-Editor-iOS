@@ -1,6 +1,5 @@
 #import "WPEditorView.h"
 
-#import "UIView+SizeClass.h"
 #import "UIWebView+GUIFixes.h"
 #import "HRColorUtil.h"
 #import "WPEditorField.h"
@@ -19,13 +18,11 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 static NSString* const kWPEditorViewFieldTitleId = @"zss_field_title";
 static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 
-static const CGFloat UITextFieldLeftRightInset = 15.5;
-static const CGFloat iPadUITextFieldLeftRightInset = 45.0;
+static const CGFloat UITextFieldLeftRightInset = 20.0;
 static const CGFloat UITextFieldFieldHeight = 55.0;
 static const CGFloat SourceTitleTextFieldYOffset = 4.0;
 static const CGFloat HTMLViewTopInset = 15.0;
-static const CGFloat HTMLViewLeftRightInset = 10.0;
-static const CGFloat iPadHTMLViewLeftRightInset = 42.5;
+static const CGFloat HTMLViewLeftRightInset = 15.0;
 
 static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
@@ -113,13 +110,8 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     NSAssert(!_sourceViewTitleField, @"The source view title field must not exist when this method is called!");	
 
     CGRect titleFrame;
-    if (!self.isViewHorizontallyCompact) {
-        CGFloat textWidth = CGRectGetWidth(frame) - (2 * iPadUITextFieldLeftRightInset);
-        titleFrame = CGRectMake(iPadUITextFieldLeftRightInset, SourceTitleTextFieldYOffset, textWidth, UITextFieldFieldHeight);
-    } else {
-        CGFloat textWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset);
-        titleFrame = CGRectMake(UITextFieldLeftRightInset, SourceTitleTextFieldYOffset, textWidth, UITextFieldFieldHeight);
-    }
+    CGFloat textWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset);
+    titleFrame = CGRectMake(UITextFieldLeftRightInset, SourceTitleTextFieldYOffset, textWidth, UITextFieldFieldHeight);
     _sourceViewTitleField = [[UITextField alloc] initWithFrame:titleFrame];
     _sourceViewTitleField.hidden = YES;
     _sourceViewTitleField.font = [WPFontManager merriweatherBoldFontOfSize:24.0];
@@ -136,13 +128,8 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 {
     NSAssert(!_sourceContentDividerView, @"The source divider view must not exist when this method is called!");
     
-    if (!self.isViewHorizontallyCompact) {
-        CGFloat lineWidth = CGRectGetWidth(frame) - (2 * iPadUITextFieldLeftRightInset);
-        _sourceContentDividerView = [[UIView alloc] initWithFrame:CGRectMake(iPadUITextFieldLeftRightInset, CGRectGetMaxY(frame), lineWidth, CGRectGetHeight(frame))];
-    } else {
-        CGFloat lineWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset);
-        _sourceContentDividerView = [[UIView alloc] initWithFrame:CGRectMake(UITextFieldLeftRightInset, CGRectGetMaxY(frame), lineWidth, CGRectGetHeight(frame))];
-    }
+    CGFloat lineWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset);
+    _sourceContentDividerView = [[UIView alloc] initWithFrame:CGRectMake(UITextFieldLeftRightInset, CGRectGetMaxY(frame), lineWidth, CGRectGetHeight(frame))];
     _sourceContentDividerView.backgroundColor = [WPStyleGuide greyLighten30];
     _sourceContentDividerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     _sourceContentDividerView.hidden = YES;
@@ -159,11 +146,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     _sourceView.autocorrectionType = UITextAutocorrectionTypeNo;
     _sourceView.autoresizingMask =  UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     _sourceView.autoresizesSubviews = YES;
-    if (!self.isViewHorizontallyCompact) {
-        _sourceView.textContainerInset = UIEdgeInsetsMake(HTMLViewTopInset, iPadHTMLViewLeftRightInset, 0, iPadHTMLViewLeftRightInset);
-    } else {
-        _sourceView.textContainerInset = UIEdgeInsetsMake(HTMLViewTopInset, HTMLViewLeftRightInset, 0.0f, HTMLViewLeftRightInset);
-    }
+    _sourceView.textContainerInset = UIEdgeInsetsMake(HTMLViewTopInset, HTMLViewLeftRightInset, 0.0f, HTMLViewLeftRightInset);
     _sourceView.delegate = self;
     [self addSubview:_sourceView];
 }
