@@ -19,13 +19,18 @@
     return self;
 }
 
+- (UIImage *)imageNamed:(NSString *)imageName {
+    NSBundle* editorBundle = [NSBundle bundleForClass:[self class]];
+    return [UIImage imageNamed:imageName inBundle:editorBundle compatibleWithTraitCollection:nil];
+}
+
 - (void)setImageName:(NSString *)imageName {
-    [self setImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@", imageName]] forState:UIControlStateNormal];
+    [self setImage:[self imageNamed:[NSString stringWithFormat:@"%@", imageName]] forState:UIControlStateNormal];
     self.imageView.contentMode = UIViewContentModeCenter;
 }
 
 - (void)setImageName:(NSString *)imageName withColor:(UIColor *)tintColor highlightColor:(UIColor *)highlightColor {
-    UIImage *image = [UIImage imageNamed:[NSString stringWithFormat:@"%@", imageName]];
+    UIImage *image = [self imageNamed:[NSString stringWithFormat:@"%@", imageName]];
     if (tintColor) {
         image = [self createImage:image withColor:tintColor];
     }
