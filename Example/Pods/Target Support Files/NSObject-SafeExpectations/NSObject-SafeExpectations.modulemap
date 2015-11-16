@@ -1,0 +1,6 @@
+framework module NSObject_SafeExpectations {
+  umbrella header "NSObject-SafeExpectations-umbrella.h"
+
+  export *
+  module * { export * }
+}

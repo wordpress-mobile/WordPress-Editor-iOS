@@ -82,3 +82,20 @@ strip_invalid_archs() {
   fi
 }
 
+
+if [[ "$CONFIGURATION" == "Debug" ]]; then
+  install_framework "Pods-EditorDemo/AFNetworking.framework"
+  install_framework "Pods-EditorDemo/CocoaLumberjack.framework"
+  install_framework "Pods-EditorDemo/NSObject_SafeExpectations.framework"
+  install_framework "Pods-EditorDemo/WordPressEditor.framework"
+  install_framework "Pods-EditorDemo/WordPressShared.framework"
+  install_framework "Pods-EditorDemo/WordPressComAnalytics.framework"
+fi
+if [[ "$CONFIGURATION" == "Release" ]]; then
+  install_framework "Pods-EditorDemo/AFNetworking.framework"
+  install_framework "Pods-EditorDemo/CocoaLumberjack.framework"
+  install_framework "Pods-EditorDemo/NSObject_SafeExpectations.framework"
+  install_framework "Pods-EditorDemo/WordPressEditor.framework"
+  install_framework "Pods-EditorDemo/WordPressShared.framework"
+  install_framework "Pods-EditorDemo/WordPressComAnalytics.framework"
+fi

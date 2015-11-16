@@ -1,0 +1,6 @@
+framework module WordPressEditor {
+  umbrella header "WordPress-iOS-Editor-umbrella.h"
+
+  export *
+  module * { export * }
+}
