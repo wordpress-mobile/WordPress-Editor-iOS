@@ -103,8 +103,9 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)createToolbarView
 {
     NSAssert(!_toolbarView, @"The toolbar view should not exist here.");
-    
-    _toolbarView = (WPEditorFormatbarView *)[[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([WPEditorFormatbarView class]) owner:nil options:nil] firstObject];
+
+    NSBundle *editorBundle = [NSBundle bundleForClass:[WPEditorFormatbarView class]];
+    _toolbarView = (WPEditorFormatbarView *)[[editorBundle loadNibNamed:NSStringFromClass([WPEditorFormatbarView class]) owner:nil options:nil] firstObject];
     _toolbarView.delegate = self;
     _toolbarView.borderColor = [WPStyleGuide greyLighten10];
     _toolbarView.itemTintColor = [WPStyleGuide greyLighten10];
