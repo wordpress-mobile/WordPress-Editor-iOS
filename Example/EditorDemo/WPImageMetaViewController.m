@@ -1,5 +1,5 @@
 #import "WPImageMetaViewController.h"
-#import <WordPress-iOS-Editor/WPImageMeta.h>
+#import <WordPressEditor/WPImageMeta.h>
 
 @interface WPImageMetaViewController ()
 

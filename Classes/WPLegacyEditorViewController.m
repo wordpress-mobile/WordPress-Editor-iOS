@@ -1,10 +1,10 @@
 #import "WPLegacyEditorViewController.h"
 #import "WPLegacyKeyboardToolbarBase.h"
 #import "WPLegacyKeyboardToolbarDone.h"
-#import <WordPressCom-Analytics-iOS/WPAnalytics.h>
-#import <WordPress-iOS-Shared/WPStyleGuide.h>
-#import <WordPress-iOS-Shared/WPTableViewCell.h>
-#import <WordPress-iOS-Shared/UIImage+Util.h>
+#import <WordPressComAnalytics/WPAnalytics.h>
+#import <WordPressShared/WPStyleGuide.h>
+#import <WordPressShared/WPTableViewCell.h>
+#import <WordPressShared/UIImage+Util.h>
 
 CGFloat const WPLegacyEPVCTextfieldHeight = 44.0f;
 CGFloat const WPLegacyEPVCOptionsHeight = 44.0f;
@@ -138,11 +138,11 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
         return;
     }
     
-    UIBarButtonItem *previewButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon-posts-editor-preview"]
+    UIBarButtonItem *previewButton = [[UIBarButtonItem alloc] initWithImage:[self imageNamed:@"icon-posts-editor-preview"]
                                                                       style:UIBarButtonItemStylePlain
                                                                      target:self
                                                                      action:@selector(didTouchPreview)];
-    UIBarButtonItem *photoButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon-posts-editor-media"]
+    UIBarButtonItem *photoButton = [[UIBarButtonItem alloc] initWithImage:[self imageNamed:@"icon-posts-editor-media"]
                                                                     style:UIBarButtonItemStylePlain
                                                                    target:self
                                                                    action:@selector(didTouchMediaOptions)];
@@ -492,6 +492,11 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     } else {
         return [NSString stringWithFormat:@"http://%@", urlText];
     }
+}
+
+- (UIImage *)imageNamed:(NSString *)imageName {
+    NSBundle* editorBundle = [NSBundle bundleForClass:[self class]];
+    return [UIImage imageNamed:imageName inBundle:editorBundle compatibleWithTraitCollection:nil];
 }
 
 #pragma mark - Formatting

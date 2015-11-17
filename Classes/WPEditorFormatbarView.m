@@ -1,7 +1,7 @@
 #import "WPEditorFormatbarView.h"
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
-#import "WPDeviceIdentification.h"
+#import <WordPressShared/WPDeviceIdentification.h>
 #import "WPEditorToolbarButton.h"
 #import "ZSSBarButtonItem.h"
 
@@ -274,9 +274,11 @@
     barButtonItem.tag = tag;
     barButtonItem.htmlProperty = htmlProperty;
     barButtonItem.accessibilityLabel = accessibilityLabel;
-    
-    UIImage* buttonImage = [[UIImage imageNamed:imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    
+
+    NSBundle* editorBundle = [NSBundle bundleForClass:[self class]];
+    UIImage* image = [UIImage imageNamed:imageName inBundle:editorBundle compatibleWithTraitCollection:nil];
+    UIImage* buttonImage = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
     WPEditorToolbarButton* customButton = [[WPEditorToolbarButton alloc] initWithFrame:CGRectMake(0.0, 0.0, buttonImage.size.width, buttonImage.size.height)];
     [customButton setImage:buttonImage forState:UIControlStateNormal];
     customButton.normalTintColor = self.itemTintColor;
