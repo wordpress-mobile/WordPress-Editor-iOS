@@ -140,6 +140,14 @@ typedef enum
 #pragma mark - Toolbar items
 
 /**
+ *  @brief      Makes a toolbar item visible or hidden
+ *
+ *  @param      tag     WPEditorViewControllerElementTag of the item to alter.
+ *  @param      visible YES to make the item visible, NO to hide it.
+ */
+- (void)toolBarItemWithTag:(WPEditorViewControllerElementTag)tag setVisible:(BOOL)visible;
+
+/**
  *  @brief      Enables and disables the toolbar items.
  *
  *  @param      enable       YES to enable the toolbar buttons; NO to disable them.

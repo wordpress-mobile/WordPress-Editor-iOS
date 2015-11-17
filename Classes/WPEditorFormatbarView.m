@@ -189,6 +189,21 @@
 
 #pragma mark - Toolbar items
 
+- (void)toolBarItemWithTag:(WPEditorViewControllerElementTag)tag setVisible:(BOOL)visible
+{
+    for (ZSSBarButtonItem *item in self.leftToolbar.items) {
+        if (item.tag == tag) {
+            item.customView.hidden = !visible;
+        }
+    }
+
+    for (ZSSBarButtonItem *item in self.regularToolbar.items) {
+        if (item.tag == tag) {
+            item.customView.hidden = !visible;
+        }
+    }
+}
+
 - (void)enableToolbarItems:(BOOL)enable
     shouldShowSourceButton:(BOOL)showSource
 {
