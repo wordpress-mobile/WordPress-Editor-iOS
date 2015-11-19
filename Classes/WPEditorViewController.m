@@ -153,8 +153,6 @@ NSInteger const WPLinkAlertViewTag = 92;
     [super viewWillAppear:animated];
 	
     if (!self.isFirstSetupComplete) {
-        self.isFirstSetupComplete = YES;
-
         // When restoring state, the navigationController is nil when the view loads,
         // so configure its appearance here instead.
         self.navigationController.navigationBar.translucent = NO;
@@ -175,6 +173,11 @@ NSInteger const WPLinkAlertViewTag = 92;
     [super viewDidAppear:animated];
     if (self.isFirstSetupComplete) {
         [self restoreEditSelection];
+    } else {
+        // Note: Very important this is set here otherwise the post will not initially
+        // load properly in the editor. Please be careful if you make a change here and
+        // test the editor within WPiOS!
+        self.isFirstSetupComplete = YES;
     }
 }
 
