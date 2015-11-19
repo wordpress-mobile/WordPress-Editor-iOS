@@ -3,7 +3,6 @@
 
 static NSString* const CircleLayerKey = @"circleLayer";
 static CGFloat TouchAnimationCircleRadius = 15.0;
-static CGFloat TouchAnimationCircleRadiusiPad = 17.0;
 static CGFloat TouchAnimationDuration = 0.25;
 static CGFloat TouchAnimationInitialOpacity = 0.8;
 
@@ -83,8 +82,7 @@ static CGFloat NormalAlpha = 1.0;
     CGRect circleRect = CGRectInset(self.bounds, circleLineWidth / 2.0, circleLineWidth / 2.0);
     CGPoint drawPoint = CGPointMake(CGRectGetMidX(circleRect), CGRectGetMidY(circleRect));
     CAShapeLayer *circleLayer = [CAShapeLayer layer];
-    CGFloat radius = IS_IPAD ? TouchAnimationCircleRadiusiPad : TouchAnimationCircleRadius;
-    circleLayer.path = [UIBezierPath bezierPathWithArcCenter:CGPointZero radius:radius startAngle:0 endAngle:M_PI*2 clockwise:NO].CGPath;
+    circleLayer.path = [UIBezierPath bezierPathWithArcCenter:CGPointZero radius:TouchAnimationCircleRadius startAngle:0 endAngle:M_PI*2 clockwise:NO].CGPath;
     circleLayer.position = drawPoint;
     circleLayer.fillColor =  [[WPStyleGuide greyLighten10] CGColor];
     circleLayer.strokeColor =  [[WPStyleGuide greyLighten10] CGColor];

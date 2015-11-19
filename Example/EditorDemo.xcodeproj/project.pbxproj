@@ -27,6 +27,7 @@
 		748D2AAD193E516000D5ACC8 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748D2A8C193E516000D5ACC8 /* UIKit.framework */; };
 		748D2AB5193E516000D5ACC8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 748D2AB3193E516000D5ACC8 /* InfoPlist.strings */; };
 		748D2AB7193E516000D5ACC8 /* EditorDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 748D2AB6193E516000D5ACC8 /* EditorDemoTests.m */; };
+		74991B601BF10E7500AFA57B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74991B5F1BF10E7500AFA57B /* LaunchScreen.storyboard */; };
 		B1341A871FF54DCCAEE52D3A /* libPods-EditorDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 986CDAC2D08B4B22A292BF20 /* libPods-EditorDemo.a */; };
 /* End PBXBuildFile section */
 
@@ -69,6 +70,7 @@
 		748D2AB2193E516000D5ACC8 /* EditorDemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "EditorDemoTests-Info.plist"; sourceTree = "<group>"; };
 		748D2AB4193E516000D5ACC8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		748D2AB6193E516000D5ACC8 /* EditorDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditorDemoTests.m; sourceTree = "<group>"; };
+		74991B5F1BF10E7500AFA57B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7DB5B4BB7BD920939EF39DA4 /* Pods-EditorDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EditorDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-EditorDemo/Pods-EditorDemo.release.xcconfig"; sourceTree = "<group>"; };
 		986CDAC2D08B4B22A292BF20 /* libPods-EditorDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EditorDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A92C5705CA55DA4FE6C241C2 /* Pods-EditorDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EditorDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EditorDemo/Pods-EditorDemo.debug.xcconfig"; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 		748D2A8E193E516000D5ACC8 /* EditorDemo */ = {
 			isa = PBXGroup;
 			children = (
+				74991B5F1BF10E7500AFA57B /* LaunchScreen.storyboard */,
 				748D2A97193E516000D5ACC8 /* WPAppDelegate.h */,
 				748D2A98193E516000D5ACC8 /* WPAppDelegate.m */,
 				59F15AD019E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.h */,
@@ -208,6 +211,7 @@
 				748D2A82193E516000D5ACC8 /* Frameworks */,
 				748D2A83193E516000D5ACC8 /* Resources */,
 				7B14E390F1F44925BD4E909E /* Copy Pods Resources */,
+				B17C11FC3A30818D034999F4 /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -227,6 +231,7 @@
 				748D2AA6193E516000D5ACC8 /* Frameworks */,
 				748D2AA7193E516000D5ACC8 /* Resources */,
 				6F47E5FEC4324110ABF4E468 /* Copy Pods Resources */,
+				1588B1AD7A2360DFD8F19450 /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -245,7 +250,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = WP;
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Automattic, Inc.";
 				TargetAttributes = {
 					748D2A84193E516000D5ACC8 = {
@@ -283,6 +288,7 @@
 				748D2A9F193E516000D5ACC8 /* Main_iPad.storyboard in Resources */,
 				74291D0A1940C859004230D4 /* content.html in Resources */,
 				748D2AA4193E516000D5ACC8 /* Images.xcassets in Resources */,
+				74991B601BF10E7500AFA57B /* LaunchScreen.storyboard in Resources */,
 				748D2A9C193E516000D5ACC8 /* Main_iPhone.storyboard in Resources */,
 				748D2A93193E516000D5ACC8 /* InfoPlist.strings in Resources */,
 			);
@@ -299,6 +305,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		1588B1AD7A2360DFD8F19450 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-EditorDemoTests/Pods-EditorDemoTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		2D865ACDBA974E4A87925BA6 /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -357,6 +378,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-EditorDemo/Pods-EditorDemo-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B17C11FC3A30818D034999F4 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-EditorDemo/Pods-EditorDemo-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -446,6 +482,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -460,7 +497,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -493,7 +530,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -505,12 +542,12 @@
 			baseConfigurationReference = A92C5705CA55DA4FE6C241C2 /* Pods-EditorDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EditorDemo/EditorDemo-Prefix.pch";
 				INFOPLIST_FILE = "EditorDemo/EditorDemo-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.wordpress.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -521,12 +558,12 @@
 			baseConfigurationReference = 7DB5B4BB7BD920939EF39DA4 /* Pods-EditorDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EditorDemo/EditorDemo-Prefix.pch";
 				INFOPLIST_FILE = "EditorDemo/EditorDemo-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.wordpress.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -549,6 +586,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "EditorDemoTests/EditorDemoTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.wordpress.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -568,6 +606,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "EditorDemo/EditorDemo-Prefix.pch";
 				INFOPLIST_FILE = "EditorDemoTests/EditorDemoTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.wordpress.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;

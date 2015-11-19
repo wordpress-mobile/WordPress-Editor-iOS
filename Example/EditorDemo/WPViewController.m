@@ -1,21 +1,14 @@
 #import "WPViewController.h"
 
-@import AssetsLibrary;
+@import Photos;
 @import AVFoundation;
+@import MobileCoreServices;
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import "WPEditorField.h"
 #import "WPEditorView.h"
 #import "WPImageMetaViewController.h"
 
-typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
-    WPViewControllerActionSheetImageUploadStop = 200,
-    WPViewControllerActionSheetImageUploadRetry = 201,
-    WPViewControllerActionSheetVideoUploadStop = 202,
-    WPViewControllerActionSheetVideoUploadRetry = 203
-
-};
-
-@interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIActionSheetDelegate, WPImageMetaViewControllerDelegate>
+@interface WPViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, WPImageMetaViewControllerDelegate>
 @property(nonatomic, strong) NSMutableDictionary *mediaAdded;
 @property(nonatomic, strong) NSString *selectedMediaID;
 @property(nonatomic, strong) NSCache *videoPressCache;
@@ -30,7 +23,7 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     
     self.delegate = self;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Edit"
-                                                                             style:UIBarButtonItemStyleBordered
+                                                                             style:UIBarButtonItemStylePlain
                                                                             target:self
                                                                             action:@selector(editTouchedUpInside)];
     self.mediaAdded = [NSMutableDictionary dictionary];
@@ -173,17 +166,59 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     if (imageId.length == 0){
         return;
     }
+    
+    __weak __typeof(self)weakSelf = self;
+    UITraitCollection *traits = self.navigationController.traitCollection;
     NSProgress *progress = self.mediaAdded[imageId];
-    if (!progress.cancelled){
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
-        [actionSheet showInView:self.view];
-        actionSheet.tag = WPViewControllerActionSheetImageUploadStop;
+    UIAlertController *alertController;
+    if (traits.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        alertController = [UIAlertController alertControllerWithTitle:nil
+                                                              message:nil
+                                                       preferredStyle:UIAlertControllerStyleAlert];
     } else {
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Remove Image" otherButtonTitles:@"Retry Upload", nil];
-        [actionSheet showInView:self.view];
-        actionSheet.tag = WPViewControllerActionSheetImageUploadRetry;
+        alertController = [UIAlertController alertControllerWithTitle:nil
+                                                              message:nil
+                                                       preferredStyle:UIAlertControllerStyleActionSheet];
     }
+    
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction *action){}];
+    [alertController addAction:cancelAction];
+    
+    if (!progress.cancelled){
+        UIAlertAction *stopAction = [UIAlertAction actionWithTitle:@"Stop Upload"
+                                                             style:UIAlertActionStyleDestructive
+                                                           handler:^(UIAlertAction *action){
+                                                               [weakSelf.editorView removeImage:weakSelf.selectedMediaID];
+                                                           }];
+        [alertController addAction:stopAction];
+    } else {
+        UIAlertAction *removeAction = [UIAlertAction actionWithTitle:@"Remove Image"
+                                                               style:UIAlertActionStyleDestructive
+                                                             handler:^(UIAlertAction *action){
+                                                                 [weakSelf.editorView removeImage:weakSelf.selectedMediaID];
+                                                             }];
+        
+        UIAlertAction *retryAction = [UIAlertAction actionWithTitle:@"Retry Upload"
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction *action){
+                                                                NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":self.selectedMediaID}];
+                                                                progress.totalUnitCount = 100;
+                                                                [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                                                                 target:self
+                                                                                               selector:@selector(timerFireMethod:)
+                                                                                               userInfo:progress
+                                                                                                repeats:YES];
+                                                                weakSelf.mediaAdded[weakSelf.selectedMediaID] = progress;
+                                                                [weakSelf.editorView unmarkImageFailedUpload:weakSelf.selectedMediaID];
+                                                            }];
+        [alertController addAction:removeAction];
+        [alertController addAction:retryAction];
+    }
+    
     self.selectedMediaID = imageId;
+    [self.navigationController presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)showPromptForVideoWithID:(NSString *)videoId
@@ -191,17 +226,57 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     if (videoId.length == 0){
         return;
     }
+    __weak __typeof(self)weakSelf = self;
+    UITraitCollection *traits = self.navigationController.traitCollection;
     NSProgress *progress = self.mediaAdded[videoId];
-    if (!progress.cancelled){
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Stop Upload" otherButtonTitles:nil];
-        [actionSheet showInView:self.view];
-        actionSheet.tag = WPViewControllerActionSheetVideoUploadStop;
+    UIAlertController *alertController;
+    if (traits.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        alertController = [UIAlertController alertControllerWithTitle:nil
+                                                              message:nil
+                                                       preferredStyle:UIAlertControllerStyleAlert];
     } else {
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Remove Video" otherButtonTitles:@"Retry Upload", nil];
-        [actionSheet showInView:self.view];
-        actionSheet.tag = WPViewControllerActionSheetVideoUploadRetry;
+        alertController = [UIAlertController alertControllerWithTitle:nil
+                                                              message:nil
+                                                       preferredStyle:UIAlertControllerStyleActionSheet];
+    }
+    
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:^(UIAlertAction *action){}];
+    [alertController addAction:cancelAction];
+    
+    if (!progress.cancelled){
+        UIAlertAction *stopAction = [UIAlertAction actionWithTitle:@"Stop Upload"
+                                                             style:UIAlertActionStyleDestructive
+                                                           handler:^(UIAlertAction *action){
+                                                               [weakSelf.editorView removeVideo:weakSelf.selectedMediaID];
+                                                           }];
+        [alertController addAction:stopAction];
+    } else {
+        UIAlertAction *removeAction = [UIAlertAction actionWithTitle:@"Remove Video"
+                                                               style:UIAlertActionStyleDestructive
+                                                             handler:^(UIAlertAction *action){
+                                                                 [weakSelf.editorView removeVideo:weakSelf.selectedMediaID];
+                                                             }];
+        
+        UIAlertAction *retryAction = [UIAlertAction actionWithTitle:@"Retry Upload"
+                                                              style:UIAlertActionStyleDefault
+                                                            handler:^(UIAlertAction *action){
+                                                                NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"videoID":weakSelf.selectedMediaID}];
+                                                                progress.totalUnitCount = 100;
+                                                                [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                                                                 target:self
+                                                                                               selector:@selector(timerFireMethod:)
+                                                                                               userInfo:progress
+                                                                                                repeats:YES];
+                                                                weakSelf.mediaAdded[self.selectedMediaID] = progress;
+                                                                [weakSelf.editorView unmarkVideoFailedUpload:weakSelf.selectedMediaID];
+                                                            }];
+        [alertController addAction:removeAction];
+        [alertController addAction:retryAction];
     }
     self.selectedMediaID = videoId;
+    [self.navigationController presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)showPhotoPicker
@@ -216,16 +291,24 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     [self.navigationController presentViewController:picker animated:YES completion:nil];
 }
 
-- (void)addImageAssetToContent:(ALAsset *)asset
+- (void)addImageAssetToContent:(PHAsset *)asset
 {
-    UIImage *image = [UIImage imageWithCGImage:asset.defaultRepresentation.fullScreenImage];
-    NSData *data = UIImageJPEGRepresentation(image, 0.7);
+    PHImageRequestOptions *options = [PHImageRequestOptions new];
+    options.synchronous = NO;
+    options.networkAccessAllowed = YES;
+    options.resizeMode = PHImageRequestOptionsResizeModeExact;
+    options.version = PHImageRequestOptionsVersionCurrent;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
     NSString *imageID = [[NSUUID UUID] UUIDString];
     NSString *path = [NSString stringWithFormat:@"%@/%@.jpg", NSTemporaryDirectory(), imageID];
-    [data writeToFile:path atomically:YES];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
-    });
+    [[PHImageManager defaultManager] requestImageDataForAsset:asset
+                                                      options:options
+                                                resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
+        [imageData writeToFile:path atomically:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
+        });
+    }];
 
     NSProgress *progress = [[NSProgress alloc] initWithParent:nil userInfo:@{ @"imageID": imageID,
                                                                               @"url": path }];
@@ -242,55 +325,72 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
     self.mediaAdded[imageID] = progress;
 }
 
-- (void)addVideoAssetToContent:(ALAsset *)originalAsset
+- (void)addVideoAssetToContent:(PHAsset *)originalAsset
 {
-    UIImage *image = [UIImage imageWithCGImage:originalAsset.defaultRepresentation.fullScreenImage];
-    NSData *data = UIImageJPEGRepresentation(image, 0.7);
-    NSString *posterImagePath = [NSString stringWithFormat:@"%@/%@.jpg", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
-    [data writeToFile:posterImagePath atomically:YES];
+    PHImageRequestOptions *options = [PHImageRequestOptions new];
+    options.synchronous = NO;
+    options.networkAccessAllowed = YES;
+    options.resizeMode = PHImageRequestOptionsResizeModeFast;
+    options.version = PHImageRequestOptionsVersionCurrent;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
     NSString *videoID = [[NSUUID UUID] UUIDString];
-    [self.editorView insertInProgressVideoWithID:videoID
-                                usingPosterImage:[[NSURL fileURLWithPath:posterImagePath] absoluteString]];
-    ALAssetRepresentation *representation = originalAsset.defaultRepresentation;
-    AVAsset *asset = [AVURLAsset URLAssetWithURL:representation.url options:nil];
     NSString *videoPath = [NSString stringWithFormat:@"%@%@.mov", NSTemporaryDirectory(), videoID];
-    NSString *presetName = AVAssetExportPresetPassthrough;
-    AVAssetExportSession *session = [AVAssetExportSession exportSessionWithAsset:asset presetName:presetName];
-    session.outputFileType = representation.UTI;
-    session.shouldOptimizeForNetworkUse = YES;
-    session.outputURL = [NSURL fileURLWithPath:videoPath];
-    [session exportAsynchronouslyWithCompletionHandler:^{
-        if (session.status != AVAssetExportSessionStatusCompleted) {
-            return;
-        }
+    [[PHImageManager defaultManager] requestImageForAsset:originalAsset
+                                               targetSize:[UIScreen mainScreen].bounds.size
+                                              contentMode:PHImageContentModeAspectFit
+                                                  options:options
+                                            resultHandler:^(UIImage *image, NSDictionary * _Nullable info) {
+        NSData *data = UIImageJPEGRepresentation(image, 0.7);
+        NSString *posterImagePath = [NSString stringWithFormat:@"%@/%@.jpg", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
+        [data writeToFile:posterImagePath atomically:YES];
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSProgress *progress = [[NSProgress alloc] initWithParent:nil
-                                                             userInfo:@{@"videoID": videoID, @"url": videoPath, @"poster": posterImagePath }];
-            progress.cancellable = YES;
-            progress.totalUnitCount = 100;
-            [NSTimer scheduledTimerWithTimeInterval:0.1
-                                             target:self
-                                           selector:@selector(timerFireMethod:)
-                                           userInfo:progress
-                                            repeats:YES];
-            self.mediaAdded[videoID] = progress;
+            [self.editorView insertInProgressVideoWithID:videoID
+                                        usingPosterImage:[[NSURL fileURLWithPath:posterImagePath] absoluteString]];
         });
+        PHVideoRequestOptions *videoOptions = [PHVideoRequestOptions new];
+        videoOptions.networkAccessAllowed = YES;
+        [[PHImageManager defaultManager] requestExportSessionForVideo:originalAsset
+                                                              options:videoOptions
+                                                         exportPreset:AVAssetExportPresetPassthrough
+                                                        resultHandler:^(AVAssetExportSession * _Nullable exportSession, NSDictionary * _Nullable info) {
+                                                            exportSession.outputFileType = (__bridge NSString*)kUTTypeQuickTimeMovie;
+                                                            exportSession.shouldOptimizeForNetworkUse = YES;
+                                                            exportSession.outputURL = [NSURL fileURLWithPath:videoPath];
+                                                            [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                                                                if (exportSession.status != AVAssetExportSessionStatusCompleted) {
+                                                                    return;
+                                                                }
+                                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                                    NSProgress *progress = [[NSProgress alloc] initWithParent:nil
+                                                                                                                     userInfo:@{@"videoID": videoID, @"url": videoPath, @"poster": posterImagePath }];
+                                                                    progress.cancellable = YES;
+                                                                    progress.totalUnitCount = 100;
+                                                                    [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                                                                     target:self
+                                                                                                   selector:@selector(timerFireMethod:)
+                                                                                                   userInfo:progress
+                                                                                                    repeats:YES];
+                                                                    self.mediaAdded[videoID] = progress;
+                                                                });
+                                                            }];
+            
+        }];
     }];
 }
 
 - (void)addAssetToContent:(NSURL *)assetURL
 {
-    ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
-    [assetsLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset) {
+    PHFetchResult *assets = [PHAsset fetchAssetsWithALAssetURLs:@[assetURL] options:nil];
+    if (assets.count < 1) {
+        return;
+    }
+    PHAsset *asset = [assets firstObject];
         
-        if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypeVideo) {
-            [self addVideoAssetToContent:asset];
-        } if ([asset valueForProperty:ALAssetPropertyType] == ALAssetTypePhoto) {
-            [self addImageAssetToContent:asset];
-        }
-    } failureBlock:^(NSError *error) {
-        DDLogInfo(@"Failed to insert media: %@", [error localizedDescription]);
-    }];
+    if (asset.mediaType == PHAssetMediaTypeVideo) {
+        [self addVideoAssetToContent:asset];
+    } if (asset.mediaType == PHAssetMediaTypeImage) {
+        [self addImageAssetToContent:asset];
+    }
 }
 
 - (void)timerFireMethod:(NSTimer *)timer
@@ -344,54 +444,6 @@ typedef NS_ENUM(NSUInteger,  WPViewControllerActionSheet) {
         NSURL *assetURL = info[UIImagePickerControllerReferenceURL];
         [self addAssetToContent:assetURL];
     }];
-    
-}
-
-#pragma mark - UIActionSheetDelegate
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (actionSheet.tag == WPViewControllerActionSheetImageUploadStop){
-        if (buttonIndex == actionSheet.destructiveButtonIndex) {
-            [self.editorView removeImage:self.selectedMediaID];
-        }
-    } else if (actionSheet.tag == WPViewControllerActionSheetImageUploadRetry){
-        if (buttonIndex == actionSheet.destructiveButtonIndex) {
-            [self.editorView removeImage:self.selectedMediaID];
-        } else if (buttonIndex == actionSheet.firstOtherButtonIndex) {
-            NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"imageID":self.selectedMediaID}];
-            progress.totalUnitCount = 100;
-            [NSTimer scheduledTimerWithTimeInterval:0.1
-                                             target:self
-                                           selector:@selector(timerFireMethod:)
-                                           userInfo:progress
-                                            repeats:YES];
-            self.mediaAdded[self.selectedMediaID] = progress;
-            [self.editorView unmarkImageFailedUpload:self.selectedMediaID];
-        }
-
-    } else if (actionSheet.tag == WPViewControllerActionSheetVideoUploadStop){
-        if (buttonIndex == actionSheet.destructiveButtonIndex) {
-            [self.editorView removeVideo:self.selectedMediaID];
-        }
-    } else if (actionSheet.tag == WPViewControllerActionSheetVideoUploadRetry){
-        if (buttonIndex == actionSheet.destructiveButtonIndex) {
-            [self.editorView removeVideo:self.selectedMediaID];
-        } else if (buttonIndex == actionSheet.firstOtherButtonIndex) {
-            NSProgress * progress = [[NSProgress alloc] initWithParent:nil userInfo:@{@"videoID":self.selectedMediaID}];
-            progress.totalUnitCount = 100;
-            [NSTimer scheduledTimerWithTimeInterval:0.1
-                                             target:self
-                                           selector:@selector(timerFireMethod:)
-                                           userInfo:progress
-                                            repeats:YES];
-            self.mediaAdded[self.selectedMediaID] = progress;
-            [self.editorView unmarkVideoFailedUpload:self.selectedMediaID];
-        }
-        
-    }
-
-    
     
 }
 
