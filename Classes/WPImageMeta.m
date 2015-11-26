@@ -1,5 +1,5 @@
 #import "WPImageMeta.h"
-#import "NSObject+SafeExpectations.h"
+#import <NSObject-SafeExpectations/NSObject+SafeExpectations.h>
 
 static NSString *const MetaKeyAlign             = @"align";
 static NSString *const MetaKeyAlt               = @"alt";
