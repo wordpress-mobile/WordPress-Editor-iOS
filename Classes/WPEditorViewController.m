@@ -1076,11 +1076,9 @@ didFailLoadWithError:(NSError *)error
         // input accessory view (the format bar) to update itself. FWIW, setNeedsDisplay and
         // setNeedsLayout do NOT work.
         if ([self.editorView isInVisualMode]) {
-            [self.editorView showHTMLSource];
             [self.editorView showVisualEditor];
         } else {
             [self.editorView showHTMLSource];
-            [self.editorView showVisualEditor];
         }
     }
 }
