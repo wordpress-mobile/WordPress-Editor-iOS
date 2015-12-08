@@ -224,14 +224,14 @@ stylesForCurrentSelection:(NSArray*)styles;
  *
  *  @returns    The content.
  */
-- (NSString*)contents;
+- (void)contents:(void (^)(NSString *contents))completionHandler;
 
 /**
  *  @brief      Retrieves the title in both HTML and visual mode.
  *
  *  @returns    The title.
  */
-- (NSString*)title;
+- (void)title:(void (^)(NSString *title))completionHandler;
 
 #pragma mark - Selection
 
@@ -251,7 +251,7 @@ stylesForCurrentSelection:(NSArray*)styles;
  *
  *	@returns	The selected text.
  */
-- (NSString*)selectedText;
+- (void)selectedText:(void (^)(NSString *text))completionHandler;
 
 - (void)setSelectedColor:(UIColor*)color
 					 tag:(int)tag;

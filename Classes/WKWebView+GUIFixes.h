@@ -1,6 +1,6 @@
-#import <UIKit/UIKit.h>
+#import <WebKit/WebKit.h>
 
-@interface UIWebView (GUIFixes)
+@interface WKWebView (GUIFixes)
 
 /**
  *	@brief		The custom input accessory view.

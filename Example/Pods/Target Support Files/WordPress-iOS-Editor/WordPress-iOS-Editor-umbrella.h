@@ -11,7 +11,7 @@
 #import "HRColorPickerView.h"
 #import "HRColorPickerViewController.h"
 #import "HRColorUtil.h"
-#import "UIWebView+GUIFixes.h"
+#import "WKWebView+GUIFixes.h"
 #import "WPEditorField.h"
 #import "WPEditorFormatbarView.h"
 #import "WPEditorLoggingConfiguration.h"
