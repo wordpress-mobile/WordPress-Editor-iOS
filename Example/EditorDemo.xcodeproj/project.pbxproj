@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		15E849FD13EC454FA48CFC80 /* libPods-EditorDemoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 290415B5098D4CEDAA96DF0F /* libPods-EditorDemoTests.a */; };
 		59F15AD219E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 59F15AD119E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.m */; };
 		5D24FEF91A3C9E8B009E1932 /* WPImageMetaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D24FEF81A3C9E8B009E1932 /* WPImageMetaViewController.m */; };
 		74291D0A1940C859004230D4 /* content.html in Resources */ = {isa = PBXBuildFile; fileRef = 74291D091940C859004230D4 /* content.html */; };
@@ -28,7 +27,8 @@
 		748D2AB5193E516000D5ACC8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 748D2AB3193E516000D5ACC8 /* InfoPlist.strings */; };
 		748D2AB7193E516000D5ACC8 /* EditorDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 748D2AB6193E516000D5ACC8 /* EditorDemoTests.m */; };
 		74991B601BF10E7500AFA57B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74991B5F1BF10E7500AFA57B /* LaunchScreen.storyboard */; };
-		B1341A871FF54DCCAEE52D3A /* libPods-EditorDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 986CDAC2D08B4B22A292BF20 /* libPods-EditorDemo.a */; };
+		9B748FC06BB5833078779F06 /* Pods_EditorDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4B93A674A3CAFF72CC6964B /* Pods_EditorDemo.framework */; };
+		FF4B4D4C28B2EE2360630A8A /* Pods_EditorDemoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0F0C09885E0B8DAD277393B /* Pods_EditorDemoTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,7 +42,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		290415B5098D4CEDAA96DF0F /* libPods-EditorDemoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EditorDemoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		59F15AD019E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPEditorDemoLoggingConfiguration.h; sourceTree = "<group>"; };
 		59F15AD119E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPEditorDemoLoggingConfiguration.m; sourceTree = "<group>"; };
 		5D24FEF71A3C9E8B009E1932 /* WPImageMetaViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPImageMetaViewController.h; sourceTree = "<group>"; };
@@ -72,9 +71,10 @@
 		748D2AB6193E516000D5ACC8 /* EditorDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditorDemoTests.m; sourceTree = "<group>"; };
 		74991B5F1BF10E7500AFA57B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7DB5B4BB7BD920939EF39DA4 /* Pods-EditorDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EditorDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-EditorDemo/Pods-EditorDemo.release.xcconfig"; sourceTree = "<group>"; };
-		986CDAC2D08B4B22A292BF20 /* libPods-EditorDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-EditorDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A92C5705CA55DA4FE6C241C2 /* Pods-EditorDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EditorDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EditorDemo/Pods-EditorDemo.debug.xcconfig"; sourceTree = "<group>"; };
+		C0F0C09885E0B8DAD277393B /* Pods_EditorDemoTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EditorDemoTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3905FE0E04F3570F2A87958 /* Pods-EditorDemoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EditorDemoTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EditorDemoTests/Pods-EditorDemoTests.debug.xcconfig"; sourceTree = "<group>"; };
+		E4B93A674A3CAFF72CC6964B /* Pods_EditorDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EditorDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,7 +86,7 @@
 				748D2A8B193E516000D5ACC8 /* CoreGraphics.framework in Frameworks */,
 				748D2A8D193E516000D5ACC8 /* UIKit.framework in Frameworks */,
 				748D2A89193E516000D5ACC8 /* Foundation.framework in Frameworks */,
-				B1341A871FF54DCCAEE52D3A /* libPods-EditorDemo.a in Frameworks */,
+				9B748FC06BB5833078779F06 /* Pods_EditorDemo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,7 +97,7 @@
 				748D2AAB193E516000D5ACC8 /* XCTest.framework in Frameworks */,
 				748D2AAD193E516000D5ACC8 /* UIKit.framework in Frameworks */,
 				748D2AAC193E516000D5ACC8 /* Foundation.framework in Frameworks */,
-				15E849FD13EC454FA48CFC80 /* libPods-EditorDemoTests.a in Frameworks */,
+				FF4B4D4C28B2EE2360630A8A /* Pods_EditorDemoTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,8 +143,8 @@
 				748D2A8A193E516000D5ACC8 /* CoreGraphics.framework */,
 				748D2A8C193E516000D5ACC8 /* UIKit.framework */,
 				748D2AAA193E516000D5ACC8 /* XCTest.framework */,
-				986CDAC2D08B4B22A292BF20 /* libPods-EditorDemo.a */,
-				290415B5098D4CEDAA96DF0F /* libPods-EditorDemoTests.a */,
+				E4B93A674A3CAFF72CC6964B /* Pods_EditorDemo.framework */,
+				C0F0C09885E0B8DAD277393B /* Pods_EditorDemoTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

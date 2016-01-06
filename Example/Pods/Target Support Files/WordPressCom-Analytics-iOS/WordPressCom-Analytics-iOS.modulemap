@@ -1,0 +1,6 @@
+framework module WordPressComAnalytics {
+  umbrella header "WordPressCom-Analytics-iOS-umbrella.h"
+
+  export *
+  module * { export * }
+}
