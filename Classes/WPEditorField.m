@@ -15,7 +15,7 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
 /**
  *  @brief      The web view to use for all javascript calls.
  */
-@property (nonatomic, strong, readonly) UIWebView* webView;
+@property (nonatomic, strong, readonly) WKWebView* webView;
 
 #pragma mark - Properties: preloaded values
 
@@ -56,7 +56,7 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
 }
 
 - (instancetype)initWithId:(NSString*)nodeId
-                   webView:(UIWebView*)webView
+                   webView:(WKWebView*)webView
 {
     NSAssert([nodeId isKindOfClass:[NSString class]],
              @"We're expecting a non-nil NSString object here.");
@@ -122,44 +122,76 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
 - (void)disableEditing
 {
     NSString* javascript = [NSString stringWithFormat:@"%@.disableEditing();", [self wrappedNodeJavascriptAccessor]];
-    [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+    [self.webView evaluateJavaScript:javascript completionHandler:^(id result, NSError *error) {
+        if (error) {
+            DDLogError(@"%@", [error localizedDescription]);
+            return;
+        }
+    }];
 }
 
 - (void)enableEditing
 {
     NSString* javascript = [NSString stringWithFormat:@"%@.enableEditing();", [self wrappedNodeJavascriptAccessor]];
-    [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+    [self.webView evaluateJavaScript:javascript completionHandler:^(id result, NSError *error) {
+        if (error) {
+            DDLogError(@"%@", [error localizedDescription]);
+            return;
+        }
+    }];
 }
 
 #pragma mark - HTML
 
-- (NSString*)html
+- (void)html:(void (^)(NSString *result))completionHandler;
 {
     NSString* html = nil;
     
     if (!self.domLoaded) {
         html = self.preloadedHTML;
+        if (completionHandler) {
+            completionHandler(html);
+        }
     } else {
         NSString* javascript = [NSString stringWithFormat:@"%@.getHTML();", [self wrappedNodeJavascriptAccessor]];
         
-        html = [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+        [self.webView evaluateJavaScript:javascript completionHandler:^(id result, NSError *error) {
+            if (error) {
+                DDLogError(@"%@", [error localizedDescription]);
+                return;
+            }
+            NSString *textResult = (NSString *)result;
+            if (completionHandler) {
+                completionHandler(textResult);
+            }
+        }];
+
     }
-    
-    return html;
 }
 
-- (NSString*)strippedHtml
+- (void)strippedHtml:(void (^)(NSString *result))completionHandler;
 {
     NSString* strippedHtml = nil;
     
     if (!self.domLoaded) {
         strippedHtml = self.preloadedHTML;
+        if (completionHandler) {
+            completionHandler(strippedHtml);
+        }
     } else {
-        NSString* javascript = [NSString stringWithFormat:@"%@.strippedHTML();", [self wrappedNodeJavascriptAccessor]];        
-        strippedHtml = [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+        NSString* javascript = [NSString stringWithFormat:@"%@.strippedHTML();", [self wrappedNodeJavascriptAccessor]];
+        [self.webView evaluateJavaScript:javascript completionHandler:^(id result, NSError *error) {
+            if (error) {
+                DDLogError(@"%@", [error localizedDescription]);
+                return;
+            }
+            NSString *textResult = (NSString *)result;
+            if (completionHandler) {
+                completionHandler(textResult);
+            }
+        }];
+
     }
-    
-    return strippedHtml;
 }
 
 - (void)setText:(NSString*)text
@@ -176,7 +208,12 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
         
         NSString* javascript = [NSString stringWithFormat:@"%@.setPlainText(\"%@\");", [self wrappedNodeJavascriptAccessor], text];
         
-        [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+        [self.webView evaluateJavaScript:javascript completionHandler:^(id result, NSError *error) {
+            if (error) {
+                DDLogError(@"%@", [error localizedDescription]);
+                return;
+            }
+        }];
     }
 }
 
@@ -193,8 +230,14 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
         }
         
         NSString* javascript = [NSString stringWithFormat:@"%@.setHTML(\"%@\");", [self wrappedNodeJavascriptAccessor], html];
-        
-        [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+
+        [self.webView evaluateJavaScript:javascript completionHandler:^(id result, NSError *error) {
+            if (error) {
+                DDLogError(@"%@", [error localizedDescription]);
+                return;
+            }
+        }];
+
     }
 }
 
@@ -208,7 +251,13 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
         placeholderText = [self addSlashes:placeholderText];
         NSString* javascript = [NSString stringWithFormat:@"%@.setPlaceholderText(\"%@\");", [self wrappedNodeJavascriptAccessor], placeholderText];
         
-        [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+        [self.webView evaluateJavaScript:javascript completionHandler:^(id result, NSError *error) {
+            if (error) {
+                DDLogError(@"%@", [error localizedDescription]);
+                return;
+            }
+        }];
+
     }
 }
 
@@ -222,7 +271,13 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
         
         NSString* javascript = [NSString stringWithFormat:@"%@.setPlaceholderColor(\"%@\");", [self wrappedNodeJavascriptAccessor], hexColorStr];
         
-        [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+        [self.webView evaluateJavaScript:javascript completionHandler:^(id result, NSError *error) {
+            if (error) {
+                DDLogError(@"%@", [error localizedDescription]);
+                return;
+            }
+        }];
+
     }
 }
 
@@ -251,23 +306,42 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
 - (void)focus
 {
     NSString* javascript = [NSString stringWithFormat:@"%@.focus();", [self wrappedNodeJavascriptAccessor]];
-    [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+    [self.webView evaluateJavaScript:javascript completionHandler:^(id result, NSError *error) {
+        if (error) {
+            DDLogError(@"%@", [error localizedDescription]);
+            return;
+        }
+    }];
+
 }
 
 - (void)blur
 {
     NSString* javascript = [NSString stringWithFormat:@"%@.blur();", [self wrappedNodeJavascriptAccessor]];
-    [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+    [self.webView evaluateJavaScript:javascript completionHandler:^(id result, NSError *error) {
+        if (error) {
+            DDLogError(@"%@", [error localizedDescription]);
+            return;
+        }
+    }];
+
 }
 
 #pragma mark - i18n
 
-- (BOOL)isRightToLeftTextEnabled
+- (void)isRightToLeftTextEnabled:(void (^)(BOOL result))completionHandler;
 {
     NSString* javascript = [NSString stringWithFormat:@"%@.isRightToLeftTextEnabled();", [self wrappedNodeJavascriptAccessor]];
-    NSString* result = [self.webView stringByEvaluatingJavaScriptFromString:javascript];
-    
-    return [result boolValue];
+    [self.webView evaluateJavaScript:javascript completionHandler:^(id result, NSError *error) {
+        if (error) {
+            DDLogError(@"%@", [error localizedDescription]);
+            return;
+        }
+        NSString *textResult = (NSString *)result;
+        if (completionHandler) {
+            completionHandler([textResult boolValue]);
+        }
+    }];
 }
 
 - (void)setRightToLeftTextEnabled:(BOOL)isRTL
@@ -283,17 +357,30 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
     NSAssert([rtlString isKindOfClass:[NSString class]], @"Expected a non-nil NSString object here.");
     
     NSString* javascript = [NSString stringWithFormat:@"%@.enableRightToLeftText(%@);", [self wrappedNodeJavascriptAccessor], rtlString];
-    [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+    [self.webView evaluateJavaScript:javascript completionHandler:^(id result, NSError *error) {
+        if (error) {
+            DDLogError(@"%@", [error localizedDescription]);
+            return;
+        }
+    }];
+
 }
 
 #pragma mark - Settings
 
-- (BOOL)isMultiline
+- (void)isMultiline:(void (^)(BOOL result))completionHandler;
 {
     NSString* javascript = [NSString stringWithFormat:@"%@.isMultiline();", [self wrappedNodeJavascriptAccessor]];
-    NSString* result = [self.webView stringByEvaluatingJavaScriptFromString:javascript];
-    
-    return [result boolValue];
+    [self.webView evaluateJavaScript:javascript completionHandler:^(id result, NSError *error) {
+        if (error) {
+            DDLogError(@"%@", [error localizedDescription]);
+            return;
+        }
+        NSString *textResult = (NSString *)result;
+        if (completionHandler) {
+            completionHandler([textResult boolValue]);
+        }
+    }];
 }
 
 - (void)setMultiline:(BOOL)multiline
@@ -310,7 +397,13 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
              @"Expected a non-nil NSString object here.");
     
     NSString* javascript = [NSString stringWithFormat:@"%@.setMultiline(%@);", [self wrappedNodeJavascriptAccessor], multilineString];
-    [self.webView stringByEvaluatingJavaScriptFromString:javascript];
+    [self.webView evaluateJavaScript:javascript completionHandler:^(id result, NSError *error) {
+        if (error) {
+            DDLogError(@"%@", [error localizedDescription]);
+            return;
+        }
+    }];
+
 }
 
 @end

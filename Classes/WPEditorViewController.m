@@ -247,7 +247,10 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (NSString*)titleText
 {    
-    return [self.editorView title];
+    [self.editorView title:^(NSString *title) {
+        
+    }];
+    return @"";
 }
 
 - (void)setTitleText:(NSString*)titleText
@@ -269,7 +272,9 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (NSString*)bodyText
 {
-    return [self.editorView contents];
+    [self.editorView contents:^(NSString *contents) {
+    }];
+    return @"";
 }
 
 - (void)setBodyText:(NSString*)bodyText
@@ -660,8 +665,10 @@ NSInteger const WPLinkAlertViewTag = 92;
 	if ([self.editorView isSelectionALink]) {
 		[self removeLink];
 	} else {
-		[self showInsertLinkDialogWithLink:self.editorView.selectedLinkURL
-									 title:[self.editorView selectedText]];
+        [self.editorView selectedText:^(NSString *text) {
+            [self showInsertLinkDialogWithLink:self.editorView.selectedLinkURL
+                                         title:text];
+        }];
 		[WPAnalytics track:WPAnalyticsStatEditorTappedLink];
 	}
 }
@@ -1069,11 +1076,9 @@ didFailLoadWithError:(NSError *)error
         // input accessory view (the format bar) to update itself. FWIW, setNeedsDisplay and
         // setNeedsLayout do NOT work.
         if ([self.editorView isInVisualMode]) {
-            [self.editorView showHTMLSource];
             [self.editorView showVisualEditor];
         } else {
             [self.editorView showHTMLSource];
-            [self.editorView showVisualEditor];
         }
     }
 }

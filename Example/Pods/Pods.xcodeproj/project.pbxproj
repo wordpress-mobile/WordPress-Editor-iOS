@@ -206,7 +206,7 @@
 		B42A49260E02658534FF92164B6FC311 /* UIRefreshControl+AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 3BA0C377B98B906891CEB91710CFF71F /* UIRefreshControl+AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B47357F588D108964AB37954EBBC724E /* WPTextFieldTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 20F75B2C02E2474739F9BD721500514A /* WPTextFieldTableViewCell.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
 		B59E1456CA936691A1C3D517BAD0E289 /* Pods-EditorDemoTests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = BAF149D756AAFC09D2FFA635F7271ADB /* Pods-EditorDemoTests-dummy.m */; };
-		B665DD30422C3A6E48C88B82E6E00A09 /* UIWebView+GUIFixes.m in Sources */ = {isa = PBXBuildFile; fileRef = 5289293B4F871995AD265E05A05D3817 /* UIWebView+GUIFixes.m */; };
+		B665DD30422C3A6E48C88B82E6E00A09 /* WKWebView+GUIFixes.m in Sources */ = {isa = PBXBuildFile; fileRef = 5289293B4F871995AD265E05A05D3817 /* WKWebView+GUIFixes.m */; };
 		B8D7755674D8A9F64D94B41A46CB6779 /* icon-posts-editor-preview.png in Resources */ = {isa = PBXBuildFile; fileRef = 0738AE3244C97208F6DEC179056D0EC3 /* icon-posts-editor-preview.png */; };
 		B9180280D89249BACE181ABEC7CDA133 /* icon_format_media@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BD5EFF052A0C895F7EABC40DA820D0D7 /* icon_format_media@2x.png */; };
 		B9CF30FD6067AD8E83024E6CCDE999F4 /* ZSScenterjustify@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A999CD775DC8D7697C78E8E7B4CD1589 /* ZSScenterjustify@2x.png */; };
@@ -286,7 +286,7 @@
 		E93C803FE8EBE74A1AF37C869D78AA8C /* DDLogMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D132239DE1D1D417BB8EEAF26B9165E /* DDLogMacros.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E98A7913A504B8153D6E856E1AC5F3B1 /* DDMultiFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 48C38363F1C34E1B9C26442016205135 /* DDMultiFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E9F4A75AE53063A4F3C32455A1B06025 /* ZSSbgcolor.png in Resources */ = {isa = PBXBuildFile; fileRef = DDD81D0D8ECA8C0146326533C0A4E125 /* ZSSbgcolor.png */; };
-		EB05DAE65ADA0D3708D5513A89BBCE5B /* UIWebView+GUIFixes.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CC40D2E0DF6637923AC293BD0E37F7F /* UIWebView+GUIFixes.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EB05DAE65ADA0D3708D5513A89BBCE5B /* WKWebView+GUIFixes.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CC40D2E0DF6637923AC293BD0E37F7F /* WKWebView+GUIFixes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EB7C4FF1765E2106D81ACEE2927D35F1 /* WPLegacyKeyboardToolbarDone.m in Sources */ = {isa = PBXBuildFile; fileRef = 67C774D719C21CF941FEF010F831848F /* WPLegacyKeyboardToolbarDone.m */; };
 		EE78FEB860C694A57D80F5730AFCB9CE /* icon_format_link@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FB087BE7E91DF02A5D57546BF11BC708 /* icon_format_link@2x.png */; };
 		EF4BEC993FB52323A31CA7189446D5CC /* DDTTYLogger.h in Headers */ = {isa = PBXBuildFile; fileRef = EFDB33FAE41DC5F3E78BA2C45E7B739A /* DDTTYLogger.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -520,7 +520,7 @@
 		50F203C01B103789359ABD4E366410CA /* UIImage+Util.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+Util.h"; path = "WordPress-iOS-Shared/Core/UIImage+Util.h"; sourceTree = "<group>"; };
 		5182654DA034CE513C6D844E5E783EE6 /* AFURLRequestSerialization.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFURLRequestSerialization.m; path = AFNetworking/AFURLRequestSerialization.m; sourceTree = "<group>"; };
 		51D25F690B523A7FF1BF5BF45D51B16C /* CYRLayoutManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = CYRLayoutManager.h; sourceTree = "<group>"; };
-		5289293B4F871995AD265E05A05D3817 /* UIWebView+GUIFixes.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "UIWebView+GUIFixes.m"; sourceTree = "<group>"; };
+		5289293B4F871995AD265E05A05D3817 /* WKWebView+GUIFixes.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "WKWebView+GUIFixes.m"; sourceTree = "<group>"; };
 		52B8C9BE1429D6A0326F733B7687BB33 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5379B2CA1A71541C2FCEF815B5E6D0F3 /* ZSSh2@2x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "ZSSh2@2x.png"; sourceTree = "<group>"; };
 		5454ECA6B6DEE2EE605B0F03C70CCC9D /* WPImageSource.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = WPImageSource.m; path = "WordPress-iOS-Shared/Core/WPImageSource.m"; sourceTree = "<group>"; };
@@ -619,7 +619,7 @@
 		9AE77C2D6108DFA00DD1347D8F7E9931 /* icon-posts-editor-preview@3x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "icon-posts-editor-preview@3x.png"; sourceTree = "<group>"; };
 		9C048A8DFA1FC858D8427563D1B9CA14 /* WPImageMeta.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = WPImageMeta.h; sourceTree = "<group>"; };
 		9C3341D8CE527D5B68830B13ABD5E267 /* ZSSh5.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = ZSSh5.png; sourceTree = "<group>"; };
-		9CC40D2E0DF6637923AC293BD0E37F7F /* UIWebView+GUIFixes.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "UIWebView+GUIFixes.h"; sourceTree = "<group>"; };
+		9CC40D2E0DF6637923AC293BD0E37F7F /* WKWebView+GUIFixes.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "WKWebView+GUIFixes.h"; sourceTree = "<group>"; };
 		9CD3EB146E7DDE9CD42FE48EE1244765 /* ZSSh6@2x.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = "ZSSh6@2x.png"; sourceTree = "<group>"; };
 		9D2CE98440AD437C287EA6A373706222 /* CocoaLumberjack.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = CocoaLumberjack.modulemap; sourceTree = "<group>"; };
 		9D69C952E8573264F0F3FA60A2E19845 /* Pods-EditorDemoTests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-EditorDemoTests-frameworks.sh"; sourceTree = "<group>"; };
@@ -961,8 +961,8 @@
 				F22B6F27A8D6A45026D40E397ECC1914 /* HRColorPickerViewController.m */,
 				1C238913ABF8502D6FFBE7CBEDFFAFCB /* HRColorUtil.h */,
 				73D90D4AE86E73EE6976D288212452F5 /* HRColorUtil.m */,
-				9CC40D2E0DF6637923AC293BD0E37F7F /* UIWebView+GUIFixes.h */,
-				5289293B4F871995AD265E05A05D3817 /* UIWebView+GUIFixes.m */,
+				9CC40D2E0DF6637923AC293BD0E37F7F /* WKWebView+GUIFixes.h */,
+				5289293B4F871995AD265E05A05D3817 /* WKWebView+GUIFixes.m */,
 				AE70BB24C8AA115CE55DB60031DF71CD /* WPEditorField.h */,
 				F365230EA6020EBC8440A8F20B1EAC21 /* WPEditorField.m */,
 				855F54A1C767BE41FB32823967A9D0AD /* WPEditorFormatbarView.h */,
@@ -1577,7 +1577,7 @@
 				C0E611F8D3307903F1D8796AA406F7F4 /* HRColorPickerView.h in Headers */,
 				6348E71CEEE720291E95E8A6350787ED /* HRColorPickerViewController.h in Headers */,
 				212CFF694AF1A77F31F7BCDAE1DF0C7B /* HRColorUtil.h in Headers */,
-				EB05DAE65ADA0D3708D5513A89BBCE5B /* UIWebView+GUIFixes.h in Headers */,
+				EB05DAE65ADA0D3708D5513A89BBCE5B /* WKWebView+GUIFixes.h in Headers */,
 				D5D85A3F0A4ADF8C23BEC914324FA22A /* WordPress-iOS-Editor-umbrella.h in Headers */,
 				8D6EB3C2EBC2C1A2E34CEE4569A74C1A /* WPEditorField.h in Headers */,
 				E0BD7747353D3D86730596D46E12BBC5 /* WPEditorFormatbarView.h in Headers */,
@@ -2027,7 +2027,7 @@
 				71AF2BA3CDDA7B3D8E132ADCF2E94257 /* HRColorPickerView.m in Sources */,
 				40B33C273BF1304022D991A408B0ACA3 /* HRColorPickerViewController.m in Sources */,
 				C824AC1926F6FF86BB7E3B81FCF3A047 /* HRColorUtil.m in Sources */,
-				B665DD30422C3A6E48C88B82E6E00A09 /* UIWebView+GUIFixes.m in Sources */,
+				B665DD30422C3A6E48C88B82E6E00A09 /* WKWebView+GUIFixes.m in Sources */,
 				6C02EB0798CBEBD75CF58AB3411BC26B /* WordPress-iOS-Editor-dummy.m in Sources */,
 				C0ABCEEA3B78E6FA5E1D37B293C332ED /* WPEditorField.m in Sources */,
 				3BEE130D91A37FD4B1299F7D749EC40A /* WPEditorFormatbarView.m in Sources */,

@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-
+#import <WebKit/WebKit.h>
 @interface WPEditorField : NSObject
 
 /**
@@ -23,7 +23,7 @@
  *  @returns    The initialized object.
  */
 - (instancetype)initWithId:(NSString*)nodeId
-                   webView:(UIWebView*)webView;
+                   webView:(WKWebView*)webView;
 
 #pragma mark - DOM status
 
@@ -51,14 +51,14 @@
  *
  *  @returns    The field's html contents.
  */
-- (NSString*)html;
+- (void)html:(void (^)(NSString *html))completionHandler;
 
 /**
  *  @brief      Retrieves the field's html sans HTML tags.
  *
  *  @returns    The field's contents without HTML tags.
  */
-- (NSString*)strippedHtml;
+- (void)strippedHtml:(void (^)(NSString *html))completionHandler;
 
 /**
  *  @brief      Sets the field's plain text contents. The param string is
@@ -112,7 +112,7 @@
  *
  *  @returns    YES if the field is RTL, NO otherwise.
  */
-- (BOOL)isRightToLeftTextEnabled;
+- (void)isRightToLeftTextEnabled:(void (^)(BOOL result))completionHandler;
 
 /**
  *  @brief      Sets the field's right to left text direction.
@@ -128,7 +128,7 @@
  *
  *  @returns    YES if the field is multiline, NO otherwise.
  */
-- (BOOL)isMultiline;
+- (void)isMultiline:(void (^)(BOOL result))completionHandler;
 
 /**
  *  @brief      Sets the field's multiline configuration.
