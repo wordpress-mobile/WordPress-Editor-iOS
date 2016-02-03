@@ -28,7 +28,7 @@ static const CGFloat HTMLViewLeftRightInset = 15.0;
 
 static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
-@interface WPEditorView () <UITextViewDelegate, WKNavigationDelegate, UITextFieldDelegate>
+@interface WPEditorView () <UITextViewDelegate, WKNavigationDelegate, UITextFieldDelegate, WKScriptMessageHandler>
 
 #pragma mark - Cached caret & line data
 @property (nonatomic, strong, readwrite) NSNumber *caretYOffset;
@@ -157,7 +157,14 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 {
 	NSAssert(!_webView, @"The web view must not exist when this method is called!");
 	
-	_webView = [[WKWebView alloc] initWithFrame:frame];
+	WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+	WKUserContentController *userContentController = [[WKUserContentController alloc] init];
+	
+	[userContentController addScriptMessageHandler:self name:@"notification"];
+	
+	configuration.userContentController = userContentController;
+	
+	_webView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
 	_webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	_webView.navigationDelegate = self;
     _webView.backgroundColor = [UIColor clearColor];
@@ -409,6 +416,16 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 			weakSelf.webView.scrollView.contentSize = CGSizeMake(CGRectGetWidth(weakSelf.frame), newHeight);
 		}
 	}];
+}
+
+#pragma mark - WKScriptMessageHandler
+
+- (void)userContentController:(WKUserContentController *)userContentController
+	  didReceiveScriptMessage:(WKScriptMessage *)message
+{
+	if (message.name == @"notification") {
+		NSLog(@"Message: %@", message);
+	}
 }
 
 #pragma mark - WKWebViewDelegate
