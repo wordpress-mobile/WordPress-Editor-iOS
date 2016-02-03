@@ -387,7 +387,8 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 		}
 	}];
 #endif
-    
+	
+	__weak typeof(self) weakSelf = self;
 	__block NSString* newHeightString;
 	
 	[self.webView evaluateJavaScript:@"$(document.body).height();" completionHandler:^(id result, NSError *error) {
@@ -395,12 +396,13 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 			DDLogError(@"Error: %@", error);
 		} else {
 			newHeightString = (NSString*)result;
+			
+			NSInteger newHeight = [newHeightString integerValue];
+			
+			weakSelf.lastEditorHeight = newHeight;
+			weakSelf.webView.scrollView.contentSize = CGSizeMake(CGRectGetWidth(weakSelf.frame), newHeight);
 		}
 	}];
-    NSInteger newHeight = [newHeightString integerValue];
-    
-    self.lastEditorHeight = newHeight;
-    self.webView.scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.frame), newHeight);
 }
 
 #pragma mark - WKWebViewDelegate
