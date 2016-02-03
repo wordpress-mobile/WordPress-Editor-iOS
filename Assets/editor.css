@@ -7,7 +7,7 @@
 }
 @font-face {
     font-family: 'OpenSans';
-    src: url("OpenSans-Italic");
+    src: url("OpenSans-Italic.ttf");
     font-weight: normal;
     font-style: italic;
 }
@@ -43,7 +43,7 @@
 }
 @font-face {
     font-family: 'Merriweather';
-    src: url("Merriweather-BoldItalic");
+    src: url("Merriweather-BoldItalic.ttf");
     font-weight: bold;
     font-style: italic;
 }
