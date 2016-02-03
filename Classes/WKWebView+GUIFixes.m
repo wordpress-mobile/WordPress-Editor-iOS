@@ -4,7 +4,7 @@
 @implementation WKWebView (GUIFixes)
 
 static const char* const kCustomInputAccessoryView = "kCustomInputAccessoryView";
-static const char* const fixedClassName = "UIWebBrowserViewMinusAccessoryView";
+static const char* const fixedClassName = "WKWebBrowserViewMinusAccessoryView";
 static Class fixClass = Nil;
 
 - (UIView *)browserView
@@ -13,7 +13,7 @@ static Class fixClass = Nil;
     
     UIView *browserView = nil;
     for (UIView *subview in scrollView.subviews) {
-        if ([NSStringFromClass([subview class]) hasPrefix:@"UIWebBrowserView"]) {
+        if ([NSStringFromClass([subview class]) hasPrefix:@"WKContent"]) {
             browserView = subview;
             break;
         }
