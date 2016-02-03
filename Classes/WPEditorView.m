@@ -195,28 +195,34 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     // Ref bug: https://github.com/wordpress-mobile/WordPress-iOS-Editor/issues/324
     //
     if (object == self.webView.scrollView) {
-        
-        if ([keyPath isEqualToString:WPEditorViewWebViewContentSizeKey]) {
-            NSValue *newValue = change[NSKeyValueChangeNewKey];
-            
-            CGSize newSize = [newValue CGSizeValue];
-        
-            if (newSize.height != self.lastEditorHeight) {
-                
-                // First make sure that the content size is not changed without us recalculating it.
-                //
-                self.webView.scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.frame), self.lastEditorHeight);
-                [self workaroundBrokenWebViewRendererBug];
-                
-                // Then recalculate it asynchronously so the UIWebView doesn't break.
-                //
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self refreshVisibleViewportAndContentSize];
-                });
-            }
-        }
+		
+		if (!self.webView.scrollView.isDragging
+			&& !self.webView.scrollView.isTracking
+			&& !self.webView.scrollView.isDecelerating) {
+			
+			if ([keyPath isEqualToString:WPEditorViewWebViewContentSizeKey]) {
+				NSValue *newValue = change[NSKeyValueChangeNewKey];
+				
+				CGSize newSize = [newValue CGSizeValue];
+
+				if (newSize.height != self.lastEditorHeight) {
+					
+					// First make sure that the content size is not changed without us recalculating it.
+					//
+					self.webView.scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.frame), self.lastEditorHeight);
+					[self workaroundBrokenWebViewRendererBug];
+					
+					// Then recalculate it asynchronously so the UIWebView doesn't break.
+					//
+					dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+						[self refreshVisibleViewportAndContentSize];
+					});
+				}
+			}
+		}
     }
 }
+
 
 - (void)startObservingWebViewContentSizeChanges
 {
