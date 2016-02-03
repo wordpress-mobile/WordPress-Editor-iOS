@@ -246,8 +246,24 @@ NSInteger const WPLinkAlertViewTag = 92;
 #pragma mark - Getters and Setters
 
 - (NSString*)titleText
-{    
-    return [self.editorView title];
+{
+	dispatch_semaphore_t asyncToSyncSemaphore = dispatch_semaphore_create(0);
+	
+	__block NSString* blockText = @"";
+	
+	[self.editorView title:^void(NSString* text, NSError *error) {
+		if (error) {
+			DDLogError(@"Error: %@", error);
+		} else {
+			blockText = text;
+		}
+		
+		dispatch_semaphore_signal(asyncToSyncSemaphore);
+	}];
+	
+	dispatch_semaphore_wait(asyncToSyncSemaphore, DISPATCH_TIME_FOREVER);
+	
+	return blockText;
 }
 
 - (void)setTitleText:(NSString*)titleText
@@ -269,7 +285,24 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 - (NSString*)bodyText
 {
-    return [self.editorView contents];
+	dispatch_semaphore_t asyncToSyncSemaphore = dispatch_semaphore_create(0);
+
+	__block NSString* blockText = @"";
+	
+	[self.editorView contents:^void(NSString* text, NSError *error) {
+
+		if (error) {
+			DDLogError(@"Error: %@", error);
+		} else {
+			blockText = text;
+		}
+		
+		dispatch_semaphore_signal(asyncToSyncSemaphore);
+	}];
+	
+	dispatch_semaphore_wait(asyncToSyncSemaphore, DISPATCH_TIME_FOREVER);
+
+	return blockText;
 }
 
 - (void)setBodyText:(NSString*)bodyText

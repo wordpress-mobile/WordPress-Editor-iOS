@@ -1,7 +1,7 @@
-#import "UIWebView+GUIFixes.h"
+#import "WKWebView+GUIFixes.h"
 #import <objc/runtime.h>
 
-@implementation UIWebView (GUIFixes)
+@implementation WKWebView (GUIFixes)
 
 static const char* const kCustomInputAccessoryView = "kCustomInputAccessoryView";
 static const char* const fixedClassName = "UIWebBrowserViewMinusAccessoryView";
@@ -33,12 +33,12 @@ static Class fixClass = Nil;
 		
 		UIView* parentWebView = self.superview;
 		
-		while (parentWebView && ![parentWebView isKindOfClass:[UIWebView class]])
+		while (parentWebView && ![parentWebView isKindOfClass:[WKWebView class]])
 		{
 			parentWebView = parentWebView.superview;
 		}
 		
-		view = [(UIWebView*)parentWebView customInputAccessoryView];
+		view = [(WKWebView*)parentWebView customInputAccessoryView];
 	}
 	
 	return view;
@@ -81,7 +81,7 @@ static Class fixClass = Nil;
         object_setClass(browserView, fixClass);
     }
     else {
-        Class normalClass = objc_getClass("UIWebBrowserView");
+        Class normalClass = objc_getClass("WKContent");
         object_setClass(browserView, normalClass);
     }
 	

@@ -1,6 +1,10 @@
 #import <Foundation/Foundation.h>
+#import <WebKit/WebKit.h>
 
 @interface WPEditorField : NSObject
+
+typedef void(^WPEditorFieldGetHTMLCompletionBlock)(NSString *html, NSError *error);
+typedef void(^WPEditorFieldBooleanQueryCompletionBlock)(BOOL result, NSError *error);
 
 /**
  *  @brief      inputAccessoryView      The input accessory view for the field.
@@ -23,7 +27,7 @@
  *  @returns    The initialized object.
  */
 - (instancetype)initWithId:(NSString*)nodeId
-                   webView:(UIWebView*)webView;
+                   webView:(WKWebView*)webView;
 
 #pragma mark - DOM status
 
@@ -49,16 +53,18 @@
 /**
  *  @brief      Retrieves the field's html contents.
  *
- *  @returns    The field's html contents.
+ *	@param		completionBlock		The block to execute once the HTML has been retrieved, or there
+ *									has been an error.  Cannot be nil.
  */
-- (NSString*)html;
+- (void)html:(WPEditorFieldGetHTMLCompletionBlock)completionBlock;
 
 /**
  *  @brief      Retrieves the field's html sans HTML tags.
  *
- *  @returns    The field's contents without HTML tags.
+ *	@param		completionBlock		The block to execute once the HTML has been retrieved, or there
+ *									has been an error.  Cannot be nil.
  */
-- (NSString*)strippedHtml;
+- (void)strippedHtml:(WPEditorFieldGetHTMLCompletionBlock)completionBlock;
 
 /**
  *  @brief      Sets the field's plain text contents. The param string is
@@ -110,9 +116,10 @@
 /**
  *  @brief      Whether the field has RTL text direction enabled
  *
- *  @returns    YES if the field is RTL, NO otherwise.
+ *	@parameter	completionBlock		The block that will be executed when the javascript evaluation
+ *									completes.  Cannot be nil.
  */
-- (BOOL)isRightToLeftTextEnabled;
+- (void)isRightToLeftTextEnabled:(WPEditorFieldBooleanQueryCompletionBlock)completionBlock;
 
 /**
  *  @brief      Sets the field's right to left text direction.
@@ -126,9 +133,10 @@
 /**
  *  @brief      Whether the field is single line or multiline.
  *
- *  @returns    YES if the field is multiline, NO otherwise.
+ *	@parameter	completionBlock		The block that will be executed when the javascript evaluation
+ *									completes.  Cannot be nil.
  */
-- (BOOL)isMultiline;
+- (void)isMultiline:(WPEditorFieldBooleanQueryCompletionBlock)completionBlock;
 
 /**
  *  @brief      Sets the field's multiline configuration.

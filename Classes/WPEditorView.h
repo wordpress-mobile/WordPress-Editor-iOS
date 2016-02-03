@@ -176,6 +176,8 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 @interface WPEditorView : UIView
 
+typedef void(^WPEditorViewTextRequest)(NSString* text, NSError *error);
+
 /**
  *	@brief		The editor's delegate.
  */
@@ -222,16 +224,18 @@ stylesForCurrentSelection:(NSArray*)styles;
 /**
  *  @brief      Retrieves the content in both HTML and visual mode.
  *
- *  @returns    The content.
+ *  @param		completionBlock		The block that will be executed when the request completes or
+ *									an error occurs.  Cannot be nil.
  */
-- (NSString*)contents;
+- (void)contents:(WPEditorViewTextRequest)completionBlock;
 
 /**
  *  @brief      Retrieves the title in both HTML and visual mode.
  *
- *  @returns    The title.
+ *  @param		completionBlock		The block that will be executed when the request completes or
+ *									an error occurs.  Cannot be nil.
  */
-- (NSString*)title;
+- (void)title:(WPEditorViewTextRequest)completionBlock;
 
 #pragma mark - Selection
 
