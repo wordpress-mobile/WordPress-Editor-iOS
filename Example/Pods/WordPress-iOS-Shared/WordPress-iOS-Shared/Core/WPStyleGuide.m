@@ -413,6 +413,24 @@
     }
 }
 
++ (void)configureTableViewSectionHeader:(UITableViewHeaderFooterView *)header
+{
+    if (![header isKindOfClass:[UITableViewHeaderFooterView class]]) {
+        return;
+    }
+    header.textLabel.font = [self tableviewSectionHeaderFont];
+    header.textLabel.textColor = [self whisperGrey];
+}
+
++ (void)configureTableViewSectionFooter:(UITableViewHeaderFooterView *)footer
+{
+    if (![footer isKindOfClass:[UITableViewHeaderFooterView class]]) {
+        return;
+    }
+    footer.textLabel.font = [self subtitleFont];
+    footer.textLabel.textColor = [self greyDarken10];
+}
+
 // TODO: Move to fetaure category
 + (void)configureFollowButton:(UIButton *)followButton {
     followButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;

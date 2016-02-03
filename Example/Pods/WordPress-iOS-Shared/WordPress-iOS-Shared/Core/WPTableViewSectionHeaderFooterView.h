@@ -23,6 +23,7 @@ typedef NS_ENUM(NSInteger, WPTableViewSectionStyle)
  *          should be used app-wide.
  */
 
+__deprecated_msg("Use +[WPStyleGuide configureTableViewSectionHeader:] from the table view delegate instead")
 @interface WPTableViewSectionHeaderFooterView : UITableViewHeaderFooterView
 
 @property (nonatomic, assign, readonly) WPTableViewSectionStyle style;

@@ -421,7 +421,6 @@ decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
 	if (shouldLoad) {
 		decisionHandler(WKNavigationActionPolicyAllow);
 	} else {
-		NSLog(@"URL canceled:%@", url);
 		decisionHandler(WKNavigationActionPolicyCancel);
 	}
 }
