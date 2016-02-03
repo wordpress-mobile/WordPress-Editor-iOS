@@ -79,8 +79,7 @@ static Class fixClass = Nil;
 
     if (value) {
         object_setClass(browserView, fixClass);
-    }
-    else {
+    } else {
         Class normalClass = objc_getClass("WKContent");
         object_setClass(browserView, normalClass);
     }
