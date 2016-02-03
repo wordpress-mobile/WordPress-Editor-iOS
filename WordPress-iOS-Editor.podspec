@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.social_media_url = 'http://twitter.com/WordPressiOS'
   s.platform     = :ios, '9.0'
   s.source_files = 'Classes'
-  s.resources = ["Assets/*.png", "Assets/*.html", "Assets/*.js", "Assets/*.svg", "Assets/*.css", "Assets/*.storyboard", "Assets/*.xib", "Resources/WordPress-iOS-Shared.bundle"]
+  s.resources = ["Assets/*.png", "Assets/*.html", "Assets/*.js", "Assets/*.svg", "Assets/*.css", "Assets/*.storyboard", "Assets/*.xib", "Fonts/*.ttf"]
   s.prefix_header_file = "Classes/WordPress-iOS-Editor-Prefix.pch"
   s.exclude_files = 'Classes/exclude'
   s.requires_arc = true

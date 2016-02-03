@@ -25,7 +25,7 @@
     "Assets/*.css",
     "Assets/*.storyboard",
     "Assets/*.xib",
-    "Resources/WordPress-iOS-Shared.bundle"
+    "Fonts/*.ttf"
   ],
   "prefix_header_file": "Classes/WordPress-iOS-Editor-Prefix.pch",
   "exclude_files": "Classes/exclude",
