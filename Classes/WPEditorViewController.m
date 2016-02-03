@@ -245,25 +245,13 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 #pragma mark - Getters and Setters
 
-- (NSString*)titleText
+- (void)titleText:(WPEditorViewControllerTextRequestCompletionBlock)completionBlock
 {
-	dispatch_semaphore_t asyncToSyncSemaphore = dispatch_semaphore_create(0);
-	
-	__block NSString* blockText = @"";
+	NSParameterAssert(completionBlock != nil);
 	
 	[self.editorView title:^void(NSString* text, NSError *error) {
-		if (error) {
-			DDLogError(@"Error: %@", error);
-		} else {
-			blockText = text;
-		}
-		
-		dispatch_semaphore_signal(asyncToSyncSemaphore);
+		completionBlock(text, error);
 	}];
-	
-	dispatch_semaphore_wait(asyncToSyncSemaphore, DISPATCH_TIME_FOREVER);
-	
-	return blockText;
 }
 
 - (void)setTitleText:(NSString*)titleText
@@ -283,26 +271,13 @@ NSInteger const WPLinkAlertViewTag = 92;
     }
 }
 
-- (NSString*)bodyText
+- (void)bodyText:(WPEditorViewControllerTextRequestCompletionBlock)completionBlock
 {
-	dispatch_semaphore_t asyncToSyncSemaphore = dispatch_semaphore_create(0);
-
-	__block NSString* blockText = @"";
+	NSParameterAssert(completionBlock != nil);
 	
 	[self.editorView contents:^void(NSString* text, NSError *error) {
-
-		if (error) {
-			DDLogError(@"Error: %@", error);
-		} else {
-			blockText = text;
-		}
-		
-		dispatch_semaphore_signal(asyncToSyncSemaphore);
+		completionBlock(text, error);
 	}];
-	
-	dispatch_semaphore_wait(asyncToSyncSemaphore, DISPATCH_TIME_FOREVER);
-
-	return blockText;
 }
 
 - (void)setBodyText:(NSString*)bodyText
@@ -348,20 +323,6 @@ NSInteger const WPLinkAlertViewTag = 92;
                          completion:nil];
     }
     [WPAnalytics track:WPAnalyticsStatEditorTappedImage];
-}
-
-#pragma mark - Editor and Misc Methods
-
-- (BOOL)isBodyTextEmpty
-{
-    if(!self.bodyText
-       || self.bodyText.length == 0
-       || [[self.bodyText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""]
-       || [[self.bodyText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@"<br>"]
-       || [[self.bodyText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@"<br />"]) {
-        return YES;
-    }
-    return NO;
 }
 
 #pragma mark - Editing

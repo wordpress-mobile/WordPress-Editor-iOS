@@ -123,10 +123,10 @@ WPEditorViewControllerMode;
 
 @interface WPEditorViewController : UIViewController
 
+typedef void(^WPEditorViewControllerTextRequestCompletionBlock)(NSString *text, NSError *error);
+
 @property (nonatomic, weak) id<WPEditorViewControllerDelegate> delegate;
-@property (nonatomic, copy) NSString *titleText;
 @property (nonatomic, copy) NSString *titlePlaceholderText;
-@property (nonatomic, copy) NSString *bodyText;
 @property (nonatomic, copy) NSString *bodyPlaceholderText;
 
 #pragma mark - Properties: Editor View
@@ -142,6 +142,13 @@ WPEditorViewControllerMode;
  *	@returns	The initialized object.
  */
 - (instancetype)initWithMode:(WPEditorViewControllerMode)mode;
+
+#pragma mark - Getters & setters
+
+- (void)bodyText:(WPEditorViewControllerTextRequestCompletionBlock)completionBlock;
+- (void)setBodyText:(NSString *)bodyText;
+- (void)titleText:(WPEditorViewControllerTextRequestCompletionBlock)completionBlock;
+- (void)setTitleText:(NSString *)titleText;
 
 #pragma mark - Editing
 
