@@ -1383,7 +1383,7 @@ didFinishNavigation:(WKNavigation *)navigation
 	NSParameterAssert(completionBlock != nil);
 	
     if ([self isInVisualMode]) {
-		[self.titleField html:^void(NSString *html, NSError *error) {
+		[self.contentField html:^void(NSString *html, NSError *error) {
 			completionBlock(html, error);
 		}];
 	} else {
