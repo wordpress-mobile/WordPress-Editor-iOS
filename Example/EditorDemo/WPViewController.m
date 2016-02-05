@@ -69,7 +69,7 @@
     NSString *path = [[NSBundle mainBundle] pathForResource:@"content" ofType:@"html"];
     NSString *htmlParam = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
     [self setTitleText:@"I'm editing a post!"];
-    [self setBodyText:htmlParam];
+    [self setBodyText:htmlParam onComplete:nil];
 }
 
 - (BOOL)editorShouldDisplaySourceView:(WPEditorViewController *)editorController

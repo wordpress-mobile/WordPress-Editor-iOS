@@ -124,6 +124,7 @@ WPEditorViewControllerMode;
 @interface WPEditorViewController : UIViewController
 
 typedef void(^WPEditorViewControllerTextRequestCompletionBlock)(NSString *text, NSError *error);
+typedef void(^WPEditorViewControllerVoidRequestCompletionBlock)(NSError *error);
 
 @property (nonatomic, weak) id<WPEditorViewControllerDelegate> delegate;
 @property (nonatomic, copy) NSString *titlePlaceholderText;
@@ -146,7 +147,8 @@ typedef void(^WPEditorViewControllerTextRequestCompletionBlock)(NSString *text, 
 #pragma mark - Getters & setters
 
 - (void)bodyText:(WPEditorViewControllerTextRequestCompletionBlock)completionBlock;
-- (void)setBodyText:(NSString *)bodyText;
+- (void)setBodyText:(NSString*)bodyText
+		 onComplete:(WPEditorViewControllerVoidRequestCompletionBlock)completionBlock;
 - (void)titleText:(WPEditorViewControllerTextRequestCompletionBlock)completionBlock;
 - (void)setTitleText:(NSString *)titleText;
 

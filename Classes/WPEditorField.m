@@ -87,8 +87,15 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
 
 - (void)setupInitialHTML
 {
-    [self setHtml:self.preloadedHTML];
-    self.preloadedHTML = nil;
+	__weak typeof(self) weakSelf = self;
+	
+    [self setHtml:self.preloadedHTML onComplete:^(NSError *error) {
+		if (error) {
+			DDLogError(@"Error: %@", error);
+		}
+		
+		weakSelf.preloadedHTML = nil;
+	}];
 }
 
 - (void)setupInitialPlaceholderText
@@ -200,7 +207,10 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
 }
 
 - (void)setHtml:(NSString*)html
+	 onComplete:(WPEditorFieldVoidQueryCompletionBlock)completionBlock
 {
+	NSParameterAssert(completionBlock);
+	
     if (!self.domLoaded) {
         self.preloadedHTML = html;
     } else {
@@ -214,9 +224,7 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
         NSString* javascript = [NSString stringWithFormat:@"%@.setHTML(\"%@\");", [self wrappedNodeJavascriptAccessor], html];
 		
 		[self.webView evaluateJavaScript:javascript completionHandler:^(id result, NSError *error) {
-			if (error) {
-				DDLogError(@"Error: %@", error);
-			}
+			completionBlock(error);
 		}];
     }
 }

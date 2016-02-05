@@ -5,6 +5,7 @@
 
 typedef void(^WPEditorFieldGetHTMLCompletionBlock)(NSString *html, NSError *error);
 typedef void(^WPEditorFieldBooleanQueryCompletionBlock)(BOOL result, NSError *error);
+typedef void(^WPEditorFieldVoidQueryCompletionBlock)(NSError *error);
 
 /**
  *  @brief      inputAccessoryView      The input accessory view for the field.
@@ -77,9 +78,11 @@ typedef void(^WPEditorFieldBooleanQueryCompletionBlock)(BOOL result, NSError *er
 /**
  *  @brief      Sets the field's html contents.
  *
- *  @param      html     The new field's html contents.
+ *  @param      html				The new field's html contents.
+ *	@param		completionBlock		The block to execute when the operation completes.
  */
-- (void)setHtml:(NSString*)html;
+- (void)setHtml:(NSString*)html
+	 onComplete:(WPEditorFieldVoidQueryCompletionBlock)completionBlock;
 
 #pragma mark - Placeholder
 

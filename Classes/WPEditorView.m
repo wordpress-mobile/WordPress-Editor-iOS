@@ -1921,14 +1921,47 @@ didFinishNavigation:(WKNavigation *)navigation
 
 - (void)showVisualEditor
 {
-	[self.contentField setHtml:self.sourceView.text];
-	self.sourceView.hidden = YES;
-    [self.titleField setHtml:self.sourceViewTitleField.text];
-    self.sourceViewTitleField.hidden = YES;
-    self.sourceContentDividerView.hidden = YES;
-	self.webView.hidden = NO;
-    
-    [self.contentField focus];
+	__weak typeof(self) weakSelf = self;
+	
+	__block BOOL contentSet = NO;
+	__block BOOL titleSet = NO;
+	
+	void(^privateCompletionBlock)() = ^void() {
+		__strong typeof(self) strongSelf = weakSelf;
+		
+		if (strongSelf) {
+			strongSelf.sourceView.hidden = YES;
+			strongSelf.sourceViewTitleField.hidden = YES;
+			strongSelf.sourceContentDividerView.hidden = YES;
+			strongSelf.webView.hidden = NO;
+			
+			[strongSelf.contentField focus];
+		}
+	};
+	
+	[self.contentField setHtml:self.sourceView.text onComplete:^(NSError *error) {
+		if (error) {
+			DDLogError(@"Error: %@", error);
+		}
+		
+		contentSet = YES;
+		
+		if (titleSet) {
+			privateCompletionBlock();
+		}
+	}];
+	
+	[self.titleField setHtml:self.sourceViewTitleField.text onComplete:^(NSError *error) {
+		if (error) {
+			DDLogError(@"Error: %@", error);
+		}
+		
+		titleSet = YES;
+		
+		if (contentSet) {
+			privateCompletionBlock();
+		}
+	}];
 }
 
 #pragma mark - Editing lock
