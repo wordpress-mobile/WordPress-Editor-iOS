@@ -270,11 +270,10 @@ NSInteger const WPLinkAlertViewTag = 92;
 }
 
 - (void)setBodyText:(NSString*)bodyText
-		 onComplete:(WPEditorViewControllerVoidRequestCompletionBlock)completionBlock
 {
     [self.editorView.contentField setHtml:bodyText onComplete:^(NSError *error) {
-		if (completionBlock) {
-			completionBlock(error);
+		if (error) {
+			DDLogError(@"Error: %@", error);
 		}
 	}];
 }
