@@ -1400,7 +1400,7 @@ didFinishNavigation:(WKNavigation *)navigation
 	NSParameterAssert(completionBlock != nil);
 	
     if ([self isInVisualMode]) {
-		[self.titleField html:^void(NSString *html, NSError *error) {
+		[self.contentField html:^void(NSString *html, NSError *error) {
 			completionBlock(html, error);
 		}];
 	} else {
@@ -1899,26 +1899,41 @@ didFinishNavigation:(WKNavigation *)navigation
 
 - (void)showHTMLSource
 {
+	__block NSString *content;
+	__block NSString *title;
 	__weak typeof(self) weakSelf = self;
 	
+	void(^privateCompletionBlock)() = ^void() {
+		weakSelf.sourceView.text = content;
+		weakSelf.sourceViewTitleField.text = title;
+		
+		weakSelf.sourceView.hidden = NO;
+		weakSelf.sourceViewTitleField.hidden = NO;
+		weakSelf.sourceContentDividerView.hidden = NO;
+		weakSelf.webView.hidden = YES;
+		
+		[weakSelf.sourceView becomeFirstResponder];
+		UITextPosition* position = [weakSelf.sourceView positionFromPosition:[weakSelf.sourceView beginningOfDocument]
+																	  offset:0];
+		
+		[weakSelf.sourceView setSelectedTextRange:[weakSelf.sourceView textRangeFromPosition:position toPosition:position]];
+	};
+	
 	[self.contentField html:^void(NSString *html, NSError *error) {
-		weakSelf.sourceView.text = html;
+		content = html;
+		
+		if (title != nil) {
+			privateCompletionBlock();
+		}
 	}];
 	
-	[self.contentField strippedHtml:^void(NSString *html, NSError *error) {
-		weakSelf.sourceViewTitleField.text = html;
+	[self.titleField strippedHtml:^void(NSString *html, NSError *error) {
+		title = html;
+		
+		if (content != nil) {
+			privateCompletionBlock();
+		}
 	}];
-	
-	self.sourceView.hidden = NO;
-    self.sourceViewTitleField.hidden = NO;
-    self.sourceContentDividerView.hidden = NO;
-	self.webView.hidden = YES;
-    
-    [self.sourceView becomeFirstResponder];
-    UITextPosition* position = [self.sourceView positionFromPosition:[self.sourceView beginningOfDocument]
-                                                              offset:0];
-    
-    [self.sourceView setSelectedTextRange:[self.sourceView textRangeFromPosition:position toPosition:position]];
 }
 
 - (void)showVisualEditor

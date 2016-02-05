@@ -86,12 +86,16 @@
 
 - (void)editorTitleDidChange:(WPEditorViewController *)editorController
 {
-    DDLogInfo(@"Editor title did change: %@", self.titleText);
+	[self titleText:^void(NSString *text, NSError *error) {
+		DDLogInfo(@"Editor title did change: %@", text);
+	}];
 }
 
 - (void)editorTextDidChange:(WPEditorViewController *)editorController
 {
-    DDLogInfo(@"Editor body text changed: %@", self.bodyText);
+	[self titleText:^void(NSString *text, NSError *error) {
+		DDLogInfo(@"Editor body text changed: %@", text);
+	}];
 }
 
 - (void)editorViewController:(WPEditorViewController *)editorViewController fieldCreated:(WPEditorField*)field
