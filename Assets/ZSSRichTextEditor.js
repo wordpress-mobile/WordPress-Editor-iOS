@@ -2397,8 +2397,7 @@ ZSSField.prototype.handleBlurEvent = function(e) {
     ZSSEditor.focusedField = null;
 
     this.emptyFieldIfNoContentsAndRefreshPlaceholderColor();
-    
-    this.callback("callback-focus-out");
+	window.webkit.messageHandlers.focusOut.postMessage({fieldId: this.getNodeId()});
 };
 
 ZSSField.prototype.handleFocusEvent = function(e) {
@@ -2407,8 +2406,8 @@ ZSSField.prototype.handleFocusEvent = function(e) {
     // IMPORTANT: this is the only case where checking the current focus will not work.
     // We sidestep this issue by indicating that the field is about to gain focus.
     //
-    this.refreshPlaceholderColorAboutToGainFocus(true);
-    this.callback("callback-focus-in");
+	this.refreshPlaceholderColorAboutToGainFocus(true);
+	window.webkit.messageHandlers.focusIn.postMessage({fieldId: this.getNodeId()});
 };
 
 ZSSField.prototype.handleKeyDownEvent = function(e) {

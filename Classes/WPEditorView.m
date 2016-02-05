@@ -20,6 +20,9 @@ static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
 static NSString* const kWPEditorViewFieldTitleId = @"zss_field_title";
 static NSString* const kWPEditorViewFieldContentId = @"zss_field_content";
 
+static NSString* const FocusInMessage = @"focusIn";
+static NSString* const FocusOutMessage = @"focusOut";
+
 static const CGFloat UITextFieldLeftRightInset = 20.0;
 static const CGFloat UITextFieldFieldHeight = 55.0;
 static const CGFloat SourceTitleTextFieldYOffset = 4.0;
@@ -160,7 +163,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 	WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
 	WKUserContentController *userContentController = [[WKUserContentController alloc] init];
 	
-	[userContentController addScriptMessageHandler:self name:@"notification"];
+	[self registerScriptMessageHandlers:userContentController];
 	
 	configuration.userContentController = userContentController;
 	
@@ -182,6 +185,18 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     NSBundle * bundle = [NSBundle bundleForClass:[WPEditorView class]];
     NSURL * editorURL = [bundle URLForResource:@"editor" withExtension:@"html"];
     [self.webView loadRequest:[NSURLRequest requestWithURL:editorURL]];
+}
+
+#pragma mark - Script Message handlers
+
+- (void)registerScriptMessageHandlers:(WKUserContentController *)userContentController
+{
+	NSParameterAssert([userContentController isKindOfClass:[WKUserContentController class]]);
+	
+	[userContentController addScriptMessageHandler:self
+											  name:FocusInMessage];
+	[userContentController addScriptMessageHandler:self
+											  name:FocusOutMessage];
 }
 
 #pragma mark - KVO
@@ -423,9 +438,39 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 - (void)userContentController:(WKUserContentController *)userContentController
 	  didReceiveScriptMessage:(WKScriptMessage *)message
 {
-	if (message.name == @"notification") {
-		NSLog(@"Message: %@", message);
+	if (message.name == FocusInMessage) {
+		NSLog(@"FocusIn message: %@", message.body);
+		
+		[self handleFocusInMessage:message.body];
+	} else if (message.name == FocusOutMessage) {
+		NSLog(@"FocusOut message: %@", message.body);
+		
+		[self handleFocusOutMessage:message.body];
 	}
+}
+
+- (void)handleFocusInMessage:(NSDictionary *)body
+{
+	NSParameterAssert([body isKindOfClass:[NSDictionary class]]);
+	
+	NSString *fieldId = body[@"fieldId"];
+	
+	if ([fieldId isEqualToString:kWPEditorViewFieldTitleId]) {
+		self.focusedField = self.titleField;
+	} else if ([fieldId isEqualToString:kWPEditorViewFieldContentId]) {
+		self.focusedField = self.contentField;
+	}
+	
+	self.webView.customInputAccessoryView = self.focusedField.inputAccessoryView;
+	[self.webView reload];
+	
+	[self callDelegateFieldFocused:self.focusedField];
+}
+
+- (void)handleFocusOutMessage:(id)body
+{
+	self.focusedField = nil;
+	[self callDelegateFieldFocused:nil];
 }
 
 #pragma mark - WKWebViewDelegate
@@ -478,13 +523,13 @@ didFinishNavigation:(WKNavigation *)navigation
 	DDLogDebug(@"WebEditor callback received: %@", url);
 	
     if (scheme) {
-        if ([self isFocusInScheme:scheme]) {
+        /*if ([self isFocusInScheme:scheme]) {
             [self handleFocusInCallback:url];
             handled = YES;
         } else if ([self isFocusOutScheme:scheme]) {
             [self handleFocusOutCallback:url];
             handled = YES;
-        } else if ([self isInputCallbackScheme:scheme]) {
+        } else */ if ([self isInputCallbackScheme:scheme]) {
             [self handleInputCallback:url];
             handled = YES;
         } else if ([self isLinkTappedScheme:scheme]) {
