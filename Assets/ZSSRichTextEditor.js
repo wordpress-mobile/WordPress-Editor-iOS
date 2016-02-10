@@ -30,8 +30,8 @@ ZSSEditor.caretInfo = { y: 0, height: 0 };
 // Is this device an iPad
 ZSSEditor.isiPad;
 
-// The current selection
-ZSSEditor.currentSelection;
+// A globally saved selection.  Useful for when the editor loses focus.
+ZSSEditor.savedSelection;
 
 // The current editing image
 ZSSEditor.currentEditingImage;
@@ -201,27 +201,12 @@ ZSSEditor.getFocusedField = function() {
 // MARK: - Selection
 
 ZSSEditor.backupRange = function(){
-	var selection = window.getSelection();
-    var range = selection.getRangeAt(0);
-    
-    ZSSEditor.currentSelection =
-    {
-        "startContainer": range.startContainer,
-        "startOffset": range.startOffset,
-        "endContainer": range.endContainer,
-        "endOffset": range.endOffset
-    };
+	this.savedSelection = rangy.saveSelection()
 };
 
 ZSSEditor.restoreRange = function(){
-    if (this.currentSelection) {
-        var selection = window.getSelection();
-        selection.removeAllRanges();
-        
-        var range = document.createRange();
-        range.setStart(this.currentSelection.startContainer, this.currentSelection.startOffset);
-        range.setEnd(this.currentSelection.endContainer, this.currentSelection.endOffset);
-        selection.addRange(range);
+    if (this.savedSelection) {
+		rangy.restoreSelection(this.savedSelection);
     }
 };
 
