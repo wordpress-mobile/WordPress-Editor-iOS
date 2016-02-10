@@ -2241,7 +2241,7 @@ ZSSEditor.closerParentNodeWithName = function(nodeName) {
     var parentNode = null;
     var selection = window.getSelection();
     if (selection.rangeCount < 1){
-        return nil;
+        return null;
     }
     var range = selection.getRangeAt(0).cloneRange();
     var referenceNode = range.commonAncestorContainer;
