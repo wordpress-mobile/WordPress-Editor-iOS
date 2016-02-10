@@ -61,7 +61,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 	
 	if (self)
 	{
-		[self sharedInitializationWithEditing:YES];
+		[self sharedInitializationWithEditing:NO];
 	}
 	
 	return self;

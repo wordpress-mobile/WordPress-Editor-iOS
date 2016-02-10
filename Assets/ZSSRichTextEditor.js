@@ -2578,7 +2578,7 @@ ZSSField.prototype.isFocused = function() {
 };
 
 ZSSField.prototype.focus = function() {
-    
+	
     if (!this.isFocused()) {
         this.wrappedObject.focus();
     }
@@ -2609,7 +2609,7 @@ ZSSField.prototype.getNodeId = function() {
 // MARK: - Editing
 
 ZSSField.prototype.enableEditing = function () {
-    
+	
     this.wrappedObject.attr('contenteditable', true);
     
     if (!ZSSEditor.focusedField) {

@@ -1935,7 +1935,9 @@ didFinishNavigation:(WKNavigation *)navigation
 			strongSelf.sourceContentDividerView.hidden = YES;
 			strongSelf.webView.hidden = NO;
 			
-			[strongSelf.contentField focus];
+			if (strongSelf.isEditing) {
+				[strongSelf.contentField focus];
+			}
 		}
 	};
 	
@@ -1950,12 +1952,12 @@ didFinishNavigation:(WKNavigation *)navigation
 			privateCompletionBlock();
 		}
 	}];
-	
+
 	[self.titleField setHtml:self.sourceViewTitleField.text onComplete:^(NSError *error) {
 		if (error) {
 			DDLogError(@"Error: %@", error);
 		}
-		
+
 		titleSet = YES;
 		
 		if (contentSet) {
