@@ -2388,7 +2388,7 @@ ZSSField.prototype.handleBlurEvent = function(e) {
 
 ZSSField.prototype.handleFocusEvent = function(e) {
     ZSSEditor.focusedField = this;
-    
+	
     // IMPORTANT: this is the only case where checking the current focus will not work.
     // We sidestep this issue by indicating that the field is about to gain focus.
     //

@@ -63,11 +63,18 @@ static Class fixClass = Nil;
 
 - (void)fixAssistNodeMethodForClass:(Class)class
 {
+	__weak typeof(self) weakSelf = self;
+	
 	SEL sel = sel_getUid("_startAssistingNode:userIsInteracting:blurPreviousNode:userObject:");
 	Method method = class_getInstanceMethod(class, sel);
 	IMP originalImp = method_getImplementation(method);
 	IMP imp = imp_implementationWithBlock(^void(id me, void* arg0, BOOL arg1, BOOL arg2, id arg3) {
-		((void (*)(id, SEL, void*, BOOL, BOOL, id))originalImp)(me, sel, arg0, TRUE, arg2, arg3);
+		
+		if (!weakSelf.isLoading) {
+			((void (*)(id, SEL, void*, BOOL, BOOL, id))originalImp)(me, sel, arg0, TRUE, arg2, arg3);
+		} else {
+			((void (*)(id, SEL, void*, BOOL, BOOL, id))originalImp)(me, sel, arg0, arg1, arg2, arg3);
+		}
 	});
 	method_setImplementation(method, imp);
 }
