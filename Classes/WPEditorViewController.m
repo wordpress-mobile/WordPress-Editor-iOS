@@ -61,7 +61,7 @@ NSInteger const WPLinkAlertViewTag = 92;
 	
 	if (self)
 	{
-		[self sharedInitializationWithEditing:YES];
+		[self sharedInitializationWithEditing:NO];
 	}
 	
 	return self;
@@ -191,17 +191,6 @@ NSInteger const WPLinkAlertViewTag = 92;
     [self saveEditSelection];
 }
 
-- (void)traitCollectionDidChange:(UITraitCollection *) previousTraitCollection
-{
-    [super traitCollectionDidChange: previousTraitCollection];
-    [self recoverFromViewSizeChange];
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
-{
-    [self recoverFromViewSizeChange];
-}
-
 - (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     [super willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
@@ -245,9 +234,13 @@ NSInteger const WPLinkAlertViewTag = 92;
 
 #pragma mark - Getters and Setters
 
-- (NSString*)titleText
-{    
-    return [self.editorView title];
+- (void)titleText:(WPEditorViewControllerTextRequestCompletionBlock)completionBlock
+{
+	NSParameterAssert(completionBlock != nil);
+	
+	[self.editorView title:^void(NSString* text, NSError *error) {
+		completionBlock(text, error);
+	}];
 }
 
 - (void)setTitleText:(NSString*)titleText
@@ -267,14 +260,22 @@ NSInteger const WPLinkAlertViewTag = 92;
     }
 }
 
-- (NSString*)bodyText
+- (void)bodyText:(WPEditorViewControllerTextRequestCompletionBlock)completionBlock
 {
-    return [self.editorView contents];
+	NSParameterAssert(completionBlock != nil);
+	
+	[self.editorView contents:^void(NSString* text, NSError *error) {
+		completionBlock(text, error);
+	}];
 }
 
 - (void)setBodyText:(NSString*)bodyText
 {
-    [self.editorView.contentField setHtml:bodyText];
+    [self.editorView.contentField setHtml:bodyText onComplete:^(NSError *error) {
+		if (error) {
+			DDLogError(@"Error: %@", error);
+		}
+	}];
 }
 
 - (void)setBodyPlaceholderText:(NSString*)bodyPlaceholderText
@@ -315,20 +316,6 @@ NSInteger const WPLinkAlertViewTag = 92;
                          completion:nil];
     }
     [WPAnalytics track:WPAnalyticsStatEditorTappedImage];
-}
-
-#pragma mark - Editor and Misc Methods
-
-- (BOOL)isBodyTextEmpty
-{
-    if(!self.bodyText
-       || self.bodyText.length == 0
-       || [[self.bodyText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""]
-       || [[self.bodyText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@"<br>"]
-       || [[self.bodyText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@"<br />"]) {
-        return YES;
-    }
-    return NO;
 }
 
 #pragma mark - Editing
@@ -1059,24 +1046,6 @@ didFailLoadWithError:(NSError *)error
 }
 
 #pragma mark - Utilities
-
-- (void)recoverFromViewSizeChange
-{
-    if (self.isFirstSetupComplete) {
-        // Important: This is a complete and utter hack that compensates for the input accessory view
-        // not properly changing size classes (resizing) when the rest of the views in the editor VC do.
-        // Toggling the HTML button on the input bar quickly does not affect the view and forces the
-        // input accessory view (the format bar) to update itself. FWIW, setNeedsDisplay and
-        // setNeedsLayout do NOT work.
-        if ([self.editorView isInVisualMode]) {
-            [self.editorView showHTMLSource];
-            [self.editorView showVisualEditor];
-        } else {
-            [self.editorView showHTMLSource];
-            [self.editorView showVisualEditor];
-        }
-    }
-}
 
 - (UIColor *)barButtonItemDefaultColor
 {

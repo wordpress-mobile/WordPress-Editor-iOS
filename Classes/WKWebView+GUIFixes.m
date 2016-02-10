@@ -1,10 +1,10 @@
-#import "UIWebView+GUIFixes.h"
+#import "WKWebView+GUIFixes.h"
 #import <objc/runtime.h>
 
-@implementation UIWebView (GUIFixes)
+@implementation WKWebView (GUIFixes)
 
 static const char* const kCustomInputAccessoryView = "kCustomInputAccessoryView";
-static const char* const fixedClassName = "UIWebBrowserViewMinusAccessoryView";
+static const char* const fixedClassName = "WKWebBrowserViewMinusAccessoryView";
 static Class fixClass = Nil;
 
 - (UIView *)browserView
@@ -13,7 +13,7 @@ static Class fixClass = Nil;
     
     UIView *browserView = nil;
     for (UIView *subview in scrollView.subviews) {
-        if ([NSStringFromClass([subview class]) hasPrefix:@"UIWebBrowserView"]) {
+        if ([NSStringFromClass([subview class]) hasPrefix:@"WKContent"]) {
             browserView = subview;
             break;
         }
@@ -28,18 +28,15 @@ static Class fixClass = Nil;
 #pragma clang diagnostic ignored "-Wundeclared-selector"
 	UIView* view = [self performSelector:@selector(originalInputAccessoryView) withObject:nil];
 #pragma clang diagnostic pop
+
+	UIView* parentWebView = self.superview;
 	
-	if (view) {
-		
-		UIView* parentWebView = self.superview;
-		
-		while (parentWebView && ![parentWebView isKindOfClass:[UIWebView class]])
-		{
-			parentWebView = parentWebView.superview;
-		}
-		
-		view = [(UIWebView*)parentWebView customInputAccessoryView];
+	while (parentWebView && ![parentWebView isKindOfClass:[WKWebView class]])
+	{
+		parentWebView = parentWebView.superview;
 	}
+	
+	view = [(WKWebView*)parentWebView customInputAccessoryView];
 	
 	return view;
 }
@@ -57,9 +54,29 @@ static Class fixClass = Nil;
         IMP newImp = [self methodForSelector:@selector(methodReturningCustomInputAccessoryView)];
         class_addMethod(newClass, @selector(inputAccessoryView), newImp, "@@:");
         objc_registerClassPair(newClass);
-        
+		
+		[self fixAssistNodeMethodForClass:newClass];
+		
         fixClass = newClass;
     }
+}
+
+- (void)fixAssistNodeMethodForClass:(Class)class
+{
+	__weak typeof(self) weakSelf = self;
+	
+	SEL sel = sel_getUid("_startAssistingNode:userIsInteracting:blurPreviousNode:userObject:");
+	Method method = class_getInstanceMethod(class, sel);
+	IMP originalImp = method_getImplementation(method);
+	IMP imp = imp_implementationWithBlock(^void(id me, void* arg0, BOOL arg1, BOOL arg2, id arg3) {
+		
+		if (!weakSelf.isLoading) {
+			((void (*)(id, SEL, void*, BOOL, BOOL, id))originalImp)(me, sel, arg0, TRUE, arg2, arg3);
+		} else {
+			((void (*)(id, SEL, void*, BOOL, BOOL, id))originalImp)(me, sel, arg0, arg1, arg2, arg3);
+		}
+	});
+	method_setImplementation(method, imp);
 }
 
 - (BOOL)usesGUIFixes
@@ -79,13 +96,10 @@ static Class fixClass = Nil;
 
     if (value) {
         object_setClass(browserView, fixClass);
-    }
-    else {
-        Class normalClass = objc_getClass("UIWebBrowserView");
+    } else {
+        Class normalClass = objc_getClass("WKContent");
         object_setClass(browserView, normalClass);
     }
-	
-    [browserView reloadInputViews];
 }
 
 - (UIView*)customInputAccessoryView
