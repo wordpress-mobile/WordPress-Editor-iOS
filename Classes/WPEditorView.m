@@ -1588,19 +1588,19 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 #pragma mark - Localization
 
-- (void)setImageEditLabel:(NSString *)label
+- (void)setImageEditText:(NSString *)text
 {
-	NSParameterAssert([label isKindOfClass:[NSString class]]);
+	NSParameterAssert([text isKindOfClass:[NSString class]]);
 	
-	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.localizedEditLabel = \"%@\"", label];
+	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.localizedEditText = \"%@\"", text];
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)setImageTryAgainUploadLabel:(NSString *)label
+- (void)setImageTryAgainUploadText:(NSString *)text
 {
-	NSParameterAssert([label isKindOfClass:[NSString class]]);
+	NSParameterAssert([text isKindOfClass:[NSString class]]);
 	
-	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.localizedTapToTryAgainLabel = \"%@\"", label];
+	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.localizedTapToTryAgainText = \"%@\"", text];
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 

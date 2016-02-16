@@ -312,6 +312,23 @@ stylesForCurrentSelection:(NSArray*)styles;
 
 - (void)removeImage:(NSString*)uniqueId;
 
+#pragma mark - Localization
+
+/**
+ *	@brief		Sets the text for the edit button on images.  Useful for localization.
+ *
+ *	@param		text		The text to use.  Cannot be nil.
+ */
+- (void)setImageEditText:(NSString *)text;
+
+/**
+ *	@brief		Sets the text for the try again text for failed image uploads.  Useful for
+ *				localization.
+ *
+ *	@param		text		The text to use.  Cannot be nil.
+ */
+- (void)setImageTryAgainUploadText:(NSString *)text;
+
 #pragma mark - Videos
 
 /**
