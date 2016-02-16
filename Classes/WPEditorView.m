@@ -65,8 +65,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
 - (void)dealloc
 {
-    [self stopObservingKeyboardNotifications];
-	[self stopObservingTitleFieldChanges];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
     [self stopObservingWebViewContentSizeChanges];
 }
 
@@ -98,9 +97,10 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {
     if (!newSuperview) {
-        [self stopObservingKeyboardNotifications];
+		[[NSNotificationCenter defaultCenter] removeObserver:self];
     } else {
         [self startObservingKeyboardNotifications];
+		[self startObservingTitleFieldChanges];
     }
 }
 
@@ -238,12 +238,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
                              context:nil];
 }
 
-- (void)stopObservingTitleFieldChanges
-{
-	[[NSNotificationCenter defaultCenter] removeObserver:self
-											  forKeyPath:UITextFieldTextDidChangeNotification];
-}
-
 - (void)stopObservingWebViewContentSizeChanges
 {
     [self.webView.scrollView removeObserver:self
@@ -299,13 +293,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
-}
-
-- (void)stopObservingKeyboardNotifications
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
 #pragma mark - Keyboard status
