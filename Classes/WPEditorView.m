@@ -1586,6 +1586,24 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
+#pragma mark - Localization
+
+- (void)setImageEditLabel:(NSString *)label
+{
+	NSParameterAssert([label isKindOfClass:[NSString class]]);
+	
+	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.localizedEditLabel = \"%@\"", label];
+	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
+- (void)setImageTryAgainUploadLabel:(NSString *)label
+{
+	NSParameterAssert([label isKindOfClass:[NSString class]]);
+	
+	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.localizedTapToTryAgainLabel = \"%@\"", label];
+	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
 #pragma mark - URL normalization
 
 - (NSString*)normalizeURL:(NSString*)url
