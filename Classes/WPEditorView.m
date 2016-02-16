@@ -66,6 +66,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 - (void)dealloc
 {
     [self stopObservingKeyboardNotifications];
+	[self stopObservingTitleFieldChanges];
     [self stopObservingWebViewContentSizeChanges];
 }
 
@@ -122,6 +123,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     _sourceViewTitleField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
     _sourceViewTitleField.returnKeyType = UIReturnKeyNext;
     [self addSubview:_sourceViewTitleField];
+	[self startObservingTitleFieldChanges];
 }
 
 - (void)createSourceDividerViewWithFrame:(CGRect)frame
@@ -217,7 +219,15 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
                 });
             }
         }
-    }
+	}
+}
+
+- (void)startObservingTitleFieldChanges
+{
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(titleTextDidChange)
+												 name:UITextFieldTextDidChangeNotification
+											   object:nil];
 }
 
 - (void)startObservingWebViewContentSizeChanges
@@ -226,6 +236,12 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
                           forKeyPath:WPEditorViewWebViewContentSizeKey
                              options:NSKeyValueObservingOptionNew
                              context:nil];
+}
+
+- (void)stopObservingTitleFieldChanges
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self
+											  forKeyPath:UITextFieldTextDidChangeNotification];
 }
 
 - (void)stopObservingWebViewContentSizeChanges
@@ -1993,17 +2009,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     return YES;
 }
 
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{
-    textField.text = [textField.text stringByReplacingCharactersInRange:range withString:string];
-    [self callDelegateEditorTitleDidChange];
-    return NO;
-}
-
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [self.sourceView becomeFirstResponder];
     return NO;
+}
+
+#pragma mark - UITextField: event handlers
+
+- (void)titleTextDidChange
+{
+	[self callDelegateEditorTitleDidChange];
 }
 
 #pragma mark - Delegate calls
