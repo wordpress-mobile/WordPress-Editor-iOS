@@ -542,16 +542,24 @@ ZSSEditor.setBackgroundColor = function(color) {
 ZSSEditor.insertLink = function(url, title) {
 
     ZSSEditor.restoreRange();
-	
+
     var sel = document.getSelection();
 	if (sel.rangeCount) {
-
+		var range = sel.getRangeAt(0).cloneRange();
+		
+		var isEmptyRange = (range.startNode == range.endNode && range.startOffset == range.endOffset);
+		
 		var el = document.createElement("a");
 		el.setAttribute("href", url);
 		
-		var range = sel.getRangeAt(0).cloneRange();
 		range.surroundContents(el);
 		el.innerHTML = title;
+		
+		if (isEmptyRange) {
+			range.setStartAfter(el);
+			range.setEndAfter(el);
+		}
+		
 		sel.removeAllRanges();
 		sel.addRange(range);
 	}
