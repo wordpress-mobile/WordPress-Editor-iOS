@@ -547,18 +547,14 @@ ZSSEditor.insertLink = function(url, title) {
 	if (sel.rangeCount) {
 		var range = sel.getRangeAt(0).cloneRange();
 		
-		var isEmptyRange = (range.startNode == range.endNode && range.startOffset == range.endOffset);
-		
 		var el = document.createElement("a");
 		el.setAttribute("href", url);
 		
 		range.surroundContents(el);
 		el.innerHTML = title;
 		
-		if (isEmptyRange) {
-			range.setStartAfter(el);
-			range.setEndAfter(el);
-		}
+		range.setStartAfter(el);
+		range.setEndAfter(el);
 		
 		sel.removeAllRanges();
 		sel.addRange(range);
