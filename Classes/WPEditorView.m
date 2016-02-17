@@ -224,10 +224,10 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
 - (void)startObservingTitleFieldChanges
 {
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(titleTextDidChange)
-												 name:UITextFieldTextDidChangeNotification
-											   object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(titleTextDidChange)
+                                                 name:UITextFieldTextDidChangeNotification
+                                               object:nil];
 }
 
 - (void)startObservingWebViewContentSizeChanges
