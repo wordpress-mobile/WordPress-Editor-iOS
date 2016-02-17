@@ -65,7 +65,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
 - (void)dealloc
 {
-    [self stopObservingKeyboardNotifications];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
     [self stopObservingWebViewContentSizeChanges];
 }
 
@@ -97,9 +97,10 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {
     if (!newSuperview) {
-        [self stopObservingKeyboardNotifications];
+		[[NSNotificationCenter defaultCenter] removeObserver:self];
     } else {
         [self startObservingKeyboardNotifications];
+		[self startObservingTitleFieldChanges];
     }
 }
 
@@ -122,6 +123,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     _sourceViewTitleField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
     _sourceViewTitleField.returnKeyType = UIReturnKeyNext;
     [self addSubview:_sourceViewTitleField];
+	[self startObservingTitleFieldChanges];
 }
 
 - (void)createSourceDividerViewWithFrame:(CGRect)frame
@@ -217,7 +219,15 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
                 });
             }
         }
-    }
+	}
+}
+
+- (void)startObservingTitleFieldChanges
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(titleTextDidChange)
+                                                 name:UITextFieldTextDidChangeNotification
+                                               object:nil];
 }
 
 - (void)startObservingWebViewContentSizeChanges
@@ -283,13 +293,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
-}
-
-- (void)stopObservingKeyboardNotifications
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
 #pragma mark - Keyboard status
@@ -1993,17 +1996,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     return YES;
 }
 
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{
-    textField.text = [textField.text stringByReplacingCharactersInRange:range withString:string];
-    [self callDelegateEditorTitleDidChange];
-    return NO;
-}
-
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [self.sourceView becomeFirstResponder];
     return NO;
+}
+
+#pragma mark - UITextField: event handlers
+
+- (void)titleTextDidChange
+{
+	[self callDelegateEditorTitleDidChange];
 }
 
 #pragma mark - Delegate calls
