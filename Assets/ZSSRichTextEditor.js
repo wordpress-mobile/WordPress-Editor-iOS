@@ -1822,11 +1822,13 @@ ZSSEditor.insertHTML = function(html) {
 
     var currentField = this.getFocusedField();
     
-    // When inserting HTML in the editor (like media), we must make sure the caret is wrapped in a
-    // paragraph tag.  By forcing to have all content inside paragraphs we obtain a behavior that's
-    // much closer to the one we have in our web editor.
-    //
-    currentField.wrapCaretInParagraphIfNecessary();
+    if (currentField.isMultiline()) {
+        // When inserting HTML in the editor (like media), we must make sure the caret is wrapped in a
+        // paragraph tag.  By forcing to have all content inside paragraphs we obtain a behavior that's
+        // much closer to the one we have in our web editor.
+        //
+        currentField.wrapCaretInParagraphIfNecessary();
+    }
     
 	document.execCommand('insertHTML', false, html);
 	this.sendEnabledStyles();
@@ -2709,9 +2711,15 @@ ZSSField.prototype.setPlainText = function(text) {
 
 ZSSField.prototype.setHTML = function(html) {
     ZSSEditor.currentEditingImage = null;
-    var mutatedHTML = wp.loadText(html);
-    mutatedHTML = ZSSEditor.applyVisualFormatting(mutatedHTML);
-    this.wrappedObject.html(mutatedHTML);
+    
+    if (this.isMultiline()) {
+        var mutatedHTML = wp.loadText(html);
+        mutatedHTML = ZSSEditor.applyVisualFormatting(mutatedHTML);
+        this.wrappedObject.html(mutatedHTML);
+    } else {
+        this.wrappedObject.html(html);
+    }
+    
     var thisObj = this;
     //bind events to any video present on the html.
     $('video').on('webkitbeginfullscreen', function (event){ thisObj.sendVideoFullScreenStarted();});
