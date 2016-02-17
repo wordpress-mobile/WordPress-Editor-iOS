@@ -1589,6 +1589,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
+#pragma mark - Localization
+
+- (void)setImageEditText:(NSString *)text
+{
+	NSParameterAssert([text isKindOfClass:[NSString class]]);
+	
+	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.localizedEditText = \"%@\"", text];
+	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
 #pragma mark - URL normalization
 
 - (NSString*)normalizeURL:(NSString*)url
