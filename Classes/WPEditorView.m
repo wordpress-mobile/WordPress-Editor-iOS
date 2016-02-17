@@ -1596,14 +1596,6 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
-- (void)setImageTryAgainUploadText:(NSString *)text
-{
-	NSParameterAssert([text isKindOfClass:[NSString class]]);
-	
-	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.localizedTapToTryAgainText = \"%@\"", text];
-	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
-}
-
 #pragma mark - URL normalization
 
 - (NSString*)normalizeURL:(NSString*)url

@@ -321,14 +321,6 @@ stylesForCurrentSelection:(NSArray*)styles;
  */
 - (void)setImageEditText:(NSString *)text;
 
-/**
- *	@brief		Sets the text for the try again text for failed image uploads.  Useful for
- *				localization.
- *
- *	@param		text		The text to use.  Cannot be nil.
- */
-- (void)setImageTryAgainUploadText:(NSString *)text;
-
 #pragma mark - Videos
 
 /**

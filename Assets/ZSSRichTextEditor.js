@@ -56,7 +56,6 @@ ZSSEditor.defaultParagraphSeparator = 'p';
 
 // Localization strings
 ZSSEditor.localizedEditText = "Edit";
-ZSSEditor.localizedTapToTryAgainText = "Tap to try again!";
 
 /**
  * The initializer function that must be called onLoad
@@ -763,7 +762,7 @@ ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
     var space = '&nbsp';
     var progressIdentifier = this.getImageProgressIdentifier(imageNodeIdentifier);
     var imageContainerIdentifier = this.getImageContainerIdentifier(imageNodeIdentifier);
-    var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container" contenteditable="false" data-failed="' + this.localizedTapToTryAgainText + '">';
+    var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container" contenteditable="false">';
     var imgContainerEnd = '</span>';
     var progress = '<progress id="' + progressIdentifier+'" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
     var image = '<img data-wpid="' + imageNodeIdentifier + '" src="' + localImageUrl + '" alt="" />';
