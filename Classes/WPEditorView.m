@@ -1708,6 +1708,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)showHTMLSource
 {
+    BOOL titleHadFocus = self.focusedField == self.titleField;
+    
 	self.sourceView.text = [self.contentField html];
 	self.sourceView.hidden = NO;
     self.sourceViewTitleField.text = [self.titleField strippedHtml];
@@ -1715,7 +1717,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     self.sourceContentDividerView.hidden = NO;
 	self.webView.hidden = YES;
     
-    [self.sourceView becomeFirstResponder];
+    if (titleHadFocus) {
+        [self.sourceViewTitleField becomeFirstResponder];
+    } else {
+        [self.sourceView becomeFirstResponder];
+    }
+    
     UITextPosition* position = [self.sourceView positionFromPosition:[self.sourceView beginningOfDocument]
                                                               offset:0];
     
@@ -1724,6 +1731,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)showVisualEditor
 {
+    BOOL titleHadFocus = self.sourceViewTitleField.isFirstResponder;
+    
 	[self.contentField setHtml:self.sourceView.text];
 	self.sourceView.hidden = YES;
     [self.titleField setHtml:self.sourceViewTitleField.text];
@@ -1731,7 +1740,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     self.sourceContentDividerView.hidden = YES;
 	self.webView.hidden = NO;
     
-    [self.contentField focus];
+    if (titleHadFocus) {
+        [self.titleField focus];
+    } else {
+        [self.contentField focus];
+    }
 }
 
 #pragma mark - Editing lock
