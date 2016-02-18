@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "WordPress-iOS-Editor"
-  s.version          = "1.1.2"
+  s.version          = "1.1.3"
   s.summary      = "Reusable component rich text editor for WordPress.com in an iOS application."
 
   s.description  = <<-DESC
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
 
   s.homepage     = "http://apps.wordpress.org"
   s.license      = 'GPLv2'
-  s.author       = { "Matt Bumgardner" => "matt.bumgardner@automattic.com" }
+  s.author       = { "Automattic" => "mobile@automattic.com", "Matt Bumgardner" => "matt.bumgardner@automattic.com", "Diego Rey Mendez" => "diego.rey.mendez@automattic.com", "Sergio Estevao" => "sergio@automattic.com" }
   s.source       = { :git => "https://github.com/wordpress-mobile/WordPress-iOS-Editor.git", :tag => s.version.to_s }
   s.social_media_url = 'http://twitter.com/WordPressiOS'
   s.platform     = :ios, '9.0'
