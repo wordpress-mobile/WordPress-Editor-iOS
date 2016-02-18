@@ -765,9 +765,9 @@ ZSSEditor.insertImage = function(url, alt) {
 ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
     var progressIdentifier = this.getImageProgressIdentifier(imageNodeIdentifier);
     var imageContainerIdentifier = this.getImageContainerIdentifier(imageNodeIdentifier);
-    var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container" contenteditable="false">';
+    var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container">';
     var imgContainerEnd = '</span>';
-    var progress = '<progress id="' + progressIdentifier+'" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
+    var progress = '<progress id="' + progressIdentifier+'" value=0  class="wp_media_indicator"></progress>';
     var image = '<img data-wpid="' + imageNodeIdentifier + '" src="' + localImageUrl + '" alt="" />';
     var html = imgContainerStart + progress+image + imgContainerEnd;
     
