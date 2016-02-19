@@ -2207,7 +2207,7 @@ ZSSEditor.closerParentNodeStartingAtNode = function(nodeName, startingNode) {
     nodeName = nodeName.toLowerCase();
     
     var parentNode = null;
-    var currentNode = startingNode,parentElement;
+    var currentNode = startingNode.parentElement;
     
     while (currentNode) {
         
