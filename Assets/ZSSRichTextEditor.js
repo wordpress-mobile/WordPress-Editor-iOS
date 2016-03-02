@@ -234,10 +234,11 @@ ZSSEditor.getCaretArguments = function() {
 ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments = function() {
     
     var joinedArguments = ZSSEditor.getJoinedCaretArguments();
-    var idArgument = "id=" + ZSSEditor.getFocusedField().getNodeId();
-    
-    joinedArguments = idArgument + defaultCallbackSeparator + joinedArguments;
-    
+    var focusedField = ZSSEditor.getFocusedField();
+    if (focusedField) {
+        var idArgument = "id=" + focusedField.getNodeId();
+        joinedArguments = idArgument + defaultCallbackSeparator + joinedArguments;
+    }
     return joinedArguments;
 };
 
