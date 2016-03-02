@@ -30,8 +30,8 @@ ZSSEditor.caretInfo = { y: 0, height: 0 };
 // Is this device an iPad
 ZSSEditor.isiPad;
 
-// The current selection
-ZSSEditor.currentSelection;
+// A globally saved selection.  Useful for when the editor loses focus.
+ZSSEditor.savedSelection;
 
 // The current editing image
 ZSSEditor.currentEditingImage;
@@ -53,6 +53,9 @@ ZSSEditor.lastTappedNode = null;
 
 // The default paragraph separator
 ZSSEditor.defaultParagraphSeparator = 'p';
+
+// Localization strings
+ZSSEditor.localizedEditText = "Edit";
 
 /**
  * The initializer function that must be called onLoad
@@ -201,27 +204,12 @@ ZSSEditor.getFocusedField = function() {
 // MARK: - Selection
 
 ZSSEditor.backupRange = function(){
-	var selection = window.getSelection();
-    var range = selection.getRangeAt(0);
-    
-    ZSSEditor.currentSelection =
-    {
-        "startContainer": range.startContainer,
-        "startOffset": range.startOffset,
-        "endContainer": range.endContainer,
-        "endOffset": range.endOffset
-    };
+	this.savedSelection = rangy.saveSelection()
 };
 
 ZSSEditor.restoreRange = function(){
-    if (this.currentSelection) {
-        var selection = window.getSelection();
-        selection.removeAllRanges();
-        
-        var range = document.createRange();
-        range.setStart(this.currentSelection.startContainer, this.currentSelection.startOffset);
-        range.setEnd(this.currentSelection.endContainer, this.currentSelection.endOffset);
-        selection.addRange(range);
+    if (this.savedSelection) {
+		rangy.restoreSelection(this.savedSelection);
     }
 };
 
@@ -557,16 +545,20 @@ ZSSEditor.setBackgroundColor = function(color) {
 ZSSEditor.insertLink = function(url, title) {
 
     ZSSEditor.restoreRange();
-	
+
     var sel = document.getSelection();
 	if (sel.rangeCount) {
-
+		var range = sel.getRangeAt(0).cloneRange();
+		
 		var el = document.createElement("a");
 		el.setAttribute("href", url);
 		
-		var range = sel.getRangeAt(0).cloneRange();
 		range.surroundContents(el);
 		el.innerHTML = title;
+		
+		range.setStartAfter(el);
+		range.setEndAfter(el);
+		
 		sel.removeAllRanges();
 		sel.addRange(range);
 	}
@@ -774,7 +766,7 @@ ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
     var space = '&nbsp';
     var progressIdentifier = this.getImageProgressIdentifier(imageNodeIdentifier);
     var imageContainerIdentifier = this.getImageContainerIdentifier(imageNodeIdentifier);
-    var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container" contenteditable="false" data-failed="Tap to try again!">';
+    var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container" contenteditable="false">';
     var imgContainerEnd = '</span>';
     var progress = '<progress id="' + progressIdentifier+'" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
     var image = '<img data-wpid="' + imageNodeIdentifier + '" src="' + localImageUrl + '" alt="" />';
@@ -1383,7 +1375,7 @@ ZSSEditor.applyImageSelectionFormatting = function( imageNode ) {
         sizeClass = " small";
     }
 
-    var overlay = '<span class="edit-overlay"><span class="edit-content">Edit</span></span>';
+    var overlay = '<span class="edit-overlay"><span class="edit-content">' + this.localizedEditText + '</span></span>';
     var html = '<span class="edit-container' + sizeClass + '">' + overlay + '</span>';
    	node.insertAdjacentHTML( 'beforebegin', html );
     var selectionNode = node.previousSibling;
@@ -1833,11 +1825,13 @@ ZSSEditor.insertHTML = function(html) {
 
     var currentField = this.getFocusedField();
     
-    // When inserting HTML in the editor (like media), we must make sure the caret is wrapped in a
-    // paragraph tag.  By forcing to have all content inside paragraphs we obtain a behavior that's
-    // much closer to the one we have in our web editor.
-    //
-    currentField.wrapCaretInParagraphIfNecessary();
+    if (currentField.isMultiline()) {
+        // When inserting HTML in the editor (like media), we must make sure the caret is wrapped in a
+        // paragraph tag.  By forcing to have all content inside paragraphs we obtain a behavior that's
+        // much closer to the one we have in our web editor.
+        //
+        currentField.wrapCaretInParagraphIfNecessary();
+    }
     
 	document.execCommand('insertHTML', false, html);
 	this.sendEnabledStyles();
@@ -2241,7 +2235,7 @@ ZSSEditor.closerParentNodeWithName = function(nodeName) {
     var parentNode = null;
     var selection = window.getSelection();
     if (selection.rangeCount < 1){
-        return nil;
+        return null;
     }
     var range = selection.getRangeAt(0).cloneRange();
     var referenceNode = range.commonAncestorContainer;
@@ -2720,9 +2714,15 @@ ZSSField.prototype.setPlainText = function(text) {
 
 ZSSField.prototype.setHTML = function(html) {
     ZSSEditor.currentEditingImage = null;
-    var mutatedHTML = wp.loadText(html);
-    mutatedHTML = ZSSEditor.applyVisualFormatting(mutatedHTML);
-    this.wrappedObject.html(mutatedHTML);
+    
+    if (this.isMultiline()) {
+        var mutatedHTML = wp.loadText(html);
+        mutatedHTML = ZSSEditor.applyVisualFormatting(mutatedHTML);
+        this.wrappedObject.html(mutatedHTML);
+    } else {
+        this.wrappedObject.html(html);
+    }
+    
     var thisObj = this;
     //bind events to any video present on the html.
     $('video').on('webkitbeginfullscreen', function (event){ thisObj.sendVideoFullScreenStarted();});

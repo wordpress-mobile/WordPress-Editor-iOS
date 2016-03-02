@@ -18,7 +18,7 @@ platform :ios, '9.0'
 pod 'WordPress-iOS-Editor'
 ```
 
-Or, you can just try out the demo by using the Cocoapods try command:
+Or, you can just try out the demo by using the CocoaPods try command:
 
 ```ruby
 pod try WordPress-iOS-Editor
@@ -33,7 +33,7 @@ WordPress-iOS-Editor requires iOS 9.0 or higher. It depends on the following App
 * CoreGraphics.framework
 * CoreText.framework
 
-and the following Cocoapods:
+and the following CocoaPods:
 
 * [CocoaLumberjack](https://github.com/CocoaLumberjack/CocoaLumberjack)
 * [WordPress-iOS-Shared](https://github.com/wordpress-mobile/WordPress-iOS-Shared)
