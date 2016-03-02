@@ -1851,7 +1851,7 @@ ZSSEditor.sendEnabledStyles = function(e) {
 	
     var focusedField = this.getFocusedField();
     
-    if (!focusedField.hasNoStyle) {
+    if (focusedField && !focusedField.hasNoStyle) {
         // Find all relevant parent tags
         var parentTags = ZSSEditor.parentTags();
         
