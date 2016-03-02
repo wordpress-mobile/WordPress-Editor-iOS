@@ -193,9 +193,14 @@ ZSSEditor.getFocusedField = function() {
     
     while (currentField
            && (!currentFieldId || this.editableFields[currentFieldId] == null)) {
-        currentField = this.closerParentNodeStartingAtNode('div', currentField);
-        currentFieldId = currentField.attr('id');
-        
+
+        var newField = this.closerParentNodeStartingAtNode('div', currentField);
+        if (newField) {
+            currentField = newField;
+            currentFieldId = currentField.attr('id');
+        } else {
+            currentField = newField;
+        }
     }
     
     return this.editableFields[currentFieldId];
