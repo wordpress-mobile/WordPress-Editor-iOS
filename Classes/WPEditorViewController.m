@@ -1062,18 +1062,22 @@ didFailLoadWithError:(NSError *)error
 
 - (void)recoverFromViewSizeChange
 {
+    // This hack forces the input accessory view to refresh itself and resize properly.
     if (self.isFirstSetupComplete) {
-        // Important: This is a complete and utter hack that compensates for the input accessory view
-        // not properly changing size classes (resizing) when the rest of the views in the editor VC do.
-        // Toggling the HTML button on the input bar quickly does not affect the view and forces the
-        // input accessory view (the format bar) to update itself. FWIW, setNeedsDisplay and
-        // setNeedsLayout do NOT work.
         if ([self.editorView isInVisualMode]) {
-            [self.editorView showHTMLSource];
-            [self.editorView showVisualEditor];
+            WPEditorField *field = [self.editorView focusedField];
+            [self.editorView saveSelection];
+            [field blur];
+            [field focus];
+            [self.editorView restoreSelection];
         } else {
-            [self.editorView showHTMLSource];
-            [self.editorView showVisualEditor];
+            if ([[self.editorView sourceViewTitleField] isFirstResponder]) {
+                [[self.editorView sourceViewTitleField] resignFirstResponder];
+                [[self.editorView sourceViewTitleField] becomeFirstResponder];
+            } else {
+                [[self.editorView sourceView] resignFirstResponder];
+                [[self.editorView sourceView] becomeFirstResponder];
+            }
         }
     }
 }
