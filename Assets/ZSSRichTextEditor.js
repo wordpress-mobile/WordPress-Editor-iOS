@@ -193,9 +193,14 @@ ZSSEditor.getFocusedField = function() {
     
     while (currentField
            && (!currentFieldId || this.editableFields[currentFieldId] == null)) {
-        currentField = this.closerParentNodeStartingAtNode('div', currentField);
-        currentFieldId = currentField.attr('id');
-        
+
+        var newField = this.closerParentNodeStartingAtNode('div', currentField);
+        if (newField) {
+            currentField = newField;
+            currentFieldId = currentField.attr('id');
+        } else {
+            currentField = newField;
+        }
     }
     
     return this.editableFields[currentFieldId];
@@ -234,10 +239,11 @@ ZSSEditor.getCaretArguments = function() {
 ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments = function() {
     
     var joinedArguments = ZSSEditor.getJoinedCaretArguments();
-    var idArgument = "id=" + ZSSEditor.getFocusedField().getNodeId();
-    
-    joinedArguments = idArgument + defaultCallbackSeparator + joinedArguments;
-    
+    var focusedField = ZSSEditor.getFocusedField();
+    if (focusedField) {
+        var idArgument = "id=" + focusedField.getNodeId();
+        joinedArguments = idArgument + defaultCallbackSeparator + joinedArguments;
+    }
     return joinedArguments;
 };
 
@@ -1845,7 +1851,7 @@ ZSSEditor.sendEnabledStyles = function(e) {
 	
     var focusedField = this.getFocusedField();
     
-    if (!focusedField.hasNoStyle) {
+    if (focusedField && !focusedField.hasNoStyle) {
         // Find all relevant parent tags
         var parentTags = ZSSEditor.parentTags();
         
