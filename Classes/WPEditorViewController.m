@@ -1065,8 +1065,11 @@ didFailLoadWithError:(NSError *)error
     // This hack forces the input accessory view to refresh itself and resize properly.
     if (self.isFirstSetupComplete) {
         if ([self.editorView isInVisualMode]) {
-            [[self.editorView focusedField] blur];
-            [[self.editorView focusedField] focus];
+            WPEditorField *field = [self.editorView focusedField];
+            [self.editorView saveSelection];
+            [field blur];
+            [field focus];
+            [self.editorView restoreSelection];
         } else {
             if ([[self.editorView sourceViewTitleField] isFirstResponder]) {
                 [[self.editorView sourceViewTitleField] resignFirstResponder];
