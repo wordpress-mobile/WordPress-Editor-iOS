@@ -7,7 +7,6 @@
 #import <WordPressShared/WPTableViewCell.h>
 #import <WordPressShared/UIImage+Util.h>
 #import <WordPressShared/UIColor+Helpers.h>
-#import <WordPressShared/WPDeviceIdentification.h>
 
 #import "WPEditorField.h"
 #import "WPEditorToolbarButton.h"
@@ -366,10 +365,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)restoreEditSelection
 {
     if (self.isEditing) {
-        if ([WPDeviceIdentification isiOSVersionEarlierThan8]){
-            [self.focusedField blur];
-            [self.focusedField focus];
-        }
         [self.editorView restoreSelection];
     }
 }
@@ -380,9 +375,6 @@ NSInteger const WPLinkAlertViewTag = 92;
 - (void)saveEditSelection
 {
     if (self.isEditing) {
-        if ([WPDeviceIdentification isiOSVersionEarlierThan8]){
-            self.focusedField = self.editorView.focusedField;
-        }
         [self.editorView saveSelection];
     }
 }

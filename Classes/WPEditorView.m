@@ -5,7 +5,6 @@
 #import "WPEditorField.h"
 #import "WPImageMeta.h"
 #import "ZSSTextView.h"
-#import <WordPressShared/WPDeviceIdentification.h>
 #import <WordPressShared/WPFontManager.h>
 #import <WordPressShared/WPStyleGuide.h>
 
@@ -299,27 +298,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
 - (void)keyboardDidShow:(NSNotification *)notification
 {
-    BOOL isiOSVersionEarlierThan8 = [WPDeviceIdentification isiOSVersionEarlierThan8];
-    
-    if (isiOSVersionEarlierThan8) {
-        // PROBLEM: under iOS 7, it seems that setting the proper insets in keyboardWillShow: is not
-        // enough.  We were having trouble when adding images, where the keyboard would show but the
-        // insets would be reset to {0, 0, 0, 0} between keyboardWillShow: and keyboardDidShow:
-        //
-        // HOW TO TEST:
-        //
-        // - launch the WPiOS app under iOS 7.
-        // - set a title
-        // - make sure the virtual keyboard is up
-        // - add some text and on the same line add an image
-        // - once the image is added tap once on the content field to make the keyboard come back up
-        //   (do this before the upload finishes).
-        //
-        // WORKAROUND: we just set the insets again in keyboardDidShow: for iOS 7
-        //
-        [self refreshKeyboardInsetsWithShowNotification:notification];
-    }
-    
     [self scrollToCaretAnimated:NO];
 }
 
