@@ -139,10 +139,6 @@ NSInteger const WPLinkAlertViewTag = 92;
     [WPFontManager merriweatherItalicFontOfSize:16.0];
     [WPFontManager merriweatherLightFontOfSize:16.0];
     [WPFontManager merriweatherRegularFontOfSize:16.0];
-    [WPFontManager openSansRegularFontOfSize:16.0];
-    [WPFontManager openSansItalicFontOfSize:16.0];
-    [WPFontManager openSansBoldFontOfSize:16.0];
-    [WPFontManager openSansBoldItalicFontOfSize:16.0];
 	
     [self createToolbarView];
     [self buildTextViews];

@@ -7,37 +7,37 @@
 
 + (UIFont *)textFieldFont
 {
-    return [WPFontManager openSansRegularFontOfSize:16.0];
+    return [WPFontManager systemRegularFontOfSize:16.0];
 }
 
 + (UIFont *)descriptionTextFont
 {
-    return [WPFontManager openSansRegularFontOfSize:15.0];
+    return [WPFontManager systemRegularFontOfSize:15.0];
 }
 
 + (UIFont *)titleFont
 {
-    return [WPFontManager openSansLightFontOfSize:24.0];
+    return [WPFontManager systemLightFontOfSize:24.0];
 }
 
 + (UIFont *)swipeToContinueFont
 {
-    return [WPFontManager openSansRegularFontOfSize:10.0];
+    return [WPFontManager systemRegularFontOfSize:10.0];
 }
 
 + (UIFont *)tosLabelFont
 {
-    return [WPFontManager openSansRegularFontOfSize:12.0];
+    return [WPFontManager systemRegularFontOfSize:12.0];
 }
 
 + (UIFont *)tosLabelSmallerFont
 {
-    return [WPFontManager openSansRegularFontOfSize:9.0];
+    return [WPFontManager systemRegularFontOfSize:9.0];
 }
 
 + (UIFont *)confirmationLabelFont
 {
-    return [WPFontManager openSansRegularFontOfSize:14.0];
+    return [WPFontManager systemRegularFontOfSize:14.0];
 }
 
 #pragma mark - Colors
