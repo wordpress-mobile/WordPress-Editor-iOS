@@ -9,7 +9,7 @@
 
 + (UIFont *)largePostTitleFont
 {
-    return [WPFontManager openSansLightFontOfSize:32.0];
+    return [WPFontManager systemLightFontOfSize:32.0];
 }
 
 + (NSDictionary *)largePostTitleAttributes
@@ -22,12 +22,12 @@
 
 + (UIFont *)postTitleFont
 {
-    return [WPFontManager openSansRegularFontOfSize:16.0];
+    return [WPFontManager systemRegularFontOfSize:16.0];
 }
 
 + (UIFont *)postTitleFontBold
 {
-    return [WPFontManager openSansBoldFontOfSize:16.0];
+    return [WPFontManager systemBoldFontOfSize:16.0];
 }
 
 + (NSDictionary *)postTitleAttributes
@@ -47,7 +47,7 @@
 
 + (UIFont *)subtitleFont
 {
-    return [WPFontManager openSansRegularFontOfSize:12.0];
+    return [WPFontManager systemRegularFontOfSize:12.0];
 }
 
 + (NSDictionary *)subtitleAttributes
@@ -60,7 +60,7 @@
 
 + (UIFont *)subtitleFontItalic
 {
-    return [WPFontManager openSansItalicFontOfSize:12.0];
+    return [WPFontManager systemItalicFontOfSize:12.0];
 }
 
 + (NSDictionary *)subtitleItalicAttributes
@@ -73,7 +73,7 @@
 
 + (UIFont *)subtitleFontBold
 {
-    return [WPFontManager openSansBoldFontOfSize:12.0];
+    return [WPFontManager systemBoldFontOfSize:12.0];
 }
 
 + (NSDictionary *)subtitleAttributesBold
@@ -86,12 +86,12 @@
 
 + (UIFont *)labelFont
 {
-    return [WPFontManager openSansBoldFontOfSize:10.0];
+    return [WPFontManager systemBoldFontOfSize:10.0];
 }
 
 + (UIFont *)labelFontNormal
 {
-    return [WPFontManager openSansRegularFontOfSize:10.0];
+    return [WPFontManager systemRegularFontOfSize:10.0];
 }
 
 + (NSDictionary *)labelAttributes
@@ -104,17 +104,17 @@
 
 + (UIFont *)regularTextFont
 {
-    return [WPFontManager openSansRegularFontOfSize:16.0];
+    return [WPFontManager systemRegularFontOfSize:16.0];
 }
 
 + (UIFont *)regularTextFontSemiBold
 {
-    return [WPFontManager openSansSemiBoldFontOfSize:16.0];
+    return [WPFontManager systemSemiBoldFontOfSize:16.0];
 }
 
 + (UIFont *)regularTextFontBold
 {
-    return [WPFontManager openSansBoldFontOfSize:16.0];
+    return [WPFontManager systemBoldFontOfSize:16.0];
 }
 
 + (NSDictionary *)regularTextAttributes
@@ -127,17 +127,17 @@
 
 + (UIFont *)tableviewTextFont
 {
-    return [WPFontManager openSansRegularFontOfSize:17.0];
+    return [WPFontManager systemRegularFontOfSize:17.0];
 }
 
 + (UIFont *)tableviewSubtitleFont
 {
-    return [WPFontManager openSansRegularFontOfSize:17.0];
+    return [WPFontManager systemRegularFontOfSize:17.0];
 }
 
 + (UIFont *)tableviewSectionHeaderFont
 {
-    return [WPFontManager openSansRegularFontOfSize:13.0];
+    return [WPFontManager systemRegularFontOfSize:13.0];
 }
 
 
