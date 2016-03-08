@@ -41,7 +41,7 @@
         
         // Message Label
         _messageLabel               = [[UILabel alloc] init];
-        _messageLabel.font          = [WPFontManager openSansRegularFontOfSize:14.0];
+        _messageLabel.font          = [WPFontManager systemRegularFontOfSize:14.0];
         _messageLabel.textColor     = [WPStyleGuide allTAllShadeGrey];
         _messageLabel.numberOfLines = 0;
         _messageLabel.textAlignment = NSTextAlignmentCenter;
