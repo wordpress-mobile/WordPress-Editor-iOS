@@ -193,9 +193,14 @@ ZSSEditor.getFocusedField = function() {
     
     while (currentField
            && (!currentFieldId || this.editableFields[currentFieldId] == null)) {
-        currentField = this.closerParentNodeStartingAtNode('div', currentField);
-        currentFieldId = currentField.attr('id');
-        
+
+        var newField = this.closerParentNodeStartingAtNode('div', currentField);
+        if (newField) {
+            currentField = newField;
+            currentFieldId = currentField.attr('id');
+        } else {
+            currentField = newField;
+        }
     }
     
     return this.editableFields[currentFieldId];
@@ -234,10 +239,11 @@ ZSSEditor.getCaretArguments = function() {
 ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments = function() {
     
     var joinedArguments = ZSSEditor.getJoinedCaretArguments();
-    var idArgument = "id=" + ZSSEditor.getFocusedField().getNodeId();
-    
-    joinedArguments = idArgument + defaultCallbackSeparator + joinedArguments;
-    
+    var focusedField = ZSSEditor.getFocusedField();
+    if (focusedField) {
+        var idArgument = "id=" + focusedField.getNodeId();
+        joinedArguments = idArgument + defaultCallbackSeparator + joinedArguments;
+    }
     return joinedArguments;
 };
 
@@ -763,15 +769,13 @@ ZSSEditor.insertImage = function(url, alt) {
  *                                      does not check for that.  It would be a mistake.
  */
 ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
-    var space = '&nbsp';
     var progressIdentifier = this.getImageProgressIdentifier(imageNodeIdentifier);
     var imageContainerIdentifier = this.getImageContainerIdentifier(imageNodeIdentifier);
-    var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container" contenteditable="false">';
+    var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container">';
     var imgContainerEnd = '</span>';
-    var progress = '<progress id="' + progressIdentifier+'" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
+    var progress = '<progress id="' + progressIdentifier+'" value=0  class="wp_media_indicator"></progress>';
     var image = '<img data-wpid="' + imageNodeIdentifier + '" src="' + localImageUrl + '" alt="" />';
     var html = imgContainerStart + progress+image + imgContainerEnd;
-    html = space + html + space;
     
     this.insertHTML(html);
     this.sendEnabledStyles();
@@ -1847,7 +1851,7 @@ ZSSEditor.sendEnabledStyles = function(e) {
 	
     var focusedField = this.getFocusedField();
     
-    if (!focusedField.hasNoStyle) {
+    if (focusedField && !focusedField.hasNoStyle) {
         // Find all relevant parent tags
         var parentTags = ZSSEditor.parentTags();
         
@@ -2209,7 +2213,7 @@ ZSSEditor.closerParentNodeStartingAtNode = function(nodeName, startingNode) {
     nodeName = nodeName.toLowerCase();
     
     var parentNode = null;
-    var currentNode = startingNode,parentElement;
+    var currentNode = startingNode.parentElement;
     
     while (currentNode) {
         

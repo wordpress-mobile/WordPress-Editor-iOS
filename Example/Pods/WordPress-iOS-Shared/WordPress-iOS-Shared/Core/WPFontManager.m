@@ -65,6 +65,32 @@ static NSString * const FontTypeOTF = @"otf";
     return [self fontNamed:fontName resourceName:resourceName fontType:FontTypeTTF size:size];
 }
 
+#pragma mark - System Fonts
+
++ (UIFont *)systemLightFontOfSize:(CGFloat)size
+{
+    return [UIFont systemFontOfSize:size weight:UIFontWeightLight];
+}
+
++ (UIFont *)systemItalicFontOfSize:(CGFloat)size
+{
+    return [UIFont italicSystemFontOfSize:size];
+}
+
++ (UIFont *)systemBoldFontOfSize:(CGFloat)size
+{
+    return [UIFont systemFontOfSize:size weight:UIFontWeightBold];
+}
+
++ (UIFont *)systemSemiBoldFontOfSize:(CGFloat)size
+{
+    return [UIFont systemFontOfSize:size weight:UIFontWeightSemibold];
+}
+
++ (UIFont *)systemRegularFontOfSize:(CGFloat)size
+{
+    return [UIFont systemFontOfSize:size weight:UIFontWeightRegular];
+}
 
 #pragma mark - Merryweather Fonts
 
