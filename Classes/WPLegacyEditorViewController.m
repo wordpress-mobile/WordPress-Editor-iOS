@@ -670,7 +670,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     if ([self shouldHideToolbarsWhileTyping]) {
         [self setNeedsStatusBarAppearanceUpdate];
         [self.navigationController setNavigationBarHidden:YES animated:YES];
-        [self.navigationController setToolbarHidden:YES animated:NO];
+        [self.navigationController setToolbarHidden:YES animated:YES];
     }
 }
 
@@ -690,7 +690,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 	self.isShowingKeyboard = NO;
     [self setNeedsStatusBarAppearanceUpdate];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
-    [self.navigationController setToolbarHidden:NO animated:NO];
+    [self.navigationController setToolbarHidden:NO animated:YES];
     [self positionTextView:notification];
 }
 

@@ -5,7 +5,6 @@
 #import "WPEditorField.h"
 #import "WPImageMeta.h"
 #import "ZSSTextView.h"
-#import <WordPressShared/WPDeviceIdentification.h>
 #import <WordPressShared/WPFontManager.h>
 #import <WordPressShared/WPStyleGuide.h>
 
@@ -65,7 +64,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
 - (void)dealloc
 {
-    [self stopObservingKeyboardNotifications];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
     [self stopObservingWebViewContentSizeChanges];
 }
 
@@ -97,9 +96,10 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {
     if (!newSuperview) {
-        [self stopObservingKeyboardNotifications];
+		[[NSNotificationCenter defaultCenter] removeObserver:self];
     } else {
         [self startObservingKeyboardNotifications];
+		[self startObservingTitleFieldChanges];
     }
 }
 
@@ -116,12 +116,13 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     _sourceViewTitleField.hidden = YES;
     _sourceViewTitleField.font = [WPFontManager merriweatherBoldFontOfSize:24.0];
     _sourceViewTitleField.autocapitalizationType = UITextAutocapitalizationTypeWords;
-    _sourceViewTitleField.autocorrectionType = UITextAutocorrectionTypeYes;
+    _sourceViewTitleField.autocorrectionType = UITextAutocorrectionTypeDefault;
     _sourceViewTitleField.autoresizingMask =  UIViewAutoresizingFlexibleWidth;
     _sourceViewTitleField.delegate = self;
     _sourceViewTitleField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
     _sourceViewTitleField.returnKeyType = UIReturnKeyNext;
     [self addSubview:_sourceViewTitleField];
+	[self startObservingTitleFieldChanges];
 }
 
 - (void)createSourceDividerViewWithFrame:(CGRect)frame
@@ -217,7 +218,15 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
                 });
             }
         }
-    }
+	}
+}
+
+- (void)startObservingTitleFieldChanges
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(titleTextDidChange)
+                                                 name:UITextFieldTextDidChangeNotification
+                                               object:nil];
 }
 
 - (void)startObservingWebViewContentSizeChanges
@@ -285,38 +294,10 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
                                                object:nil];
 }
 
-- (void)stopObservingKeyboardNotifications
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-}
-
 #pragma mark - Keyboard status
 
 - (void)keyboardDidShow:(NSNotification *)notification
 {
-    BOOL isiOSVersionEarlierThan8 = [WPDeviceIdentification isiOSVersionEarlierThan8];
-    
-    if (isiOSVersionEarlierThan8) {
-        // PROBLEM: under iOS 7, it seems that setting the proper insets in keyboardWillShow: is not
-        // enough.  We were having trouble when adding images, where the keyboard would show but the
-        // insets would be reset to {0, 0, 0, 0} between keyboardWillShow: and keyboardDidShow:
-        //
-        // HOW TO TEST:
-        //
-        // - launch the WPiOS app under iOS 7.
-        // - set a title
-        // - make sure the virtual keyboard is up
-        // - add some text and on the same line add an image
-        // - once the image is added tap once on the content field to make the keyboard come back up
-        //   (do this before the upload finishes).
-        //
-        // WORKAROUND: we just set the insets again in keyboardDidShow: for iOS 7
-        //
-        [self refreshKeyboardInsetsWithShowNotification:notification];
-    }
-    
     [self scrollToCaretAnimated:NO];
 }
 
@@ -1586,6 +1567,16 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self.webView stringByEvaluatingJavaScriptFromString:trigger];
 }
 
+#pragma mark - Localization
+
+- (void)setImageEditText:(NSString *)text
+{
+	NSParameterAssert([text isKindOfClass:[NSString class]]);
+	
+	NSString *trigger = [NSString stringWithFormat:@"ZSSEditor.localizedEditText = \"%@\"", text];
+	[self.webView stringByEvaluatingJavaScriptFromString:trigger];
+}
+
 #pragma mark - URL normalization
 
 - (NSString*)normalizeURL:(NSString*)url
@@ -1705,6 +1696,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)showHTMLSource
 {
+    BOOL titleHadFocus = self.focusedField == self.titleField;
+    
 	self.sourceView.text = [self.contentField html];
 	self.sourceView.hidden = NO;
     self.sourceViewTitleField.text = [self.titleField strippedHtml];
@@ -1712,7 +1705,12 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     self.sourceContentDividerView.hidden = NO;
 	self.webView.hidden = YES;
     
-    [self.sourceView becomeFirstResponder];
+    if (titleHadFocus) {
+        [self.sourceViewTitleField becomeFirstResponder];
+    } else {
+        [self.sourceView becomeFirstResponder];
+    }
+    
     UITextPosition* position = [self.sourceView positionFromPosition:[self.sourceView beginningOfDocument]
                                                               offset:0];
     
@@ -1721,6 +1719,8 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 
 - (void)showVisualEditor
 {
+    BOOL titleHadFocus = self.sourceViewTitleField.isFirstResponder;
+    
 	[self.contentField setHtml:self.sourceView.text];
 	self.sourceView.hidden = YES;
     [self.titleField setHtml:self.sourceViewTitleField.text];
@@ -1728,7 +1728,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     self.sourceContentDividerView.hidden = YES;
 	self.webView.hidden = NO;
     
-    [self.contentField focus];
+    if (titleHadFocus) {
+        [self.titleField focus];
+    } else {
+        [self.contentField focus];
+    }
 }
 
 #pragma mark - Editing lock
@@ -1993,17 +1997,17 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     return YES;
 }
 
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{
-    textField.text = [textField.text stringByReplacingCharactersInRange:range withString:string];
-    [self callDelegateEditorTitleDidChange];
-    return NO;
-}
-
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [self.sourceView becomeFirstResponder];
     return NO;
+}
+
+#pragma mark - UITextField: event handlers
+
+- (void)titleTextDidChange
+{
+	[self callDelegateEditorTitleDidChange];
 }
 
 #pragma mark - Delegate calls
