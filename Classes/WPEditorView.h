@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ZSSTextView.h"
+//#import "WPViewController.h" // TODO: find a better way
 
 @class WPEditorView;
 @class WPEditorField;
@@ -113,7 +114,7 @@
          imageMeta:(WPImageMeta *)imageMeta;
 
 /**
- * @brief		Received when the user taps on a image in the editor.
+ * @brief		Received when the user taps on a video in the editor.
  *
  * @param		editorView	The editor view.
  * @param		videoId		The id of image of the image that was tapped.

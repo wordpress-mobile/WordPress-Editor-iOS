@@ -469,6 +469,9 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
         } else if ([self isMediaRemovedScheme:scheme]) {
             [self handleMediaRemovedCallback:url];
             handled = YES;
+        } else if ([self isPasteCallbackScheme:scheme]) {
+            [self handlePasteCallback];
+            handled = YES;
         }
         
     }
@@ -937,6 +940,21 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     [self processStyles:styles];
 }
 
+- (void)handlePasteCallback
+{
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    
+    if (pasteboard.image != nil) {
+        UIImage *pastedImage = pasteboard.image;
+        NSString *imageID = [[NSUUID UUID] UUIDString];
+        NSString *path = [NSString stringWithFormat:@"%@/%@.jpg", NSTemporaryDirectory(), imageID];
+        NSData *imageData = UIImagePNGRepresentation(pastedImage);
+        [imageData writeToFile:path atomically:YES];
+        
+        [self insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
+    }
+}
+
 #pragma mark - Handling callbacks: identifying schemes
 
 - (BOOL)isDOMLoadedScheme:(NSString*)scheme
@@ -1102,6 +1120,13 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 	static NSString* const kCallbackScheme = @"callback-input";
 	
 	return [scheme isEqualToString:kCallbackScheme];
+}
+
+- (BOOL)isPasteCallbackScheme:(NSString *)scheme
+{
+    static NSString* const kCallbackScheme = @"callback-paste";
+    
+    return [scheme isEqualToString:kCallbackScheme];
 }
 
 - (void)processStyles:(NSString *)styles
