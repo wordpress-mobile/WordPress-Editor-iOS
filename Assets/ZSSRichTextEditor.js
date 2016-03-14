@@ -827,8 +827,9 @@ ZSSEditor.extractMediaIdentifier = function(node) {
  *                                      a mechanism to update the image node with the remote URL
  *                                      when replaceLocalImageWithRemoteImage() is called.
  *  @param      remoteImageUrl          The URL of the remote image to display.
+ *  @param      mediaID                 An integer that is the mediaID of the image on the server.
  */
-ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remoteImageUrl) {
+ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remoteImageUrl, mediaID) {
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
     
     if (imageNode.length == 0) {
@@ -840,18 +841,14 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remot
     var image = new Image;
     
     image.onload = function () {
-        imageNode.attr('src', image.src);
-        ZSSEditor.markImageUploadDone(imageNodeIdentifier);
-        imageNode.attr({'width':image.width, 'height':image.height, 'class':'alignnone size-full'});
+        ZSSEditor.markImageUploadDone(imageNodeIdentifier, image, mediaID);
     }
     
     image.onerror = function () {
         // Even on an error, we swap the image for the time being.  This is because private
         // blogs are currently failing to download images due to access privilege issues.
         //
-        imageNode.attr('src', image.src);
-        ZSSEditor.markImageUploadDone(imageNodeIdentifier);
-        imageNode.attr({'width':image.width, 'height':image.height, 'class':'alignnone size-full'});
+        ZSSEditor.markImageUploadDone(imageNodeIdentifier, image, mediaID);
     }
     
     image.src = remoteImageUrl;
@@ -883,8 +880,10 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
  *  @brief      Notifies that the image upload as finished
  *
  *  @param      imageNodeIdentifier     The unique image ID for the uploaded image
+ *  @param      image  The image to be replaces
+ *  @param      mediaID An integer that is the mediaID of the image on the server
  */
-ZSSEditor.markImageUploadDone = function(imageNodeIdentifier) {
+ZSSEditor.markImageUploadDone = function(imageNodeIdentifier, image, mediaID) {
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
     if (imageNode.length > 0){
         // remove identifier attributed from image
@@ -893,7 +892,15 @@ ZSSEditor.markImageUploadDone = function(imageNodeIdentifier) {
         // remove uploading style
         imageNode.removeClass("uploading");
         imageNode.removeAttr("class");
-        
+
+        // set remote source
+        imageNode.attr('src', image.src);
+        // set attributes
+        imageNode.attr({'width':image.width, 'height':image.height, 'class':'alignnone size-full'});
+        if (mediaID >= 0) {
+            imageNode.addClass('wp-image-' + mediaID);
+        }
+
         // Remove all extra formatting nodes for progress
         if (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)) {
             // remove id from container to avoid to report a user removal
