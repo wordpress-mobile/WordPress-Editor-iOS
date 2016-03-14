@@ -842,6 +842,7 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remot
     image.onload = function () {
         imageNode.attr('src', image.src);
         ZSSEditor.markImageUploadDone(imageNodeIdentifier);
+        imageNode.attr({'width':image.width, 'height':image.height, 'class':'alignnone size-full'});
     }
     
     image.onerror = function () {
@@ -850,6 +851,7 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remot
         //
         imageNode.attr('src', image.src);
         ZSSEditor.markImageUploadDone(imageNodeIdentifier);
+        imageNode.attr({'width':image.width, 'height':image.height, 'class':'alignnone size-full'});
     }
     
     image.src = remoteImageUrl;
