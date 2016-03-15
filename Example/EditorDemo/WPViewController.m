@@ -407,7 +407,7 @@
         //        [timer invalidate];
         //    }
         if (progress.fractionCompleted >= 1) {
-            [self.editorView replaceLocalImageWithRemoteImage:[[NSURL fileURLWithPath:progress.userInfo[@"url"]] absoluteString] uniqueId:imageID];
+            [self.editorView replaceLocalImageWithRemoteImage:[[NSURL fileURLWithPath:progress.userInfo[@"url"]] absoluteString] uniqueId:imageID mediaId:[@(arc4random()) stringValue]];
             [timer invalidate];
         }
         return;

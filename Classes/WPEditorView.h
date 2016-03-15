@@ -285,8 +285,9 @@ stylesForCurrentSelection:(NSArray*)styles;
  *  @param      uniqueId    This is a unique ID provided by the caller.  It exists as a mechanism
  *                          to update the image node with the remote URL
  *                          when replaceLocalImageWithRemoteImage() is called.
+ *  @param      mediaId     The mediaID of the image on the server
  */
-- (void)replaceLocalImageWithRemoteImage:(NSString*)url uniqueId:(NSString*)uniqueId;
+- (void)replaceLocalImageWithRemoteImage:(NSString*)url uniqueId:(NSString*)uniqueId mediaId:(NSString *)mediaId;
 
 - (void)updateImage:(NSString *)url alt:(NSString *)alt;
 
