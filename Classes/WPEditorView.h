@@ -1,7 +1,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ZSSTextView.h"
-//#import "WPViewController.h" // TODO: find a better way
 
 @class WPEditorView;
 @class WPEditorField;
@@ -154,6 +153,16 @@ stylesForCurrentSelection:(NSArray*)styles;
  */
 - (void)editorView:(WPEditorView*)editorView
      videoReplaced:(NSString *)videoID;
+
+/**
+ * @brief		Received when an image is pasted into the editor.
+ *
+ * @param		editorView	The editor view.
+ * @param		imageId		The id of image of the image that was pasted.
+ *
+ */
+- (void)editorView:(WPEditorView*)editorView
+     imagePasted:(UIImage *)image;
 
 /**
  * @brief		Received when a the editor request the url for a videopress shortcode.

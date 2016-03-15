@@ -946,12 +946,11 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
     
     if (pasteboard.image != nil) {
         UIImage *pastedImage = pasteboard.image;
-        NSString *imageID = [[NSUUID UUID] UUIDString];
-        NSString *path = [NSString stringWithFormat:@"%@/%@.jpg", NSTemporaryDirectory(), imageID];
-        NSData *imageData = UIImagePNGRepresentation(pastedImage);
-        [imageData writeToFile:path atomically:YES];
         
-        [self insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
+        if ([self.delegate respondsToSelector:@selector(editorView:imagePasted:)])
+        {
+            [self.delegate editorView:self imagePasted:pastedImage];
+        }
     }
 }
 
