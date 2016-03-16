@@ -1671,7 +1671,7 @@ ZSSEditor.getCaptionForImage = function( imageNode ) {
 ZSSEditor.captionMetaForImage = function( imageNode ) {
     var attrs,
         meta = {
-            align: '',
+            align:  '',
             caption: '',
             captionClassName: '',
             captionId: ''
@@ -1679,6 +1679,12 @@ ZSSEditor.captionMetaForImage = function( imageNode ) {
 
     var caption = ZSSEditor.getCaptionForImage( imageNode );
     if ( !caption ) {
+        // don return align
+        meta = {
+            caption: '',
+            captionClassName: '',
+            captionId: ''
+        };
         return meta;
     }
 
