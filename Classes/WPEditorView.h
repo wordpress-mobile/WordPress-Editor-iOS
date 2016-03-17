@@ -157,8 +157,8 @@ stylesForCurrentSelection:(NSArray*)styles;
 /**
  * @brief		Received when an image is pasted into the editor.
  *
- * @param		editorView	The editor view.
- * @param		imageId		The id of image of the image that was pasted.
+ * @param       editorView  The editor view.
+ * @param       imageId     The id of image of the image that was pasted.
  *
  */
 - (void)editorView:(WPEditorView*)editorView
