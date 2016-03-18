@@ -75,6 +75,9 @@
 		C0F0C09885E0B8DAD277393B /* Pods_EditorDemoTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EditorDemoTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3905FE0E04F3570F2A87958 /* Pods-EditorDemoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EditorDemoTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EditorDemoTests/Pods-EditorDemoTests.debug.xcconfig"; sourceTree = "<group>"; };
 		E4B93A674A3CAFF72CC6964B /* Pods_EditorDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EditorDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FFE317141C9C4D5C00430319 /* WordPress-iOS-Editor.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "WordPress-iOS-Editor.podspec"; path = "../WordPress-iOS-Editor.podspec"; sourceTree = "<group>"; };
+		FFE317151C9C4D5C00430319 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		FFE317161C9C4D5C00430319 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +121,7 @@
 		748D2A7C193E516000D5ACC8 = {
 			isa = PBXGroup;
 			children = (
+				FFE317131C9C4D4B00430319 /* Podspec Metadata */,
 				748D2A8E193E516000D5ACC8 /* EditorDemo */,
 				748D2AB0193E516000D5ACC8 /* EditorDemoTests */,
 				748D2A87193E516000D5ACC8 /* Frameworks */,
@@ -197,6 +201,16 @@
 				748D2AB3193E516000D5ACC8 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		FFE317131C9C4D4B00430319 /* Podspec Metadata */ = {
+			isa = PBXGroup;
+			children = (
+				FFE317141C9C4D5C00430319 /* WordPress-iOS-Editor.podspec */,
+				FFE317151C9C4D5C00430319 /* README.md */,
+				FFE317161C9C4D5C00430319 /* LICENSE */,
+			);
+			name = "Podspec Metadata";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
