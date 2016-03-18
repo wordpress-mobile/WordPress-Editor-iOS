@@ -827,8 +827,9 @@ ZSSEditor.extractMediaIdentifier = function(node) {
  *                                      a mechanism to update the image node with the remote URL
  *                                      when replaceLocalImageWithRemoteImage() is called.
  *  @param      remoteImageUrl          The URL of the remote image to display.
+ *  @param      mediaID                 An integer that is the mediaID of the image on the server.
  */
-ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remoteImageUrl) {
+ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remoteImageUrl, mediaID) {
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
     
     if (imageNode.length == 0) {
@@ -840,16 +841,14 @@ ZSSEditor.replaceLocalImageWithRemoteImage = function(imageNodeIdentifier, remot
     var image = new Image;
     
     image.onload = function () {
-        imageNode.attr('src', image.src);
-        ZSSEditor.markImageUploadDone(imageNodeIdentifier);
+        ZSSEditor.markImageUploadDone(imageNodeIdentifier, image, mediaID);
     }
     
     image.onerror = function () {
         // Even on an error, we swap the image for the time being.  This is because private
         // blogs are currently failing to download images due to access privilege issues.
         //
-        imageNode.attr('src', image.src);
-        ZSSEditor.markImageUploadDone(imageNodeIdentifier);
+        ZSSEditor.markImageUploadDone(imageNodeIdentifier, image, mediaID);
     }
     
     image.src = remoteImageUrl;
@@ -881,8 +880,10 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
  *  @brief      Notifies that the image upload as finished
  *
  *  @param      imageNodeIdentifier     The unique image ID for the uploaded image
+ *  @param      image  The image to be replaces
+ *  @param      mediaID An integer that is the mediaID of the image on the server
  */
-ZSSEditor.markImageUploadDone = function(imageNodeIdentifier) {
+ZSSEditor.markImageUploadDone = function(imageNodeIdentifier, image, mediaID) {
     var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
     if (imageNode.length > 0){
         // remove identifier attributed from image
@@ -891,7 +892,15 @@ ZSSEditor.markImageUploadDone = function(imageNodeIdentifier) {
         // remove uploading style
         imageNode.removeClass("uploading");
         imageNode.removeAttr("class");
-        
+
+        // set remote source
+        imageNode.attr('src', image.src);
+        // set attributes
+        imageNode.attr({'width':image.width, 'height':image.height, 'class':'alignnone size-full'});
+        if (mediaID >= 0) {
+            imageNode.addClass('wp-image-' + mediaID);
+        }
+
         // Remove all extra formatting nodes for progress
         if (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)) {
             // remove id from container to avoid to report a user removal
@@ -1041,14 +1050,13 @@ ZSSEditor.insertVideo = function(videoURL, posterURL, alt) {
  *  @param      posterURL               The URL of a poster image to display while the video is being uploaded.
  */
 ZSSEditor.insertInProgressVideoWithIDUsingPosterImage = function(videoNodeIdentifier, posterURL) {
-    var space = '&nbsp';
     var progressIdentifier = this.getVideoProgressIdentifier(videoNodeIdentifier);
     var videoContainerIdentifier = this.getVideoContainerIdentifier(videoNodeIdentifier);
     var videoContainerStart = '<span id="' + videoContainerIdentifier + '" class="video_container">';
     var videoContainerEnd = '</span>';
-    var progress = '<progress id="' + progressIdentifier + '" value=0  class="wp_media_indicator"  contenteditable="false"></progress>';
+    var progress = '<progress id="' + progressIdentifier + '" value=0 class="wp_media_indicator"></progress>';
     var video = '<video data-wpid="' + videoNodeIdentifier + '" webkit-playsinline poster="' + posterURL + '" onclick="" class="uploading"></video>';
-    var html =  space + videoContainerStart + progress + video + videoContainerEnd + space;
+    var html =  videoContainerStart + progress + video + videoContainerEnd;
     this.insertHTML(html);
     this.sendEnabledStyles();
 };
@@ -1663,7 +1671,7 @@ ZSSEditor.getCaptionForImage = function( imageNode ) {
 ZSSEditor.captionMetaForImage = function( imageNode ) {
     var attrs,
         meta = {
-            align: '',
+            align:  '',
             caption: '',
             captionClassName: '',
             captionId: ''
@@ -1671,6 +1679,12 @@ ZSSEditor.captionMetaForImage = function( imageNode ) {
 
     var caption = ZSSEditor.getCaptionForImage( imageNode );
     if ( !caption ) {
+        // don return align
+        meta = {
+            caption: '',
+            captionClassName: '',
+            captionId: ''
+        };
         return meta;
     }
 

@@ -1,29 +1,5 @@
 
 @font-face {
-    font-family: 'OpenSans';
-    src: local("OpenSans");
-    font-weight: normal;
-    font-style: normal;
-}
-@font-face {
-    font-family: 'OpenSans';
-    src: local("OpenSans-Italic");
-    font-weight: normal;
-    font-style: italic;
-}
-@font-face {
-    font-family: 'OpenSans';
-    src: local("OpenSans-Bold");
-    font-weight: bold;
-    font-style: normal;
-}
-@font-face {
-    font-family: 'OpenSans';
-    src: local("OpenSans-BoldItalic");
-    font-weight: bold;
-    font-style: italic;
-}
-@font-face {
     font-family: 'Merriweather';
     src: local("Merriweather Light");
     font-weight: normal;
@@ -177,7 +153,7 @@ span.img_container.failed::after {
     padding:27px 0 0 0;
     top:50%;
     left:0%;
-    font-family:OpenSans;
+    font-family:-apple-system;
     font-size:20px;
     font-weight:600;
     text-align: center;
@@ -196,7 +172,7 @@ span.img_container.failed.largeFail::after {
 }
 
 span.img_container.failed.smallFail::after {
-    font-family:OpenSans;
+    font-family:-apple-system;
     content:attr(data-failed);
 }
 
@@ -251,7 +227,7 @@ span.video_container.failed::after {
     padding:27px 0 0 0;
     top:50%;
     left:0%;
-    font-family:OpenSans;
+    font-family:-apple-system;
     font-size:20px;
     font-weight:600;
     text-align: center;
@@ -270,7 +246,7 @@ span.video_container.failed.largeFail::after {
 }
 
 span.video_container.failed.smallFail::after {
-    font-family:OpenSans;
+    font-family:-apple-system;
     content:attr(data-failed);
 }
 
@@ -321,7 +297,7 @@ span.video_container.failed.smallFail::after {
 }
 
 .edit-container .edit-content {
-    font-family:OpenSans;
+    font-family:-apple-system;
     font-size:20px;
     font-weight:600;
     text-align: center;
