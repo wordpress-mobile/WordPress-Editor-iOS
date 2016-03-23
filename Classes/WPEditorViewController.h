@@ -100,6 +100,16 @@ WPEditorViewControllerMode;
                videoReplaced:(NSString *)videoID;
 
 /**
+ * @brief		Received when an image is pasted into the editor.
+ *
+ * @param		editorViewController    The editor view controller.
+ * @param		imageId                 The id of image of the image that was pasted.
+ *
+ */
+- (void)editorViewController:(WPEditorViewController*)editorViewController
+               imagePasted:(UIImage *)image;
+
+/**
  *	@brief		Received when the editor requests information about a videopress video.
  *
  *	@param		editorView	The editor view.

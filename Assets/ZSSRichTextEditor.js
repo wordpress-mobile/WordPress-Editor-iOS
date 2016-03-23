@@ -107,7 +107,12 @@ ZSSEditor.init = function(callbacker, logger) {
         // Ensure we only insert plaintext from the pasteboard
         e.preventDefault();
         var plainText = (e.originalEvent || e).clipboardData.getData('text/plain');
-        document.execCommand('insertText', false, plainText);
+        if (plainText.length > 0) {
+            document.execCommand('insertText', false, plainText);
+        } else {
+            //var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
+            ZSSEditor.callback("callback-paste");
+        }
     });
 
     this.domLoadedCallback();

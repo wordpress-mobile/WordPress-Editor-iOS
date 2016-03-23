@@ -1021,6 +1021,13 @@ NSInteger const WPLinkAlertViewTag = 92;
 	[self.toolbarView selectToolbarItemsForStyles:styles];
 }
 
+- (void)editorView:(WPEditorView *)editorView imagePasted:(UIImage *)image
+{
+    if ([self.delegate respondsToSelector:@selector(editorViewController:imagePasted:)]) {
+        [self.delegate editorViewController:self imagePasted:image];
+    }
+}
+
 
 #ifdef DEBUG
 -      (void)webView:(UIWebView *)webView
