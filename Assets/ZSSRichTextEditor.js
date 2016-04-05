@@ -2396,10 +2396,11 @@ ZSSField.prototype.emptyFieldIfNoContents = function() {
     if (text.length == 0) {
         
         var hasChildImages = (this.wrappedObject.find('img').length > 0);
+        var hasChildVideos = (this.wrappedObject.find('video').length > 0);
         var hasUnorderedList = (this.wrappedObject.find('ul').length > 0);
         var hasOrderedList = (this.wrappedObject.find('ol').length > 0);
         
-        if (!hasChildImages && !hasUnorderedList && !hasOrderedList) {
+        if (!hasChildImages && !hasUnorderedList && !hasOrderedList && !hasChildVideos) {
             this.wrappedObject.empty();
         }
     }
