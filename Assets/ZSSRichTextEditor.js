@@ -1036,8 +1036,9 @@ ZSSEditor.sendMediaRemovedCallback = function(mediaNodeIdentifier) {
  *
  */
 ZSSEditor.insertVideo = function(videoURL, posterURL, alt) {
-    var html = '<video controls webkit-playsinline poster="' + posterURL+ '"><source src="'
-    + videoURL + '" type="video/mp4"/>' + alt + '</video>';
+    var zeroWidthSpace = '&#x200b;';
+    var html = zeroWidthSpace + '<video controls webkit-playsinline poster="' + posterURL+ '"><source src="'
+    + videoURL + '" type="video/mp4"/>' + alt + '</video>' + zeroWidthSpace;
     
     this.insertHTML(html);
     this.sendEnabledStyles();
@@ -1055,13 +1056,14 @@ ZSSEditor.insertVideo = function(videoURL, posterURL, alt) {
  *  @param      posterURL               The URL of a poster image to display while the video is being uploaded.
  */
 ZSSEditor.insertInProgressVideoWithIDUsingPosterImage = function(videoNodeIdentifier, posterURL) {
+    var zeroWidthSpace = '&#x200b;';
     var progressIdentifier = this.getVideoProgressIdentifier(videoNodeIdentifier);
     var videoContainerIdentifier = this.getVideoContainerIdentifier(videoNodeIdentifier);
     var videoContainerStart = '<span id="' + videoContainerIdentifier + '" class="video_container">';
     var videoContainerEnd = '</span>';
     var progress = '<progress id="' + progressIdentifier + '" value=0 class="wp_media_indicator"></progress>';
     var video = '<video data-wpid="' + videoNodeIdentifier + '" webkit-playsinline poster="' + posterURL + '" onclick="" class="uploading"></video>';
-    var html =  videoContainerStart + progress + video + videoContainerEnd;
+    var html =  zeroWidthSpace + videoContainerStart + progress + video + videoContainerEnd + zeroWidthSpace;
     this.insertHTML(html);
     this.sendEnabledStyles();
 };
