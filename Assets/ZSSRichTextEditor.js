@@ -2384,13 +2384,6 @@ ZSSField.prototype.bindMutationObserver = function () {
                 var mediaIdentifier = ZSSEditor.extractMediaIdentifier(removedNode);
                 ZSSEditor.sendMediaRemovedCallback(mediaIdentifier);
             }
-//            for (var i = 0; i < mutation.removedNodes.length; i++) {
-//                var removedNode = mutation.removedNodes[i];
-//                if ( ZSSEditor.isMediaContainerNode(removedNode) ) {
-//                    var mediaIdentifier = ZSSEditor.extractMediaIdentifier(removedNode);
-//                    ZSSEditor.sendMediaRemovedCallback(mediaIdentifier);
-//                }
-//            }
         });
     });
     
