@@ -149,7 +149,7 @@
 {
     NSProgress * progress = self.mediaAdded[mediaID];
     [progress cancel];
-    NSLog(@"Media Removed: %@", mediaID);
+    DDLogInfo(@"Media Removed: %@", mediaID);
 }
 
 - (void)editorFormatBarStatusChanged:(WPEditorViewController *)editorController
