@@ -2388,7 +2388,7 @@ ZSSField.prototype.bindMutationObserver = function () {
     });
     
     // configuration of the observer:
-    var config = { attributes: false, childList: true, characterData: false };
+    var config = { attributes: false, childList: true, characterData: false, subtree: true };
     
     // pass in the target node, as well as the observer options
     observer.observe(target, config);
