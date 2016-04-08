@@ -7,7 +7,6 @@
 #import <WordPressShared/UIImage+Util.h>
 
 CGFloat const WPLegacyEPVCTextfieldHeight = 44.0f;
-CGFloat const WPLegacyEPVCOptionsHeight = 44.0f;
 CGFloat const WPLegacyEPVCStandardOffset = 15.0;
 CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 CGFloat const WPLegacyEPVCTextViewBottomPadding = 50.0f;
@@ -19,8 +18,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 @property (nonatomic, strong) UILabel *tapToStartWritingLabel;
 @property (nonatomic, strong) UITextField *titleTextField;
 @property (nonatomic, strong) UITextView *textView;
-@property (nonatomic, strong) UIView *optionsSeparatorView;
-@property (nonatomic, strong) UIView *optionsView;
 @property (nonatomic, strong) UIView *separatorView;
 @property (nonatomic, strong) WPLegacyKeyboardToolbarBase *editorToolbar;
 @property (nonatomic, strong) WPLegacyKeyboardToolbarDone *titleToolbar;
@@ -36,7 +33,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     self.modalPresentationCapturesStatusBarAppearance = YES;
     [self setupToolbar];
     [self setupTextView];
-    [self setupOptionsView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -251,61 +247,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
         self.tapToStartWritingLabel.isAccessibilityElement = NO;
     }
     [self.textView addSubview:self.tapToStartWritingLabel];
-}
-
-- (void)setupOptionsView
-{
-    CGFloat width = CGRectGetWidth(self.textView.frame);
-    CGFloat x = CGRectGetMinX(self.textView.frame);
-    CGFloat y = CGRectGetMaxY(self.textView.frame);
-    
-    CGRect frame;
-    if (!self.optionsView) {
-        frame = CGRectMake(x, y, width, WPLegacyEPVCOptionsHeight);
-        self.optionsView = [[UIView alloc] initWithFrame:frame];
-        self.optionsView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-        if (IS_IPAD) {
-            self.optionsView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
-        }
-        self.optionsView.backgroundColor = [UIColor whiteColor];
-    }
-    [self.view addSubview:self.optionsView];
-    
-    // One pixel separator bewteen content and table view cells.
-    if (!self.optionsSeparatorView) {
-        CGFloat separatorWidth = width - WPLegacyEPVCStandardOffset;
-        frame = CGRectMake(WPLegacyEPVCStandardOffset, 0.0f, separatorWidth, 1.0f);
-        self.optionsSeparatorView = [[UIView alloc] initWithFrame:frame];
-        self.optionsSeparatorView.backgroundColor = [WPStyleGuide readGrey];
-        self.optionsSeparatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    }
-    [self.optionsView addSubview:self.optionsSeparatorView];
-    
-    if (!self.optionsButton) {
-        NSString *optionsTitle = NSLocalizedString(@"Options", @"Title of the Post Settings tableview cell in the Post Editor. Tapping shows settings and options related to the post being edited.");
-        frame = CGRectMake(0.0f, 1.0f, width, WPLegacyEPVCOptionsHeight - 1.0f);
-        self.optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.optionsButton.frame = frame;
-        self.optionsButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [self.optionsButton addTarget:self action:@selector(didTouchSettings)
-                     forControlEvents:UIControlEventTouchUpInside];
-        [self.optionsButton setBackgroundImage:[UIImage imageWithColor:[WPStyleGuide readGrey]]
-                                      forState:UIControlStateHighlighted];
-        self.optionsButton.accessibilityIdentifier = @"Options";
-        // Rather than using a UIImageView to fake a disclosure icon, just use a cell and future proof the UI.
-        WPTableViewCell *cell = [[WPTableViewCell alloc] initWithFrame:self.optionsButton.bounds];
-        // The cell uses its default frame and ignores what was passed during init, so set it again.
-        cell.frame = self.optionsButton.bounds;
-        cell.backgroundColor = [UIColor clearColor];
-        cell.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-        cell.textLabel.text = optionsTitle;
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        cell.userInteractionEnabled = NO;
-        [WPStyleGuide configureTableViewCell:cell];
-        
-        [self.optionsButton addSubview:cell];
-    }
-    [self.optionsView addSubview:self.optionsButton];
 }
 
 - (void)positionTextView:(NSNotification *)notification
