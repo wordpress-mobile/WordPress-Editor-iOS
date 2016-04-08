@@ -252,7 +252,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     if (self.isShowingKeyboard) {
         frame.size.height = CGRectGetMinY(keyboardFrame) - CGRectGetMinY(frame);
     } else {
-        frame.size.height = CGRectGetHeight(self.view.frame) - WPLegacyEPVCOptionsHeight;
+        frame.size.height = CGRectGetHeight(self.view.frame);
     }
     self.textView.frame = frame;
 }
