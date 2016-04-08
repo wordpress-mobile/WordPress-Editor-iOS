@@ -31,11 +31,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    // For the iPhone, let's let the overscroll background color be white to match the editor.
-    if (IS_IPAD) {
-        self.view.backgroundColor = [WPStyleGuide itsEverywhereGrey];
-    }
+
     self.navigationController.navigationBar.translucent = NO;
     self.modalPresentationCapturesStatusBarAppearance = YES;
     [self setupToolbar];
@@ -175,12 +171,8 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     CGFloat viewWidth = CGRectGetWidth(self.view.frame);
     CGFloat width = viewWidth;
     UIViewAutoresizing mask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    if (IS_IPAD) {
-        width = WPTableViewFixedWidth;
-        x = ceilf((viewWidth - width) / 2.0f);
-        mask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleHeight;
-    }
-    CGRect frame = CGRectMake(x, 0.0f, width, CGRectGetHeight(self.view.frame) - WPLegacyEPVCOptionsHeight);
+
+    CGRect frame = CGRectMake(x, 0.0f, width, CGRectGetHeight(self.view.frame));
 
     // Height should never be smaller than what is required to display its text.
     if (!self.textView) {
