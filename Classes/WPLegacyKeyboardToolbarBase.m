@@ -108,15 +108,21 @@
     [self buildFormatButtons];
 
     self.items = @[
+                   [self flexibleSpaceItem],
                    self.mediaButton,
                    [self flexibleSpaceItem],
                    self.boldButton,
+                   [self fixedSpaceItem],
                    self.italicsButton,
+                   [self fixedSpaceItem],
                    self.underlineButton,
+                   [self fixedSpaceItem],
                    self.delButton,
                    [self flexibleSpaceItem],
                    self.linkButton,
+                   [self fixedSpaceItem],
                    self.quoteButton,
+                   [self fixedSpaceItem],
                    self.moreButton,
                    [self flexibleSpaceItem]
                    ];
@@ -127,7 +133,9 @@
 }
 
 - (UIBarButtonItem *)fixedSpaceItem {
-    return [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    item.width = item.width / 2.0f;
+    return item;
 }
 
 

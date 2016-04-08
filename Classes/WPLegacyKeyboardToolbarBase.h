@@ -2,13 +2,6 @@
 #import <QuartzCore/QuartzCore.h>
 #import "WPLegacyKeyboardToolbarButtonItem.h"
 
-#define WPKT_HEIGHT_IPHONE_PORTRAIT 40.0f
-#define WPKT_HEIGHT_IPHONE_LANDSCAPE 33.0f
-#define WPKT_HEIGHT_IPAD_PORTRAIT 65.0f
-#define WPKT_HEIGHT_IPAD_LANDSCAPE 65.0f
-#define WPKT_HEIGHT_PORTRAIT (IS_IPAD ? WPKT_HEIGHT_IPAD_PORTRAIT : WPKT_HEIGHT_IPHONE_PORTRAIT)
-#define WPKT_HEIGHT_LANDSCAPE (IS_IPAD ? WPKT_HEIGHT_IPAD_LANDSCAPE : WPKT_HEIGHT_IPHONE_LANDSCAPE)
-
 @protocol WPLegacyKeyboardToolbarDelegate <NSObject>
 - (void)keyboardToolbarButtonItemPressed:(WPLegacyKeyboardToolbarButtonItem *)buttonItem;
 @end
