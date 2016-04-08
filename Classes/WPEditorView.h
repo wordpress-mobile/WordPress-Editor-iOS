@@ -113,7 +113,7 @@
          imageMeta:(WPImageMeta *)imageMeta;
 
 /**
- * @brief		Received when the user taps on a image in the editor.
+ * @brief		Received when the user taps on a video in the editor.
  *
  * @param		editorView	The editor view.
  * @param		videoId		The id of image of the image that was tapped.
@@ -153,6 +153,16 @@ stylesForCurrentSelection:(NSArray*)styles;
  */
 - (void)editorView:(WPEditorView*)editorView
      videoReplaced:(NSString *)videoID;
+
+/**
+ * @brief		Received when an image is pasted into the editor.
+ *
+ * @param       editorView  The editor view.
+ * @param       imageId     The id of image of the image that was pasted.
+ *
+ */
+- (void)editorView:(WPEditorView*)editorView
+     imagePasted:(UIImage *)image;
 
 /**
  * @brief		Received when a the editor request the url for a videopress shortcode.

@@ -107,7 +107,12 @@ ZSSEditor.init = function(callbacker, logger) {
         // Ensure we only insert plaintext from the pasteboard
         e.preventDefault();
         var plainText = (e.originalEvent || e).clipboardData.getData('text/plain');
-        document.execCommand('insertText', false, plainText);
+        if (plainText.length > 0) {
+            document.execCommand('insertText', false, plainText);
+        } else {
+            //var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
+            ZSSEditor.callback("callback-paste");
+        }
     });
 
     this.domLoadedCallback();
@@ -801,6 +806,21 @@ ZSSEditor.getImageContainerNodeWithIdentifier = function(imageNodeIdentifier) {
     return $('#'+this.getImageContainerIdentifier(imageNodeIdentifier));
 };
 
+ZSSEditor.searchForMediaNode = function(nodes) {
+    if (nodes === undefined) {
+        return null;
+    }
+    for (var i = 0; i < nodes.length; i++) {
+        var node = nodes[i];
+        if ( ZSSEditor.isMediaContainerNode(node) ) {
+            return node;
+        }
+        var children = node.children;
+        return this.searchForMediaNode(children);
+    }
+    return null;
+};
+
 ZSSEditor.isMediaContainerNode = function(node) {
     if (node.id === undefined) {
         return false;
@@ -1031,8 +1051,9 @@ ZSSEditor.sendMediaRemovedCallback = function(mediaNodeIdentifier) {
  *
  */
 ZSSEditor.insertVideo = function(videoURL, posterURL, alt) {
-    var html = '<video controls webkit-playsinline poster="' + posterURL+ '"><source src="'
-    + videoURL + '" type="video/mp4"/>' + alt + '</video>';
+    var zeroWidthSpace = '&#x200b;';
+    var html = zeroWidthSpace + '<video controls webkit-playsinline poster="' + posterURL+ '"><source src="'
+    + videoURL + '" type="video/mp4"/>' + alt + '</video>' + zeroWidthSpace;
     
     this.insertHTML(html);
     this.sendEnabledStyles();
@@ -1050,13 +1071,14 @@ ZSSEditor.insertVideo = function(videoURL, posterURL, alt) {
  *  @param      posterURL               The URL of a poster image to display while the video is being uploaded.
  */
 ZSSEditor.insertInProgressVideoWithIDUsingPosterImage = function(videoNodeIdentifier, posterURL) {
+    var zeroWidthSpace = '&#x200b;';
     var progressIdentifier = this.getVideoProgressIdentifier(videoNodeIdentifier);
     var videoContainerIdentifier = this.getVideoContainerIdentifier(videoNodeIdentifier);
     var videoContainerStart = '<span id="' + videoContainerIdentifier + '" class="video_container">';
     var videoContainerEnd = '</span>';
     var progress = '<progress id="' + progressIdentifier + '" value=0 class="wp_media_indicator"></progress>';
     var video = '<video data-wpid="' + videoNodeIdentifier + '" webkit-playsinline poster="' + posterURL + '" onclick="" class="uploading"></video>';
-    var html =  videoContainerStart + progress + video + videoContainerEnd;
+    var html =  zeroWidthSpace + videoContainerStart + progress + video + videoContainerEnd + zeroWidthSpace;
     this.insertHTML(html);
     this.sendEnabledStyles();
 };
@@ -2356,19 +2378,17 @@ ZSSField.prototype.bindMutationObserver = function () {
     var target = this.wrappedObject[0];
     // create an observer instance
     var observer = new MutationObserver(function(mutations) {
-                                        mutations.forEach(function(mutation) {
-                                                          for (var i = 0; i < mutation.removedNodes.length; i++) {
-                                                          var removedNode = mutation.removedNodes[i];
-                                                          if ( ZSSEditor.isMediaContainerNode(removedNode) ) {
-                                                          var mediaIdentifier = ZSSEditor.extractMediaIdentifier(removedNode);
-                                                          ZSSEditor.sendMediaRemovedCallback(mediaIdentifier);
-                                                          }
-                                                          }
-                                                          });
-                                        });
+        mutations.forEach(function(mutation) {
+            var removedNode = ZSSEditor.searchForMediaNode(mutation.removedNodes)
+            if ( removedNode != null) {                
+                var mediaIdentifier = ZSSEditor.extractMediaIdentifier(removedNode);
+                ZSSEditor.sendMediaRemovedCallback(mediaIdentifier);
+            }
+        });
+    });
     
     // configuration of the observer:
-    var config = { attributes: false, childList: true, characterData: false };
+    var config = { attributes: false, childList: true, characterData: false, subtree: true };
     
     // pass in the target node, as well as the observer options
     observer.observe(target, config);
@@ -2389,10 +2409,11 @@ ZSSField.prototype.emptyFieldIfNoContents = function() {
     if (text.length == 0) {
         
         var hasChildImages = (this.wrappedObject.find('img').length > 0);
+        var hasChildVideos = (this.wrappedObject.find('video').length > 0);
         var hasUnorderedList = (this.wrappedObject.find('ul').length > 0);
         var hasOrderedList = (this.wrappedObject.find('ol').length > 0);
         
-        if (!hasChildImages && !hasUnorderedList && !hasOrderedList) {
+        if (!hasChildImages && !hasUnorderedList && !hasOrderedList && !hasChildVideos) {
             this.wrappedObject.empty();
         }
     }

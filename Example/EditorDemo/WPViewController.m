@@ -123,6 +123,13 @@
     [self.mediaAdded removeObjectForKey:imageId];
 }
 
+- (void)editorViewController:(WPEditorViewController *)editorViewController imagePasted:(UIImage *)image
+{
+    NSData *imageData = UIImageJPEGRepresentation(image, 0.9);
+    
+    [self addImageDataToContent:imageData];
+}
+
 - (void)editorViewController:(WPEditorViewController *)editorViewController videoReplaced:(NSString *)videoId
 {
     [self.mediaAdded removeObjectForKey:videoId];
@@ -142,6 +149,7 @@
 {
     NSProgress * progress = self.mediaAdded[mediaID];
     [progress cancel];
+    DDLogInfo(@"Media Removed: %@", mediaID);
 }
 
 - (void)editorFormatBarStatusChanged:(WPEditorViewController *)editorController
@@ -291,6 +299,31 @@
     [self.navigationController presentViewController:picker animated:YES completion:nil];
 }
 
+- (void)addImageDataToContent:(NSData *)imageData
+{
+    NSString *imageID = [[NSUUID UUID] UUIDString];
+    NSString *path = [NSString stringWithFormat:@"%@/%@.jpg", NSTemporaryDirectory(), imageID];
+    [imageData writeToFile:path atomically:YES];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
+    });
+
+    NSProgress *progress = [[NSProgress alloc] initWithParent:nil userInfo:@{ @"imageID": imageID, @"url": path }];
+    progress.cancellable = YES;
+    progress.totalUnitCount = 100;
+    NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                       target:self
+                                                     selector:@selector(timerFireMethod:)
+                                                     userInfo:progress
+                                                      repeats:YES];
+    [progress setCancellationHandler:^{
+        [timer invalidate];
+    }];
+    
+    self.mediaAdded[imageID] = progress;
+}
+
 - (void)addImageAssetToContent:(PHAsset *)asset
 {
     PHImageRequestOptions *options = [PHImageRequestOptions new];
@@ -299,30 +332,12 @@
     options.resizeMode = PHImageRequestOptionsResizeModeExact;
     options.version = PHImageRequestOptionsVersionCurrent;
     options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-    NSString *imageID = [[NSUUID UUID] UUIDString];
-    NSString *path = [NSString stringWithFormat:@"%@/%@.jpg", NSTemporaryDirectory(), imageID];
+    
     [[PHImageManager defaultManager] requestImageDataForAsset:asset
                                                       options:options
                                                 resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info) {
-        [imageData writeToFile:path atomically:YES];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.editorView insertLocalImage:[[NSURL fileURLWithPath:path] absoluteString] uniqueId:imageID];
-        });
+        [self addImageDataToContent:imageData];
     }];
-
-    NSProgress *progress = [[NSProgress alloc] initWithParent:nil userInfo:@{ @"imageID": imageID,
-                                                                              @"url": path }];
-    progress.cancellable = YES;
-    progress.totalUnitCount = 100;
-    NSTimer * timer = [NSTimer scheduledTimerWithTimeInterval:0.1
-                                     target:self
-                                   selector:@selector(timerFireMethod:)
-                                   userInfo:progress
-                                    repeats:YES];
-    [progress setCancellationHandler:^{
-        [timer invalidate];
-    }];
-    self.mediaAdded[imageID] = progress;
 }
 
 - (void)addVideoAssetToContent:(PHAsset *)originalAsset
