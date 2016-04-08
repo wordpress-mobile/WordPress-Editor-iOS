@@ -483,29 +483,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     return NO;
 }
 
-#pragma mark - Positioning & Rotation
-
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration
-{
-    CGRect frame = self.editorToolbar.frame;
-    if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
-        if (IS_IPAD) {
-            frame.size.height = WPKT_HEIGHT_IPAD_LANDSCAPE;
-        } else {
-            frame.size.height = WPKT_HEIGHT_IPHONE_LANDSCAPE;
-        }
-        
-    } else {
-        if (IS_IPAD) {
-            frame.size.height = WPKT_HEIGHT_IPAD_PORTRAIT;
-        } else {
-            frame.size.height = WPKT_HEIGHT_IPHONE_PORTRAIT;
-        }
-    }
-    self.editorToolbar.frame = frame;
-    self.titleToolbar.frame = frame; // Frames match, no need to re-calc.
-}
-
 #pragma mark - Keyboard management
 
 - (void)keyboardWillShow:(NSNotification *)notification

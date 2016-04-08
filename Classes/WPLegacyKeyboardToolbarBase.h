@@ -13,18 +13,9 @@
 - (void)keyboardToolbarButtonItemPressed:(WPLegacyKeyboardToolbarButtonItem *)buttonItem;
 @end
 
-@interface WPLegacyKeyboardToolbarBase : UIView<UIInputViewAudioFeedback>
+@interface WPLegacyKeyboardToolbarBase : UIToolbar
 
 @property (nonatomic, weak) id<WPLegacyKeyboardToolbarDelegate> delegate;
-@property (nonatomic, strong) UIView *formatView;
-@property (nonatomic, strong) WPLegacyKeyboardToolbarButtonItem *boldButton;
-@property (nonatomic, strong) WPLegacyKeyboardToolbarButtonItem *italicsButton;
-@property (nonatomic, strong) WPLegacyKeyboardToolbarButtonItem *underlineButton;
-@property (nonatomic, strong) WPLegacyKeyboardToolbarButtonItem *delButton;
-@property (nonatomic, strong) WPLegacyKeyboardToolbarButtonItem *linkButton;
-@property (nonatomic, strong) WPLegacyKeyboardToolbarButtonItem *quoteButton;
-@property (nonatomic, strong) WPLegacyKeyboardToolbarButtonItem *moreButton;
-@property (nonatomic, strong) WPLegacyKeyboardToolbarButtonItem *doneButton;
 
 - (void)setupView;
 - (void)setupFormatView;
