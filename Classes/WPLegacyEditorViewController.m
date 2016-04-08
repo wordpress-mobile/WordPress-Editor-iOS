@@ -417,7 +417,9 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
         [WPAnalytics track:WPAnalyticsStatEditorTappedMore];
     }
          
-    if ([buttonItem.actionTag isEqualToString:@"link"]) {
+    if ([buttonItem.actionTag isEqualToString:@"add_media"]) {
+        [self didTouchMediaOptions];
+    } else if ([buttonItem.actionTag isEqualToString:@"link"]) {
         [self showLinkView];
     } else if ([buttonItem.actionTag isEqualToString:@"done"]) {
         [self stopEditing];
