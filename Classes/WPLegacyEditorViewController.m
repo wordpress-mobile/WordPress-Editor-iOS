@@ -52,19 +52,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
-    
-    if(self.navigationController.navigationBarHidden) {
-        [self.navigationController setNavigationBarHidden:NO animated:animated];
-    }
-    
-    if (self.navigationController.toolbarHidden) {
-        [self.navigationController setToolbarHidden:NO animated:animated];
-    }
-    
-    for (UIView *view in self.navigationController.toolbar.subviews) {
-        [view setExclusiveTouch:YES];
-    }
-    
+
     [self.textView setContentOffset:CGPointMake(0, 0)];
 }
 
@@ -82,7 +70,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-    [self.navigationController setToolbarHidden:YES animated:animated];
 	[self stopEditing];
 }
 
@@ -535,24 +522,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 #pragma mark - Positioning & Rotation
 
-- (BOOL)shouldHideToolbarsWhileTyping
-{
-    /*
-     Never hide for the iPad.
-     Always hide on the iPhone except for portrait + external keyboard
-     */
-    if (IS_IPAD) {
-        return NO;
-    }
-    
-    BOOL isLandscape = UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
-    if (!isLandscape && self.isExternalKeyboard) {
-        return NO;
-    }
-    
-    return YES;
-}
-
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration
 {
     CGRect frame = self.editorToolbar.frame;
@@ -574,29 +543,11 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     self.titleToolbar.frame = frame; // Frames match, no need to re-calc.
 }
 
-#pragma mark - Status bar management
-
-- (BOOL)prefersStatusBarHidden
-{
-    return self.isShowingKeyboard;
-}
-
-- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation
-{
-    return UIStatusBarAnimationSlide;
-}
-
 #pragma mark - Keyboard management
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
 	self.isShowingKeyboard = YES;
-    
-    if ([self shouldHideToolbarsWhileTyping]) {
-        [self setNeedsStatusBarAppearanceUpdate];
-        [self.navigationController setNavigationBarHidden:YES animated:YES];
-        [self.navigationController setToolbarHidden:YES animated:YES];
-    }
 }
 
 - (void)keyboardDidShow:(NSNotification *)notification
@@ -613,9 +564,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 - (void)keyboardWillHide:(NSNotification *)notification
 {
 	self.isShowingKeyboard = NO;
-    [self setNeedsStatusBarAppearanceUpdate];
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
-    [self.navigationController setToolbarHidden:NO animated:YES];
     [self positionTextView:notification];
 }
 
