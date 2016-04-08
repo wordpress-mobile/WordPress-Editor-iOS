@@ -806,6 +806,21 @@ ZSSEditor.getImageContainerNodeWithIdentifier = function(imageNodeIdentifier) {
     return $('#'+this.getImageContainerIdentifier(imageNodeIdentifier));
 };
 
+ZSSEditor.searchForMediaNode = function(nodes) {
+    if (nodes === undefined) {
+        return null;
+    }
+    for (var i = 0; i < nodes.length; i++) {
+        var node = nodes[i];
+        if ( ZSSEditor.isMediaContainerNode(node) ) {
+            return node;
+        }
+        var children = node.children;
+        return this.searchForMediaNode(children);
+    }
+    return null;
+};
+
 ZSSEditor.isMediaContainerNode = function(node) {
     if (node.id === undefined) {
         return false;
@@ -2363,19 +2378,17 @@ ZSSField.prototype.bindMutationObserver = function () {
     var target = this.wrappedObject[0];
     // create an observer instance
     var observer = new MutationObserver(function(mutations) {
-                                        mutations.forEach(function(mutation) {
-                                                          for (var i = 0; i < mutation.removedNodes.length; i++) {
-                                                          var removedNode = mutation.removedNodes[i];
-                                                          if ( ZSSEditor.isMediaContainerNode(removedNode) ) {
-                                                          var mediaIdentifier = ZSSEditor.extractMediaIdentifier(removedNode);
-                                                          ZSSEditor.sendMediaRemovedCallback(mediaIdentifier);
-                                                          }
-                                                          }
-                                                          });
-                                        });
+        mutations.forEach(function(mutation) {
+            var removedNode = ZSSEditor.searchForMediaNode(mutation.removedNodes)
+            if ( removedNode != null) {                
+                var mediaIdentifier = ZSSEditor.extractMediaIdentifier(removedNode);
+                ZSSEditor.sendMediaRemovedCallback(mediaIdentifier);
+            }
+        });
+    });
     
     // configuration of the observer:
-    var config = { attributes: false, childList: true, characterData: false };
+    var config = { attributes: false, childList: true, characterData: false, subtree: true };
     
     // pass in the target node, as well as the observer options
     observer.observe(target, config);
