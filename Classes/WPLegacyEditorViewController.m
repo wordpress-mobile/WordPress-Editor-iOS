@@ -103,43 +103,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 #pragma mark - View Setup
 
-//- (void)setupToolbar
-//{
-//    if ([self.toolbarItems count] > 0) {
-//        return;
-//    }
-//    
-//    UIBarButtonItem *previewButton = [[UIBarButtonItem alloc] initWithImage:[self imageNamed:@"icon-posts-editor-preview"]
-//                                                                      style:UIBarButtonItemStylePlain
-//                                                                     target:self
-//                                                                     action:@selector(didTouchPreview)];
-//    UIBarButtonItem *photoButton = [[UIBarButtonItem alloc] initWithImage:[self imageNamed:@"icon_format_media"]
-//                                                                    style:UIBarButtonItemStylePlain
-//                                                                   target:self
-//                                                                   action:@selector(didTouchMediaOptions)];
-//    
-//    previewButton.tintColor = [WPStyleGuide readGrey];
-//    photoButton.tintColor = [WPStyleGuide readGrey];
-//
-//    previewButton.accessibilityLabel = NSLocalizedString(@"Preview post", nil);
-//    photoButton.accessibilityLabel = NSLocalizedString(@"Add media", nil);
-//    
-//    UIBarButtonItem *leftFixedSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-//                                                                                     target:nil
-//                                                                                     action:nil];
-//    UIBarButtonItem *rightFixedSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-//                                                                                      target:nil
-//                                                                                      action:nil];
-//    UIBarButtonItem *centerFlexSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-//                                                                                      target:nil
-//                                                                                      action:nil];
-//    
-//    leftFixedSpacer.width = -2.0f;
-//    rightFixedSpacer.width = -5.0f;
-//    
-//    self.toolbarItems = @[leftFixedSpacer, previewButton, centerFlexSpacer, photoButton, rightFixedSpacer];
-//}
-
 - (void)setupTextView
 {
     CGFloat x = 0.0f;
