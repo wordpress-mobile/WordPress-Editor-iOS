@@ -438,7 +438,7 @@
                             </barButtonItem>
                             <barButtonItem title="Legacy" id="dq0-9H-ue3">
                                 <connections>
-                                    <segue destination="oo8-hJ-TkA" kind="push" id="hgC-0H-Uhi"/>
+                                    <segue destination="A74-Nk-jcW" kind="push" id="da6-JF-MtQ"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
@@ -446,7 +446,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1046" y="189"/>
+            <point key="canvasLocation" x="1122" y="189"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Y5p-Ja-PLK">
@@ -463,24 +463,23 @@
             </objects>
             <point key="canvasLocation" x="525" y="189"/>
         </scene>
-        <!--Legacy Editor-->
-        <scene sceneID="NSZ-AN-0Bf">
+        <!--Test Legacy Editor View Controller-->
+        <scene sceneID="r7S-hk-h0B">
             <objects>
-                <viewController id="oo8-hJ-TkA" customClass="WPLegacyEditorViewController" sceneMemberID="viewController">
+                <viewController id="A74-Nk-jcW" customClass="WPTestLegacyEditorViewController" sceneMemberID="viewController">
                     <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="zsV-HD-bFm"/>
-                        <viewControllerLayoutGuide type="bottom" id="rdE-Mj-Fia"/>
+                        <viewControllerLayoutGuide type="top" id="Lde-c8-FI5"/>
+                        <viewControllerLayoutGuide type="bottom" id="kEs-6s-7SQ"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="fhD-x2-dgr">
+                    <view key="view" contentMode="scaleToFill" id="CIg-Ox-RHs">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Legacy Editor" id="h8a-Ib-BnY"/>
+                    <navigationItem key="navigationItem" id="Umi-Hw-hct"/>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="6gg-mn-ogq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="biZ-bm-FI5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1629" y="977"/>
         </scene>
     </scenes>
 </document>
