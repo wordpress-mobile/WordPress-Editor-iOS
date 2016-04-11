@@ -12,5 +12,6 @@
 
 - (void)setupView;
 - (void)setupFormatView;
+- (void)disableAllButtons;
 
 @end

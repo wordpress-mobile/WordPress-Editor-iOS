@@ -33,7 +33,6 @@
     if (self.mediaButton == nil) {
         self.mediaButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
         [self.mediaButton setImageName:@"icon_format_media"];
-        self.mediaButton.tintColor = [WPStyleGuide greyLighten10];
         self.mediaButton.actionTag = @"add_media";
         self.mediaButton.accessibilityIdentifier = @"add media";
         self.mediaButton.actionName = NSLocalizedString(@"add media", @"Add media in the Post Editor. This string will be used in the Undo message if the last change was adding formatting.");
@@ -42,7 +41,6 @@
     if (self.boldButton == nil) {
         self.boldButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
         [self.boldButton setImageName:@"icon_format_bold"];
-        self.boldButton.tintColor = [WPStyleGuide greyLighten10];
         self.boldButton.actionTag = @"strong";
         self.boldButton.accessibilityIdentifier = @"strong";
         self.boldButton.actionName = NSLocalizedString(@"bold", @"Bold text formatting in the Post Editor. This string will be used in the Undo message if the last change was adding formatting.");
@@ -51,7 +49,6 @@
     if (self.italicsButton == nil) {
         self.italicsButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
         [self.italicsButton setImageName:@"icon_format_italic"];
-        self.italicsButton.tintColor = [WPStyleGuide greyLighten10];
         self.italicsButton.actionTag = @"em";
         self.italicsButton.accessibilityIdentifier = @"em";
         self.italicsButton.actionName = NSLocalizedString(@"italic", @"Italic text formatting in the Post Editor. This string will be used in the Undo message if the last change was adding formatting.");
@@ -60,7 +57,6 @@
     if (self.underlineButton == nil) {
         self.underlineButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
         [self.underlineButton setImageName:@"icon_format_underline"];
-        self.underlineButton.tintColor = [WPStyleGuide greyLighten10];
         self.underlineButton.actionTag = @"u";
         self.underlineButton.accessibilityIdentifier = @"u";
         self.underlineButton.actionName = NSLocalizedString(@"underline", @"Underline text formatting in the Post Editor. This string will be used in the Undo message if the last change was adding formatting.");
@@ -69,7 +65,6 @@
     if (self.delButton == nil) {
         self.delButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
         [self.delButton setImageName:@"icon_format_strikethrough"];
-        self.delButton.tintColor = [WPStyleGuide greyLighten10];
         self.delButton.actionTag = @"del";
         self.delButton.accessibilityIdentifier = @"del";
         self.delButton.actionName = NSLocalizedString(@"del", @"<del> (deleted text) HTML formatting in the Post Editor. This string will be used in the Undo message if the last change was adding a <del> HTML element.");
@@ -78,7 +73,6 @@
     if (self.linkButton == nil) {
         self.linkButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
         [self.linkButton setImageName:@"icon_format_link"];
-        self.linkButton.tintColor = [WPStyleGuide greyLighten10];
         self.linkButton.actionTag = @"link";
         self.linkButton.accessibilityIdentifier = @"link";
         self.linkButton.actionName = NSLocalizedString(@"link", @"Link helper button in the Post Editor. This string will be used in the Undo message if the last change was adding a link.");
@@ -87,7 +81,6 @@
     if (self.quoteButton == nil) {
         self.quoteButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
         [self.quoteButton setImageName:@"icon_format_quote"];
-        self.quoteButton.tintColor = [WPStyleGuide greyLighten10];
         self.quoteButton.actionTag = @"blockquote";
         self.quoteButton.accessibilityIdentifier = @"blockquote";
         self.quoteButton.actionName = NSLocalizedString(@"quote", @"Blockquote HTML formatting in the Post Editor. This string will be used in the Undo message if the last change was adding a blockquote.");
@@ -95,8 +88,7 @@
     }
     if (self.moreButton == nil) {
         self.moreButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        [self.moreButton setImageName:@"icon_format_more"];
-        self.moreButton.tintColor = [WPStyleGuide greyLighten10];
+        [self.moreButton setImageName:@"icon_format_more"];        
         self.moreButton.actionTag = @"more";
         self.moreButton.accessibilityIdentifier = @"more";
         self.moreButton.actionName = NSLocalizedString(@"more", @"Adding a More excerpt cut-off in the Post Editor. This string will be used in the Undo message if the last change was adding this formatting.");
@@ -144,7 +136,6 @@
 }
 
 - (void)setupView {
-    [self setupBackground];
     [self setupFormatView];
     [self setupDoneButton];
 }
@@ -177,13 +168,16 @@
 - (id)initDoneWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        [self setupBackground];
         [self setupDoneButton];
     }
     return self;
 }
 
-- (void)setupBackground {}
+- (void)disableAllButtons {
+    for (UIBarButtonItem *button in self.items) {
+        button.enabled = NO;
+    }
+}
 
 #pragma mark - UIInputViewAudioFeedback
 
