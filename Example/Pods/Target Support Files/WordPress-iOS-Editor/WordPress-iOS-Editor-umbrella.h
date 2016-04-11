@@ -22,7 +22,6 @@
 #import "WPLegacyEditorViewController.h"
 #import "WPLegacyKeyboardToolbarBase.h"
 #import "WPLegacyKeyboardToolbarButtonItem.h"
-#import "WPLegacyKeyboardToolbarDone.h"
 #import "ZSSBarButtonItem.h"
 #import "ZSSTextView.h"
 

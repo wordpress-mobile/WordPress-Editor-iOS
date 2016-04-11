@@ -11,7 +11,6 @@
 @property (nonatomic, strong) WPLegacyKeyboardToolbarButtonItem *linkButton;
 @property (nonatomic, strong) WPLegacyKeyboardToolbarButtonItem *quoteButton;
 @property (nonatomic, strong) WPLegacyKeyboardToolbarButtonItem *moreButton;
-@property (nonatomic, strong) WPLegacyKeyboardToolbarButtonItem *doneButton;
 
 @end
 
@@ -19,9 +18,6 @@
 
 - (void)buttonAction:(WPLegacyKeyboardToolbarButtonItem *)sender {
     DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
-    if (![sender.actionTag isEqualToString:@"done"]) {
-        [[UIDevice currentDevice] playInputClick];
-    }
     if (self.delegate) {
         [self.delegate keyboardToolbarButtonItemPressed:sender];
     }
@@ -130,14 +126,8 @@
     return item;
 }
 
-
-- (void)setupDoneButton {
-
-}
-
 - (void)setupView {
     [self setupFormatView];
-    [self setupDoneButton];
 }
 
 - (id)init {
@@ -161,14 +151,6 @@
     self = [super initWithCoder:coder];
     if (self) {
         [self setupView];
-    }
-    return self;
-}
-
-- (id)initDoneWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-        [self setupDoneButton];
     }
     return self;
 }
