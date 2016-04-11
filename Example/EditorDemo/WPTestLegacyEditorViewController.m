@@ -66,8 +66,10 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     [self.navigationController dismissViewControllerAnimated:YES completion:^{
+        [self startEditing];
         NSURL *assetURL = info[UIImagePickerControllerReferenceURL];
         [self addAssetToContent:assetURL];
+        
     }];
 
 }

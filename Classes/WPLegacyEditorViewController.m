@@ -234,10 +234,15 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 #pragma mark - Editor and Misc Methods
 
+- (void)startEditing
+{
+    [self.textView becomeFirstResponder];
+}
+
 - (void)stopEditing
 {
     // With the titleTextField as a subview of textField, we need to resign and
-    // end editing to prevent the textField from becomeing first responder.
+    // end editing to prevent the textField from becoming first responder.
     if ([self.titleTextField isFirstResponder]) {
         [self.titleTextField resignFirstResponder];
     }
