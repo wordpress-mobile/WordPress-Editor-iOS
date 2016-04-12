@@ -171,7 +171,7 @@
 - (void)buttonAction:(UIBarButtonItem *)sender {
     DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
     if (self.formatDelegate) {
-        [self.formatDelegate keyboardToolbarButtonItemPressed:sender];
+        [self.formatDelegate formatToolbar:self actionPressed:sender.tag];
     }
 }
 

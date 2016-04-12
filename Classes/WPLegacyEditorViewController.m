@@ -407,9 +407,9 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 #pragma mark - WPKeyboardToolbar Delegate
 
-- (void)keyboardToolbarButtonItemPressed:(UIBarButtonItem *)buttonItem
+- (void)formatToolbar:(WPLegacyEditorFormatToolbar *)formatToolbar actionPressed:(WPLegacyEditorFormatAction)formatAction
 {
-    switch (buttonItem.tag) {
+    switch (formatAction) {
         case WPLegacyEditorFormatActionBold:
             [WPAnalytics track:WPAnalyticsStatEditorTappedBold];
             break;
@@ -433,13 +433,13 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
             break;
     }
          
-    if (buttonItem.tag == WPLegacyEditorFormatActionMedia) {
+    if (formatAction == WPLegacyEditorFormatActionMedia) {
         [self didTouchMediaOptions];
-    } else if (buttonItem.tag == WPLegacyEditorFormatActionLink) {
+    } else if (formatAction == WPLegacyEditorFormatActionLink) {
         [self showLinkView];
     } else {
-        [self wrapSelectionWithTag:WPLegacyEditorFormatActionToTag(buttonItem.tag)];
-        [self.textView.undoManager setActionName:WPLegacyEditorFormatActionToTag(buttonItem.tag)];
+        [self wrapSelectionWithTag:WPLegacyEditorFormatActionToTag(formatAction)];
+        [self.textView.undoManager setActionName:WPLegacyEditorFormatActionToTag(formatAction)];
     }
 }
 

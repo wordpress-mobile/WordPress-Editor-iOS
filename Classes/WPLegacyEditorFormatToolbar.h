@@ -1,7 +1,12 @@
 #import <UIKit/UIKit.h>
+#import "WPLegacyEditorFormatAction.h"
+
+@class WPLegacyEditorFormatToolbar;
 
 @protocol WPLegacyEditorFormatToolbarDelegate <NSObject>
-- (void)keyboardToolbarButtonItemPressed:(UIBarButtonItem *)buttonItem;
+
+- (void)formatToolbar:(WPLegacyEditorFormatToolbar *)formatToolbar actionPressed:(WPLegacyEditorFormatAction)formatAction;
+
 @end
 
 @interface WPLegacyEditorFormatToolbar : UIToolbar
