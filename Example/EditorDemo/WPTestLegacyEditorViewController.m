@@ -18,30 +18,32 @@
 {
     [super viewDidLoad];
     self.delegate = self;
-    self.navigationItem.rightBarButtonItems = @[
-                                                [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_preview"]
-                                                                             style:UIBarButtonItemStylePlain
-                                                                            target:self
-                                                                            action:@selector(previewAction)],
-                                                [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_options"]
-                                                                                 style:UIBarButtonItemStylePlain
-                                                                                target:self
-                                                                                action:@selector(previewOptions)]
-                                                ];
     self.mediaAdded = [NSMutableDictionary dictionary];
     self.videoPressCache = [[NSCache alloc] init];
+    UIImage *imagePreview = [UIImage imageNamed:@"icon_preview" inBundle:[NSBundle bundleForClass:[WPLegacyEditorViewController class]] compatibleWithTraitCollection:nil];
+    UIImage *imageOptions = [UIImage imageNamed:@"icon_options" inBundle:[NSBundle bundleForClass:[WPLegacyEditorViewController class]] compatibleWithTraitCollection:nil];
+    [self.navigationItem setRightBarButtonItems: @[
+                                                   [[UIBarButtonItem alloc] initWithImage:imagePreview
+                                                                                    style:UIBarButtonItemStylePlain
+                                                                                   target:self
+                                                                                   action:@selector(previewAction)],
+                                                   [[UIBarButtonItem alloc] initWithImage:imageOptions
+                                                                                    style:UIBarButtonItemStylePlain
+                                                                                   target:self
+                                                                                   action:@selector(optionsAction)]
+                                                   ] animated: YES];
 }
 
 #pragma mark - Navigation Bar
 
 - (void)previewAction
 {
-
+    NSLog(@"Show Preview");
 }
 
-- (void)previewOptions
+- (void)optionsAction
 {
-
+    NSLog(@"Show Options");
 }
 
 - (void)editorDidPressMedia:(WPLegacyEditorViewController *)editorController
