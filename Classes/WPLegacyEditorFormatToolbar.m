@@ -16,83 +16,32 @@
 
 @implementation WPLegacyEditorFormatToolbar
 
-- (void)buttonAction:(WPLegacyKeyboardToolbarButtonItem *)sender {
-    DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
-    if (self.formatDelegate) {
-        [self.formatDelegate keyboardToolbarButtonItemPressed:sender];
+- (id)init {
+    self = [super init];
+    if (self) {
+        [self setupToolbar];
     }
+    return self;
 }
 
-- (void)buildFormatButtons {    
-    if (self.mediaButton == nil) {
-        self.mediaButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        [self.mediaButton setImageName:@"icon_format_media"];
-        self.mediaButton.actionTag = @"add_media";
-        self.mediaButton.accessibilityIdentifier = @"add media";
-        self.mediaButton.actionName = NSLocalizedString(@"add media", @"Add media in the Post Editor. This string will be used in the Undo message if the last change was adding formatting.");
-        self.mediaButton.accessibilityLabel = NSLocalizedString(@"add media", nil);
+- (id)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        [self setupToolbar];
     }
-    if (self.boldButton == nil) {
-        self.boldButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        [self.boldButton setImageName:@"icon_format_bold"];
-        self.boldButton.actionTag = @"strong";
-        self.boldButton.accessibilityIdentifier = @"strong";
-        self.boldButton.actionName = NSLocalizedString(@"bold", @"Bold text formatting in the Post Editor. This string will be used in the Undo message if the last change was adding formatting.");
-        self.boldButton.accessibilityLabel = NSLocalizedString(@"bold", nil);
-    }
-    if (self.italicsButton == nil) {
-        self.italicsButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        [self.italicsButton setImageName:@"icon_format_italic"];
-        self.italicsButton.actionTag = @"em";
-        self.italicsButton.accessibilityIdentifier = @"em";
-        self.italicsButton.actionName = NSLocalizedString(@"italic", @"Italic text formatting in the Post Editor. This string will be used in the Undo message if the last change was adding formatting.");
-        self.italicsButton.accessibilityLabel = NSLocalizedString(@"italic", nil);
-    }
-    if (self.underlineButton == nil) {
-        self.underlineButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        [self.underlineButton setImageName:@"icon_format_underline"];
-        self.underlineButton.actionTag = @"u";
-        self.underlineButton.accessibilityIdentifier = @"u";
-        self.underlineButton.actionName = NSLocalizedString(@"underline", @"Underline text formatting in the Post Editor. This string will be used in the Undo message if the last change was adding formatting.");
-        self.underlineButton.accessibilityLabel = NSLocalizedString(@"underline", nil);        
-    }
-    if (self.delButton == nil) {
-        self.delButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        [self.delButton setImageName:@"icon_format_strikethrough"];
-        self.delButton.actionTag = @"del";
-        self.delButton.accessibilityIdentifier = @"del";
-        self.delButton.actionName = NSLocalizedString(@"del", @"<del> (deleted text) HTML formatting in the Post Editor. This string will be used in the Undo message if the last change was adding a <del> HTML element.");
-        self.delButton.accessibilityLabel = NSLocalizedString(@"delete", nil);
-    }
-    if (self.linkButton == nil) {
-        self.linkButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        [self.linkButton setImageName:@"icon_format_link"];
-        self.linkButton.actionTag = @"link";
-        self.linkButton.accessibilityIdentifier = @"link";
-        self.linkButton.actionName = NSLocalizedString(@"link", @"Link helper button in the Post Editor. This string will be used in the Undo message if the last change was adding a link.");
-        self.linkButton.accessibilityLabel = NSLocalizedString(@"link", nil);
-    }
-    if (self.quoteButton == nil) {
-        self.quoteButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        [self.quoteButton setImageName:@"icon_format_quote"];
-        self.quoteButton.actionTag = @"blockquote";
-        self.quoteButton.accessibilityIdentifier = @"blockquote";
-        self.quoteButton.actionName = NSLocalizedString(@"quote", @"Blockquote HTML formatting in the Post Editor. This string will be used in the Undo message if the last change was adding a blockquote.");
-        self.quoteButton.accessibilityLabel = NSLocalizedString(@"quote", nil);
-    }
-    if (self.moreButton == nil) {
-        self.moreButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        [self.moreButton setImageName:@"icon_format_more"];        
-        self.moreButton.actionTag = @"more";
-        self.moreButton.accessibilityIdentifier = @"more";
-        self.moreButton.actionName = NSLocalizedString(@"more", @"Adding a More excerpt cut-off in the Post Editor. This string will be used in the Undo message if the last change was adding this formatting.");
-        self.moreButton.accessibilityLabel = NSLocalizedString(@"more", nil);
-    }
+    return self;
 }
 
-- (void)setupFormatView {
-    [self buildFormatButtons];
+- (id)initWithCoder:(NSCoder *)coder {
+    self = [super initWithCoder:coder];
+    if (self) {
+        [self setupToolbar];
+    }
+    return self;
+}
 
+- (void)setupToolbar {
     self.items = @[
                    [self flexibleSpaceItem],
                    self.mediaButton,
@@ -114,48 +63,122 @@
                    ];
 }
 
+- (UIBarButtonItem *)mediaButton {
+    if (_mediaButton == nil) {
+        _mediaButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
+        [_mediaButton setImageName:@"icon_format_media"];
+        _mediaButton.actionTag = @"add_media";
+        _mediaButton.accessibilityIdentifier = @"add media";
+        _mediaButton.actionName = NSLocalizedString(@"add media", @"Add media in the Post Editor. This string will be used in the Undo message if the last change was adding formatting.");
+        _mediaButton.accessibilityLabel = NSLocalizedString(@"add media", nil);
+    }
+    return _mediaButton;
+}
+
+- (UIBarButtonItem *)boldButton {
+    if (_boldButton == nil) {
+        _boldButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
+        [_boldButton setImageName:@"icon_format_bold"];
+        _boldButton.actionTag = @"strong";
+        _boldButton.accessibilityIdentifier = @"strong";
+        _boldButton.actionName = NSLocalizedString(@"bold", @"Bold text formatting in the Post Editor. This string will be used in the Undo message if the last change was adding formatting.");
+        _boldButton.accessibilityLabel = NSLocalizedString(@"bold", nil);
+    }
+    return _boldButton;
+}
+
+- (UIBarButtonItem *)italicsButton {
+    if (_italicsButton == nil) {
+        _italicsButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
+        [_italicsButton setImageName:@"icon_format_italic"];
+        _italicsButton.actionTag = @"em";
+        _italicsButton.accessibilityIdentifier = @"em";
+        _italicsButton.actionName = NSLocalizedString(@"italic", @"Italic text formatting in the Post Editor. This string will be used in the Undo message if the last change was adding formatting.");
+        _italicsButton.accessibilityLabel = NSLocalizedString(@"italic", nil);
+    }
+    return _italicsButton;
+}
+
+- (UIBarButtonItem *)underlineButton {
+    if (_underlineButton == nil) {
+        _underlineButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
+        [_underlineButton setImageName:@"icon_format_underline"];
+        _underlineButton.actionTag = @"u";
+        _underlineButton.accessibilityIdentifier = @"u";
+        _underlineButton.actionName = NSLocalizedString(@"underline", @"Underline text formatting in the Post Editor. This string will be used in the Undo message if the last change was adding formatting.");
+        _underlineButton.accessibilityLabel = NSLocalizedString(@"underline", nil);        
+    }
+    return _underlineButton;
+}
+
+- (UIBarButtonItem *)delButton {
+    if (_delButton == nil) {
+        _delButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
+        [_delButton setImageName:@"icon_format_strikethrough"];
+        _delButton.actionTag = @"del";
+        _delButton.accessibilityIdentifier = @"del";
+        _delButton.actionName = NSLocalizedString(@"del", @"<del> (deleted text) HTML formatting in the Post Editor. This string will be used in the Undo message if the last change was adding a <del> HTML element.");
+        _delButton.accessibilityLabel = NSLocalizedString(@"delete", nil);
+    }
+    return _delButton;
+}
+
+- (UIBarButtonItem *)linkButton {
+    if (_linkButton == nil) {
+        _linkButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
+        [_linkButton setImageName:@"icon_format_link"];
+        _linkButton.actionTag = @"link";
+        _linkButton.accessibilityIdentifier = @"link";
+        _linkButton.actionName = NSLocalizedString(@"link", @"Link helper button in the Post Editor. This string will be used in the Undo message if the last change was adding a link.");
+        _linkButton.accessibilityLabel = NSLocalizedString(@"link", nil);
+    }
+    return _linkButton;
+}
+
+- (UIBarButtonItem *)quoteButton {
+    if (_quoteButton == nil) {
+        _quoteButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
+        [_quoteButton setImageName:@"icon_format_quote"];
+        _quoteButton.actionTag = @"blockquote";
+        _quoteButton.accessibilityIdentifier = @"blockquote";
+        _quoteButton.actionName = NSLocalizedString(@"quote", @"Blockquote HTML formatting in the Post Editor. This string will be used in the Undo message if the last change was adding a blockquote.");
+        _quoteButton.accessibilityLabel = NSLocalizedString(@"quote", nil);
+    }
+    return _quoteButton;
+}
+
+- (UIBarButtonItem *)moreButton {
+    if (_moreButton == nil) {
+        _moreButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
+        [_moreButton setImageName:@"icon_format_more"];        
+        _moreButton.actionTag = @"more";
+        _moreButton.accessibilityIdentifier = @"more";
+        _moreButton.actionName = NSLocalizedString(@"more", @"Adding a More excerpt cut-off in the Post Editor. This string will be used in the Undo message if the last change was adding this formatting.");
+        _moreButton.accessibilityLabel = NSLocalizedString(@"more", nil);
+    }
+    return _moreButton;
+}
+
 - (UIBarButtonItem *)flexibleSpaceItem {
     return [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 }
 
 - (UIBarButtonItem *)fixedSpaceItem {
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    item.width = item.width / 2.0f;
+    item.width = -15.0f;
     return item;
-}
-
-- (void)setupView {
-    [self setupFormatView];
-}
-
-- (id)init {
-    self = [super init];
-    if (self) {
-        [self setupView];
-    }
-    return self;
-}
-
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        [self setupView];
-    }
-    return self;
-}
-
-- (id)initWithCoder:(NSCoder *)coder {
-    self = [super initWithCoder:coder];
-    if (self) {
-        [self setupView];
-    }
-    return self;
 }
 
 - (void)disableAllButtons {
     for (UIBarButtonItem *button in self.items) {
         button.enabled = NO;
+    }
+}
+
+- (void)buttonAction:(WPLegacyKeyboardToolbarButtonItem *)sender {
+    DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
+    if (self.formatDelegate) {
+        [self.formatDelegate keyboardToolbarButtonItemPressed:sender];
     }
 }
 
