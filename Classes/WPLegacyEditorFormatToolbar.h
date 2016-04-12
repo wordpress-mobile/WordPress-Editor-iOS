@@ -1,9 +1,7 @@
 #import <UIKit/UIKit.h>
-#import <QuartzCore/QuartzCore.h>
-#import "WPLegacyKeyboardToolbarButtonItem.h"
 
 @protocol WPLegacyEditorFormatToolbarDelegate <NSObject>
-- (void)keyboardToolbarButtonItemPressed:(WPLegacyKeyboardToolbarButtonItem *)buttonItem;
+- (void)keyboardToolbarButtonItemPressed:(UIBarButtonItem *)buttonItem;
 @end
 
 @interface WPLegacyEditorFormatToolbar : UIToolbar

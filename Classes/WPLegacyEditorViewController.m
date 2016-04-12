@@ -1,5 +1,6 @@
 #import "WPLegacyEditorViewController.h"
 #import "WPLegacyEditorFormatToolbar.h"
+#import "WPLegacyEditorFormatAction.h"
 #import <WordPressComAnalytics/WPAnalytics.h>
 #import <WordPressShared/WPStyleGuide.h>
 #import <WordPressShared/WPTableViewCell.h>
@@ -406,33 +407,39 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 #pragma mark - WPKeyboardToolbar Delegate
 
-- (void)keyboardToolbarButtonItemPressed:(WPLegacyKeyboardToolbarButtonItem *)buttonItem
+- (void)keyboardToolbarButtonItemPressed:(UIBarButtonItem *)buttonItem
 {
-    if ([buttonItem.actionTag isEqualToString:@"strong"]) {
-        [WPAnalytics track:WPAnalyticsStatEditorTappedBold];
-    } else if ([buttonItem.actionTag isEqualToString:@"em"]) {
-        [WPAnalytics track:WPAnalyticsStatEditorTappedItalic];
-    } else if ([buttonItem.actionTag isEqualToString:@"u"]) {
-        [WPAnalytics track:WPAnalyticsStatEditorTappedUnderline];
-    } else if ([buttonItem.actionTag isEqualToString:@"del"]) {
-        [WPAnalytics track:WPAnalyticsStatEditorTappedStrikethrough];
-    } else if ([buttonItem.actionTag isEqualToString:@"link"]) {
-        [WPAnalytics track:WPAnalyticsStatEditorTappedLink];
-    } else if ([buttonItem.actionTag isEqualToString:@"blockquote"]) {
-        [WPAnalytics track:WPAnalyticsStatEditorTappedBlockquote];
-    } else if ([buttonItem.actionTag isEqualToString:@"more"]) {
-        [WPAnalytics track:WPAnalyticsStatEditorTappedMore];
+    switch (buttonItem.tag) {
+        case WPLegacyEditorFormatActionBold:
+            [WPAnalytics track:WPAnalyticsStatEditorTappedBold];
+            break;
+        case WPLegacyEditorFormatActionItalic:
+            [WPAnalytics track:WPAnalyticsStatEditorTappedItalic];
+            break;
+        case WPLegacyEditorFormatActionUnderline:
+            [WPAnalytics track:WPAnalyticsStatEditorTappedUnderline];
+            break;
+        case WPLegacyEditorFormatActionDelete:
+            [WPAnalytics track:WPAnalyticsStatEditorTappedStrikethrough];
+            break;
+        case WPLegacyEditorFormatActionLink:
+            [WPAnalytics track:WPAnalyticsStatEditorTappedLink];
+            break;
+        case WPLegacyEditorFormatActionQuote:
+            [WPAnalytics track:WPAnalyticsStatEditorTappedBlockquote];
+            break;
+        case WPLegacyEditorFormatActionMore:
+            [WPAnalytics track:WPAnalyticsStatEditorTappedMore];
+            break;
     }
          
-    if ([buttonItem.actionTag isEqualToString:@"add_media"]) {
+    if (buttonItem.tag == WPLegacyEditorFormatActionMedia) {
         [self didTouchMediaOptions];
-    } else if ([buttonItem.actionTag isEqualToString:@"link"]) {
+    } else if (buttonItem.tag == WPLegacyEditorFormatActionLink) {
         [self showLinkView];
-    } else if ([buttonItem.actionTag isEqualToString:@"done"]) {
-        [self stopEditing];
     } else {
-        [self wrapSelectionWithTag:buttonItem.actionTag];
-        [self.textView.undoManager setActionName:buttonItem.actionName];
+        [self wrapSelectionWithTag:WPLegacyEditorFormatActionToTag(buttonItem.tag)];
+        [self.textView.undoManager setActionName:WPLegacyEditorFormatActionToTag(buttonItem.tag)];
     }
 }
 

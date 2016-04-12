@@ -19,9 +19,9 @@
 #import "WPEditorView.h"
 #import "WPEditorViewController.h"
 #import "WPImageMeta.h"
-#import "WPLegacyEditorViewController.h"
+#import "WPLegacyEditorFormatAction.h"
 #import "WPLegacyEditorFormatToolbar.h"
-#import "WPLegacyKeyboardToolbarButtonItem.h"
+#import "WPLegacyEditorViewController.h"
 #import "ZSSBarButtonItem.h"
 #import "ZSSTextView.h"
 
