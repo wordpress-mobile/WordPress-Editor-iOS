@@ -10,8 +10,6 @@
 
 @property (nonatomic, weak) id<WPLegacyEditorFormatToolbarDelegate> formatDelegate;
 
-- (void)setupView;
-- (void)setupFormatView;
 - (void)disableAllButtons;
 
 @end
