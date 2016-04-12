@@ -1,5 +1,5 @@
 #import "WPLegacyEditorViewController.h"
-#import "WPLegacyKeyboardToolbarBase.h"
+#import "WPLegacyEditorFormatToolbar.h"
 #import <WordPressComAnalytics/WPAnalytics.h>
 #import <WordPressShared/WPStyleGuide.h>
 #import <WordPressShared/WPTableViewCell.h>
@@ -11,15 +11,15 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 CGFloat const WPLegacyEPVCTextViewBottomPadding = 50.0f;
 CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
-@interface WPLegacyEditorViewController ()<UITextFieldDelegate, UITextViewDelegate, WPLegacyKeyboardToolbarDelegate>
+@interface WPLegacyEditorViewController ()<UITextFieldDelegate, UITextViewDelegate, WPLegacyEditorFormatToolbarDelegate>
 @property (nonatomic) CGPoint scrollOffsetRestorePoint;
 @property (nonatomic, strong) UIButton *optionsButton;
 @property (nonatomic, strong) UILabel *tapToStartWritingLabel;
 @property (nonatomic, strong) UITextField *titleTextField;
 @property (nonatomic, strong) UITextView *textView;
 @property (nonatomic, strong) UIView *separatorView;
-@property (nonatomic, strong) WPLegacyKeyboardToolbarBase *editorToolbar;
-@property (nonatomic, strong) WPLegacyKeyboardToolbarBase *titleToolbar;
+@property (nonatomic, strong) WPLegacyEditorFormatToolbar *editorToolbar;
+@property (nonatomic, strong) WPLegacyEditorFormatToolbar *titleToolbar;
 @end
 
 @implementation WPLegacyEditorViewController
@@ -125,10 +125,10 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     
     // Formatting bar for the textView's inputAccessoryView.
     if (self.editorToolbar == nil) {
-        self.editorToolbar = [[WPLegacyKeyboardToolbarBase alloc] init];
+        self.editorToolbar = [[WPLegacyEditorFormatToolbar alloc] init];
         self.editorToolbar.backgroundColor = [WPStyleGuide keyboardColor];
         self.editorToolbar.tintColor = [WPStyleGuide baseDarkerBlue];
-        self.editorToolbar.delegate = self;
+        self.editorToolbar.formatDelegate = self;
         [self.editorToolbar sizeToFit];
         self.textView.inputAccessoryView = self.editorToolbar;
     }
@@ -150,10 +150,10 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     
     // InputAccessoryView for title textField.
     if (!self.titleToolbar) {
-        self.titleToolbar = [[WPLegacyKeyboardToolbarBase alloc] init];
+        self.titleToolbar = [[WPLegacyEditorFormatToolbar alloc] init];
         [self.titleToolbar disableAllButtons];
         self.titleToolbar.backgroundColor = [WPStyleGuide keyboardColor];
-        self.titleToolbar.delegate = self;
+        self.titleToolbar.formatDelegate = self;
         [self.titleToolbar sizeToFit];
         self.titleTextField.inputAccessoryView = nil;
         self.titleTextField.inputAccessoryView = self.titleToolbar;

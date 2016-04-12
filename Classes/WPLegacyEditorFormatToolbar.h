@@ -2,13 +2,13 @@
 #import <QuartzCore/QuartzCore.h>
 #import "WPLegacyKeyboardToolbarButtonItem.h"
 
-@protocol WPLegacyKeyboardToolbarDelegate <NSObject>
+@protocol WPLegacyEditorFormatToolbarDelegate <NSObject>
 - (void)keyboardToolbarButtonItemPressed:(WPLegacyKeyboardToolbarButtonItem *)buttonItem;
 @end
 
-@interface WPLegacyKeyboardToolbarBase : UIToolbar
+@interface WPLegacyEditorFormatToolbar : UIToolbar
 
-@property (nonatomic, weak) id<WPLegacyKeyboardToolbarDelegate> delegate;
+@property (nonatomic, weak) id<WPLegacyEditorFormatToolbarDelegate> formatDelegate;
 
 - (void)setupView;
 - (void)setupFormatView;

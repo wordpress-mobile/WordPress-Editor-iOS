@@ -1,7 +1,7 @@
-#import "WPLegacyKeyboardToolbarBase.h"
+#import "WPLegacyEditorFormatToolbar.h"
 #import <WordPressShared/WPStyleGuide.h>
 
-@interface WPLegacyKeyboardToolbarBase()
+@interface WPLegacyEditorFormatToolbar()
 
 @property (nonatomic, strong) WPLegacyKeyboardToolbarButtonItem *mediaButton;
 @property (nonatomic, strong) WPLegacyKeyboardToolbarButtonItem *boldButton;
@@ -14,18 +14,16 @@
 
 @end
 
-@implementation WPLegacyKeyboardToolbarBase
+@implementation WPLegacyEditorFormatToolbar
 
 - (void)buttonAction:(WPLegacyKeyboardToolbarButtonItem *)sender {
     DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
-    if (self.delegate) {
-        [self.delegate keyboardToolbarButtonItemPressed:sender];
+    if (self.formatDelegate) {
+        [self.formatDelegate keyboardToolbarButtonItemPressed:sender];
     }
 }
 
-- (void)buildFormatButtons {
-    CGFloat x = 0.0f;
-    UIColor *highlightColor = [UIColor whiteColor];
+- (void)buildFormatButtons {    
     if (self.mediaButton == nil) {
         self.mediaButton = [[WPLegacyKeyboardToolbarButtonItem alloc] initWithImage:nil style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
         [self.mediaButton setImageName:@"icon_format_media"];
