@@ -20,7 +20,7 @@
 #import "WPEditorViewController.h"
 #import "WPImageMeta.h"
 #import "WPLegacyEditorViewController.h"
-#import "WPLegacyFormatToolbar.h"
+#import "WPLegacyEditorFormatToolbar.h"
 #import "WPLegacyKeyboardToolbarButtonItem.h"
 #import "ZSSBarButtonItem.h"
 #import "ZSSTextView.h"
