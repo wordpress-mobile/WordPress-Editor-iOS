@@ -73,10 +73,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 	[self stopEditing];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
 #pragma mark - Getters and Setters
 
 - (NSString*)titleText
@@ -156,7 +152,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
         self.titleToolbar.backgroundColor = [WPStyleGuide keyboardColor];
         self.titleToolbar.formatDelegate = self;
         [self.titleToolbar sizeToFit];
-        self.titleTextField.inputAccessoryView = nil;
         self.titleTextField.inputAccessoryView = self.titleToolbar;
     }
     
@@ -500,6 +495,13 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 }
 
 #pragma mark - Keyboard management
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    CGRect frame = self.editorToolbar.frame;
+    frame.size.width = size.width;
+    self.editorToolbar.frame = frame;
+    self.titleToolbar.frame = frame;
+}
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
