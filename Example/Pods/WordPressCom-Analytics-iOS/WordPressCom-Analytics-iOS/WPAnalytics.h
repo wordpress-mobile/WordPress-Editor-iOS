@@ -74,6 +74,7 @@ typedef NS_ENUM(NSUInteger, WPAnalyticsStat) {
     WPAnalyticsStatOnePasswordLogin,
     WPAnalyticsStatOnePasswordSignup,
     WPAnalyticsStatOpenedAccountSettings,
+    WPAnalyticsStatOpenedAppSettings,
     WPAnalyticsStatOpenedComments,
     WPAnalyticsStatOpenedMediaLibrary,
     WPAnalyticsStatOpenedMyProfile,

@@ -376,6 +376,8 @@
     
     cell.textLabel.textColor = [self darkGrey];
     cell.detailTextLabel.textColor = [self grey];
+    
+    cell.imageView.tintColor = [self greyLighten10];
 }
 
 + (void)configureTableViewSmallSubtitleCell:(UITableViewCell *)cell
