@@ -125,8 +125,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     // Formatting bar for the textView's inputAccessoryView.
     if (self.editorToolbar == nil) {
         self.editorToolbar = [[WPLegacyEditorFormatToolbar alloc] init];
-        self.editorToolbar.backgroundColor = [WPStyleGuide keyboardColor];
-        self.editorToolbar.tintColor = [WPStyleGuide baseDarkerBlue];
         self.editorToolbar.formatDelegate = self;
         [self.editorToolbar sizeToFit];
         self.textView.inputAccessoryView = self.editorToolbar;
@@ -151,7 +149,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     if (!self.titleToolbar) {
         self.titleToolbar = [[WPLegacyEditorFormatToolbar alloc] init];
         [self.titleToolbar disableAllButtons];
-        self.titleToolbar.backgroundColor = [WPStyleGuide keyboardColor];
         self.titleToolbar.formatDelegate = self;
         [self.titleToolbar sizeToFit];
         self.titleTextField.inputAccessoryView = self.titleToolbar;

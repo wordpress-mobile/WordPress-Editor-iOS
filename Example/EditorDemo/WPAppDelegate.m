@@ -2,6 +2,9 @@
 
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <WordPressEditor/WPEditorViewController.h>
+#import <WordPressEditor/WPLegacyEditorViewController.h>
+#import <WordPressEditor/WPLegacyEditorFormatToolbar.h>
+#import <WordPressShared/WPStyleGuide.h>
 
 @implementation WPAppDelegate
 
@@ -9,7 +12,10 @@
 {
     //Default to white
     [[UIToolbar appearanceWhenContainedInInstancesOfClasses:@[[WPEditorViewController class]]] setBarTintColor:[UIColor whiteColor]];
-    
+
+    [[WPLegacyEditorFormatToolbar appearance] setTintColor:[WPStyleGuide greyDarken10]];
+    [[WPLegacyEditorFormatToolbar appearance] setBackgroundColor:[WPStyleGuide keyboardColor]];
+
     [DDLog addLogger:[DDASLLogger sharedInstance]];
     [DDLog addLogger:[DDTTYLogger sharedInstance]];
     
