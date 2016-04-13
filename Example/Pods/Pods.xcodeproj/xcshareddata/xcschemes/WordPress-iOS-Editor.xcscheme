@@ -14,7 +14,7 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'CE808A4A427DD3EF88D1F462'
+               BlueprintIdentifier = 'E94A23EA512C506BA0CEDDD0'
                BlueprintName = 'WordPress-iOS-Editor'
                ReferencedContainer = 'container:Pods.xcodeproj'
                BuildableName = 'WordPressEditor.framework'>

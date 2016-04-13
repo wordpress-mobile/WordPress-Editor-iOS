@@ -15,4 +15,6 @@
 
 - (void)disableAllButtons;
 
+- (void)configureForHorizontalSizeClass:(UIUserInterfaceSizeClass)sizeClass;
+
 @end

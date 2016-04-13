@@ -30,6 +30,8 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     [super viewDidLoad];
     self.navigationController.navigationBar.translucent = NO;
     [self setupTextView];
+    [self.editorToolbar configureForHorizontalSizeClass:self.traitCollection.horizontalSizeClass];
+    [self.titleToolbar configureForHorizontalSizeClass:self.traitCollection.horizontalSizeClass];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -494,14 +496,40 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     return NO;
 }
 
-#pragma mark - Keyboard management
+#pragma mark - Size management
+
+- (void)recoverFromViewSizeChange
+{
+    if ([self.titleTextField isFirstResponder]) {
+        [self.titleTextField resignFirstResponder];
+        [self.titleTextField becomeFirstResponder];
+    }
+    if ([self.textView isFirstResponder]) {
+        [self.textView resignFirstResponder];
+        [self.textView becomeFirstResponder];
+    }
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection *) previousTraitCollection
+{
+    [super traitCollectionDidChange: previousTraitCollection];
+    [self recoverFromViewSizeChange];
+}
+
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
-    CGRect frame = self.editorToolbar.frame;
-    frame.size.width = size.width;
-    self.editorToolbar.frame = frame;
-    self.titleToolbar.frame = frame;
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    [self recoverFromViewSizeChange];
 }
+
+- (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
+    [self.editorToolbar configureForHorizontalSizeClass:newCollection.horizontalSizeClass];
+    [self.titleToolbar configureForHorizontalSizeClass:newCollection.horizontalSizeClass];
+}
+
+#pragma mark - Keyboard management
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {

@@ -43,25 +43,54 @@
 }
 
 - (void)setupToolbar {
-    self.items = @[
-                   [self flexibleSpaceItem],
-                   self.mediaButton,
-                   [self flexibleSpaceItem],
-                   self.boldButton,
-                   [self fixedSpaceItem],
-                   self.italicsButton,
-                   [self fixedSpaceItem],
-                   self.underlineButton,
-                   [self fixedSpaceItem],
-                   self.delButton,
-                   [self flexibleSpaceItem],
-                   self.linkButton,
-                   [self fixedSpaceItem],
-                   self.quoteButton,
-                   [self fixedSpaceItem],
-                   self.moreButton,
-                   [self flexibleSpaceItem]
-                   ];
+    [self configureForHorizontalSizeClass:UIUserInterfaceSizeClassCompact];
+}
+
+- (void)configureForHorizontalSizeClass:(UIUserInterfaceSizeClass)sizeClass
+{
+    if (sizeClass == UIUserInterfaceSizeClassCompact) {
+        self.items = @[
+
+                       [self flexibleSpaceItem],
+                       self.mediaButton,
+                       [self flexibleSpaceItem],
+                       self.boldButton,
+                       [self flexibleSpaceItem],
+                       self.italicsButton,
+                       [self flexibleSpaceItem],
+                       self.underlineButton,
+                       [self flexibleSpaceItem],
+                       self.delButton,
+                       [self flexibleSpaceItem],
+                       self.linkButton,
+                       [self flexibleSpaceItem],
+                       self.quoteButton,
+                       [self flexibleSpaceItem],
+                       self.moreButton,
+                       [self flexibleSpaceItem]
+                       ];    }
+
+    if (sizeClass == UIUserInterfaceSizeClassRegular) {
+        self.items = @[
+                       [self flexibleSpaceItem],
+                       self.mediaButton,
+                       [self flexibleSpaceItem],
+                       self.boldButton,
+                       [self fixedSpaceItem],
+                       self.italicsButton,
+                       [self fixedSpaceItem],
+                       self.underlineButton,
+                       [self fixedSpaceItem],
+                       self.delButton,
+                       [self flexibleSpaceItem],
+                       self.linkButton,
+                       [self fixedSpaceItem],
+                       self.quoteButton,
+                       [self fixedSpaceItem],
+                       self.moreButton,
+                       [self flexibleSpaceItem]
+                       ];
+    }
 }
 
 - (UIBarButtonItem *)mediaButton {
@@ -158,7 +187,6 @@
 
 - (UIBarButtonItem *)fixedSpaceItem {
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    item.width = -15.0f;
     return item;
 }
 
