@@ -258,9 +258,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 - (void)refreshUI
 {
-    if(self.titleText != nil || self.titleText.length != 0) {
-        self.title = self.titleText;
-    }
     if(!self.bodyText || self.bodyText.length == 0) {
         self.tapToStartWritingLabel.hidden = NO;
         self.textView.text = @"";
@@ -490,8 +487,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-    if (textField == self.titleTextField) {
-        [self setTitle:[textField.text stringByReplacingCharactersInRange:range withString:string]];
+    if (textField == self.titleTextField) {        
         if ([self.delegate respondsToSelector: @selector(editorTitleDidChange:)]) {
             [self.delegate editorTitleDidChange:self];
         }
