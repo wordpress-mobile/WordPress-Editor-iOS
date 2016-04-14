@@ -169,7 +169,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     // One pixel separator bewteen title and content text fields.
     if (!self.separatorView) {
         CGFloat y = CGRectGetMaxY(self.titleTextField.frame);
-        CGFloat separatorWidth = width - WPLegacyEPVCStandardOffset;
+        CGFloat separatorWidth = width - (WPLegacyEPVCStandardOffset * 2.0);
         frame = CGRectMake(WPLegacyEPVCStandardOffset, y, separatorWidth, 1.0);
         self.separatorView = [[UIView alloc] initWithFrame:frame];
         self.separatorView.backgroundColor = [WPStyleGuide readGrey];
