@@ -5,6 +5,7 @@
 #import <WordPressShared/WPStyleGuide.h>
 #import <WordPressShared/WPTableViewCell.h>
 #import <WordPressShared/UIImage+Util.h>
+#import <WordPressShared/WPFontManager.h>
 
 CGFloat const WPLegacyEPVCTextfieldHeight = 44.0f;
 CGFloat const WPLegacyEPVCStandardOffset = 15.0;
@@ -127,8 +128,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
         self.textView = [[UITextView alloc] initWithFrame:frame];
         self.textView.autoresizingMask = mask;
         self.textView.delegate = self;
-        self.textView.typingAttributes = [WPStyleGuide regularTextAttributes];
-        self.textView.font = [WPStyleGuide regularTextFont];
+        self.textView.font = [UIFont fontWithName: @"Menlo-Regular" size:14.0f];;
         self.textView.textColor = [WPStyleGuide darkAsNightGrey];
         self.textView.accessibilityLabel = NSLocalizedString(@"Content", @"Post content");
     }
@@ -148,7 +148,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
         frame = CGRectMake(WPLegacyEPVCStandardOffset, 0.0, textWidth, WPLegacyEPVCTextfieldHeight);
         self.titleTextField = [[UITextField alloc] initWithFrame:frame];
         self.titleTextField.delegate = self;
-        self.titleTextField.font = [WPStyleGuide postTitleFont];
+        self.titleTextField.font = [WPFontManager merriweatherBoldFontOfSize:24.0];//[WPStyleGuide postTitleFont];
         self.titleTextField.textColor = [WPStyleGuide darkAsNightGrey];
         self.titleTextField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.titleTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:(NSLocalizedString(@"Enter title here", @"Label for the title of the post field. Should be the same as WP core.")) attributes:(@{NSForegroundColorAttributeName: [WPStyleGuide textFieldPlaceholderGrey]})];
