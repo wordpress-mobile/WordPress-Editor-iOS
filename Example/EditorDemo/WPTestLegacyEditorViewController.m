@@ -3,6 +3,7 @@
 @import Photos;
 @import AVFoundation;
 @import MobileCoreServices;
+@import SafariServices;
 
 @interface WPTestLegacyEditorViewController () <WPLegacyEditorViewControllerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
@@ -39,6 +40,8 @@
 - (void)previewAction
 {
     NSLog(@"Show Preview");
+    SFSafariViewController *vc = [[SFSafariViewController alloc] initWithURL:[[NSURL alloc] initWithString:@"http://www.google.com" ]];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)optionsAction
