@@ -19,6 +19,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 @property (nonatomic, strong) UITextField *titleTextField;
 @property (nonatomic, strong) UITextView *textView;
 @property (nonatomic, strong) UIView *separatorView;
+@property (nonatomic, strong) UIView *activeField;
 @property (nonatomic, strong) WPLegacyEditorFormatToolbar *editorToolbar;
 @property (nonatomic, strong) WPLegacyEditorFormatToolbar *titleToolbar;
 @end
@@ -56,6 +57,10 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
                                                object:nil];
 
     [self.textView setContentOffset:CGPointMake(0, 0)];
+    if (self.activeField ) {
+        [self.activeField becomeFirstResponder];
+        self.tapToStartWritingLabel.hidden = YES;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -69,10 +74,17 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    self.activeField = nil;
+    if ([self.textView isFirstResponder]) {
+        self.activeField = self.textView;
+    } else if ([self.titleTextField isFirstResponder]) {
+        self.activeField = self.titleTextField;
+    }
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 	[self stopEditing];
+
 }
 
 #pragma mark - Getters and Setters
