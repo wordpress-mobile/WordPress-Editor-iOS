@@ -7,7 +7,6 @@
 #import <WordPressShared/UIImage+Util.h>
 #import <WordPressShared/WPFontManager.h>
 
-CGFloat const WPLegacyEPVCTextfieldHeight = 44.0f;
 CGFloat const WPLegacyEPVCStandardOffset = 15.0;
 CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 CGFloat const WPLegacyEPVCTextViewBottomPadding = 50.0f;
@@ -145,10 +144,11 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     // Title TextField.
     if (!self.titleTextField) {
         CGFloat textWidth = CGRectGetWidth(self.textView.frame) - (2 * WPLegacyEPVCStandardOffset);
-        frame = CGRectMake(WPLegacyEPVCStandardOffset, 0.0, textWidth, WPLegacyEPVCTextfieldHeight);
+        UIFont *font = [WPFontManager merriweatherBoldFontOfSize:24.0];
+        frame = CGRectMake(WPLegacyEPVCStandardOffset, 0.0, textWidth, font.lineHeight * 2.0);
         self.titleTextField = [[UITextField alloc] initWithFrame:frame];
         self.titleTextField.delegate = self;
-        self.titleTextField.font = [WPFontManager merriweatherBoldFontOfSize:24.0];//[WPStyleGuide postTitleFont];
+        self.titleTextField.font = font;
         self.titleTextField.textColor = [WPStyleGuide darkAsNightGrey];
         self.titleTextField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.titleTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:(NSLocalizedString(@"Enter title here", @"Label for the title of the post field. Should be the same as WP core.")) attributes:(@{NSForegroundColorAttributeName: [WPStyleGuide textFieldPlaceholderGrey]})];
