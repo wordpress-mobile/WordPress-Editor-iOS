@@ -27,6 +27,7 @@ typedef NS_ENUM(NSInteger, WPTableViewSectionStyle)
 
 @property (nonatomic, assign, readonly) WPTableViewSectionStyle style;
 @property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) NSAttributedString *attributedTitle;
 @property (nonatomic, strong) UIColor *titleColor;
 @property (nonatomic, strong) UIFont *titleFont;
 @property (nonatomic, assign) NSTextAlignment titleAlignment;

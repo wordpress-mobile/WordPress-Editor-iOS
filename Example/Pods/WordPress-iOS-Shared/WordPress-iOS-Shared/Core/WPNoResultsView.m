@@ -3,6 +3,7 @@
 #import "WPStyleGuide.h"
 #import "WPNUXUtility.h"
 #import "WPFontManager.h"
+#import "WPDeviceIdentification.h"
 
 @interface WPNoResultsView ()
 @property (nonatomic, strong) UILabel   *titleLabel;
@@ -226,7 +227,7 @@
     
     // Hide the accessory view in landscape orientation on iPhone to ensure entire view fits on screen
     UIDevice *device        = notification.object;
-    _accessoryView.hidden   = (UIDeviceOrientationIsLandscape(device.orientation) && IS_IPHONE);
+    _accessoryView.hidden   = (UIDeviceOrientationIsLandscape(device.orientation) && [WPDeviceIdentification isiPhone]);
     
     [self setNeedsLayout];
 }

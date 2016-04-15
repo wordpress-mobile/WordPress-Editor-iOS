@@ -1,8 +1,8 @@
 #import "WPTableViewSectionHeaderFooterView.h"
 #import "WPTableViewCell.h"
 #import "WPStyleGuide.h"
+#import "WPDeviceIdentification.h"
 #import "NSString+Util.h"
-
 
 
 @interface WPTableViewSectionHeaderFooterView ()
@@ -95,6 +95,38 @@
 - (void)setTitle:(NSString *)title
 {
     self.titleLabel.text = self.uppercase ? [title uppercaseStringWithLocale:[NSLocale currentLocale]] : title;
+    [self setNeedsLayout];
+}
+
+- (NSAttributedString *)attributedTitle
+{
+    return self.titleLabel.attributedText;
+}
+
+- (void)setAttributedTitle:(NSAttributedString *)attributedTitle
+{
+    if (self.uppercase) {
+        NSString *title = [[attributedTitle string] uppercaseStringWithLocale:[NSLocale currentLocale]];
+        
+        // If we're uppercasing the title then we'll need to copy any existing attributes...
+        NSMutableArray *attributes = [NSMutableArray new];
+        [attributedTitle enumerateAttributesInRange:NSMakeRange(0, [attributedTitle length])
+                                            options:0
+                                         usingBlock:^(NSDictionary *attr, NSRange range, BOOL *stop) {
+                                             [attributes addObject:@{ @"attr": attr, @"range": [NSValue valueWithRange:range] }];
+                                         }];
+        
+        NSMutableAttributedString *uppercaseTitle = [[NSMutableAttributedString alloc] initWithString:title];
+        
+        // And then apply them to a new uppercased string
+        for (NSDictionary *attribute in attributes) {
+            [uppercaseTitle setAttributes:attribute[@"attr"] range:[attribute[@"range"] rangeValue]];
+        }
+        
+        attributedTitle = uppercaseTitle;
+    }
+    
+    self.titleLabel.attributedText = attributedTitle;
     [self setNeedsLayout];
 }
 
@@ -202,7 +234,7 @@
 
 + (CGFloat)fixedWidth
 {
-    return IS_IPAD ? WPTableViewFixedWidth : 0.0;
+    return [WPDeviceIdentification isiPad] ? WPTableViewFixedWidth : 0.0;
 }
 
 

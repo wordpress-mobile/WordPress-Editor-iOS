@@ -1,16 +1,17 @@
-#import <AFNetworking/AFNetworking.h>
 #import "WPImageSource.h"
-
-#import "WPAnimatedImageResponseSerializer.h"
 
 NSString * const WPImageSourceErrorDomain = @"WPImageSourceErrorDomain";
 
-@implementation WPImageSource {
-    NSOperationQueue *_downloadingQueue;
-    NSMutableSet *_urlDownloadsInProgress;
-    NSMutableDictionary *_successBlocks;
-    NSMutableDictionary *_failureBlocks;
-}
+@interface WPImageSource()
+
+@property (nonatomic, strong) NSURLSession *downloadsSession;
+@property (nonatomic, strong) NSMutableSet *urlDownloadsInProgress;
+@property (nonatomic, strong) NSMutableDictionary *successBlocks;
+@property (nonatomic, strong) NSMutableDictionary *failureBlocks;
+
+@end
+
+@implementation WPImageSource
 
 + (instancetype)sharedSource
 {
@@ -24,17 +25,19 @@ NSString * const WPImageSourceErrorDomain = @"WPImageSourceErrorDomain";
 
 - (void)dealloc
 {
-    [_downloadingQueue cancelAllOperations];
+    [_downloadsSession invalidateAndCancel];
 }
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (self) {
-        _downloadingQueue = [[NSOperationQueue alloc] init];
         _urlDownloadsInProgress = [[NSMutableSet alloc] init];
         _successBlocks = [[NSMutableDictionary alloc] init];
         _failureBlocks = [[NSMutableDictionary alloc] init];
+
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        _downloadsSession = [NSURLSession sessionWithConfiguration:configuration];
     }
     return self;
 }
@@ -49,8 +52,8 @@ NSString * const WPImageSourceErrorDomain = @"WPImageSourceErrorDomain";
     
     [self addCallbackForURL:url withSuccess:success failure:failure];
     
-    if (![_urlDownloadsInProgress containsObject:url]) {
-        [_urlDownloadsInProgress addObject:url];
+    if (![self.urlDownloadsInProgress containsObject:url]) {
+        [self.urlDownloadsInProgress addObject:url];
         [self startDownloadForURL:url authToken:authToken];
     }
 }
@@ -82,33 +85,29 @@ NSString * const WPImageSourceErrorDomain = @"WPImageSourceErrorDomain";
             [request addValue:[NSString stringWithFormat:@"Bearer %@", token] forHTTPHeaderField:@"Authorization"];
         }
 
-		AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-		
-		operation.responseSerializer = [[WPAnimatedImageResponseSerializer alloc] init];
-		operation.responseSerializer.acceptableContentTypes
-			= [operation.responseSerializer.acceptableContentTypes setByAddingObject:@"image/jpg"];
-		
-		[operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject)
-		{
-			UIImage* image = (UIImage*)responseObject;
-			
-			if (!image) {
-				[self downloadSucceededWithNilImageForURL:url response:operation.response];
-				return;
-			}
-			[self downloadedImage:image forURL:url];
-		} failure:^(AFHTTPRequestOperation *operation, NSError *error)
-		{
-			[self downloadFailedWithError:error forURL:url];
-		}];
-		
-        [_downloadingQueue addOperation:operation];
+        NSURLSessionDownloadTask *task = [self.downloadsSession downloadTaskWithRequest:request
+            completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+                if (error) {
+                    [self downloadFailedWithError:error forURL:url];
+                    return;
+                }
+                NSError *readError;
+                NSData *data = [NSData dataWithContentsOfURL:location options:NSDataReadingUncached error:&readError];
+                UIImage *image = [UIImage imageWithData:data];
+                if (!image) {
+                    [self downloadSucceededWithNilImageForURL:url response:response];
+                    return;
+                }
+
+                [self downloadedImage:image forURL:url];
+        }];
+        [task resume];
     });
 }
 
 - (void)downloadedImage:(UIImage *)image forURL:(NSURL *)url
 {
-    NSArray *successBlocks = [_successBlocks objectForKey:url];
+    NSArray *successBlocks = [self.successBlocks objectForKey:url];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self removeCallbacksForURL:url];
         for (void (^success)(UIImage *) in successBlocks) {
@@ -119,7 +118,7 @@ NSString * const WPImageSourceErrorDomain = @"WPImageSourceErrorDomain";
 
 - (void)downloadFailedWithError:(NSError *)error forURL:(NSURL *)url
 {
-    NSArray *failureBlocks = [_failureBlocks objectForKey:url];
+    NSArray *failureBlocks = [self.failureBlocks objectForKey:url];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self removeCallbacksForURL:url];
         for (void (^failure)(NSError *) in failureBlocks) {
@@ -128,9 +127,12 @@ NSString * const WPImageSourceErrorDomain = @"WPImageSourceErrorDomain";
     });
 }
 
-- (void)downloadSucceededWithNilImageForURL:(NSURL *)url response:(NSHTTPURLResponse *)response
+- (void)downloadSucceededWithNilImageForURL:(NSURL *)url response:(NSURLResponse *)response
 {
-    DDLogError(@"WPImageSource download completed sucessfully but the image was nil. Headers: %@", [response allHeaderFields]);
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]){
+        NSHTTPURLResponse *httpURLResponse = (NSHTTPURLResponse *)response;
+        DDLogError(@"WPImageSource download completed sucessfully but the image was nil. Headers: %@", [httpURLResponse allHeaderFields]);
+    }
     NSString *description = [NSString stringWithFormat:@"A download request ended successfully but the image was nil. URL: %@", [url absoluteString]];
     NSError *error = [NSError errorWithDomain:WPImageSourceErrorDomain
                                          code:WPImageSourceErrorNilImage
@@ -143,31 +145,31 @@ NSString * const WPImageSourceErrorDomain = @"WPImageSourceErrorDomain";
 - (void)addCallbackForURL:(NSURL *)url withSuccess:(void (^)(UIImage *))success failure:(void (^)(NSError *))failure
 {
     if (success) {
-        NSArray *successBlocks = [_successBlocks objectForKey:url];
+        NSArray *successBlocks = [self.successBlocks objectForKey:url];
         if (!successBlocks) {
             successBlocks = @[[success copy]];
         } else {
             successBlocks = [successBlocks arrayByAddingObject:[success copy]];
         }
-        [_successBlocks setObject:successBlocks forKey:url];
+        [self.successBlocks setObject:successBlocks forKey:url];
     }
 
     if (failure) {
-        NSArray *failureBlocks = [_failureBlocks objectForKey:url];
+        NSArray *failureBlocks = [self.failureBlocks objectForKey:url];
         if (!failureBlocks) {
             failureBlocks = @[[failure copy]];
         } else {
             failureBlocks = [failureBlocks arrayByAddingObject:[failure copy]];
         }
-        [_failureBlocks setObject:failureBlocks forKey:url];
+        [self.failureBlocks setObject:failureBlocks forKey:url];
     }
 }
 
 - (void)removeCallbacksForURL:(NSURL *)url
 {
-    [_successBlocks removeObjectForKey:url];
-    [_failureBlocks removeObjectForKey:url];
-    [_urlDownloadsInProgress removeObject:url];
+    [self.successBlocks removeObjectForKey:url];
+    [self.failureBlocks removeObjectForKey:url];
+    [self.urlDownloadsInProgress removeObject:url];
 }
 
 @end

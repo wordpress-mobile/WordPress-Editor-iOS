@@ -2,6 +2,7 @@
 #import "WPTextFieldTableViewCell.h"
 #import "UIColor+Helpers.h"
 #import "WPFontManager.h"
+#import "WPDeviceIdentification.h"
 
 @implementation WPStyleGuide
 
@@ -278,14 +279,14 @@
     BOOL hasLighterKeyboard = [versionStr compare:@"7.1" options:NSNumericSearch] == NSOrderedAscending;
 
     if (hasLighterKeyboard) {
-        if (IS_IPAD) {
+        if ([WPDeviceIdentification isiPad]) {
             return [UIColor colorWithRed:207.0f/255.0f green:210.0f/255.0f blue:213.0f/255.0f alpha:1.0];
         } else {
             return [UIColor colorWithRed:220.0f/255.0f green:223.0f/255.0f blue:226.0f/255.0f alpha:1.0];
         }
     }
 
-    if (IS_IPAD) {
+    if ([WPDeviceIdentification isiPad]) {
         return [UIColor colorWithRed:217.0f/255.0f green:220.0f/255.0f blue:223.0f/255.0f alpha:1.0];
     } else {
         return [UIColor colorWithRed:204.0f/255.0f green:208.0f/255.0f blue:214.0f/255.0f alpha:1.0];
