@@ -1,4 +1,5 @@
 #import "WPTableViewCell.h"
+#import "WPDeviceIdentification.h"
 
 CGFloat const WPTableViewFixedWidth = 600;
 
@@ -15,7 +16,7 @@ CGFloat const WPTableViewFixedWidth = 600;
 - (void)setFrame:(CGRect)frame {
     CGFloat width = self.superview.frame.size.width;
     // On iPad, add a margin around tables
-    if (IS_IPAD && width > WPTableViewFixedWidth) {
+    if ([WPDeviceIdentification isiPad] && width > WPTableViewFixedWidth) {
         CGFloat x = (width - WPTableViewFixedWidth) / 2;
         // If origin.x is not equal to x we add the value.
         // This is a semi-fix / work around for an issue positioning cells on
@@ -35,7 +36,7 @@ CGFloat const WPTableViewFixedWidth = 600;
     
     // Need to set the origin again on iPad (for margins)
     CGFloat width = self.superview.frame.size.width;
-    if (IS_IPAD && width > WPTableViewFixedWidth) {
+    if ([WPDeviceIdentification isiPad] && width > WPTableViewFixedWidth) {
         CGRect frame = self.frame;
         frame.origin.x = (width - WPTableViewFixedWidth) / 2;
         self.frame = frame;

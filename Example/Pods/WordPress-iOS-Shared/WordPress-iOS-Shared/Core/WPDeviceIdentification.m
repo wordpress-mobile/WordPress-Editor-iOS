@@ -89,6 +89,19 @@ static NSString* const WPDeviceNameSimulator = @"Simulator";
 
 #pragma mark - Device identification
 
++ (BOOL)isiPhone {
+    return ![self isiPad];
+}
+
++ (BOOL)isiPad {
+    return [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad;
+}
+
++ (BOOL)isRetina {
+    return ([[UIScreen mainScreen] respondsToSelector:@selector(scale)] && [[UIScreen mainScreen] scale] > 1);
+}
+
+
 + (BOOL)isiPhoneSix
 {
     NSString* deviceName = [self deviceName];
@@ -99,7 +112,7 @@ static NSString* const WPDeviceNameSimulator = @"Simulator";
         //  basically our best bet at identifying the device in lack of a better method.  This
         //  aproximation may need adjusting when new devices come out.
         //
-        result = (IS_IPHONE
+        result = ([self isiPhone]
                   && [[UIScreen mainScreen] respondsToSelector:@selector(nativeScale)]
                   && [[UIScreen mainScreen] respondsToSelector:@selector(nativeBounds)]
                   && [[UIScreen mainScreen] nativeScale] == 2
@@ -121,7 +134,7 @@ static NSString* const WPDeviceNameSimulator = @"Simulator";
         //  basically our best bet at identifying the device in lack of a better method.  This
         //  aproximation may need adjusting when new devices come out.
         //
-        result = (IS_IPHONE
+        result = ([self isiPhone]
                   && [[UIScreen mainScreen] respondsToSelector:@selector(nativeScale)]
                   && [[UIScreen mainScreen] respondsToSelector:@selector(nativeBounds)]
                   && [[UIScreen mainScreen] nativeScale] > 2.5
