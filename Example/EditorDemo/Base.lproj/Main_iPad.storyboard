@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="13F34" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="SJS-I4-Dof">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="SJS-I4-Dof">
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
     </dependencies>
     <scenes>
         <!--Editor Demo-->
@@ -20,11 +20,18 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" title="Editor Demo" id="nfj-PR-FyY">
-                        <barButtonItem key="rightBarButtonItem" title="Next" id="t8U-Qs-odh">
-                            <connections>
-                                <segue destination="kE3-C2-Rh1" kind="push" id="Sih-Y9-9aG"/>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem title="Next" id="t8U-Qs-odh">
+                                <connections>
+                                    <segue destination="kE3-C2-Rh1" kind="push" id="Sih-Y9-9aG"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Legacy" id="JCX-t1-Say">
+                                <connections>
+                                    <segue destination="Juj-bS-ouS" kind="push" id="KkX-nW-zhu"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -44,14 +51,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="This VC exists to test the editor's behaviour when it hidden behind another VC." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="69K-e5-sa0">
-                                <rect key="frame" x="16" y="501" width="736" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This VC exists to test the editor's behaviour when it hidden behind another VC." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="69K-e5-sa0">
+                                <rect key="frame" x="84" y="501.5" width="600" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="69K-e5-sa0" firstAttribute="centerY" secondItem="DYe-Ti-QYh" secondAttribute="centerY" id="LHh-vt-hAv"/>
+                            <constraint firstItem="69K-e5-sa0" firstAttribute="centerX" secondItem="DYe-Ti-QYh" secondAttribute="centerX" id="cQ7-YD-vdM"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Another VC" id="bhX-vo-kTK">
                         <barButtonItem key="leftBarButtonItem" title="Close" id="ci5-Lf-m8O">
@@ -63,7 +74,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7Ft-Zt-ZQD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1608" y="65"/>
+            <point key="canvasLocation" x="1580" y="65"/>
         </scene>
         <!--Edit Image Meta-->
         <scene sceneID="tPj-zC-1AE">
@@ -74,7 +85,7 @@
                         <viewControllerLayoutGuide type="bottom" id="5Ez-Hk-7fc"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="oux-ld-V9h">
-                        <rect key="frame" x="0.0" y="0.0" width="768" height="960"/>
+                        <rect key="frame" x="0.0" y="64" width="768" height="960"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NiS-xZ-kZg">
@@ -455,10 +466,24 @@
             </objects>
             <point key="canvasLocation" x="-249" y="65"/>
         </scene>
+        <!--Legacy Editor-->
+        <scene sceneID="7Ew-y9-JBR">
+            <objects>
+                <viewController id="Juj-bS-ouS" customClass="WPTestLegacyEditorViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="eDH-Tk-6Ub"/>
+                        <viewControllerLayoutGuide type="bottom" id="w0f-bo-4Da"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Gt1-7Y-uQM">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Legacy Editor" id="uob-Rd-Mfi"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GnI-yP-z56" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1588" y="1290"/>
+        </scene>
     </scenes>
-    <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedStatusBarMetrics key="statusBar"/>
-        <simulatedOrientationMetrics key="orientation"/>
-        <simulatedScreenMetrics key="destination"/>
-    </simulatedMetricsContainer>
 </document>

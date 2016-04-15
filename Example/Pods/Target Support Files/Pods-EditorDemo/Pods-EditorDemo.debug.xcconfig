@@ -1,6 +1,6 @@
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
 LD_RUNPATH_SEARCH_PATHS = $(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks'
-OTHER_CFLAGS = $(inherited) -iquote "$CONFIGURATION_BUILD_DIR/AFNetworking.framework/Headers" -iquote "$CONFIGURATION_BUILD_DIR/CocoaLumberjack.framework/Headers" -iquote "$CONFIGURATION_BUILD_DIR/NSObject_SafeExpectations.framework/Headers" -iquote "$CONFIGURATION_BUILD_DIR/WordPressComAnalytics.framework/Headers" -iquote "$CONFIGURATION_BUILD_DIR/WordPressEditor.framework/Headers" -iquote "$CONFIGURATION_BUILD_DIR/WordPressShared.framework/Headers"
-OTHER_LDFLAGS = $(inherited) -framework "AFNetworking" -framework "CocoaLumberjack" -framework "NSObject_SafeExpectations" -framework "WordPressComAnalytics" -framework "WordPressEditor" -framework "WordPressShared"
+OTHER_CFLAGS = $(inherited) -iquote "$CONFIGURATION_BUILD_DIR/CocoaLumberjack.framework/Headers" -iquote "$CONFIGURATION_BUILD_DIR/NSObject_SafeExpectations.framework/Headers" -iquote "$CONFIGURATION_BUILD_DIR/WordPressComAnalytics.framework/Headers" -iquote "$CONFIGURATION_BUILD_DIR/WordPressEditor.framework/Headers" -iquote "$CONFIGURATION_BUILD_DIR/WordPressShared.framework/Headers"
+OTHER_LDFLAGS = $(inherited) -framework "CocoaLumberjack" -framework "NSObject_SafeExpectations" -framework "WordPressComAnalytics" -framework "WordPressEditor" -framework "WordPressShared"
 PODS_FRAMEWORK_BUILD_PATH = $(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/Pods-EditorDemo
 PODS_ROOT = ${SRCROOT}/Pods

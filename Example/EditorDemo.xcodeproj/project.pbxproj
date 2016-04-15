@@ -29,6 +29,7 @@
 		74991B601BF10E7500AFA57B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74991B5F1BF10E7500AFA57B /* LaunchScreen.storyboard */; };
 		9B748FC06BB5833078779F06 /* Pods_EditorDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4B93A674A3CAFF72CC6964B /* Pods_EditorDemo.framework */; };
 		FF4B4D4C28B2EE2360630A8A /* Pods_EditorDemoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0F0C09885E0B8DAD277393B /* Pods_EditorDemoTests.framework */; };
+		FFBC2B351CB85A5B00B0379E /* WPTestLegacyEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FFBC2B341CB85A5B00B0379E /* WPTestLegacyEditorViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +76,8 @@
 		C0F0C09885E0B8DAD277393B /* Pods_EditorDemoTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EditorDemoTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E3905FE0E04F3570F2A87958 /* Pods-EditorDemoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EditorDemoTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-EditorDemoTests/Pods-EditorDemoTests.debug.xcconfig"; sourceTree = "<group>"; };
 		E4B93A674A3CAFF72CC6964B /* Pods_EditorDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EditorDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FFBC2B331CB85A5B00B0379E /* WPTestLegacyEditorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPTestLegacyEditorViewController.h; sourceTree = "<group>"; };
+		FFBC2B341CB85A5B00B0379E /* WPTestLegacyEditorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPTestLegacyEditorViewController.m; sourceTree = "<group>"; };
 		FFE317141C9C4D5C00430319 /* WordPress-iOS-Editor.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "WordPress-iOS-Editor.podspec"; path = "../WordPress-iOS-Editor.podspec"; sourceTree = "<group>"; };
 		FFE317151C9C4D5C00430319 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		FFE317161C9C4D5C00430319 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
@@ -165,6 +168,8 @@
 				5D24FEF81A3C9E8B009E1932 /* WPImageMetaViewController.m */,
 				748D2AA0193E516000D5ACC8 /* WPViewController.h */,
 				748D2AA1193E516000D5ACC8 /* WPViewController.m */,
+				FFBC2B331CB85A5B00B0379E /* WPTestLegacyEditorViewController.h */,
+				FFBC2B341CB85A5B00B0379E /* WPTestLegacyEditorViewController.m */,
 				748D2A9A193E516000D5ACC8 /* Main_iPhone.storyboard */,
 				748D2A9D193E516000D5ACC8 /* Main_iPad.storyboard */,
 				74291D091940C859004230D4 /* content.html */,
@@ -419,6 +424,7 @@
 				748D2A95193E516000D5ACC8 /* main.m in Sources */,
 				748D2A99193E516000D5ACC8 /* WPAppDelegate.m in Sources */,
 				5D24FEF91A3C9E8B009E1932 /* WPImageMetaViewController.m in Sources */,
+				FFBC2B351CB85A5B00B0379E /* WPTestLegacyEditorViewController.m in Sources */,
 				748D2AA2193E516000D5ACC8 /* WPViewController.m in Sources */,
 				59F15AD219E45BB000CD8E33 /* WPEditorDemoLoggingConfiguration.m in Sources */,
 			);

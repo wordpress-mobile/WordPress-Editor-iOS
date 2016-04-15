@@ -1,29 +1,25 @@
 #import "WPLegacyEditorViewController.h"
-#import "WPLegacyKeyboardToolbarBase.h"
-#import "WPLegacyKeyboardToolbarDone.h"
+#import "WPLegacyEditorFormatToolbar.h"
+#import "WPLegacyEditorFormatAction.h"
 #import <WordPressComAnalytics/WPAnalytics.h>
 #import <WordPressShared/WPStyleGuide.h>
 #import <WordPressShared/WPTableViewCell.h>
 #import <WordPressShared/UIImage+Util.h>
+#import <WordPressShared/WPFontManager.h>
 
-CGFloat const WPLegacyEPVCTextfieldHeight = 44.0f;
-CGFloat const WPLegacyEPVCOptionsHeight = 44.0f;
 CGFloat const WPLegacyEPVCStandardOffset = 15.0;
 CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
-CGFloat const WPLegacyEPVCTextViewBottomPadding = 50.0f;
-CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
-@interface WPLegacyEditorViewController ()<UITextFieldDelegate, UITextViewDelegate, WPLegacyKeyboardToolbarDelegate>
+@interface WPLegacyEditorViewController ()<UITextFieldDelegate, UITextViewDelegate, WPLegacyEditorFormatToolbarDelegate>
 @property (nonatomic) CGPoint scrollOffsetRestorePoint;
 @property (nonatomic, strong) UIButton *optionsButton;
 @property (nonatomic, strong) UILabel *tapToStartWritingLabel;
 @property (nonatomic, strong) UITextField *titleTextField;
 @property (nonatomic, strong) UITextView *textView;
-@property (nonatomic, strong) UIView *optionsSeparatorView;
-@property (nonatomic, strong) UIView *optionsView;
 @property (nonatomic, strong) UIView *separatorView;
-@property (nonatomic, strong) WPLegacyKeyboardToolbarBase *editorToolbar;
-@property (nonatomic, strong) WPLegacyKeyboardToolbarDone *titleToolbar;
+@property (nonatomic, strong) UIView *activeField;
+@property (nonatomic, strong) WPLegacyEditorFormatToolbar *editorToolbar;
+@property (nonatomic, strong) WPLegacyEditorFormatToolbar *titleToolbar;
 @end
 
 @implementation WPLegacyEditorViewController
@@ -31,16 +27,10 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    // For the iPhone, let's let the overscroll background color be white to match the editor.
-    if (IS_IPAD) {
-        self.view.backgroundColor = [WPStyleGuide itsEverywhereGrey];
-    }
     self.navigationController.navigationBar.translucent = NO;
-    self.modalPresentationCapturesStatusBarAppearance = YES;
-    [self setupToolbar];
     [self setupTextView];
-    [self setupOptionsView];
+    [self.editorToolbar configureForHorizontalSizeClass:self.traitCollection.horizontalSizeClass];
+    [self.titleToolbar configureForHorizontalSizeClass:self.traitCollection.horizontalSizeClass];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -50,12 +40,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     // When restoring state, the navigationController is nil when the view loads,
     // so configure its appearance here instead.
     self.navigationController.navigationBar.translucent = NO;
-    self.navigationController.toolbarHidden = NO;
-    UIToolbar *toolbar = self.navigationController.toolbar;
-    toolbar.barTintColor = [WPStyleGuide littleEddieGrey];
-    toolbar.translucent = NO;
-    toolbar.barStyle = UIBarStyleDefault;
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
@@ -68,20 +53,12 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
-    
-    if(self.navigationController.navigationBarHidden) {
-        [self.navigationController setNavigationBarHidden:NO animated:animated];
-    }
-    
-    if (self.navigationController.toolbarHidden) {
-        [self.navigationController setToolbarHidden:NO animated:animated];
-    }
-    
-    for (UIView *view in self.navigationController.toolbar.subviews) {
-        [view setExclusiveTouch:YES];
-    }
-    
+
     [self.textView setContentOffset:CGPointMake(0, 0)];
+    if (self.activeField ) {
+        [self.activeField becomeFirstResponder];
+        self.tapToStartWritingLabel.hidden = YES;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -95,15 +72,17 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    self.activeField = nil;
+    if ([self.textView isFirstResponder]) {
+        self.activeField = self.textView;
+    } else if ([self.titleTextField isFirstResponder]) {
+        self.activeField = self.titleTextField;
+    }
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-    [self.navigationController setToolbarHidden:YES animated:animated];
 	[self stopEditing];
-}
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 
 #pragma mark - Getters and Setters
@@ -132,85 +111,43 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 #pragma mark - View Setup
 
-- (void)setupToolbar
-{
-    if ([self.toolbarItems count] > 0) {
-        return;
-    }
-    
-    UIBarButtonItem *previewButton = [[UIBarButtonItem alloc] initWithImage:[self imageNamed:@"icon-posts-editor-preview"]
-                                                                      style:UIBarButtonItemStylePlain
-                                                                     target:self
-                                                                     action:@selector(didTouchPreview)];
-    UIBarButtonItem *photoButton = [[UIBarButtonItem alloc] initWithImage:[self imageNamed:@"icon-posts-editor-media"]
-                                                                    style:UIBarButtonItemStylePlain
-                                                                   target:self
-                                                                   action:@selector(didTouchMediaOptions)];
-    
-    previewButton.tintColor = [WPStyleGuide readGrey];
-    photoButton.tintColor = [WPStyleGuide readGrey];
-
-    previewButton.accessibilityLabel = NSLocalizedString(@"Preview post", nil);
-    photoButton.accessibilityLabel = NSLocalizedString(@"Add media", nil);
-    
-    UIBarButtonItem *leftFixedSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                                                                     target:nil
-                                                                                     action:nil];
-    UIBarButtonItem *rightFixedSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                                                                      target:nil
-                                                                                      action:nil];
-    UIBarButtonItem *centerFlexSpacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                                                      target:nil
-                                                                                      action:nil];
-    
-    leftFixedSpacer.width = -2.0f;
-    rightFixedSpacer.width = -5.0f;
-    
-    self.toolbarItems = @[leftFixedSpacer, previewButton, centerFlexSpacer, photoButton, rightFixedSpacer];
-}
-
 - (void)setupTextView
 {
     CGFloat x = 0.0f;
     CGFloat viewWidth = CGRectGetWidth(self.view.frame);
     CGFloat width = viewWidth;
     UIViewAutoresizing mask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    if (IS_IPAD) {
-        width = WPTableViewFixedWidth;
-        x = ceilf((viewWidth - width) / 2.0f);
-        mask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleHeight;
-    }
-    CGRect frame = CGRectMake(x, 0.0f, width, CGRectGetHeight(self.view.frame) - WPLegacyEPVCOptionsHeight);
+
+    CGRect frame = CGRectMake(x, 0.0f, width, CGRectGetHeight(self.view.frame));
 
     // Height should never be smaller than what is required to display its text.
     if (!self.textView) {
         self.textView = [[UITextView alloc] initWithFrame:frame];
         self.textView.autoresizingMask = mask;
         self.textView.delegate = self;
-        self.textView.typingAttributes = [WPStyleGuide regularTextAttributes];
-        self.textView.font = [WPStyleGuide regularTextFont];
-        self.textView.textColor = [WPStyleGuide darkAsNightGrey];
+        self.textView.font = [UIFont fontWithName: @"Menlo-Regular" size:14.0f];;
+        self.textView.textColor = [UIColor blackColor];
         self.textView.accessibilityLabel = NSLocalizedString(@"Content", @"Post content");
     }
     [self.view addSubview:self.textView];
     
     // Formatting bar for the textView's inputAccessoryView.
     if (self.editorToolbar == nil) {
-        frame = CGRectMake(0.0f, 0.0f, viewWidth, WPKT_HEIGHT_PORTRAIT);
-        self.editorToolbar = [[WPLegacyKeyboardToolbarBase alloc] initWithFrame:frame];
-        self.editorToolbar.backgroundColor = [WPStyleGuide keyboardColor];
-        self.editorToolbar.delegate = self;
+        self.editorToolbar = [[WPLegacyEditorFormatToolbar alloc] init];
+        self.editorToolbar.formatDelegate = self;
+        [self.editorToolbar sizeToFit];
         self.textView.inputAccessoryView = self.editorToolbar;
     }
     
     // Title TextField.
     if (!self.titleTextField) {
         CGFloat textWidth = CGRectGetWidth(self.textView.frame) - (2 * WPLegacyEPVCStandardOffset);
-        frame = CGRectMake(WPLegacyEPVCStandardOffset, 0.0, textWidth, WPLegacyEPVCTextfieldHeight);
+        UIFont *font = [WPFontManager merriweatherBoldFontOfSize:24.0];
+        frame = CGRectMake(WPLegacyEPVCStandardOffset, 0.0, textWidth, font.lineHeight * 2.0);
         self.titleTextField = [[UITextField alloc] initWithFrame:frame];
         self.titleTextField.delegate = self;
-        self.titleTextField.font = [WPStyleGuide postTitleFont];
-        self.titleTextField.textColor = [WPStyleGuide darkAsNightGrey];
+        self.titleTextField.font = font;
+        self.titleTextField.textColor = [UIColor blackColor];
         self.titleTextField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.titleTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:(NSLocalizedString(@"Enter title here", @"Label for the title of the post field. Should be the same as WP core.")) attributes:(@{NSForegroundColorAttributeName: [WPStyleGuide textFieldPlaceholderGrey]})];
         self.titleTextField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
@@ -220,17 +157,17 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     
     // InputAccessoryView for title textField.
     if (!self.titleToolbar) {
-        frame = CGRectMake(0.0f, 0.0f, viewWidth, WPKT_HEIGHT_PORTRAIT);
-        self.titleToolbar = [[WPLegacyKeyboardToolbarDone alloc] initWithFrame:frame];
-        self.titleToolbar.backgroundColor = [WPStyleGuide keyboardColor];
-        self.titleToolbar.delegate = self;
+        self.titleToolbar = [[WPLegacyEditorFormatToolbar alloc] init];
+        [self.titleToolbar disableAllButtons];
+        self.titleToolbar.formatDelegate = self;
+        [self.titleToolbar sizeToFit];
         self.titleTextField.inputAccessoryView = self.titleToolbar;
     }
     
     // One pixel separator bewteen title and content text fields.
     if (!self.separatorView) {
         CGFloat y = CGRectGetMaxY(self.titleTextField.frame);
-        CGFloat separatorWidth = width - WPLegacyEPVCStandardOffset;
+        CGFloat separatorWidth = width - (WPLegacyEPVCStandardOffset * 2.0);
         frame = CGRectMake(WPLegacyEPVCStandardOffset, y, separatorWidth, 1.0);
         self.separatorView = [[UIView alloc] initWithFrame:frame];
         self.separatorView.backgroundColor = [WPStyleGuide readGrey];
@@ -241,8 +178,8 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     // Update the textView's textContainerInsets so text does not overlap content.
     CGFloat left = WPLegacyEPVCTextViewOffset;
     CGFloat right = WPLegacyEPVCTextViewOffset;
-    CGFloat top = CGRectGetMaxY(self.separatorView.frame) + WPLegacyEPVCTextViewTopPadding;
-    CGFloat bottom = WPLegacyEPVCTextViewBottomPadding;
+    CGFloat top = CGRectGetMaxY(self.separatorView.frame) + self.textView.font.lineHeight;
+    CGFloat bottom = self.textView.font.lineHeight;
     self.textView.textContainerInset = UIEdgeInsetsMake(top, left, bottom, right);
 
     if (!self.tapToStartWritingLabel) {
@@ -250,7 +187,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
         frame.origin.x = WPLegacyEPVCStandardOffset;
         frame.origin.y = self.textView.textContainerInset.top;
         frame.size.width = width - (WPLegacyEPVCStandardOffset * 2);
-        frame.size.height = 26.0f;
+        frame.size.height = [WPStyleGuide regularTextFont].lineHeight;
         self.tapToStartWritingLabel = [[UILabel alloc] initWithFrame:frame];
         self.tapToStartWritingLabel.text = NSLocalizedString(@"Tap here to begin writing", @"Placeholder for the main body text. Should hint at tapping to enter text (not specifying body text).");
         self.tapToStartWritingLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -259,61 +196,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
         self.tapToStartWritingLabel.isAccessibilityElement = NO;
     }
     [self.textView addSubview:self.tapToStartWritingLabel];
-}
-
-- (void)setupOptionsView
-{
-    CGFloat width = CGRectGetWidth(self.textView.frame);
-    CGFloat x = CGRectGetMinX(self.textView.frame);
-    CGFloat y = CGRectGetMaxY(self.textView.frame);
-    
-    CGRect frame;
-    if (!self.optionsView) {
-        frame = CGRectMake(x, y, width, WPLegacyEPVCOptionsHeight);
-        self.optionsView = [[UIView alloc] initWithFrame:frame];
-        self.optionsView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-        if (IS_IPAD) {
-            self.optionsView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
-        }
-        self.optionsView.backgroundColor = [UIColor whiteColor];
-    }
-    [self.view addSubview:self.optionsView];
-    
-    // One pixel separator bewteen content and table view cells.
-    if (!self.optionsSeparatorView) {
-        CGFloat separatorWidth = width - WPLegacyEPVCStandardOffset;
-        frame = CGRectMake(WPLegacyEPVCStandardOffset, 0.0f, separatorWidth, 1.0f);
-        self.optionsSeparatorView = [[UIView alloc] initWithFrame:frame];
-        self.optionsSeparatorView.backgroundColor = [WPStyleGuide readGrey];
-        self.optionsSeparatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    }
-    [self.optionsView addSubview:self.optionsSeparatorView];
-    
-    if (!self.optionsButton) {
-        NSString *optionsTitle = NSLocalizedString(@"Options", @"Title of the Post Settings tableview cell in the Post Editor. Tapping shows settings and options related to the post being edited.");
-        frame = CGRectMake(0.0f, 1.0f, width, WPLegacyEPVCOptionsHeight - 1.0f);
-        self.optionsButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.optionsButton.frame = frame;
-        self.optionsButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [self.optionsButton addTarget:self action:@selector(didTouchSettings)
-                     forControlEvents:UIControlEventTouchUpInside];
-        [self.optionsButton setBackgroundImage:[UIImage imageWithColor:[WPStyleGuide readGrey]]
-                                      forState:UIControlStateHighlighted];
-        self.optionsButton.accessibilityIdentifier = @"Options";
-        // Rather than using a UIImageView to fake a disclosure icon, just use a cell and future proof the UI.
-        WPTableViewCell *cell = [[WPTableViewCell alloc] initWithFrame:self.optionsButton.bounds];
-        // The cell uses its default frame and ignores what was passed during init, so set it again.
-        cell.frame = self.optionsButton.bounds;
-        cell.backgroundColor = [UIColor clearColor];
-        cell.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-        cell.textLabel.text = optionsTitle;
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        cell.userInteractionEnabled = NO;
-        [WPStyleGuide configureTableViewCell:cell];
-        
-        [self.optionsButton addSubview:cell];
-    }
-    [self.optionsView addSubview:self.optionsButton];
 }
 
 - (void)positionTextView:(NSNotification *)notification
@@ -327,7 +209,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     if (self.isShowingKeyboard) {
         frame.size.height = CGRectGetMinY(keyboardFrame) - CGRectGetMinY(frame);
     } else {
-        frame.size.height = CGRectGetHeight(self.view.frame) - WPLegacyEPVCOptionsHeight;
+        frame.size.height = CGRectGetHeight(self.view.frame);
     }
     self.textView.frame = frame;
 }
@@ -357,10 +239,15 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 #pragma mark - Editor and Misc Methods
 
+- (void)startEditing
+{
+    [self.textView becomeFirstResponder];
+}
+
 - (void)stopEditing
 {
     // With the titleTextField as a subview of textField, we need to resign and
-    // end editing to prevent the textField from becomeing first responder.
+    // end editing to prevent the textField from becoming first responder.
     if ([self.titleTextField isFirstResponder]) {
         [self.titleTextField resignFirstResponder];
     }
@@ -369,9 +256,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 - (void)refreshUI
 {
-    if(self.titleText != nil || self.titleText.length != 0) {
-        self.title = self.titleText;
-    }
     if(!self.bodyText || self.bodyText.length == 0) {
         self.tapToStartWritingLabel.hidden = NO;
         self.textView.text = @"";
@@ -524,31 +408,39 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 #pragma mark - WPKeyboardToolbar Delegate
 
-- (void)keyboardToolbarButtonItemPressed:(WPLegacyKeyboardToolbarButtonItem *)buttonItem
+- (void)formatToolbar:(WPLegacyEditorFormatToolbar *)formatToolbar actionPressed:(WPLegacyEditorFormatAction)formatAction
 {
-    if ([buttonItem.actionTag isEqualToString:@"strong"]) {
-        [WPAnalytics track:WPAnalyticsStatEditorTappedBold];
-    } else if ([buttonItem.actionTag isEqualToString:@"em"]) {
-        [WPAnalytics track:WPAnalyticsStatEditorTappedItalic];
-    } else if ([buttonItem.actionTag isEqualToString:@"u"]) {
-        [WPAnalytics track:WPAnalyticsStatEditorTappedUnderline];
-    } else if ([buttonItem.actionTag isEqualToString:@"del"]) {
-        [WPAnalytics track:WPAnalyticsStatEditorTappedStrikethrough];
-    } else if ([buttonItem.actionTag isEqualToString:@"link"]) {
-        [WPAnalytics track:WPAnalyticsStatEditorTappedLink];
-    } else if ([buttonItem.actionTag isEqualToString:@"blockquote"]) {
-        [WPAnalytics track:WPAnalyticsStatEditorTappedBlockquote];
-    } else if ([buttonItem.actionTag isEqualToString:@"more"]) {
-        [WPAnalytics track:WPAnalyticsStatEditorTappedMore];
+    switch (formatAction) {
+        case WPLegacyEditorFormatActionBold:
+            [WPAnalytics track:WPAnalyticsStatEditorTappedBold];
+            break;
+        case WPLegacyEditorFormatActionItalic:
+            [WPAnalytics track:WPAnalyticsStatEditorTappedItalic];
+            break;
+        case WPLegacyEditorFormatActionUnderline:
+            [WPAnalytics track:WPAnalyticsStatEditorTappedUnderline];
+            break;
+        case WPLegacyEditorFormatActionDelete:
+            [WPAnalytics track:WPAnalyticsStatEditorTappedStrikethrough];
+            break;
+        case WPLegacyEditorFormatActionLink:
+            [WPAnalytics track:WPAnalyticsStatEditorTappedLink];
+            break;
+        case WPLegacyEditorFormatActionQuote:
+            [WPAnalytics track:WPAnalyticsStatEditorTappedBlockquote];
+            break;
+        case WPLegacyEditorFormatActionMore:
+            [WPAnalytics track:WPAnalyticsStatEditorTappedMore];
+            break;
     }
          
-    if ([buttonItem.actionTag isEqualToString:@"link"]) {
+    if (formatAction == WPLegacyEditorFormatActionMedia) {
+        [self didTouchMediaOptions];
+    } else if (formatAction == WPLegacyEditorFormatActionLink) {
         [self showLinkView];
-    } else if ([buttonItem.actionTag isEqualToString:@"done"]) {
-        [self stopEditing];
     } else {
-        [self wrapSelectionWithTag:buttonItem.actionTag];
-        [self.textView.undoManager setActionName:buttonItem.actionName];
+        [self wrapSelectionWithTag:WPLegacyEditorFormatActionToTag(formatAction)];
+        [self.textView.undoManager setActionName:WPLegacyEditorFormatActionToTag(formatAction)];
     }
 }
 
@@ -593,8 +485,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-    if (textField == self.titleTextField) {
-        [self setTitle:[textField.text stringByReplacingCharactersInRange:range withString:string]];
+    if (textField == self.titleTextField) {        
         if ([self.delegate respondsToSelector: @selector(editorTitleDidChange:)]) {
             [self.delegate editorTitleDidChange:self];
         }
@@ -608,57 +499,37 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     return NO;
 }
 
-#pragma mark - Positioning & Rotation
+#pragma mark - Size management
 
-- (BOOL)shouldHideToolbarsWhileTyping
+- (void)recoverFromViewSizeChange
 {
-    /*
-     Never hide for the iPad.
-     Always hide on the iPhone except for portrait + external keyboard
-     */
-    if (IS_IPAD) {
-        return NO;
+    if ([self.titleTextField isFirstResponder]) {
+        [self.titleTextField resignFirstResponder];
+        [self.titleTextField becomeFirstResponder];
     }
-    
-    BOOL isLandscape = UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation);
-    if (!isLandscape && self.isExternalKeyboard) {
-        return NO;
+    if ([self.textView isFirstResponder]) {
+        [self.textView resignFirstResponder];
+        [self.textView becomeFirstResponder];
     }
-    
-    return YES;
 }
 
-- (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration
+- (void)traitCollectionDidChange:(UITraitCollection *) previousTraitCollection
 {
-    CGRect frame = self.editorToolbar.frame;
-    if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
-        if (IS_IPAD) {
-            frame.size.height = WPKT_HEIGHT_IPAD_LANDSCAPE;
-        } else {
-            frame.size.height = WPKT_HEIGHT_IPHONE_LANDSCAPE;
-        }
-        
-    } else {
-        if (IS_IPAD) {
-            frame.size.height = WPKT_HEIGHT_IPAD_PORTRAIT;
-        } else {
-            frame.size.height = WPKT_HEIGHT_IPHONE_PORTRAIT;
-        }
-    }
-    self.editorToolbar.frame = frame;
-    self.titleToolbar.frame = frame; // Frames match, no need to re-calc.
+    [super traitCollectionDidChange: previousTraitCollection];
+    [self recoverFromViewSizeChange];
 }
 
-#pragma mark - Status bar management
-
-- (BOOL)prefersStatusBarHidden
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
-    return self.isShowingKeyboard;
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    [self recoverFromViewSizeChange];
 }
 
-- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation
+- (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
-    return UIStatusBarAnimationSlide;
+    [super willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
+    [self.editorToolbar configureForHorizontalSizeClass:newCollection.horizontalSizeClass];
+    [self.titleToolbar configureForHorizontalSizeClass:newCollection.horizontalSizeClass];
 }
 
 #pragma mark - Keyboard management
@@ -666,12 +537,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 - (void)keyboardWillShow:(NSNotification *)notification
 {
 	self.isShowingKeyboard = YES;
-    
-    if ([self shouldHideToolbarsWhileTyping]) {
-        [self setNeedsStatusBarAppearanceUpdate];
-        [self.navigationController setNavigationBarHidden:YES animated:YES];
-        [self.navigationController setToolbarHidden:YES animated:YES];
-    }
 }
 
 - (void)keyboardDidShow:(NSNotification *)notification
@@ -688,9 +553,6 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 - (void)keyboardWillHide:(NSNotification *)notification
 {
 	self.isShowingKeyboard = NO;
-    [self setNeedsStatusBarAppearanceUpdate];
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
-    [self.navigationController setToolbarHidden:NO animated:YES];
     [self positionTextView:notification];
 }
 

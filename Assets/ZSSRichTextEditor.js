@@ -2446,6 +2446,16 @@ ZSSField.prototype.handleFocusEvent = function(e) {
 
 ZSSField.prototype.handleKeyDownEvent = function(e) {
     
+    var wasBackspaceOrDeletePressed = (e.keyCode == 8 || e.keyCode == 46);
+    
+    // We don't want to alter the default behaviour for the backspace and delete key.
+    //
+    // Ref: https://github.com/wordpress-mobile/WordPress-Editor-iOS/issues/803
+    //
+    if (wasBackspaceOrDeletePressed) {
+        return;
+    }
+    
     var wasEnterPressed = (e.keyCode == '13');
     
     if (this.isComposing) {
