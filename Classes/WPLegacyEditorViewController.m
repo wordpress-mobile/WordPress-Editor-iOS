@@ -9,8 +9,6 @@
 
 CGFloat const WPLegacyEPVCStandardOffset = 15.0;
 CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
-CGFloat const WPLegacyEPVCTextViewBottomPadding = 50.0f;
-CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
 
 @interface WPLegacyEditorViewController ()<UITextFieldDelegate, UITextViewDelegate, WPLegacyEditorFormatToolbarDelegate>
 @property (nonatomic) CGPoint scrollOffsetRestorePoint;
@@ -180,8 +178,8 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
     // Update the textView's textContainerInsets so text does not overlap content.
     CGFloat left = WPLegacyEPVCTextViewOffset;
     CGFloat right = WPLegacyEPVCTextViewOffset;
-    CGFloat top = CGRectGetMaxY(self.separatorView.frame) + WPLegacyEPVCTextViewTopPadding;
-    CGFloat bottom = WPLegacyEPVCTextViewBottomPadding;
+    CGFloat top = CGRectGetMaxY(self.separatorView.frame) + self.textView.font.lineHeight;
+    CGFloat bottom = self.textView.font.lineHeight;
     self.textView.textContainerInset = UIEdgeInsetsMake(top, left, bottom, right);
 
     if (!self.tapToStartWritingLabel) {
