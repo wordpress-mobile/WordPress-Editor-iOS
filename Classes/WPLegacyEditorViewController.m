@@ -128,7 +128,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
         self.textView.autoresizingMask = mask;
         self.textView.delegate = self;
         self.textView.font = [UIFont fontWithName: @"Menlo-Regular" size:14.0f];;
-        self.textView.textColor = [WPStyleGuide darkAsNightGrey];
+        self.textView.textColor = [UIColor blackColor];
         self.textView.accessibilityLabel = NSLocalizedString(@"Content", @"Post content");
     }
     [self.view addSubview:self.textView];
@@ -149,7 +149,7 @@ CGFloat const WPLegacyEPVCTextViewTopPadding = 7.0f;
         self.titleTextField = [[UITextField alloc] initWithFrame:frame];
         self.titleTextField.delegate = self;
         self.titleTextField.font = font;
-        self.titleTextField.textColor = [WPStyleGuide darkAsNightGrey];
+        self.titleTextField.textColor = [UIColor blackColor];
         self.titleTextField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.titleTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:(NSLocalizedString(@"Enter title here", @"Label for the title of the post field. Should be the same as WP core.")) attributes:(@{NSForegroundColorAttributeName: [WPStyleGuide textFieldPlaceholderGrey]})];
         self.titleTextField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
