@@ -15,10 +15,6 @@
 #import "WPEditorFormatbarView.h"
 #import "ZSSBarButtonItem.h"
 
-CGFloat const EPVCStandardOffset = 10.0;
-NSInteger const WPImageAlertViewTag = 91;
-NSInteger const WPLinkAlertViewTag = 92;
-
 @interface WPEditorViewController () <HRColorPickerViewControllerDelegate, WPEditorFormatbarViewDelegate, WPEditorViewDelegate>
 
 @property (nonatomic, strong) NSString *htmlString;
