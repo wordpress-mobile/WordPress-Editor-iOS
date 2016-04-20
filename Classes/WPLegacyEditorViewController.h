@@ -23,6 +23,15 @@
 @property (nonatomic) BOOL isShowingKeyboard;
 @property (nonatomic) BOOL isExternalKeyboard;
 
+@property (nonatomic, strong) UIFont *titleFont;
+@property (nonatomic, strong) UIColor *titleColor;
+
+@property (nonatomic, strong) UIFont *bodyFont;
+@property (nonatomic, strong) UIColor *bodyColor;
+
+@property (nonatomic, strong) UIColor *separatorColor;
+@property (nonatomic, strong) UIColor *placeholderColor;
+
 - (void)stopEditing;
 - (void)startEditing;
 

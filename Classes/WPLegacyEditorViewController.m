@@ -2,15 +2,12 @@
 #import "WPLegacyEditorFormatToolbar.h"
 #import "WPLegacyEditorFormatAction.h"
 #import <WordPressComAnalytics/WPAnalytics.h>
-#import <WordPressShared/WPStyleGuide.h>
-#import <WordPressShared/WPTableViewCell.h>
-#import <WordPressShared/UIImage+Util.h>
-#import <WordPressShared/WPFontManager.h>
 
 CGFloat const WPLegacyEPVCStandardOffset = 15.0;
 CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 
 @interface WPLegacyEditorViewController ()<UITextFieldDelegate, UITextViewDelegate, WPLegacyEditorFormatToolbarDelegate>
+
 @property (nonatomic) CGPoint scrollOffsetRestorePoint;
 @property (nonatomic, strong) UIButton *optionsButton;
 @property (nonatomic, strong) UILabel *tapToStartWritingLabel;
@@ -20,9 +17,37 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 @property (nonatomic, strong) UIView *activeField;
 @property (nonatomic, strong) WPLegacyEditorFormatToolbar *editorToolbar;
 @property (nonatomic, strong) WPLegacyEditorFormatToolbar *titleToolbar;
+
 @end
 
 @implementation WPLegacyEditorViewController
+
+-(instancetype)init {
+    self = [super initWithNibName:nil bundle:nil];
+    if (self) {
+        [self commonInit];
+    }
+    return self;
+}
+
+-(instancetype)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self commonInit];
+    }
+    return self;
+}
+
+-(void)commonInit {
+    _titleFont = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+    _titleColor = [UIColor darkTextColor];
+
+    _bodyFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _bodyColor = [UIColor darkTextColor];
+
+    _separatorColor = [UIColor lightGrayColor];
+    _placeholderColor = [UIColor lightGrayColor];
+}
 
 - (void)viewDidLoad
 {
@@ -125,8 +150,8 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         self.textView = [[UITextView alloc] initWithFrame:frame];
         self.textView.autoresizingMask = mask;
         self.textView.delegate = self;
-        self.textView.font = [UIFont fontWithName: @"Menlo-Regular" size:14.0f];;
-        self.textView.textColor = [UIColor blackColor];
+        self.textView.font =  self.bodyFont;
+        self.textView.textColor = self.bodyColor;
         self.textView.accessibilityLabel = NSLocalizedString(@"Content", @"Post content");
     }
     [self.view addSubview:self.textView];
@@ -142,14 +167,14 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
     // Title TextField.
     if (!self.titleTextField) {
         CGFloat textWidth = CGRectGetWidth(self.textView.frame) - (2 * WPLegacyEPVCStandardOffset);
-        UIFont *font = [WPFontManager merriweatherBoldFontOfSize:24.0];
-        frame = CGRectMake(WPLegacyEPVCStandardOffset, 0.0, textWidth, font.lineHeight * 2.0);
+        frame = CGRectMake(WPLegacyEPVCStandardOffset, 0.0, textWidth, self.titleFont.lineHeight * 2.0);
         self.titleTextField = [[UITextField alloc] initWithFrame:frame];
+        self.titleTextField.frame = frame;
         self.titleTextField.delegate = self;
-        self.titleTextField.font = font;
-        self.titleTextField.textColor = [UIColor blackColor];
+        self.titleTextField.font = self.titleFont;
+        self.titleTextField.textColor = self.titleColor;
+        self.titleTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:(NSLocalizedString(@"Enter title here", @"Label for the title of the post field. Should be the same as WP core.")) attributes:(@{NSForegroundColorAttributeName: self.placeholderColor})];
         self.titleTextField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        self.titleTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:(NSLocalizedString(@"Enter title here", @"Label for the title of the post field. Should be the same as WP core.")) attributes:(@{NSForegroundColorAttributeName: [WPStyleGuide textFieldPlaceholderGrey]})];
         self.titleTextField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
         self.titleTextField.returnKeyType = UIReturnKeyNext;
     }
@@ -170,7 +195,7 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         CGFloat separatorWidth = width - (WPLegacyEPVCStandardOffset * 2.0);
         frame = CGRectMake(WPLegacyEPVCStandardOffset, y, separatorWidth, 1.0);
         self.separatorView = [[UIView alloc] initWithFrame:frame];
-        self.separatorView.backgroundColor = [WPStyleGuide readGrey];
+        self.separatorView.backgroundColor = self.separatorColor;
         self.separatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     }
     [self.textView addSubview:self.separatorView];
@@ -187,12 +212,12 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         frame.origin.x = WPLegacyEPVCStandardOffset;
         frame.origin.y = self.textView.textContainerInset.top;
         frame.size.width = width - (WPLegacyEPVCStandardOffset * 2);
-        frame.size.height = [WPStyleGuide regularTextFont].lineHeight;
+        frame.size.height = self.bodyFont.lineHeight;
         self.tapToStartWritingLabel = [[UILabel alloc] initWithFrame:frame];
         self.tapToStartWritingLabel.text = NSLocalizedString(@"Tap here to begin writing", @"Placeholder for the main body text. Should hint at tapping to enter text (not specifying body text).");
         self.tapToStartWritingLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        self.tapToStartWritingLabel.font = [WPStyleGuide regularTextFont];
-        self.tapToStartWritingLabel.textColor = [WPStyleGuide textFieldPlaceholderGrey];
+        self.tapToStartWritingLabel.font = self.bodyFont;
+        self.tapToStartWritingLabel.textColor = self.placeholderColor;
         self.tapToStartWritingLabel.isAccessibilityElement = NO;
     }
     [self.textView addSubview:self.tapToStartWritingLabel];
