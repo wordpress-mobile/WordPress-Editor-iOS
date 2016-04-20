@@ -120,22 +120,22 @@ typedef enum
 /**
  *	@brief		The border color for the toolbar.
  */
-@property (nonatomic, copy, readwrite) UIColor* borderColor;
+@property (nonatomic, copy, readwrite) UIColor* borderColor UI_APPEARANCE_SELECTOR;
 
 /**
  *  Color to tint the toolbar items
  */
-@property (nonatomic, strong) UIColor *itemTintColor;
+@property (nonatomic, strong) UIColor *itemTintColor UI_APPEARANCE_SELECTOR;
 
 /**
  *  Color to tint the toolbar items when the toolbar is disabled
  */
-@property (nonatomic, strong) UIColor *disabledItemTintColor;
+@property (nonatomic, strong) UIColor *disabledItemTintColor UI_APPEARANCE_SELECTOR;
 
 /**
  *  Color to tint selected items
  */
-@property (nonatomic, strong) UIColor *selectedItemTintColor;
+@property (nonatomic, strong) UIColor *selectedItemTintColor UI_APPEARANCE_SELECTOR;
 
 #pragma mark - Toolbar items
 

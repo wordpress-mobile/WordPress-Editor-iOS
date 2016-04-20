@@ -66,6 +66,22 @@
 				</array>
 			</dict>
 		</dict>
+		<key>01B6662FC6333C7FE12A527E1D1B7E4C</key>
+		<dict>
+			<key>children</key>
+			<array>
+				<string>3976A54154F2E60C4DF9E012E81FAC58</string>
+				<string>59A23F55488379719EA0B0CB9553CA5C</string>
+				<string>271E503EE1BEA045BB28FAABE6E102D6</string>
+				<string>F06D728637BE326A007FD6F96413272D</string>
+			</array>
+			<key>isa</key>
+			<string>PBXGroup</string>
+			<key>name</key>
+			<string>Frameworks</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
 		<key>01BCB4232F7511AF3635E8C6B4FFC55E</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -76,6 +92,18 @@
 			<string>ZSSoutdent.png</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
+		</dict>
+		<key>01C6190D3710971C5F4E9CC30D38DE92</key>
+		<dict>
+			<key>fileRef</key>
+			<string>9BBC2C8130497CE9138AA3B02118997C</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>COMPILER_FLAGS</key>
+				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
+			</dict>
 		</dict>
 		<key>0290AA5DF46EF3DD7E36417C939D6C24</key>
 		<dict>
@@ -118,10 +146,10 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>04FA270AC3AFB74AC886883B83FDD5DD</key>
+		<key>04FCCD349B8A96EED5E9F9E114ECB25F</key>
 		<dict>
 			<key>fileRef</key>
-			<string>F13D380393F6BFCD1678D1195E722151</string>
+			<string>3976A54154F2E60C4DF9E012E81FAC58</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
@@ -193,68 +221,37 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>067EFA5E1E00FB15C4F7B694B99D3B47</key>
-		<dict>
-			<key>baseConfigurationReference</key>
-			<string>DEEB2CF0509E97B9BAB585A264200BBC</string>
-			<key>buildSettings</key>
-			<dict>
-				<key>CODE_SIGN_IDENTITY[sdk=iphoneos*]</key>
-				<string>iPhone Developer</string>
-				<key>CURRENT_PROJECT_VERSION</key>
-				<string>1</string>
-				<key>DEFINES_MODULE</key>
-				<string>YES</string>
-				<key>DYLIB_COMPATIBILITY_VERSION</key>
-				<string>1</string>
-				<key>DYLIB_CURRENT_VERSION</key>
-				<string>1</string>
-				<key>DYLIB_INSTALL_NAME_BASE</key>
-				<string>@rpath</string>
-				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
-				<string>YES</string>
-				<key>GCC_PREFIX_HEADER</key>
-				<string>Target Support Files/WordPress-iOS-Shared/WordPress-iOS-Shared-prefix.pch</string>
-				<key>INFOPLIST_FILE</key>
-				<string>Target Support Files/WordPress-iOS-Shared/Info.plist</string>
-				<key>INSTALL_PATH</key>
-				<string>$(LOCAL_LIBRARY_DIR)/Frameworks</string>
-				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
-				<string>9.0</string>
-				<key>LD_RUNPATH_SEARCH_PATHS</key>
-				<array>
-					<string>$(inherited)</string>
-					<string>@executable_path/Frameworks</string>
-					<string>@loader_path/Frameworks</string>
-				</array>
-				<key>MODULEMAP_FILE</key>
-				<string>Target Support Files/WordPress-iOS-Shared/WordPress-iOS-Shared.modulemap</string>
-				<key>MTL_ENABLE_DEBUG_INFO</key>
-				<string>YES</string>
-				<key>PRODUCT_NAME</key>
-				<string>WordPressShared</string>
-				<key>SDKROOT</key>
-				<string>iphoneos</string>
-				<key>SKIP_INSTALL</key>
-				<string>YES</string>
-				<key>TARGETED_DEVICE_FAMILY</key>
-				<string>1,2</string>
-				<key>VERSIONING_SYSTEM</key>
-				<string>apple-generic</string>
-				<key>VERSION_INFO_PREFIX</key>
-				<string></string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Debug</string>
-		</dict>
 		<key>068D1C8963282DF5123043D6C02AB63C</key>
 		<dict>
 			<key>fileRef</key>
 			<string>CAD8E79A592F46B051094FBDF8A22A10</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
+		</dict>
+		<key>07EF99F4B9734BD3A4B01AF97CCB9992</key>
+		<dict>
+			<key>fileRef</key>
+			<string>EC237DABC161F9D6A7B2B568840C7BBC</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>COMPILER_FLAGS</key>
+				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
+			</dict>
+		</dict>
+		<key>08011711EF7CF11BA575C1BB2B7B28F1</key>
+		<dict>
+			<key>buildActionMask</key>
+			<string>2147483647</string>
+			<key>files</key>
+			<array>
+				<string>7B015EAC3AE398ABDE23D305CC0C6D26</string>
+			</array>
+			<key>isa</key>
+			<string>PBXResourcesBuildPhase</string>
+			<key>runOnlyForDeploymentPostprocessing</key>
+			<string>0</string>
 		</dict>
 		<key>084C845BC9C055A982ABAD3EC10984F5</key>
 		<dict>
@@ -273,6 +270,13 @@
 			<string>ZSShorizontalrule@2x.png</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
+		</dict>
+		<key>08F0556379C441A1706C7CE7B4662008</key>
+		<dict>
+			<key>fileRef</key>
+			<string>D37279669B43670DB443F490788E3CD0</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
 		</dict>
 		<key>090941BFCFEDA8950E827E53ABC95F94</key>
 		<dict>
@@ -303,7 +307,7 @@
 			<key>name</key>
 			<string>WordPress-iOS-Shared</string>
 			<key>target</key>
-			<string>ABF9F69D8682A55C95D7DC6077A4BAAD</string>
+			<string>9B3476DB4FC03F7CCA54D4101A0A512C</string>
 			<key>targetProxy</key>
 			<string>F9DB62E089FD146BB1C236E99B1643C4</string>
 		</dict>
@@ -331,20 +335,6 @@
 			<string>Release</string>
 			<key>isa</key>
 			<string>XCConfigurationList</string>
-		</dict>
-		<key>0A2F23EEF70CA794046DF78858C3CDA9</key>
-		<dict>
-			<key>fileRef</key>
-			<string>53B5711ADEEE0B1C4CC2C4135157AECB</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>ATTRIBUTES</key>
-				<array>
-					<string>Public</string>
-				</array>
-			</dict>
 		</dict>
 		<key>0A4B83B75BC115A306E68DB59D24125D</key>
 		<dict>
@@ -422,26 +412,23 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>0E225AB9205BB88E49938AE5CD086D84</key>
-		<dict>
-			<key>fileRef</key>
-			<string>7C38580549F53764A8D5F555D848DE2E</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>ATTRIBUTES</key>
-				<array>
-					<string>Public</string>
-				</array>
-			</dict>
-		</dict>
 		<key>0EE2716BB6C4307A83757E48D1C303E3</key>
 		<dict>
 			<key>fileRef</key>
 			<string>245F54ECECB27C0FFE46C6AF76E58072</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
+		</dict>
+		<key>0F27CA80FFB6F27857CFEFB6A402325E</key>
+		<dict>
+			<key>buildActionMask</key>
+			<string>2147483647</string>
+			<key>files</key>
+			<array/>
+			<key>isa</key>
+			<string>PBXFrameworksBuildPhase</string>
+			<key>runOnlyForDeploymentPostprocessing</key>
+			<string>0</string>
 		</dict>
 		<key>0F5A74891EC5B2FC7E2F87971BE031B4</key>
 		<dict>
@@ -467,25 +454,18 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>1024F9F36D5B51DDD72FD2442D1A55BD</key>
+		<key>10D86A901FE4A2D790F2DFA021765BA7</key>
 		<dict>
-			<key>explicitFileType</key>
-			<string>wrapper.framework</string>
-			<key>includeInIndex</key>
-			<string>0</string>
+			<key>containerPortal</key>
+			<string>D41D8CD98F00B204E9800998ECF8427E</string>
 			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>path</key>
-			<string>WordPressComAnalytics.framework</string>
-			<key>sourceTree</key>
-			<string>BUILT_PRODUCTS_DIR</string>
-		</dict>
-		<key>1037AC9205AA7F7A380C22D409580B01</key>
-		<dict>
-			<key>fileRef</key>
-			<string>B3CA66C30810C785A44C0B73FC1F61E8</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
+			<string>PBXContainerItemProxy</string>
+			<key>proxyType</key>
+			<string>1</string>
+			<key>remoteGlobalIDString</key>
+			<string>81A3B8F66C6F7E37261DB6A91FBA729A</string>
+			<key>remoteInfo</key>
+			<string>WordPress-iOS-Shared-WordPress-iOS-Shared</string>
 		</dict>
 		<key>11368C911EFD50086CAAE15A44E0BECC</key>
 		<dict>
@@ -525,6 +505,18 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
+		<key>12748AA8BE2BF12E58CC344FB7159676</key>
+		<dict>
+			<key>fileRef</key>
+			<string>F2DF2C0A48402835850121E0E2EF0EE3</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>COMPILER_FLAGS</key>
+				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
+			</dict>
+		</dict>
 		<key>127D2FDF51E1530225DF1C1CC8C8117C</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -543,7 +535,7 @@
 		<key>128F72111FC0A32E4BB018BF5FCC7A40</key>
 		<dict>
 			<key>fileRef</key>
-			<string>B3CA66C30810C785A44C0B73FC1F61E8</string>
+			<string>676A7542F6954D52CFA72E9AE8D773FC</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
@@ -573,6 +565,18 @@
 			<string>34D651860ED44A41B3C8BDB095EEAC6A</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
+		</dict>
+		<key>153E3DC79473C83DF2999CB09F723973</key>
+		<dict>
+			<key>fileRef</key>
+			<string>65E935C226925A5FB4E1B47E640C0648</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>COMPILER_FLAGS</key>
+				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
+			</dict>
 		</dict>
 		<key>1571C1DB12A1CDA739E05261030CDA4C</key>
 		<dict>
@@ -745,20 +749,6 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>192B070F4E0C2960996C646B5EA6F006</key>
-		<dict>
-			<key>fileRef</key>
-			<string>94E8B57BD3574A87AE44E18C2A6F99CE</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>ATTRIBUTES</key>
-				<array>
-					<string>Public</string>
-				</array>
-			</dict>
-		</dict>
 		<key>19885539202FD91E61E9AA5F4EEE1DCC</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -826,13 +816,6 @@
 			<string>WordPress-iOS-Shared/Core/WPTableViewCell.h</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>1AC55C9D6E1E202F74A97A136EC435B1</key>
-		<dict>
-			<key>fileRef</key>
-			<string>0123A6BEC7969A75F67DC69B14E4C57D</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
 		</dict>
 		<key>1AD3F2444DCB0CACC27778789A6219C1</key>
 		<dict>
@@ -964,27 +947,6 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>1FF24712C2834832CD72883E88EF655A</key>
-		<dict>
-			<key>fileRef</key>
-			<string>C40BED3037967D402804639286FEB406</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>1FF3C7D3828CB84DE163694FD0FE47AA</key>
-		<dict>
-			<key>fileRef</key>
-			<string>3FBD8A0C12B737AFE086A4D5BAFDC746</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>ATTRIBUTES</key>
-				<array>
-					<string>Public</string>
-				</array>
-			</dict>
-		</dict>
 		<key>2026A788FEA997F52E05E3C36198518F</key>
 		<dict>
 			<key>fileRef</key>
@@ -1056,29 +1018,31 @@
 			<key>sourceTree</key>
 			<string>BUILT_PRODUCTS_DIR</string>
 		</dict>
-		<key>22F559FF2D74737D8A3E9E9260349FCF</key>
+		<key>22A28E29E5422FA4E1A8F7C9D831257E</key>
+		<dict>
+			<key>fileRef</key>
+			<string>1AB6D0A1D9D034778A0DBCE3207A9FDE</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>ATTRIBUTES</key>
+				<array>
+					<string>Public</string>
+				</array>
+			</dict>
+		</dict>
+		<key>236F1728366BCA4A4B7F213C51B1EAA5</key>
 		<dict>
 			<key>buildActionMask</key>
 			<string>2147483647</string>
 			<key>files</key>
 			<array>
-				<string>F2F602418A745EAAFF62515659F6701F</string>
-				<string>698B9414E2D9B19491AA7F3E0E7D56B1</string>
-				<string>B306B4BA0253F6EF5AF7E1F488E7A8F3</string>
-				<string>442B5E5737A78E8B317F4E47CC520AFA</string>
-				<string>52402846AB6A1D8BF3765635D03D78BA</string>
-				<string>3C0C47196B99F5441CB2483EF885D0E9</string>
-				<string>9A722B5308CC47D7738CC8006BA7FB5B</string>
-				<string>E6FA3EE01CF18A482A8AA0D1FD2557C3</string>
-				<string>82FE37150229255AD574B954190AE9C0</string>
-				<string>B96CE42A03AFD8E6C2F868B5C72B43C3</string>
-				<string>A2F243553B9CD8C6789A6CF4EC868A62</string>
-				<string>B6E6B19B332947E2B551B27FA2977405</string>
-				<string>7DA088C199DD694B2C9DB74810410D49</string>
-				<string>95C6DD90499AE583E4F3A8D85A06DB59</string>
+				<string>76A83E9C448078508338A00FD898B59E</string>
+				<string>C73F1B671B4ED3AAB3B55446E992F2BA</string>
 			</array>
 			<key>isa</key>
-			<string>PBXSourcesBuildPhase</string>
+			<string>PBXFrameworksBuildPhase</string>
 			<key>runOnlyForDeploymentPostprocessing</key>
 			<string>0</string>
 		</dict>
@@ -1124,6 +1088,20 @@
 			<string>36EAD39CF95D93ED27639D6ECABFCCDF</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
+		</dict>
+		<key>253257C66622697467D9F95C5D2D97DF</key>
+		<dict>
+			<key>buildConfigurations</key>
+			<array>
+				<string>60DCD28418C62AFAFD48B7CE5CB2FB81</string>
+				<string>E202FA356BD349590B3E21BE62666224</string>
+			</array>
+			<key>defaultConfigurationIsVisible</key>
+			<string>0</string>
+			<key>defaultConfigurationName</key>
+			<string>Release</string>
+			<key>isa</key>
+			<string>XCConfigurationList</string>
 		</dict>
 		<key>25910FCF335A4CDC0542685B7EE2EECA</key>
 		<dict>
@@ -1188,6 +1166,19 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
+		<key>271E503EE1BEA045BB28FAABE6E102D6</key>
+		<dict>
+			<key>explicitFileType</key>
+			<string>wrapper.framework</string>
+			<key>includeInIndex</key>
+			<string>0</string>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>path</key>
+			<string>WordPressComAnalytics.framework</string>
+			<key>sourceTree</key>
+			<string>BUILT_PRODUCTS_DIR</string>
+		</dict>
 		<key>27546FCC97F42DC8F60B8AA0941B7426</key>
 		<dict>
 			<key>fileRef</key>
@@ -1195,12 +1186,17 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
-		<key>27768B361B5608C7C30DB934AB8ACA91</key>
+		<key>282208812776B07E1F825E50F44CCC82</key>
 		<dict>
 			<key>fileRef</key>
-			<string>B3CA66C30810C785A44C0B73FC1F61E8</string>
+			<string>A2337CC482E94C87E3C05C6F762768CE</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>COMPILER_FLAGS</key>
+				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
+			</dict>
 		</dict>
 		<key>2866C92FF271803585B9869806816B32</key>
 		<dict>
@@ -1339,19 +1335,6 @@
 			<key>name</key>
 			<string>Release</string>
 		</dict>
-		<key>2BE6D43C4F7E6F3E340E7ECFB056E535</key>
-		<dict>
-			<key>containerPortal</key>
-			<string>D41D8CD98F00B204E9800998ECF8427E</string>
-			<key>isa</key>
-			<string>PBXContainerItemProxy</string>
-			<key>proxyType</key>
-			<string>1</string>
-			<key>remoteGlobalIDString</key>
-			<string>51724DC3F62CEBD1B203FA25AE581F75</string>
-			<key>remoteInfo</key>
-			<string>WordPress-iOS-Shared-WordPress-iOS-Shared</string>
-		</dict>
 		<key>2C264B7E6C168306DF29C9378B70348B</key>
 		<dict>
 			<key>fileRef</key>
@@ -1391,17 +1374,6 @@
 			<string>WPLegacyEditorFormatToolbar.m</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>2D0D5B40858A8DAA70E69BF51A9B26AD</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array/>
-			<key>isa</key>
-			<string>PBXFrameworksBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
 		</dict>
 		<key>2D1EDF3017CAFFE0A54DBF79F5F04182</key>
 		<dict>
@@ -1509,13 +1481,6 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
-		<key>30BAEE056AF0BA4BDE4ADF4420E23BC8</key>
-		<dict>
-			<key>fileRef</key>
-			<string>EC0BE5FDF36E664AE7A67D5EA2ECB3DA</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
 		<key>30C52CF0DB3C82080F216C711CDF4D6F</key>
 		<dict>
 			<key>children</key>
@@ -1534,6 +1499,20 @@
 			<string>../Target Support Files/CocoaLumberjack</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
+		</dict>
+		<key>30EB1692A9773491529AB34F3C8D13D1</key>
+		<dict>
+			<key>fileRef</key>
+			<string>5B780789CC23D84203C8C37B5298253E</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>ATTRIBUTES</key>
+				<array>
+					<string>Public</string>
+				</array>
+			</dict>
 		</dict>
 		<key>30F18BE32B44031DFD8C985B6041C0ED</key>
 		<dict>
@@ -1561,17 +1540,6 @@
 			<string>WordPress-iOS-Shared/Core/WPFontManager.m</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>315EA88D4FE986D62E4101D883525C16</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXTargetDependency</string>
-			<key>name</key>
-			<string>WordPress-iOS-Shared-WordPress-iOS-Shared</string>
-			<key>target</key>
-			<string>51724DC3F62CEBD1B203FA25AE581F75</string>
-			<key>targetProxy</key>
-			<string>2BE6D43C4F7E6F3E340E7ECFB056E535</string>
 		</dict>
 		<key>31C9984D992BD9D50CD4186218E1F11B</key>
 		<dict>
@@ -1655,6 +1623,20 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
+		<key>33AA4C4C4BB79C20FA807F558F3F7C7B</key>
+		<dict>
+			<key>fileRef</key>
+			<string>7C38580549F53764A8D5F555D848DE2E</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>ATTRIBUTES</key>
+				<array>
+					<string>Public</string>
+				</array>
+			</dict>
+		</dict>
 		<key>3442CFE39BC27A33F4FE132DC6686ABA</key>
 		<dict>
 			<key>fileRef</key>
@@ -1721,6 +1703,13 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
+		<key>3594034F6E12818647B52F5ED59549E1</key>
+		<dict>
+			<key>fileRef</key>
+			<string>271E503EE1BEA045BB28FAABE6E102D6</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
 		<key>35AB5DF63FB82F643DD9FA486D50CF1A</key>
 		<dict>
 			<key>fileRef</key>
@@ -1785,10 +1774,10 @@
 				</array>
 			</dict>
 		</dict>
-		<key>36C15F74E5F93A653E390333E2C8272B</key>
+		<key>36C4547AE5261C2347AF61025554FCC9</key>
 		<dict>
 			<key>fileRef</key>
-			<string>C449397FCB53B34540202D5AC93832E4</string>
+			<string>88DED3CA8A055F69564000D040E0F04D</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
@@ -1816,18 +1805,12 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>380557BAE43AF76FCCA779A08CE97D88</key>
+		<key>37F2054562F4F672ADA653F964961D0B</key>
 		<dict>
-			<key>explicitFileType</key>
-			<string>wrapper.framework</string>
-			<key>includeInIndex</key>
-			<string>0</string>
+			<key>fileRef</key>
+			<string>DB6905F5571DDA123ADEEB9A167A0365</string>
 			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>path</key>
-			<string>WordPressShared.framework</string>
-			<key>sourceTree</key>
-			<string>BUILT_PRODUCTS_DIR</string>
+			<string>PBXBuildFile</string>
 		</dict>
 		<key>380B93C8E4337BF56A410696E74F6534</key>
 		<dict>
@@ -1906,6 +1889,19 @@
 			<key>name</key>
 			<string>Debug</string>
 		</dict>
+		<key>3976A54154F2E60C4DF9E012E81FAC58</key>
+		<dict>
+			<key>explicitFileType</key>
+			<string>wrapper.framework</string>
+			<key>includeInIndex</key>
+			<string>0</string>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>path</key>
+			<string>CocoaLumberjack.framework</string>
+			<key>sourceTree</key>
+			<string>BUILT_PRODUCTS_DIR</string>
+		</dict>
 		<key>39F20D16914833954B02A228259489C7</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -1960,18 +1956,6 @@
 			<string>WordPress-iOS-Shared/Assets/OpenSans-BoldItalic.ttf</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>3C0C47196B99F5441CB2483EF885D0E9</key>
-		<dict>
-			<key>fileRef</key>
-			<string>65E935C226925A5FB4E1B47E640C0648</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>COMPILER_FLAGS</key>
-				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
-			</dict>
 		</dict>
 		<key>3C3EAEB8E5A66912CE0054706993A7E3</key>
 		<dict>
@@ -2049,20 +2033,6 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>3E73780CF6376ED7D56C32313BF601DE</key>
-		<dict>
-			<key>fileRef</key>
-			<string>1AB6D0A1D9D034778A0DBCE3207A9FDE</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>ATTRIBUTES</key>
-				<array>
-					<string>Public</string>
-				</array>
-			</dict>
-		</dict>
 		<key>3E82ADCAF1324B381F64CE78591F35F9</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -2073,23 +2043,6 @@
 			<string>OpenSans-LightItalic.ttf</string>
 			<key>path</key>
 			<string>WordPress-iOS-Shared/Assets/OpenSans-LightItalic.ttf</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>3EFEB6958A22DA6824946FB9A37ACB5A</key>
-		<dict>
-			<key>children</key>
-			<array>
-				<string>4E43FCDA244A40E666E002DFF089F655</string>
-				<string>9B173AE5C26F5F7A57CB49A22C92BE37</string>
-				<string>1024F9F36D5B51DDD72FD2442D1A55BD</string>
-				<string>380557BAE43AF76FCCA779A08CE97D88</string>
-				<string>FFCE539F31708B353892CF981D582F3E</string>
-			</array>
-			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>name</key>
-			<string>Frameworks</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
@@ -2128,17 +2081,10 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>4081192942C4E4DF1D491EAF35A13F14</key>
+		<key>4066F3C67CDBD929F075D9DE477E7A62</key>
 		<dict>
 			<key>fileRef</key>
-			<string>1024F9F36D5B51DDD72FD2442D1A55BD</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>40A6E99610ACFD2FE1B49D602A353573</key>
-		<dict>
-			<key>fileRef</key>
-			<string>88DED3CA8A055F69564000D040E0F04D</string>
+			<string>3389344C33A1E36959429F14FE0BC077</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
@@ -2154,6 +2100,17 @@
 			<string>WPEditorToolbarButton.h</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
+		</dict>
+		<key>411923FE6F6634868E0940D67DCA6511</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXTargetDependency</string>
+			<key>name</key>
+			<string>WordPress-iOS-Shared-WordPress-iOS-Shared</string>
+			<key>target</key>
+			<string>81A3B8F66C6F7E37261DB6A91FBA729A</string>
+			<key>targetProxy</key>
+			<string>10D86A901FE4A2D790F2DFA021765BA7</string>
 		</dict>
 		<key>412553FF505DCEE9BA9018CA8FCD13C4</key>
 		<dict>
@@ -2245,24 +2202,31 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
-		<key>44211D8213AF619552A3A0D595243278</key>
+		<key>454D3B9A9859BDDBF049600383837FA0</key>
 		<dict>
-			<key>fileRef</key>
-			<string>5B4B0EB6F8AC68280717E95B31FCF8D1</string>
+			<key>buildActionMask</key>
+			<string>2147483647</string>
+			<key>files</key>
+			<array>
+				<string>D65D3435E88B7A7D8DEF019C9F489039</string>
+				<string>08F0556379C441A1706C7CE7B4662008</string>
+				<string>B881DD9939A908E168C38553A0CA36E8</string>
+				<string>DC813C26C29F5AC56D2ACFC5F94E09BC</string>
+				<string>A07F14ED8A48F23C2604AFB90466B564</string>
+				<string>36C4547AE5261C2347AF61025554FCC9</string>
+				<string>51AE45DD66486FEEFEC810B14BDAC4A4</string>
+				<string>D801CF6C3D74F0F34B79A514853860C5</string>
+				<string>4066F3C67CDBD929F075D9DE477E7A62</string>
+				<string>37F2054562F4F672ADA653F964961D0B</string>
+				<string>617E0A245AAAA71C51AD7F25C5696D86</string>
+				<string>D33DF68230A130A46BC8515196867D8F</string>
+				<string>B0526C787457B3870B3ABF642003721C</string>
+				<string>A830A10E84778F08BA6EB322FB72BC8A</string>
+			</array>
 			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>442B5E5737A78E8B317F4E47CC520AFA</key>
-		<dict>
-			<key>fileRef</key>
-			<string>98C2A6CC972027AA791EB0222A3A942C</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>COMPILER_FLAGS</key>
-				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
-			</dict>
+			<string>PBXResourcesBuildPhase</string>
+			<key>runOnlyForDeploymentPostprocessing</key>
+			<string>0</string>
 		</dict>
 		<key>4563940DE95C5DD16840E34252DF90B2</key>
 		<dict>
@@ -2301,19 +2265,6 @@
 			<string>CocoaLumberjack-prefix.pch</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>47082597CE34BAAB682C22A81621D597</key>
-		<dict>
-			<key>containerPortal</key>
-			<string>D41D8CD98F00B204E9800998ECF8427E</string>
-			<key>isa</key>
-			<string>PBXContainerItemProxy</string>
-			<key>proxyType</key>
-			<string>1</string>
-			<key>remoteGlobalIDString</key>
-			<string>8A2E8FED01C8A6BC8ADFCF3C3B78368F</string>
-			<key>remoteInfo</key>
-			<string>CocoaLumberjack</string>
 		</dict>
 		<key>47BFD20D4A0E45DC4359F26E96CCA8F2</key>
 		<dict>
@@ -2420,6 +2371,19 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
+		<key>4D19F61E38E65D9610D7008A9606DEA5</key>
+		<dict>
+			<key>containerPortal</key>
+			<string>D41D8CD98F00B204E9800998ECF8427E</string>
+			<key>isa</key>
+			<string>PBXContainerItemProxy</string>
+			<key>proxyType</key>
+			<string>1</string>
+			<key>remoteGlobalIDString</key>
+			<string>8A2E8FED01C8A6BC8ADFCF3C3B78368F</string>
+			<key>remoteInfo</key>
+			<string>CocoaLumberjack</string>
+		</dict>
 		<key>4DF55A5C1484C814CD426BB31E72662B</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -2430,19 +2394,6 @@
 			<string>WordPressCom-Analytics-iOS.modulemap</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>4E43FCDA244A40E666E002DFF089F655</key>
-		<dict>
-			<key>explicitFileType</key>
-			<string>wrapper.framework</string>
-			<key>includeInIndex</key>
-			<string>0</string>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>path</key>
-			<string>CocoaLumberjack.framework</string>
-			<key>sourceTree</key>
-			<string>BUILT_PRODUCTS_DIR</string>
 		</dict>
 		<key>4E6DD9CF19AB75285F82BDEAA2A01530</key>
 		<dict>
@@ -2572,44 +2523,12 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>503DE432A480CAF59EE593FBAA043EC7</key>
+		<key>51AE45DD66486FEEFEC810B14BDAC4A4</key>
 		<dict>
 			<key>fileRef</key>
-			<string>7A2CA7B863EE2B7B98742074700F20F6</string>
+			<string>EC0BE5FDF36E664AE7A67D5EA2ECB3DA</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>ATTRIBUTES</key>
-				<array>
-					<string>Public</string>
-				</array>
-			</dict>
-		</dict>
-		<key>51724DC3F62CEBD1B203FA25AE581F75</key>
-		<dict>
-			<key>buildConfigurationList</key>
-			<string>5F398498835ADA8E215FC113C8933E5F</string>
-			<key>buildPhases</key>
-			<array>
-				<string>A6A887B507AAA7A5C57490FD5E3964D1</string>
-				<string>2D0D5B40858A8DAA70E69BF51A9B26AD</string>
-				<string>A4A50490DC12612A0646008315D63286</string>
-			</array>
-			<key>buildRules</key>
-			<array/>
-			<key>dependencies</key>
-			<array/>
-			<key>isa</key>
-			<string>PBXNativeTarget</string>
-			<key>name</key>
-			<string>WordPress-iOS-Shared-WordPress-iOS-Shared</string>
-			<key>productName</key>
-			<string>WordPress-iOS-Shared-WordPress-iOS-Shared</string>
-			<key>productReference</key>
-			<string>1DAD111CA0B289EDEF26B5808D5E23DD</string>
-			<key>productType</key>
-			<string>com.apple.product-type.bundle</string>
 		</dict>
 		<key>51AF9A8FBD8FCDA12344248D69D44A51</key>
 		<dict>
@@ -2633,10 +2552,24 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>52402846AB6A1D8BF3765635D03D78BA</key>
+		<key>523D16E3453309EBBAA5ED8A311EF1A6</key>
 		<dict>
 			<key>fileRef</key>
-			<string>052B39120247924EF4FB59D07244495F</string>
+			<string>1AA7B337C2E7368E247519771F59236B</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>ATTRIBUTES</key>
+				<array>
+					<string>Public</string>
+				</array>
+			</dict>
+		</dict>
+		<key>5256AEF12CC575688C3FFA04E98802BB</key>
+		<dict>
+			<key>fileRef</key>
+			<string>59A23F55488379719EA0B0CB9553CA5C</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
@@ -2674,6 +2607,20 @@
 				<string>-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-all-checks</string>
 			</dict>
 		</dict>
+		<key>544B13648CABD8ED9678E7611095A8E8</key>
+		<dict>
+			<key>buildConfigurations</key>
+			<array>
+				<string>CFBA6D42A7F7E0AF4CCCB04FB1C68B9B</string>
+				<string>E9B5EEB95B19A4ABBB39913D891C8CA7</string>
+			</array>
+			<key>defaultConfigurationIsVisible</key>
+			<string>0</string>
+			<key>defaultConfigurationName</key>
+			<string>Release</string>
+			<key>isa</key>
+			<string>XCConfigurationList</string>
+		</dict>
 		<key>55334BC93ADC4E3F680DFF2B70EA01B1</key>
 		<dict>
 			<key>fileRef</key>
@@ -2701,12 +2648,17 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
-		<key>560F2EDC8A22A25B83F76E4FDD8F28FC</key>
+		<key>5788044BA4E2B71F62A7F405DF63B4FC</key>
 		<dict>
 			<key>fileRef</key>
-			<string>D37279669B43670DB443F490788E3CD0</string>
+			<string>5A54A8011D45531F1BAB0AF21744AF9C</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>COMPILER_FLAGS</key>
+				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
+			</dict>
 		</dict>
 		<key>57A562825C9F00E91F55B3CABDC046B7</key>
 		<dict>
@@ -2728,28 +2680,6 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>582584B205674E154FA369C0D4746E5C</key>
-		<dict>
-			<key>baseConfigurationReference</key>
-			<string>DEEB2CF0509E97B9BAB585A264200BBC</string>
-			<key>buildSettings</key>
-			<dict>
-				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
-				<string>YES</string>
-				<key>PRODUCT_NAME</key>
-				<string>WordPress-iOS-Shared</string>
-				<key>SDKROOT</key>
-				<string>iphoneos</string>
-				<key>SKIP_INSTALL</key>
-				<string>YES</string>
-				<key>WRAPPER_EXTENSION</key>
-				<string>bundle</string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Debug</string>
-		</dict>
 		<key>58CDA75D17CB6093850009EB4A84E759</key>
 		<dict>
 			<key>children</key>
@@ -2769,6 +2699,19 @@
 			<string>../Target Support Files/WordPress-iOS-Shared</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
+		</dict>
+		<key>59A23F55488379719EA0B0CB9553CA5C</key>
+		<dict>
+			<key>explicitFileType</key>
+			<string>wrapper.framework</string>
+			<key>includeInIndex</key>
+			<string>0</string>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>path</key>
+			<string>NSObject_SafeExpectations.framework</string>
+			<key>sourceTree</key>
+			<string>BUILT_PRODUCTS_DIR</string>
 		</dict>
 		<key>5A54A8011D45531F1BAB0AF21744AF9C</key>
 		<dict>
@@ -3194,20 +3137,6 @@
 				</array>
 			</dict>
 		</dict>
-		<key>5F398498835ADA8E215FC113C8933E5F</key>
-		<dict>
-			<key>buildConfigurations</key>
-			<array>
-				<string>582584B205674E154FA369C0D4746E5C</string>
-				<string>AE62CE76442E2A0B287813FBFAE060A1</string>
-			</array>
-			<key>defaultConfigurationIsVisible</key>
-			<string>0</string>
-			<key>defaultConfigurationName</key>
-			<string>Release</string>
-			<key>isa</key>
-			<string>XCConfigurationList</string>
-		</dict>
 		<key>5F610F423121D2A73BA14EBA6CFE98E2</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -3296,6 +3225,62 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
+		<key>60DCD28418C62AFAFD48B7CE5CB2FB81</key>
+		<dict>
+			<key>baseConfigurationReference</key>
+			<string>DEEB2CF0509E97B9BAB585A264200BBC</string>
+			<key>buildSettings</key>
+			<dict>
+				<key>CODE_SIGN_IDENTITY[sdk=iphoneos*]</key>
+				<string>iPhone Developer</string>
+				<key>CURRENT_PROJECT_VERSION</key>
+				<string>1</string>
+				<key>DEFINES_MODULE</key>
+				<string>YES</string>
+				<key>DYLIB_COMPATIBILITY_VERSION</key>
+				<string>1</string>
+				<key>DYLIB_CURRENT_VERSION</key>
+				<string>1</string>
+				<key>DYLIB_INSTALL_NAME_BASE</key>
+				<string>@rpath</string>
+				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
+				<string>YES</string>
+				<key>GCC_PREFIX_HEADER</key>
+				<string>Target Support Files/WordPress-iOS-Shared/WordPress-iOS-Shared-prefix.pch</string>
+				<key>INFOPLIST_FILE</key>
+				<string>Target Support Files/WordPress-iOS-Shared/Info.plist</string>
+				<key>INSTALL_PATH</key>
+				<string>$(LOCAL_LIBRARY_DIR)/Frameworks</string>
+				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
+				<string>9.0</string>
+				<key>LD_RUNPATH_SEARCH_PATHS</key>
+				<array>
+					<string>$(inherited)</string>
+					<string>@executable_path/Frameworks</string>
+					<string>@loader_path/Frameworks</string>
+				</array>
+				<key>MODULEMAP_FILE</key>
+				<string>Target Support Files/WordPress-iOS-Shared/WordPress-iOS-Shared.modulemap</string>
+				<key>MTL_ENABLE_DEBUG_INFO</key>
+				<string>YES</string>
+				<key>PRODUCT_NAME</key>
+				<string>WordPressShared</string>
+				<key>SDKROOT</key>
+				<string>iphoneos</string>
+				<key>SKIP_INSTALL</key>
+				<string>YES</string>
+				<key>TARGETED_DEVICE_FAMILY</key>
+				<string>1,2</string>
+				<key>VERSIONING_SYSTEM</key>
+				<string>apple-generic</string>
+				<key>VERSION_INFO_PREFIX</key>
+				<string></string>
+			</dict>
+			<key>isa</key>
+			<string>XCBuildConfiguration</string>
+			<key>name</key>
+			<string>Debug</string>
+		</dict>
 		<key>610301B3D841051A9C77A4E50BF336AD</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -3308,6 +3293,13 @@
 			<string>Info.plist</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
+		</dict>
+		<key>617E0A245AAAA71C51AD7F25C5696D86</key>
+		<dict>
+			<key>fileRef</key>
+			<string>3E82ADCAF1324B381F64CE78591F35F9</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
 		</dict>
 		<key>61F234CAA6F43D6CDCBDA5B82C7D17D2</key>
 		<dict>
@@ -3378,13 +3370,6 @@
 			<key>targetProxy</key>
 			<string>DA2E673898F7E1804B18563F5C1D0B30</string>
 		</dict>
-		<key>65A9B65D8C66D127348685A286ECE58A</key>
-		<dict>
-			<key>fileRef</key>
-			<string>3389344C33A1E36959429F14FE0BC077</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
 		<key>65E632558A675386B9FC957C16DA771E</key>
 		<dict>
 			<key>fileRef</key>
@@ -3418,6 +3403,46 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
+		<key>662C7BD83201DBFCDC634B30FDC1A50F</key>
+		<dict>
+			<key>fileRef</key>
+			<string>785BB48FB37253EB3FED383FB5A96A27</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>ATTRIBUTES</key>
+				<array>
+					<string>Public</string>
+				</array>
+			</dict>
+		</dict>
+		<key>66B94614E76CA809863AB7972B720213</key>
+		<dict>
+			<key>buildActionMask</key>
+			<string>2147483647</string>
+			<key>files</key>
+			<array>
+				<string>5788044BA4E2B71F62A7F405DF63B4FC</string>
+				<string>CD16E931E3369A23F6E4C99F97450D22</string>
+				<string>9A1212C049E4E6BEC545E0973E626810</string>
+				<string>829F3FE42C3126F25FE07580EE1BF1F0</string>
+				<string>80766BFAF224B0C1B2D9D3F93C57E9EB</string>
+				<string>153E3DC79473C83DF2999CB09F723973</string>
+				<string>D80B42167E52D41AF135E6C50495F389</string>
+				<string>12748AA8BE2BF12E58CC344FB7159676</string>
+				<string>07EF99F4B9734BD3A4B01AF97CCB9992</string>
+				<string>01C6190D3710971C5F4E9CC30D38DE92</string>
+				<string>D4711383585F1AF846DC8367FAC10BF2</string>
+				<string>C3305AC00EC08AF2A707CA9D80C7263C</string>
+				<string>6ED78D67EA82812C1C59776C8120C436</string>
+				<string>282208812776B07E1F825E50F44CCC82</string>
+			</array>
+			<key>isa</key>
+			<string>PBXSourcesBuildPhase</string>
+			<key>runOnlyForDeploymentPostprocessing</key>
+			<string>0</string>
+		</dict>
 		<key>670FFEC2EF6F52052884AA52E7CC2AC9</key>
 		<dict>
 			<key>fileRef</key>
@@ -3431,6 +3456,19 @@
 					<string>Public</string>
 				</array>
 			</dict>
+		</dict>
+		<key>676A7542F6954D52CFA72E9AE8D773FC</key>
+		<dict>
+			<key>isa</key>
+			<string>PBXFileReference</string>
+			<key>lastKnownFileType</key>
+			<string>wrapper.framework</string>
+			<key>name</key>
+			<string>Foundation.framework</string>
+			<key>path</key>
+			<string>Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/Foundation.framework</string>
+			<key>sourceTree</key>
+			<string>DEVELOPER_DIR</string>
 		</dict>
 		<key>677D2D06314F97653A9C3B0D29D65555</key>
 		<dict>
@@ -3474,13 +3512,6 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>678B9E141C09EFE30A1F5E66E2174B3B</key>
-		<dict>
-			<key>fileRef</key>
-			<string>380557BAE43AF76FCCA779A08CE97D88</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
 		<key>68724888E3685F7EA779D3AAAE19A496</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -3504,18 +3535,6 @@
 			<string>rangy-classapplier.js</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>698B9414E2D9B19491AA7F3E0E7D56B1</key>
-		<dict>
-			<key>fileRef</key>
-			<string>F7A5B643293E940A43F3720DE01E6A00</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>COMPILER_FLAGS</key>
-				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
-			</dict>
 		</dict>
 		<key>69B6B4D621C2C9F61470874F1D557944</key>
 		<dict>
@@ -3559,19 +3578,6 @@
 			<string>B174D434444FFD56027D2FBA78A4820C</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
-		</dict>
-		<key>6C855DF5C6210E936457DDBDFDD126C5</key>
-		<dict>
-			<key>containerPortal</key>
-			<string>D41D8CD98F00B204E9800998ECF8427E</string>
-			<key>isa</key>
-			<string>PBXContainerItemProxy</string>
-			<key>proxyType</key>
-			<string>1</string>
-			<key>remoteGlobalIDString</key>
-			<string>ABF9F69D8682A55C95D7DC6077A4BAAD</string>
-			<key>remoteInfo</key>
-			<string>WordPress-iOS-Shared</string>
 		</dict>
 		<key>6D09EA3A9C3C3DDF7C8466F91D2DE40A</key>
 		<dict>
@@ -3624,13 +3630,6 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
-		<key>6E564EBD429A1F3939B08CFDDC044A82</key>
-		<dict>
-			<key>fileRef</key>
-			<string>3C034673379821715903DDE2E84B12B9</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
 		<key>6EB4CD335B6E3DFE43DF4D2DD6BAB9D5</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -3643,6 +3642,18 @@
 			<string>Pods-EditorDemo-umbrella.h</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
+		</dict>
+		<key>6ED78D67EA82812C1C59776C8120C436</key>
+		<dict>
+			<key>fileRef</key>
+			<string>1EFDE46D36D4D7C13A21DC2B4BD6D73C</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>COMPILER_FLAGS</key>
+				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
+			</dict>
 		</dict>
 		<key>71D8B1BE2492FCB9603E0EBC6FABAD51</key>
 		<dict>
@@ -3674,62 +3685,6 @@
 			<string>Pods-EditorDemo.release.xcconfig</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>72BD6B108D4E284926EE5EDC93C21205</key>
-		<dict>
-			<key>baseConfigurationReference</key>
-			<string>DEEB2CF0509E97B9BAB585A264200BBC</string>
-			<key>buildSettings</key>
-			<dict>
-				<key>CODE_SIGN_IDENTITY[sdk=iphoneos*]</key>
-				<string>iPhone Developer</string>
-				<key>CURRENT_PROJECT_VERSION</key>
-				<string>1</string>
-				<key>DEFINES_MODULE</key>
-				<string>YES</string>
-				<key>DYLIB_COMPATIBILITY_VERSION</key>
-				<string>1</string>
-				<key>DYLIB_CURRENT_VERSION</key>
-				<string>1</string>
-				<key>DYLIB_INSTALL_NAME_BASE</key>
-				<string>@rpath</string>
-				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
-				<string>YES</string>
-				<key>GCC_PREFIX_HEADER</key>
-				<string>Target Support Files/WordPress-iOS-Shared/WordPress-iOS-Shared-prefix.pch</string>
-				<key>INFOPLIST_FILE</key>
-				<string>Target Support Files/WordPress-iOS-Shared/Info.plist</string>
-				<key>INSTALL_PATH</key>
-				<string>$(LOCAL_LIBRARY_DIR)/Frameworks</string>
-				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
-				<string>9.0</string>
-				<key>LD_RUNPATH_SEARCH_PATHS</key>
-				<array>
-					<string>$(inherited)</string>
-					<string>@executable_path/Frameworks</string>
-					<string>@loader_path/Frameworks</string>
-				</array>
-				<key>MODULEMAP_FILE</key>
-				<string>Target Support Files/WordPress-iOS-Shared/WordPress-iOS-Shared.modulemap</string>
-				<key>MTL_ENABLE_DEBUG_INFO</key>
-				<string>NO</string>
-				<key>PRODUCT_NAME</key>
-				<string>WordPressShared</string>
-				<key>SDKROOT</key>
-				<string>iphoneos</string>
-				<key>SKIP_INSTALL</key>
-				<string>YES</string>
-				<key>TARGETED_DEVICE_FAMILY</key>
-				<string>1,2</string>
-				<key>VERSIONING_SYSTEM</key>
-				<string>apple-generic</string>
-				<key>VERSION_INFO_PREFIX</key>
-				<string></string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Release</string>
 		</dict>
 		<key>73698F2B4860E39FE0B2230C5F755DAD</key>
 		<dict>
@@ -3929,6 +3884,13 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
+		<key>76A83E9C448078508338A00FD898B59E</key>
+		<dict>
+			<key>fileRef</key>
+			<string>3976A54154F2E60C4DF9E012E81FAC58</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
 		<key>76AEF3E1F9EAB5D48A32B3DDDA058B49</key>
 		<dict>
 			<key>fileRef</key>
@@ -3971,12 +3933,19 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>78D9C1D0811C8968EE8CAFC588EAEF82</key>
+		<key>787CA3500938C3181A7A62D0658D5265</key>
 		<dict>
 			<key>fileRef</key>
-			<string>4E43FCDA244A40E666E002DFF089F655</string>
+			<string>7C76A81193FD9847E2980805926A016D</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>ATTRIBUTES</key>
+				<array>
+					<string>Public</string>
+				</array>
+			</dict>
 		</dict>
 		<key>78F6629FAB4250363B0970D9E62C0397</key>
 		<dict>
@@ -4052,6 +4021,13 @@
 			<string>wpposter.svg</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
+		</dict>
+		<key>7B015EAC3AE398ABDE23D305CC0C6D26</key>
+		<dict>
+			<key>fileRef</key>
+			<string>1DAD111CA0B289EDEF26B5808D5E23DD</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
 		</dict>
 		<key>7B26D022BB2BC86A36F0416F7081F54A</key>
 		<dict>
@@ -4130,32 +4106,13 @@
 				</array>
 			</dict>
 		</dict>
-		<key>7CB22E75CC61FCAC4CCA76320872AA08</key>
-		<dict>
-			<key>fileRef</key>
-			<string>3E82ADCAF1324B381F64CE78591F35F9</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-		</dict>
-		<key>7DA088C199DD694B2C9DB74810410D49</key>
-		<dict>
-			<key>fileRef</key>
-			<string>1EFDE46D36D4D7C13A21DC2B4BD6D73C</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>COMPILER_FLAGS</key>
-				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
-			</dict>
-		</dict>
 		<key>7DB346D0F39D3F0E887471402A8071AB</key>
 		<dict>
 			<key>children</key>
 			<array>
 				<string>BA6428E9F66FD5A23C0A2E06ED26CD2F</string>
 				<string>41BE95C9D560C83F46F10E3072A32B9D</string>
-				<string>3EFEB6958A22DA6824946FB9A37ACB5A</string>
+				<string>01B6662FC6333C7FE12A527E1D1B7E4C</string>
 				<string>A9E139127ECE05D875C50F8BB6FEB0D9</string>
 				<string>1F409197A8E8979334B3BF5F3F63C512</string>
 				<string>E3846E73C179EEE07F196F956D6E7E66</string>
@@ -4196,19 +4153,12 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>802F73C4661E5DCFDC1B5F21ED583454</key>
+		<key>80766BFAF224B0C1B2D9D3F93C57E9EB</key>
 		<dict>
 			<key>fileRef</key>
-			<string>5016986459DB343FD5C743193B03FB51</string>
+			<string>052B39120247924EF4FB59D07244495F</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>ATTRIBUTES</key>
-				<array>
-					<string>Public</string>
-				</array>
-			</dict>
 		</dict>
 		<key>80F76772FDE6BF1F7BCC86C65491F4EE</key>
 		<dict>
@@ -4216,19 +4166,6 @@
 			<string>0CF0EC6275674E5BFAC10B32355D9C65</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
-		</dict>
-		<key>812B125A76396E776964D09FE9D5A863</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array>
-				<string>8CAD388EAC837C393D5F2E2A60F2DCEC</string>
-			</array>
-			<key>isa</key>
-			<string>PBXResourcesBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
 		</dict>
 		<key>813ABCFEC9BD6FAA400412DD00244DB7</key>
 		<dict>
@@ -4283,6 +4220,31 @@
 			<key>productType</key>
 			<string>com.apple.product-type.framework</string>
 		</dict>
+		<key>81A3B8F66C6F7E37261DB6A91FBA729A</key>
+		<dict>
+			<key>buildConfigurationList</key>
+			<string>544B13648CABD8ED9678E7611095A8E8</string>
+			<key>buildPhases</key>
+			<array>
+				<string>D9FDB18F6944DD972102AAD27C5C2DE4</string>
+				<string>0F27CA80FFB6F27857CFEFB6A402325E</string>
+				<string>454D3B9A9859BDDBF049600383837FA0</string>
+			</array>
+			<key>buildRules</key>
+			<array/>
+			<key>dependencies</key>
+			<array/>
+			<key>isa</key>
+			<string>PBXNativeTarget</string>
+			<key>name</key>
+			<string>WordPress-iOS-Shared-WordPress-iOS-Shared</string>
+			<key>productName</key>
+			<string>WordPress-iOS-Shared-WordPress-iOS-Shared</string>
+			<key>productReference</key>
+			<string>1DAD111CA0B289EDEF26B5808D5E23DD</string>
+			<key>productType</key>
+			<string>com.apple.product-type.bundle</string>
+		</dict>
 		<key>8282D2BDD21D7D47E01A159B3CE3AD5E</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -4295,6 +4257,18 @@
 			<string>NSObject-SafeExpectations-prefix.pch</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
+		</dict>
+		<key>829F3FE42C3126F25FE07580EE1BF1F0</key>
+		<dict>
+			<key>fileRef</key>
+			<string>98C2A6CC972027AA791EB0222A3A942C</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>COMPILER_FLAGS</key>
+				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
+			</dict>
 		</dict>
 		<key>82B55F5AB183565A09E2D7A34DCA43B9</key>
 		<dict>
@@ -4367,18 +4341,6 @@
 			<key>name</key>
 			<string>Release</string>
 		</dict>
-		<key>82FE37150229255AD574B954190AE9C0</key>
-		<dict>
-			<key>fileRef</key>
-			<string>EC237DABC161F9D6A7B2B568840C7BBC</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>COMPILER_FLAGS</key>
-				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
-			</dict>
-		</dict>
 		<key>84152523232E48617A1CDB7BAF404289</key>
 		<dict>
 			<key>children</key>
@@ -4395,13 +4357,6 @@
 			<string>WordPressCom-Analytics-iOS</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>846BAA4EF2D7A857B1D81DB427704B91</key>
-		<dict>
-			<key>fileRef</key>
-			<string>C6AB88F7A38403F814E42C1DE4465FEB</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
 		</dict>
 		<key>84EBED66A922F650ADB7571C1C10DF10</key>
 		<dict>
@@ -4461,9 +4416,25 @@
 		<key>86F5DF1D9FAF45F43E662EB8037A0915</key>
 		<dict>
 			<key>fileRef</key>
-			<string>B3CA66C30810C785A44C0B73FC1F61E8</string>
+			<string>676A7542F6954D52CFA72E9AE8D773FC</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
+		</dict>
+		<key>87494A3968E29FEF083C8DB120EFBF78</key>
+		<dict>
+			<key>buildActionMask</key>
+			<string>2147483647</string>
+			<key>files</key>
+			<array>
+				<string>04FCCD349B8A96EED5E9F9E114ECB25F</string>
+				<string>C6D0DDAD1584412A084B981E6DA18804</string>
+				<string>5256AEF12CC575688C3FFA04E98802BB</string>
+				<string>3594034F6E12818647B52F5ED59549E1</string>
+			</array>
+			<key>isa</key>
+			<string>PBXFrameworksBuildPhase</string>
+			<key>runOnlyForDeploymentPostprocessing</key>
+			<string>0</string>
 		</dict>
 		<key>8762E904BDAC9C6132B435A4AF2DCBD6</key>
 		<dict>
@@ -4644,32 +4615,6 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>8B2C2408A951683DF0484BF5773D2900</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array>
-				<string>939B01BEAE9C71C46E0D27D87481DF3C</string>
-				<string>E3EB3566FA170DB12D7AD8B9A001714D</string>
-				<string>0A2F23EEF70CA794046DF78858C3CDA9</string>
-				<string>F244421797EA0A507926D7F551FE27FD</string>
-				<string>B9578752EEAE947EF70B4E04DE4B77CA</string>
-				<string>BC587FCBBD8C8DC378D30A852C5F0D48</string>
-				<string>A5A73EB9D3F7032A42140D70953F2A69</string>
-				<string>0E225AB9205BB88E49938AE5CD086D84</string>
-				<string>1FF3C7D3828CB84DE163694FD0FE47AA</string>
-				<string>192B070F4E0C2960996C646B5EA6F006</string>
-				<string>9A43B32DE760D2AE226AF4ECD99DA55E</string>
-				<string>3E73780CF6376ED7D56C32313BF601DE</string>
-				<string>503DE432A480CAF59EE593FBAA043EC7</string>
-				<string>802F73C4661E5DCFDC1B5F21ED583454</string>
-			</array>
-			<key>isa</key>
-			<string>PBXHeadersBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
-		</dict>
 		<key>8B7A20975D7BF2EC238AB5F05508803F</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -4706,13 +4651,6 @@
 			<string>WPEditorViewController.h</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>8CAD388EAC837C393D5F2E2A60F2DCEC</key>
-		<dict>
-			<key>fileRef</key>
-			<string>1DAD111CA0B289EDEF26B5808D5E23DD</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
 		</dict>
 		<key>8D1065EE6B008771A2479AA84F7052A3</key>
 		<dict>
@@ -4902,6 +4840,20 @@
 				<string>-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-all-checks</string>
 			</dict>
 		</dict>
+		<key>903B21496BF9C0D5826F31CE306ED852</key>
+		<dict>
+			<key>fileRef</key>
+			<string>7A2CA7B863EE2B7B98742074700F20F6</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>ATTRIBUTES</key>
+				<array>
+					<string>Public</string>
+				</array>
+			</dict>
+		</dict>
 		<key>913DDE3EDDE2C12C7B20AE71488D7114</key>
 		<dict>
 			<key>buildActionMask</key>
@@ -4994,20 +4946,6 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>939B01BEAE9C71C46E0D27D87481DF3C</key>
-		<dict>
-			<key>fileRef</key>
-			<string>5D829968FB5AFA7A623D69742DA628C5</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>ATTRIBUTES</key>
-				<array>
-					<string>Public</string>
-				</array>
-			</dict>
-		</dict>
 		<key>93DBC79C8A3421513FB47808F90922AC</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -5059,18 +4997,6 @@
 			<string>Release</string>
 			<key>isa</key>
 			<string>XCConfigurationList</string>
-		</dict>
-		<key>95C6DD90499AE583E4F3A8D85A06DB59</key>
-		<dict>
-			<key>fileRef</key>
-			<string>A2337CC482E94C87E3C05C6F762768CE</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>COMPILER_FLAGS</key>
-				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
-			</dict>
 		</dict>
 		<key>9642DA7C6BC50EECB9AA8C8B27382FF1</key>
 		<dict>
@@ -5204,24 +5130,10 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
-		<key>9A43B32DE760D2AE226AF4ECD99DA55E</key>
+		<key>9A1212C049E4E6BEC545E0973E626810</key>
 		<dict>
 			<key>fileRef</key>
-			<string>785BB48FB37253EB3FED383FB5A96A27</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>ATTRIBUTES</key>
-				<array>
-					<string>Public</string>
-				</array>
-			</dict>
-		</dict>
-		<key>9A722B5308CC47D7738CC8006BA7FB5B</key>
-		<dict>
-			<key>fileRef</key>
-			<string>31069973ADDCB09C8E1C883D68D01AA1</string>
+			<string>9D3748853C78C3E0190AFA9FD5326BCE</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 			<key>settings</key>
@@ -5229,19 +5141,6 @@
 				<key>COMPILER_FLAGS</key>
 				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
 			</dict>
-		</dict>
-		<key>9B173AE5C26F5F7A57CB49A22C92BE37</key>
-		<dict>
-			<key>explicitFileType</key>
-			<string>wrapper.framework</string>
-			<key>includeInIndex</key>
-			<string>0</string>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>path</key>
-			<string>NSObject_SafeExpectations.framework</string>
-			<key>sourceTree</key>
-			<string>BUILT_PRODUCTS_DIR</string>
 		</dict>
 		<key>9B18A0FCF6A1D95292686CBFFE852AA6</key>
 		<dict>
@@ -5257,6 +5156,35 @@
 			<string>PBXHeadersBuildPhase</string>
 			<key>runOnlyForDeploymentPostprocessing</key>
 			<string>0</string>
+		</dict>
+		<key>9B3476DB4FC03F7CCA54D4101A0A512C</key>
+		<dict>
+			<key>buildConfigurationList</key>
+			<string>253257C66622697467D9F95C5D2D97DF</string>
+			<key>buildPhases</key>
+			<array>
+				<string>66B94614E76CA809863AB7972B720213</string>
+				<string>236F1728366BCA4A4B7F213C51B1EAA5</string>
+				<string>08011711EF7CF11BA575C1BB2B7B28F1</string>
+				<string>C5A942248B04C20149D696650C9545CD</string>
+			</array>
+			<key>buildRules</key>
+			<array/>
+			<key>dependencies</key>
+			<array>
+				<string>9CCE7481ACC5AD2D1C5FF8E146067B03</string>
+				<string>411923FE6F6634868E0940D67DCA6511</string>
+			</array>
+			<key>isa</key>
+			<string>PBXNativeTarget</string>
+			<key>name</key>
+			<string>WordPress-iOS-Shared</string>
+			<key>productName</key>
+			<string>WordPress-iOS-Shared</string>
+			<key>productReference</key>
+			<string>DC572BAF5C1BD8805F16402432A14F41</string>
+			<key>productType</key>
+			<string>com.apple.product-type.framework</string>
 		</dict>
 		<key>9BB8FAFC3FDCEC82F2BCF3726E888D71</key>
 		<dict>
@@ -5295,19 +5223,16 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>9CD34EE3908D1B943106C4A9E5A8C0E1</key>
+		<key>9CCE7481ACC5AD2D1C5FF8E146067B03</key>
 		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array>
-				<string>A77C73C9914125EA476E75401E66083B</string>
-				<string>1037AC9205AA7F7A380C22D409580B01</string>
-			</array>
 			<key>isa</key>
-			<string>PBXFrameworksBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
+			<string>PBXTargetDependency</string>
+			<key>name</key>
+			<string>CocoaLumberjack</string>
+			<key>target</key>
+			<string>8A2E8FED01C8A6BC8ADFCF3C3B78368F</string>
+			<key>targetProxy</key>
+			<string>4D19F61E38E65D9610D7008A9606DEA5</string>
 		</dict>
 		<key>9D3748853C78C3E0190AFA9FD5326BCE</key>
 		<dict>
@@ -5404,23 +5329,6 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
-		<key>9EFF7E74E4961B0B0C1A87FBF0212949</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array>
-				<string>78D9C1D0811C8968EE8CAFC588EAEF82</string>
-				<string>27768B361B5608C7C30DB934AB8ACA91</string>
-				<string>EA6E15AC471EFA0C4ACF9229FD1EFB4C</string>
-				<string>4081192942C4E4DF1D491EAF35A13F14</string>
-				<string>678B9E141C09EFE30A1F5E66E2174B3B</string>
-			</array>
-			<key>isa</key>
-			<string>PBXFrameworksBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
-		</dict>
 		<key>9F50739A27236410A971138D930F393D</key>
 		<dict>
 			<key>fileRef</key>
@@ -5463,6 +5371,13 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
+		<key>A07F14ED8A48F23C2604AFB90466B564</key>
+		<dict>
+			<key>fileRef</key>
+			<string>5B4B0EB6F8AC68280717E95B31FCF8D1</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
 		<key>A133BBDD9AA369AFEDF71ADB7703CA51</key>
 		<dict>
 			<key>fileRef</key>
@@ -5500,18 +5415,6 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>A2F243553B9CD8C6789A6CF4EC868A62</key>
-		<dict>
-			<key>fileRef</key>
-			<string>39F20D16914833954B02A228259489C7</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>COMPILER_FLAGS</key>
-				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
-			</dict>
-		</dict>
 		<key>A347E40B351E562043797CF5C4F29CAB</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -5539,52 +5442,12 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
-		<key>A4A50490DC12612A0646008315D63286</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array>
-				<string>DA3E82ABC9721FBE07AE8E67439C3927</string>
-				<string>560F2EDC8A22A25B83F76E4FDD8F28FC</string>
-				<string>846BAA4EF2D7A857B1D81DB427704B91</string>
-				<string>04FA270AC3AFB74AC886883B83FDD5DD</string>
-				<string>44211D8213AF619552A3A0D595243278</string>
-				<string>40A6E99610ACFD2FE1B49D602A353573</string>
-				<string>30BAEE056AF0BA4BDE4ADF4420E23BC8</string>
-				<string>6E564EBD429A1F3939B08CFDDC044A82</string>
-				<string>65A9B65D8C66D127348685A286ECE58A</string>
-				<string>A86CD69D949A9CAE936813584CE9A705</string>
-				<string>7CB22E75CC61FCAC4CCA76320872AA08</string>
-				<string>36C15F74E5F93A653E390333E2C8272B</string>
-				<string>1FF24712C2834832CD72883E88EF655A</string>
-				<string>1AC55C9D6E1E202F74A97A136EC435B1</string>
-			</array>
-			<key>isa</key>
-			<string>PBXResourcesBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
-		</dict>
 		<key>A593D2AFCE0A9EED3D35F46639E5A93C</key>
 		<dict>
 			<key>fileRef</key>
 			<string>7BC37B9FF9D8CD27B8084EF181735C28</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
-		</dict>
-		<key>A5A73EB9D3F7032A42140D70953F2A69</key>
-		<dict>
-			<key>fileRef</key>
-			<string>291892A0E7D8C2B100E72C796428D0CD</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>ATTRIBUTES</key>
-				<array>
-					<string>Public</string>
-				</array>
-			</dict>
 		</dict>
 		<key>A64A8B7BAE37EB0E605477FC70F7839B</key>
 		<dict>
@@ -5598,17 +5461,6 @@
 			<string>WPEditorFormatbarView.h</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>A6A887B507AAA7A5C57490FD5E3964D1</key>
-		<dict>
-			<key>buildActionMask</key>
-			<string>2147483647</string>
-			<key>files</key>
-			<array/>
-			<key>isa</key>
-			<string>PBXSourcesBuildPhase</string>
-			<key>runOnlyForDeploymentPostprocessing</key>
-			<string>0</string>
 		</dict>
 		<key>A70F50B94E1F477E2B149354BAE5E632</key>
 		<dict>
@@ -5625,12 +5477,19 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>A77C73C9914125EA476E75401E66083B</key>
+		<key>A759E8EDEE9F7CC2EF1CB15DB9BC34F9</key>
 		<dict>
 			<key>fileRef</key>
-			<string>4E43FCDA244A40E666E002DFF089F655</string>
+			<string>5D829968FB5AFA7A623D69742DA628C5</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>ATTRIBUTES</key>
+				<array>
+					<string>Public</string>
+				</array>
+			</dict>
 		</dict>
 		<key>A789F8D0756B48F15EAA3A2E99A4DB70</key>
 		<dict>
@@ -5678,10 +5537,10 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>A86CD69D949A9CAE936813584CE9A705</key>
+		<key>A830A10E84778F08BA6EB322FB72BC8A</key>
 		<dict>
 			<key>fileRef</key>
-			<string>DB6905F5571DDA123ADEEB9A167A0365</string>
+			<string>0123A6BEC7969A75F67DC69B14E4C57D</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
@@ -5707,6 +5566,20 @@
 			<string>Pods</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
+		</dict>
+		<key>AA113D750AF84DC61985BFF2F4CF0C50</key>
+		<dict>
+			<key>fileRef</key>
+			<string>291892A0E7D8C2B100E72C796428D0CD</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>ATTRIBUTES</key>
+				<array>
+					<string>Public</string>
+				</array>
+			</dict>
 		</dict>
 		<key>AA5306497961A91773F160F63B9DAA0A</key>
 		<dict>
@@ -5822,35 +5695,6 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>ABF9F69D8682A55C95D7DC6077A4BAAD</key>
-		<dict>
-			<key>buildConfigurationList</key>
-			<string>D3EF8CD4129B549A059913644C3182C8</string>
-			<key>buildPhases</key>
-			<array>
-				<string>22F559FF2D74737D8A3E9E9260349FCF</string>
-				<string>9CD34EE3908D1B943106C4A9E5A8C0E1</string>
-				<string>812B125A76396E776964D09FE9D5A863</string>
-				<string>8B2C2408A951683DF0484BF5773D2900</string>
-			</array>
-			<key>buildRules</key>
-			<array/>
-			<key>dependencies</key>
-			<array>
-				<string>CABFBF50F1D446ECD8838A4B2A41CAC9</string>
-				<string>315EA88D4FE986D62E4101D883525C16</string>
-			</array>
-			<key>isa</key>
-			<string>PBXNativeTarget</string>
-			<key>name</key>
-			<string>WordPress-iOS-Shared</string>
-			<key>productName</key>
-			<string>WordPress-iOS-Shared</string>
-			<key>productReference</key>
-			<string>DC572BAF5C1BD8805F16402432A14F41</string>
-			<key>productType</key>
-			<string>com.apple.product-type.framework</string>
-		</dict>
 		<key>ACC0998DBF0E71150E65995162D92A5B</key>
 		<dict>
 			<key>fileRef</key>
@@ -5882,28 +5726,6 @@
 			<string>BA1D8C38EFA7C49DA9DEB633FB23FEA9</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
-		</dict>
-		<key>AE62CE76442E2A0B287813FBFAE060A1</key>
-		<dict>
-			<key>baseConfigurationReference</key>
-			<string>DEEB2CF0509E97B9BAB585A264200BBC</string>
-			<key>buildSettings</key>
-			<dict>
-				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
-				<string>YES</string>
-				<key>PRODUCT_NAME</key>
-				<string>WordPress-iOS-Shared</string>
-				<key>SDKROOT</key>
-				<string>iphoneos</string>
-				<key>SKIP_INSTALL</key>
-				<string>YES</string>
-				<key>WRAPPER_EXTENSION</key>
-				<string>bundle</string>
-			</dict>
-			<key>isa</key>
-			<string>XCBuildConfiguration</string>
-			<key>name</key>
-			<string>Release</string>
 		</dict>
 		<key>AE78A732938B598A265D3ACE058F62C8</key>
 		<dict>
@@ -5976,6 +5798,20 @@
 			<key>sourceTree</key>
 			<string>BUILT_PRODUCTS_DIR</string>
 		</dict>
+		<key>AF5A515E50CE8ECECE8F9F00392C9F21</key>
+		<dict>
+			<key>fileRef</key>
+			<string>53B5711ADEEE0B1C4CC2C4135157AECB</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>ATTRIBUTES</key>
+				<array>
+					<string>Public</string>
+				</array>
+			</dict>
+		</dict>
 		<key>AF8981D1116E4BFD82BA32D870E308EF</key>
 		<dict>
 			<key>fileRef</key>
@@ -6012,6 +5848,13 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
+		<key>B0526C787457B3870B3ABF642003721C</key>
+		<dict>
+			<key>fileRef</key>
+			<string>C40BED3037967D402804639286FEB406</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
 		<key>B0911D96331D4AE50F35E1ECABE4C893</key>
 		<dict>
 			<key>fileRef</key>
@@ -6046,18 +5889,6 @@
 				</array>
 			</dict>
 		</dict>
-		<key>B306B4BA0253F6EF5AF7E1F488E7A8F3</key>
-		<dict>
-			<key>fileRef</key>
-			<string>9D3748853C78C3E0190AFA9FD5326BCE</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>COMPILER_FLAGS</key>
-				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
-			</dict>
-		</dict>
 		<key>B3304C9CC56A2B40470707729A7B41F3</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -6084,19 +5915,6 @@
 					<string>Public</string>
 				</array>
 			</dict>
-		</dict>
-		<key>B3CA66C30810C785A44C0B73FC1F61E8</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXFileReference</string>
-			<key>lastKnownFileType</key>
-			<string>wrapper.framework</string>
-			<key>name</key>
-			<string>Foundation.framework</string>
-			<key>path</key>
-			<string>Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/Foundation.framework</string>
-			<key>sourceTree</key>
-			<string>DEVELOPER_DIR</string>
 		</dict>
 		<key>B41D9E59FFBF5FBD5D8396EF04F4CAD1</key>
 		<dict>
@@ -6255,18 +6073,6 @@
 			<key>isa</key>
 			<string>XCConfigurationList</string>
 		</dict>
-		<key>B6E6B19B332947E2B551B27FA2977405</key>
-		<dict>
-			<key>fileRef</key>
-			<string>127D2FDF51E1530225DF1C1CC8C8117C</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>COMPILER_FLAGS</key>
-				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
-			</dict>
-		</dict>
 		<key>B8301291F0863F23DF8CF7D330FAF346</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -6287,6 +6093,13 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
+		<key>B881DD9939A908E168C38553A0CA36E8</key>
+		<dict>
+			<key>fileRef</key>
+			<string>C6AB88F7A38403F814E42C1DE4465FEB</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
 		<key>B93968931FABF40B1EDF2E717FFC7403</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -6297,20 +6110,6 @@
 			<string>rangy-textrange.js</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>B9578752EEAE947EF70B4E04DE4B77CA</key>
-		<dict>
-			<key>fileRef</key>
-			<string>378CF758EB389727FF80B068A8957418</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>ATTRIBUTES</key>
-				<array>
-					<string>Public</string>
-				</array>
-			</dict>
 		</dict>
 		<key>B963201FD440717718FF9A52CD4F4BD1</key>
 		<dict>
@@ -6324,18 +6123,6 @@
 			<string>HRColorUtil.m</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>B96CE42A03AFD8E6C2F868B5C72B43C3</key>
-		<dict>
-			<key>fileRef</key>
-			<string>9BBC2C8130497CE9138AA3B02118997C</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>COMPILER_FLAGS</key>
-				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
-			</dict>
 		</dict>
 		<key>B9D5EF8852C04EC6E58556BCF394C592</key>
 		<dict>
@@ -6417,6 +6204,20 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
+		<key>BB1B7E731B8B4CE64DB70EFCFACC43DA</key>
+		<dict>
+			<key>fileRef</key>
+			<string>5016986459DB343FD5C743193B03FB51</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>ATTRIBUTES</key>
+				<array>
+					<string>Public</string>
+				</array>
+			</dict>
+		</dict>
 		<key>BB59CDE3797E99C842D6F03595473112</key>
 		<dict>
 			<key>fileRef</key>
@@ -6436,20 +6237,6 @@
 			<string>WPLegacyEditorFormatAction.m</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>BC587FCBBD8C8DC378D30A852C5F0D48</key>
-		<dict>
-			<key>fileRef</key>
-			<string>5B780789CC23D84203C8C37B5298253E</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>ATTRIBUTES</key>
-				<array>
-					<string>Public</string>
-				</array>
-			</dict>
 		</dict>
 		<key>BCE0BAD35EB58614B281420E212635A7</key>
 		<dict>
@@ -6696,6 +6483,18 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
+		<key>C3305AC00EC08AF2A707CA9D80C7263C</key>
+		<dict>
+			<key>fileRef</key>
+			<string>127D2FDF51E1530225DF1C1CC8C8117C</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>COMPILER_FLAGS</key>
+				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
+			</dict>
+		</dict>
 		<key>C368DC4D564F3E818819A3B99A02E384</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -6778,6 +6577,32 @@
 				</array>
 			</dict>
 		</dict>
+		<key>C5A942248B04C20149D696650C9545CD</key>
+		<dict>
+			<key>buildActionMask</key>
+			<string>2147483647</string>
+			<key>files</key>
+			<array>
+				<string>A759E8EDEE9F7CC2EF1CB15DB9BC34F9</string>
+				<string>787CA3500938C3181A7A62D0658D5265</string>
+				<string>AF5A515E50CE8ECECE8F9F00392C9F21</string>
+				<string>523D16E3453309EBBAA5ED8A311EF1A6</string>
+				<string>F3F4AEC05E9200F8B560F4B447BFE361</string>
+				<string>30EB1692A9773491529AB34F3C8D13D1</string>
+				<string>AA113D750AF84DC61985BFF2F4CF0C50</string>
+				<string>33AA4C4C4BB79C20FA807F558F3F7C7B</string>
+				<string>F45C363B623DB54AC9477CE8125EACBB</string>
+				<string>DE6E964FD54AA84BFFD2D6E729F8D289</string>
+				<string>662C7BD83201DBFCDC634B30FDC1A50F</string>
+				<string>22A28E29E5422FA4E1A8F7C9D831257E</string>
+				<string>903B21496BF9C0D5826F31CE306ED852</string>
+				<string>BB1B7E731B8B4CE64DB70EFCFACC43DA</string>
+			</array>
+			<key>isa</key>
+			<string>PBXHeadersBuildPhase</string>
+			<key>runOnlyForDeploymentPostprocessing</key>
+			<string>0</string>
+		</dict>
 		<key>C5B31B46AD651D0B87C7959EF529B9E6</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -6798,7 +6623,7 @@
 			<key>buildPhases</key>
 			<array>
 				<string>36561E48845B8C2290E00E2E5C0D4915</string>
-				<string>9EFF7E74E4961B0B0C1A87FBF0212949</string>
+				<string>87494A3968E29FEF083C8DB120EFBF78</string>
 				<string>8762E904BDAC9C6132B435A4AF2DCBD6</string>
 				<string>8FE62998A54B7B067DD7F898051CE8F7</string>
 			</array>
@@ -6808,7 +6633,6 @@
 			<array>
 				<string>650F00DE17EC5EC71C0C78452889F435</string>
 				<string>DC0E13381A4306DD9CD64E92EFF86CFD</string>
-				<string>C728920CB159A8871FBA079ABC5A64DD</string>
 				<string>A789F8D0756B48F15EAA3A2E99A4DB70</string>
 			</array>
 			<key>isa</key>
@@ -6835,6 +6659,13 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
+		<key>C6D0DDAD1584412A084B981E6DA18804</key>
+		<dict>
+			<key>fileRef</key>
+			<string>676A7542F6954D52CFA72E9AE8D773FC</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
 		<key>C6FA0AFE2A00B00A2C0B9DACA3A2190D</key>
 		<dict>
 			<key>fileRef</key>
@@ -6856,16 +6687,12 @@
 				</array>
 			</dict>
 		</dict>
-		<key>C728920CB159A8871FBA079ABC5A64DD</key>
+		<key>C73F1B671B4ED3AAB3B55446E992F2BA</key>
 		<dict>
+			<key>fileRef</key>
+			<string>676A7542F6954D52CFA72E9AE8D773FC</string>
 			<key>isa</key>
-			<string>PBXTargetDependency</string>
-			<key>name</key>
-			<string>WordPress-iOS-Shared</string>
-			<key>target</key>
-			<string>ABF9F69D8682A55C95D7DC6077A4BAAD</string>
-			<key>targetProxy</key>
-			<string>6C855DF5C6210E936457DDBDFDD126C5</string>
+			<string>PBXBuildFile</string>
 		</dict>
 		<key>C757E32D1408FA8FE21C92A3B75B8A89</key>
 		<dict>
@@ -6965,17 +6792,6 @@
 			<string>PBXFrameworksBuildPhase</string>
 			<key>runOnlyForDeploymentPostprocessing</key>
 			<string>0</string>
-		</dict>
-		<key>CABFBF50F1D446ECD8838A4B2A41CAC9</key>
-		<dict>
-			<key>isa</key>
-			<string>PBXTargetDependency</string>
-			<key>name</key>
-			<string>CocoaLumberjack</string>
-			<key>target</key>
-			<string>8A2E8FED01C8A6BC8ADFCF3C3B78368F</string>
-			<key>targetProxy</key>
-			<string>47082597CE34BAAB682C22A81621D597</string>
 		</dict>
 		<key>CAD8E79A592F46B051094FBDF8A22A10</key>
 		<dict>
@@ -7132,6 +6948,18 @@
 				</array>
 			</dict>
 		</dict>
+		<key>CD16E931E3369A23F6E4C99F97450D22</key>
+		<dict>
+			<key>fileRef</key>
+			<string>F7A5B643293E940A43F3720DE01E6A00</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>COMPILER_FLAGS</key>
+				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
+			</dict>
+		</dict>
 		<key>CD6E9B1999ACF7387AC963952DDA2372</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -7165,6 +6993,28 @@
 					<string>Public</string>
 				</array>
 			</dict>
+		</dict>
+		<key>CFBA6D42A7F7E0AF4CCCB04FB1C68B9B</key>
+		<dict>
+			<key>baseConfigurationReference</key>
+			<string>DEEB2CF0509E97B9BAB585A264200BBC</string>
+			<key>buildSettings</key>
+			<dict>
+				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
+				<string>YES</string>
+				<key>PRODUCT_NAME</key>
+				<string>WordPress-iOS-Shared</string>
+				<key>SDKROOT</key>
+				<string>iphoneos</string>
+				<key>SKIP_INSTALL</key>
+				<string>YES</string>
+				<key>WRAPPER_EXTENSION</key>
+				<string>bundle</string>
+			</dict>
+			<key>isa</key>
+			<string>XCBuildConfiguration</string>
+			<key>name</key>
+			<string>Debug</string>
 		</dict>
 		<key>D0310567205ECBD97C55838C54393AB4</key>
 		<dict>
@@ -7261,6 +7111,13 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
+		<key>D33DF68230A130A46BC8515196867D8F</key>
+		<dict>
+			<key>fileRef</key>
+			<string>C449397FCB53B34540202D5AC93832E4</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
 		<key>D35490A90DC82661CDD0C533E9A184CF</key>
 		<dict>
 			<key>buildActionMask</key>
@@ -7297,20 +7154,6 @@
 			<string>WordPress-iOS-Shared/Assets/Merriweather-BoldItalic.ttf</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>D3EF8CD4129B549A059913644C3182C8</key>
-		<dict>
-			<key>buildConfigurations</key>
-			<array>
-				<string>067EFA5E1E00FB15C4F7B694B99D3B47</string>
-				<string>72BD6B108D4E284926EE5EDC93C21205</string>
-			</array>
-			<key>defaultConfigurationIsVisible</key>
-			<string>0</string>
-			<key>defaultConfigurationName</key>
-			<string>Release</string>
-			<key>isa</key>
-			<string>XCConfigurationList</string>
 		</dict>
 		<key>D41D8CD98F00B204E9800998ECF8427E</key>
 		<dict>
@@ -7352,8 +7195,8 @@
 				<string>4F55CC9EEFFC563282D70D9899C4F877</string>
 				<string>EE8527CABE5B5A69C2C4D91D50D54ADF</string>
 				<string>C6446A02F111ECA1AA52854777DB6C12</string>
-				<string>ABF9F69D8682A55C95D7DC6077A4BAAD</string>
-				<string>51724DC3F62CEBD1B203FA25AE581F75</string>
+				<string>9B3476DB4FC03F7CCA54D4101A0A512C</string>
+				<string>81A3B8F66C6F7E37261DB6A91FBA729A</string>
 				<string>DE98AD14645D7D1B291510AB0CCE3E77</string>
 			</array>
 		</dict>
@@ -7369,6 +7212,18 @@
 				<array>
 					<string>Public</string>
 				</array>
+			</dict>
+		</dict>
+		<key>D4711383585F1AF846DC8367FAC10BF2</key>
+		<dict>
+			<key>fileRef</key>
+			<string>39F20D16914833954B02A228259489C7</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>COMPILER_FLAGS</key>
+				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
 			</dict>
 		</dict>
 		<key>D48F1DCE2D98CF39619A92E29E01D1DB</key>
@@ -7410,6 +7265,13 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
+		<key>D65D3435E88B7A7D8DEF019C9F489039</key>
+		<dict>
+			<key>fileRef</key>
+			<string>11FCC704BCE25F543AE8F1AA62D494E1</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
 		<key>D7221C7810037D171183CE45A72293F7</key>
 		<dict>
 			<key>children</key>
@@ -7434,6 +7296,25 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
+		<key>D801CF6C3D74F0F34B79A514853860C5</key>
+		<dict>
+			<key>fileRef</key>
+			<string>3C034673379821715903DDE2E84B12B9</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
+		<key>D80B42167E52D41AF135E6C50495F389</key>
+		<dict>
+			<key>fileRef</key>
+			<string>31069973ADDCB09C8E1C883D68D01AA1</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>COMPILER_FLAGS</key>
+				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
+			</dict>
+		</dict>
 		<key>D965303CD37A03A00D24E6D1EE6CA82D</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -7444,6 +7325,17 @@
 			<string>icon-posts-editor-preview@3x.png</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
+		</dict>
+		<key>D9FDB18F6944DD972102AAD27C5C2DE4</key>
+		<dict>
+			<key>buildActionMask</key>
+			<string>2147483647</string>
+			<key>files</key>
+			<array/>
+			<key>isa</key>
+			<string>PBXSourcesBuildPhase</string>
+			<key>runOnlyForDeploymentPostprocessing</key>
+			<string>0</string>
 		</dict>
 		<key>DA122D352092EF3391538387EC13D68A</key>
 		<dict>
@@ -7520,13 +7412,6 @@
 			<string>8A2E8FED01C8A6BC8ADFCF3C3B78368F</string>
 			<key>remoteInfo</key>
 			<string>CocoaLumberjack</string>
-		</dict>
-		<key>DA3E82ABC9721FBE07AE8E67439C3927</key>
-		<dict>
-			<key>fileRef</key>
-			<string>11FCC704BCE25F543AE8F1AA62D494E1</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
 		</dict>
 		<key>DB001715A25AD442B7A31A01DF541D22</key>
 		<dict>
@@ -7611,6 +7496,13 @@
 			<key>sourceTree</key>
 			<string>BUILT_PRODUCTS_DIR</string>
 		</dict>
+		<key>DC813C26C29F5AC56D2ACFC5F94E09BC</key>
+		<dict>
+			<key>fileRef</key>
+			<string>F13D380393F6BFCD1678D1195E722151</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+		</dict>
 		<key>DCBDCE2D7F542DC23725645C5F0CDC95</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -7690,6 +7582,20 @@
 			<string>WPLegacyEditorViewController.h</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
+		</dict>
+		<key>DE6E964FD54AA84BFFD2D6E729F8D289</key>
+		<dict>
+			<key>fileRef</key>
+			<string>94E8B57BD3574A87AE44E18C2A6F99CE</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>ATTRIBUTES</key>
+				<array>
+					<string>Public</string>
+				</array>
+			</dict>
 		</dict>
 		<key>DE800AB263491DCDE129805FA4FC36C5</key>
 		<dict>
@@ -7779,6 +7685,62 @@
 			<string>ZSSh1.png</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
+		</dict>
+		<key>E202FA356BD349590B3E21BE62666224</key>
+		<dict>
+			<key>baseConfigurationReference</key>
+			<string>DEEB2CF0509E97B9BAB585A264200BBC</string>
+			<key>buildSettings</key>
+			<dict>
+				<key>CODE_SIGN_IDENTITY[sdk=iphoneos*]</key>
+				<string>iPhone Developer</string>
+				<key>CURRENT_PROJECT_VERSION</key>
+				<string>1</string>
+				<key>DEFINES_MODULE</key>
+				<string>YES</string>
+				<key>DYLIB_COMPATIBILITY_VERSION</key>
+				<string>1</string>
+				<key>DYLIB_CURRENT_VERSION</key>
+				<string>1</string>
+				<key>DYLIB_INSTALL_NAME_BASE</key>
+				<string>@rpath</string>
+				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
+				<string>YES</string>
+				<key>GCC_PREFIX_HEADER</key>
+				<string>Target Support Files/WordPress-iOS-Shared/WordPress-iOS-Shared-prefix.pch</string>
+				<key>INFOPLIST_FILE</key>
+				<string>Target Support Files/WordPress-iOS-Shared/Info.plist</string>
+				<key>INSTALL_PATH</key>
+				<string>$(LOCAL_LIBRARY_DIR)/Frameworks</string>
+				<key>IPHONEOS_DEPLOYMENT_TARGET</key>
+				<string>9.0</string>
+				<key>LD_RUNPATH_SEARCH_PATHS</key>
+				<array>
+					<string>$(inherited)</string>
+					<string>@executable_path/Frameworks</string>
+					<string>@loader_path/Frameworks</string>
+				</array>
+				<key>MODULEMAP_FILE</key>
+				<string>Target Support Files/WordPress-iOS-Shared/WordPress-iOS-Shared.modulemap</string>
+				<key>MTL_ENABLE_DEBUG_INFO</key>
+				<string>NO</string>
+				<key>PRODUCT_NAME</key>
+				<string>WordPressShared</string>
+				<key>SDKROOT</key>
+				<string>iphoneos</string>
+				<key>SKIP_INSTALL</key>
+				<string>YES</string>
+				<key>TARGETED_DEVICE_FAMILY</key>
+				<string>1,2</string>
+				<key>VERSIONING_SYSTEM</key>
+				<string>apple-generic</string>
+				<key>VERSION_INFO_PREFIX</key>
+				<string></string>
+			</dict>
+			<key>isa</key>
+			<string>XCBuildConfiguration</string>
+			<key>name</key>
+			<string>Release</string>
 		</dict>
 		<key>E22C4D490C8CA59C70F0E76C21B211BD</key>
 		<dict>
@@ -7880,20 +7842,6 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
-		<key>E3EB3566FA170DB12D7AD8B9A001714D</key>
-		<dict>
-			<key>fileRef</key>
-			<string>7C76A81193FD9847E2980805926A016D</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>ATTRIBUTES</key>
-				<array>
-					<string>Public</string>
-				</array>
-			</dict>
-		</dict>
 		<key>E4525D89FE50FDD1C7FB8E7125F13E0A</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -7943,7 +7891,7 @@
 		<key>E6005ACD3D49E8DC3042F0D7F13808BC</key>
 		<dict>
 			<key>fileRef</key>
-			<string>B3CA66C30810C785A44C0B73FC1F61E8</string>
+			<string>676A7542F6954D52CFA72E9AE8D773FC</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
@@ -7970,18 +7918,6 @@
 			<string>ZSSsubscript.png</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>E6FA3EE01CF18A482A8AA0D1FD2557C3</key>
-		<dict>
-			<key>fileRef</key>
-			<string>F2DF2C0A48402835850121E0E2EF0EE3</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>COMPILER_FLAGS</key>
-				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
-			</dict>
 		</dict>
 		<key>E7C3C08035BFE839A465C0C49AD9AEC4</key>
 		<dict>
@@ -8056,6 +7992,28 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
+		<key>E9B5EEB95B19A4ABBB39913D891C8CA7</key>
+		<dict>
+			<key>baseConfigurationReference</key>
+			<string>DEEB2CF0509E97B9BAB585A264200BBC</string>
+			<key>buildSettings</key>
+			<dict>
+				<key>ENABLE_STRICT_OBJC_MSGSEND</key>
+				<string>YES</string>
+				<key>PRODUCT_NAME</key>
+				<string>WordPress-iOS-Shared</string>
+				<key>SDKROOT</key>
+				<string>iphoneos</string>
+				<key>SKIP_INSTALL</key>
+				<string>YES</string>
+				<key>WRAPPER_EXTENSION</key>
+				<string>bundle</string>
+			</dict>
+			<key>isa</key>
+			<string>XCBuildConfiguration</string>
+			<key>name</key>
+			<string>Release</string>
+		</dict>
 		<key>E9BCB820A4D6071E22B23B2D777ABCC4</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -8077,13 +8035,6 @@
 			<string>Pods-EditorDemoTests.modulemap</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>EA6E15AC471EFA0C4ACF9229FD1EFB4C</key>
-		<dict>
-			<key>fileRef</key>
-			<string>9B173AE5C26F5F7A57CB49A22C92BE37</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
 		</dict>
 		<key>EA71F08000597B13639FD158F7314439</key>
 		<dict>
@@ -8252,6 +8203,19 @@
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>
+		<key>F06D728637BE326A007FD6F96413272D</key>
+		<dict>
+			<key>children</key>
+			<array>
+				<string>676A7542F6954D52CFA72E9AE8D773FC</string>
+			</array>
+			<key>isa</key>
+			<string>PBXGroup</string>
+			<key>name</key>
+			<string>iOS</string>
+			<key>sourceTree</key>
+			<string>&lt;group&gt;</string>
+		</dict>
 		<key>F08B79315BEE400EEE7D7F1DC52405F6</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -8294,20 +8258,6 @@
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
-		<key>F244421797EA0A507926D7F551FE27FD</key>
-		<dict>
-			<key>fileRef</key>
-			<string>1AA7B337C2E7368E247519771F59236B</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>ATTRIBUTES</key>
-				<array>
-					<string>Public</string>
-				</array>
-			</dict>
-		</dict>
 		<key>F2B0F5A689CC21D3FA4D63642C202307</key>
 		<dict>
 			<key>includeInIndex</key>
@@ -8333,18 +8283,6 @@
 			<string>WordPress-iOS-Shared/Core/WPImageSource.m</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
-		</dict>
-		<key>F2F602418A745EAAFF62515659F6701F</key>
-		<dict>
-			<key>fileRef</key>
-			<string>5A54A8011D45531F1BAB0AF21744AF9C</string>
-			<key>isa</key>
-			<string>PBXBuildFile</string>
-			<key>settings</key>
-			<dict>
-				<key>COMPILER_FLAGS</key>
-				<string>-w -Xanalyzer -analyzer-disable-all-checks</string>
-			</dict>
 		</dict>
 		<key>F3380FC852DE2C91565D3255F9D6D67E</key>
 		<dict>
@@ -8377,6 +8315,20 @@
 			<key>targetProxy</key>
 			<string>C879B7E1BD3E79167C231B28E3F175D6</string>
 		</dict>
+		<key>F3F4AEC05E9200F8B560F4B447BFE361</key>
+		<dict>
+			<key>fileRef</key>
+			<string>378CF758EB389727FF80B068A8957418</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>ATTRIBUTES</key>
+				<array>
+					<string>Public</string>
+				</array>
+			</dict>
+		</dict>
 		<key>F456EB48FAAAE0BA7F30B802EDC71672</key>
 		<dict>
 			<key>buildConfigurations</key>
@@ -8391,6 +8343,20 @@
 			<key>isa</key>
 			<string>XCConfigurationList</string>
 		</dict>
+		<key>F45C363B623DB54AC9477CE8125EACBB</key>
+		<dict>
+			<key>fileRef</key>
+			<string>3FBD8A0C12B737AFE086A4D5BAFDC746</string>
+			<key>isa</key>
+			<string>PBXBuildFile</string>
+			<key>settings</key>
+			<dict>
+				<key>ATTRIBUTES</key>
+				<array>
+					<string>Public</string>
+				</array>
+			</dict>
+		</dict>
 		<key>F4896AAA649F44511D74D05B9A224996</key>
 		<dict>
 			<key>fileRef</key>
@@ -8401,7 +8367,7 @@
 		<key>F5236AEAFE4D6BD0E79496A13F2DB52E</key>
 		<dict>
 			<key>fileRef</key>
-			<string>B3CA66C30810C785A44C0B73FC1F61E8</string>
+			<string>676A7542F6954D52CFA72E9AE8D773FC</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
@@ -8415,7 +8381,7 @@
 		<key>F566D0607C3179B8154FA19EC61C8EB5</key>
 		<dict>
 			<key>fileRef</key>
-			<string>B3CA66C30810C785A44C0B73FC1F61E8</string>
+			<string>676A7542F6954D52CFA72E9AE8D773FC</string>
 			<key>isa</key>
 			<string>PBXBuildFile</string>
 		</dict>
@@ -8558,7 +8524,7 @@
 			<key>proxyType</key>
 			<string>1</string>
 			<key>remoteGlobalIDString</key>
-			<string>ABF9F69D8682A55C95D7DC6077A4BAAD</string>
+			<string>9B3476DB4FC03F7CCA54D4101A0A512C</string>
 			<key>remoteInfo</key>
 			<string>WordPress-iOS-Shared</string>
 		</dict>
@@ -8751,19 +8717,6 @@
 			<string>PBXFileReference</string>
 			<key>path</key>
 			<string>icon_format_quote.png</string>
-			<key>sourceTree</key>
-			<string>&lt;group&gt;</string>
-		</dict>
-		<key>FFCE539F31708B353892CF981D582F3E</key>
-		<dict>
-			<key>children</key>
-			<array>
-				<string>B3CA66C30810C785A44C0B73FC1F61E8</string>
-			</array>
-			<key>isa</key>
-			<string>PBXGroup</string>
-			<key>name</key>
-			<string>iOS</string>
 			<key>sourceTree</key>
 			<string>&lt;group&gt;</string>
 		</dict>

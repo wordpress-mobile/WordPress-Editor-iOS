@@ -19,7 +19,6 @@ Pod::Spec.new do |s|
   s.exclude_files = 'Classes/exclude'
   s.requires_arc = true
   s.dependency 'CocoaLumberjack', '~> 2.2.0'
-  s.dependency 'WordPress-iOS-Shared', '~>0.5.3'
   s.dependency 'WordPressCom-Analytics-iOS', '~>0.1.0'
   s.dependency 'NSObject-SafeExpectations', '~>0.0.2'
   s.header_dir = 'WordPressEditor'

@@ -2,17 +2,11 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
 #import <WordPressComAnalytics/WPAnalytics.h>
-#import <WordPressShared/WPFontManager.h>
-#import <WordPressShared/WPStyleGuide.h>
-#import <WordPressShared/WPTableViewCell.h>
-#import <WordPressShared/UIImage+Util.h>
-#import <WordPressShared/UIColor+Helpers.h>
 
 #import "WPEditorField.h"
 #import "WPEditorToolbarButton.h"
 #import "WPEditorView.h"
 #import "WPImageMeta.h"
-#import "WPEditorFormatbarView.h"
 #import "ZSSBarButtonItem.h"
 
 @interface WPEditorViewController () <HRColorPickerViewControllerDelegate, WPEditorFormatbarViewDelegate, WPEditorViewDelegate>
@@ -102,17 +96,6 @@
     NSBundle *editorBundle = [NSBundle bundleForClass:[WPEditorFormatbarView class]];
     _toolbarView = (WPEditorFormatbarView *)[[editorBundle loadNibNamed:NSStringFromClass([WPEditorFormatbarView class]) owner:nil options:nil] firstObject];
     _toolbarView.delegate = self;
-    _toolbarView.borderColor = [WPStyleGuide greyLighten10];
-    _toolbarView.itemTintColor = [WPStyleGuide greyLighten10];
-    _toolbarView.selectedItemTintColor = [WPStyleGuide baseDarkerBlue];
-    
-    // Explicit design decision to use non-standard colors. See:
-    // https://github.com/wordpress-mobile/WordPress-Editor-iOS/issues/657#issuecomment-113651034
-    _toolbarView.backgroundColor = [UIColor colorWithHexString:@"F9FBFC"];
-    _toolbarView.disabledItemTintColor = [UIColor colorWithRed:0.78
-                                                         green:0.84
-                                                          blue:0.88
-                                                         alpha:0.5];
 }
 
 #pragma mark - UIViewController
@@ -128,13 +111,6 @@
     self.didFinishLoadingEditor = NO;
     self.view.backgroundColor = [UIColor whiteColor];
     
-    // Calling the fonts we use here so they are availible to the UIWebView
-    [WPFontManager merriweatherBoldFontOfSize:16.0];
-    [WPFontManager merriweatherBoldItalicFontOfSize:16.0];
-    [WPFontManager merriweatherItalicFontOfSize:16.0];
-    [WPFontManager merriweatherLightFontOfSize:16.0];
-    [WPFontManager merriweatherRegularFontOfSize:16.0];
-	
     [self createToolbarView];
     [self buildTextViews];
 }
@@ -208,6 +184,13 @@
     }
 }
 
+- (UIColor *)placeholderColor {
+    if (_placeholderColor) {
+        return [UIColor lightGrayColor];
+    }
+    return _placeholderColor;
+}
+
 #pragma mark - Builders
 
 - (void)buildTextViews
@@ -254,7 +237,7 @@
         _titlePlaceholderText = titlePlaceholderText;
         [self.editorView.titleField setPlaceholderText:_titlePlaceholderText];
         self.editorView.sourceViewTitleField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:_titlePlaceholderText
-                                                                                                     attributes:@{NSForegroundColorAttributeName: [WPStyleGuide allTAllShadeGrey]}];
+                                                                                                     attributes:@{NSForegroundColorAttributeName: self.placeholderColor}];
     }
 }
 
@@ -896,17 +879,17 @@
         
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:NO];
-        [field setPlaceholderColor:[WPStyleGuide allTAllShadeGrey]];
+        [field setPlaceholderColor:self.placeholderColor];
         [field setPlaceholderText:self.titlePlaceholderText];
         self.editorView.sourceViewTitleField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.titlePlaceholderText
-                                                                                                     attributes:@{NSForegroundColorAttributeName: [WPStyleGuide allTAllShadeGrey]}];
+                                                                                                     attributes:@{NSForegroundColorAttributeName: self.placeholderColor}];
     } else if (field == self.editorView.contentField) {
         field.inputAccessoryView = self.toolbarView;
         
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:YES];
         [field setPlaceholderText:self.bodyPlaceholderText];
-        [field setPlaceholderColor:[WPStyleGuide allTAllShadeGrey]];
+        [field setPlaceholderColor:self.placeholderColor];
     }
     
     if ([self.delegate respondsToSelector:@selector(editorViewController:fieldCreated:)]) {
@@ -1078,16 +1061,15 @@ didFailLoadWithError:(NSError *)error
     if (self.toolbarView.itemTintColor) {
         return self.toolbarView.itemTintColor;
     }
-    
-    return [WPStyleGuide allTAllShadeGrey];
+    return [UIColor grayColor];
 }
 
 - (UIColor *)barButtonItemSelectedDefaultColor
 {
     if (self.toolbarView.selectedItemTintColor) {
         return self.toolbarView.selectedItemTintColor;
-    }
-    return [WPStyleGuide wordPressBlue];
+    }    
+    return [UIColor blueColor];;
 }
 
 - (BOOL)isCurrentLanguageDirectionRTL
