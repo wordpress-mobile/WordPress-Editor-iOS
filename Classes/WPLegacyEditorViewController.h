@@ -32,6 +32,14 @@
 @property (nonatomic, strong) UIColor *separatorColor;
 @property (nonatomic, strong) UIColor *placeholderColor;
 
+#pragma mark - Appearance
+/**
+ *	@brief		This method allows should be implement by view controllers that want customize the appearance
+ *  of the editor view and toolbar
+ *
+ */
+- (void)customizeAppearance;
+
 - (void)stopEditing;
 - (void)startEditing;
 

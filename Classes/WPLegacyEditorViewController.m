@@ -52,11 +52,18 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.navigationController.navigationBar.translucent = NO;
+    [self customizeAppearance];
     [self setupTextView];
     [self.editorToolbar configureForHorizontalSizeClass:self.traitCollection.horizontalSizeClass];
     [self.titleToolbar configureForHorizontalSizeClass:self.traitCollection.horizontalSizeClass];
 }
+
+#pragma mark - Appearance
+- (void)customizeAppearance
+{
+    self.navigationController.navigationBar.translucent = NO;
+}
+
 
 - (void)viewWillAppear:(BOOL)animated
 {

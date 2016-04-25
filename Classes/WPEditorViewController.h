@@ -159,6 +159,14 @@ WPEditorViewControllerMode;
  */
 - (instancetype)initWithMode:(WPEditorViewControllerMode)mode;
 
+#pragma mark - Appearance
+/**
+ *	@brief		This method allows should be implement by view controllers that want customize the appearance 
+ *  of the editor view and toolbar
+ *
+ */
+- (void)customizeAppearance;
+
 #pragma mark - Editing
 
 /**

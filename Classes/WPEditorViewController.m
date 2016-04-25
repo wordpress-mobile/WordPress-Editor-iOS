@@ -102,17 +102,16 @@
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
-	
-    // It's important to set this up here, in case the main view of the VC is unloaded due to low
-    // memory (it can happen if the view is hidden).
-    //
+    [super viewDidLoad];	
     self.isFirstSetupComplete = NO;
     self.didFinishLoadingEditor = NO;
-    self.view.backgroundColor = [UIColor whiteColor];
-    
     [self createToolbarView];
+    [self customizeAppearance];
     [self buildTextViews];
+}
+
+- (void)customizeAppearance {
+    self.view.backgroundColor = [UIColor whiteColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated
