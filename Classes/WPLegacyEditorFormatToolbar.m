@@ -1,6 +1,5 @@
 #import "WPLegacyEditorFormatToolbar.h"
 #import "WPLegacyEditorFormatAction.h"
-#import <WordPressShared/WPStyleGuide.h>
 
 @interface WPLegacyEditorFormatToolbar()
 

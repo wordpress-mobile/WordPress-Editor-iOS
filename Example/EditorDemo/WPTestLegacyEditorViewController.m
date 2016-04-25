@@ -1,5 +1,7 @@
 #import "WPTestLegacyEditorViewController.h"
-
+#import <WordPressShared/WPStyleGuide.h>
+#import <WordPressShared/WPFontManager.h>
+#import <WordPressEditor/WPLegacyEditorFormatToolbar.h>
 @import Photos;
 @import AVFoundation;
 @import MobileCoreServices;
@@ -33,6 +35,21 @@
                                                                                    target:self
                                                                                    action:@selector(optionsAction)]
                                                    ] animated: YES];
+
+}
+
+- (void)customizeAppearance
+{
+    [super customizeAppearance];
+    [self setTitleFont:[WPFontManager merriweatherBoldFontOfSize:24.0]];
+    [self setTitleColor:[WPStyleGuide darkGrey]];
+    [self setBodyFont:[UIFont fontWithName: @"Menlo-Regular" size:14.0f]];
+    [self setBodyColor:[WPStyleGuide darkGrey]];
+    [self setPlaceholderColor:[WPStyleGuide textFieldPlaceholderGrey]];
+    [self setSeparatorColor:[WPStyleGuide greyLighten20]];
+
+    [[WPLegacyEditorFormatToolbar appearance] setTintColor:[WPStyleGuide greyLighten10]];
+    [[WPLegacyEditorFormatToolbar appearance] setBackgroundColor:[UIColor colorWithRed:0xF9/255.0 green:0xFB/255.0 blue:0xFC/255.0 alpha:1]];
 }
 
 #pragma mark - Navigation Bar

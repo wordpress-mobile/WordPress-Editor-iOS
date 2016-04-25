@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 #import "HRColorPickerViewController.h"
-
+#import "WPEditorFormatbarView.h"
 @class WPEditorField;
 @class WPEditorView;
 @class WPEditorViewController;
@@ -139,8 +139,14 @@ WPEditorViewControllerMode;
 @property (nonatomic, copy) NSString *bodyText;
 @property (nonatomic, copy) NSString *bodyPlaceholderText;
 
+@property (nonatomic, strong) UIColor *placeholderColor;
+
 #pragma mark - Properties: Editor View
 @property (nonatomic, strong, readonly) WPEditorView *editorView;
+
+#pragma mark - Properties: Toolbar
+
+@property (nonatomic, strong, readonly) WPEditorFormatbarView* toolbarView;
 
 #pragma mark - Initializers
 
@@ -152,6 +158,14 @@ WPEditorViewControllerMode;
  *	@returns	The initialized object.
  */
 - (instancetype)initWithMode:(WPEditorViewControllerMode)mode;
+
+#pragma mark - Appearance
+/**
+ *	@brief		This method allows should be implement by view controllers that want customize the appearance 
+ *  of the editor view and toolbar
+ *
+ */
+- (void)customizeAppearance;
 
 #pragma mark - Editing
 

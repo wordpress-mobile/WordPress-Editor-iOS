@@ -5,8 +5,6 @@
 #import "WPEditorField.h"
 #import "WPImageMeta.h"
 #import "ZSSTextView.h"
-#import <WordPressShared/WPFontManager.h>
-#import <WordPressShared/WPStyleGuide.h>
 
 typedef void(^WPEditorViewCallbackParameterProcessingBlock)(NSString* parameterName, NSString* parameterValue);
 typedef void(^WPEditorViewNoParamsCompletionBlock)();
@@ -46,7 +44,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
 #pragma mark - Subviews
 @property (nonatomic, strong, readwrite) UITextField *sourceViewTitleField;
-@property (nonatomic, strong, readonly) UIView *sourceContentDividerView;
 @property (nonatomic, strong, readwrite) ZSSTextView *sourceView;
 @property (nonatomic, strong, readonly) UIWebView* webView;
 
@@ -114,7 +111,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     titleFrame = CGRectMake(UITextFieldLeftRightInset, SourceTitleTextFieldYOffset, textWidth, UITextFieldFieldHeight);
     _sourceViewTitleField = [[UITextField alloc] initWithFrame:titleFrame];
     _sourceViewTitleField.hidden = YES;
-    _sourceViewTitleField.font = [WPFontManager merriweatherBoldFontOfSize:24.0];
     _sourceViewTitleField.autocapitalizationType = UITextAutocapitalizationTypeWords;
     _sourceViewTitleField.autocorrectionType = UITextAutocorrectionTypeDefault;
     _sourceViewTitleField.autoresizingMask =  UIViewAutoresizingFlexibleWidth;
@@ -131,7 +127,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     
     CGFloat lineWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset);
     _sourceContentDividerView = [[UIView alloc] initWithFrame:CGRectMake(UITextFieldLeftRightInset, CGRectGetMaxY(frame), lineWidth, CGRectGetHeight(frame))];
-    _sourceContentDividerView.backgroundColor = [WPStyleGuide greyLighten30];
+    _sourceContentDividerView.backgroundColor = [UIColor lightGrayColor];
     _sourceContentDividerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     _sourceContentDividerView.hidden = YES;
 

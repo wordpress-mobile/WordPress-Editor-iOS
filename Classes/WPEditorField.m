@@ -214,6 +214,9 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
 
 - (void)setPlaceholderColor:(UIColor *)placeholderColor
 {
+    if (placeholderColor == nil) {
+        return;
+    }
     if (!self.domLoaded) {
         self.preloadedPlaceholderColor = placeholderColor;
     } else {
