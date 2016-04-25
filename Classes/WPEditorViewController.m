@@ -106,8 +106,8 @@
     self.isFirstSetupComplete = NO;
     self.didFinishLoadingEditor = NO;
     [self createToolbarView];
-    [self customizeAppearance];
     [self buildTextViews];
+    [self customizeAppearance];
 }
 
 - (void)customizeAppearance {
