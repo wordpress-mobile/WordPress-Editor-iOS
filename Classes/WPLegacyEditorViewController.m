@@ -308,14 +308,14 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
     }
     self.scrollOffsetRestorePoint = self.textView.contentOffset;
     
-    NSString *alertViewTitle = NSLocalizedString(@"Make a Link", @"Title of the Link Helper popup to aid in creating a Link in the Post Editor.");
+    NSString *alertViewTitle = NSLocalizedString(@"Add a Link", @"Title of the Link Helper popup to aid in creating a Link in the Post Editor.");
     NSCharacterSet *charSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
     alertViewTitle = [alertViewTitle stringByTrimmingCharactersInSet:charSet];
     
     NSString *insertButtonTitle = NSLocalizedString(@"Insert", @"Insert content (link, media) button");
     NSString *cancelButtonTitle = NSLocalizedString(@"Cancel", @"Cancel button");
     
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:insertButtonTitle
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:alertViewTitle
                                                                              message:nil
                                                                       preferredStyle:UIAlertControllerStyleAlert];
     
@@ -464,8 +464,12 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         case WPLegacyEditorFormatActionMore:
             [WPAnalytics track:WPAnalyticsStatEditorTappedMore];
             break;
+        case WPLegacyEditorFormatActionMedia:
+            [WPAnalytics track:WPAnalyticsStatEditorTappedImage];
+            break;
+
     }
-         
+
     if (formatAction == WPLegacyEditorFormatActionMedia) {
         [self didTouchMediaOptions];
     } else if (formatAction == WPLegacyEditorFormatActionLink) {
