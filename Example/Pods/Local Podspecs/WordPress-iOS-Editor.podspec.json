@@ -36,9 +36,6 @@
     "CocoaLumberjack": [
       "~> 2.2.0"
     ],
-    "WordPress-iOS-Shared": [
-      "~>0.5.3"
-    ],
     "WordPressCom-Analytics-iOS": [
       "~>0.1.0"
     ],

@@ -36,7 +36,6 @@ WordPress-iOS-Editor requires iOS 9.0 or higher. It depends on the following App
 and the following CocoaPods:
 
 * [CocoaLumberjack](https://github.com/CocoaLumberjack/CocoaLumberjack)
-* [WordPress-iOS-Shared](https://github.com/wordpress-mobile/WordPress-iOS-Shared)
 * [WordPressCom-Analytics-iOS](https://github.com/wordpress-mobile/WordPressCom-Analytics-iOS)
 
 See the [podspec](https://github.com/wordpress-mobile/WordPress-iOS-Editor/blob/develop/WordPress-iOS-Editor.podspec) for more details.

@@ -3,20 +3,15 @@
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <WordPressEditor/WPEditorViewController.h>
 #import <WordPressEditor/WPLegacyEditorViewController.h>
-#import <WordPressEditor/WPLegacyEditorFormatToolbar.h>
+#import <WordPressEditor/WPEditorFormatbarView.h>
 #import <WordPressShared/WPStyleGuide.h>
-#import <WordPressShared/UIColor+Helpers.h>
+#import <WordPressShared/WPFontManager.h>
+#import <WordPressEditor/WPEditorView.h>
 
 @implementation WPAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    //Default to white
-    [[UIToolbar appearanceWhenContainedInInstancesOfClasses:@[[WPEditorViewController class]]] setBarTintColor:[UIColor whiteColor]];
-
-    [[WPLegacyEditorFormatToolbar appearance] setTintColor:[WPStyleGuide greyLighten10]];
-    [[WPLegacyEditorFormatToolbar appearance] setBackgroundColor:[UIColor colorWithHexString:@"F9FBFC"]];
-
     [DDLog addLogger:[DDASLLogger sharedInstance]];
     [DDLog addLogger:[DDTTYLogger sharedInstance]];
     
