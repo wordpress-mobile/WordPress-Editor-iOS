@@ -184,7 +184,7 @@
 }
 
 - (UIColor *)placeholderColor {
-    if (_placeholderColor) {
+    if (!_placeholderColor) {
         return [UIColor lightGrayColor];
     }
     return _placeholderColor;
