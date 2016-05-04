@@ -43,6 +43,7 @@ ZSSEditor.currentEditingVideo;
 ZSSEditor.currentEditingLink;
 
 ZSSEditor.focusedField = null;
+ZSSEditor.savedFocusedField = null;
 
 // The objects that are enabled
 ZSSEditor.enabledItems = {};
@@ -217,10 +218,12 @@ ZSSEditor.backupRange = function(){
     var focusedField = this.getFocusedField();
     
     if (focusedField) {
-        var text = getTextWithoutNbspOrBom();
+        var text = focusedField.getTextWithoutNbspOrBom();
         
         if (text.length > 0) {
             this.savedSelection = rangy.saveSelection()
+        } else {
+            this.savedFocusedField = focusedField;
         }
     }
 };
@@ -228,6 +231,9 @@ ZSSEditor.backupRange = function(){
 ZSSEditor.restoreRange = function(){
     if (this.savedSelection) {
 		rangy.restoreSelection(this.savedSelection);
+    } else if (this.savedFocusedField != null) {
+        this.savedFocusedField.focus();
+        this.savedFocusedField = null;
     }
 };
 
