@@ -214,7 +214,15 @@ ZSSEditor.getFocusedField = function() {
 // MARK: - Selection
 
 ZSSEditor.backupRange = function(){
-	this.savedSelection = rangy.saveSelection()
+    var focusedField = this.getFocusedField();
+    
+    if (focusedField) {
+        var text = getTextWithoutNbspOrBom();
+        
+        if (text.length > 0) {
+            this.savedSelection = rangy.saveSelection()
+        }
+    }
 };
 
 ZSSEditor.restoreRange = function(){
@@ -2396,15 +2404,22 @@ ZSSField.prototype.bindMutationObserver = function () {
 
 // MARK: - Emptying the field when it should be, well... empty (HTML madness)
 
+ZSSField.prototype.getTextWithoutNbspOrBom = function() {
+    var nbsp = '\xa0';
+    var bom = '\uFEFF';
+    var text = this.wrappedObject.text().replace(nbsp, '').replace(bom, '');
+    
+    return text;
+}
+
 /**
  *  @brief      Sometimes HTML leaves some <br> tags or &nbsp; when the user deletes all
  *              text from a contentEditable field.  This code makes sure no such 'garbage' survives.
  *  @details    If the node contains child image nodes, then the content is left untouched.
  */
 ZSSField.prototype.emptyFieldIfNoContents = function() {
-
-    var nbsp = '\xa0';
-    var text = this.wrappedObject.text().replace(nbsp, '');
+    
+    var text = this.getTextWithoutNbspOrBom();
     
     if (text.length == 0) {
         
