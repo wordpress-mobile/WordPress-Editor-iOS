@@ -64,11 +64,6 @@
     }
 }
 
--(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    [self.editorView saveSelection];
-    [super prepareForSegue:segue sender:sender];
-}
-
 #pragma mark - IBActions
 
 - (IBAction)exit:(UIStoryboardSegue*)segue

@@ -43,6 +43,7 @@ ZSSEditor.currentEditingVideo;
 ZSSEditor.currentEditingLink;
 
 ZSSEditor.focusedField = null;
+ZSSEditor.savedFocusedField = null;
 
 // The objects that are enabled
 ZSSEditor.enabledItems = {};
@@ -214,12 +215,28 @@ ZSSEditor.getFocusedField = function() {
 // MARK: - Selection
 
 ZSSEditor.backupRange = function(){
-	this.savedSelection = rangy.saveSelection()
+    var focusedField = this.getFocusedField();
+    
+    if (focusedField) {
+        var text = focusedField.getTextWithoutNbspOrBom();
+        
+        if (text.length > 0) {
+            this.savedSelection = rangy.saveSelection()
+            this.savedFocusedField = null;
+        } else {
+            this.savedSelection = null;
+            this.savedFocusedField = focusedField;
+        }
+    }
 };
 
 ZSSEditor.restoreRange = function(){
     if (this.savedSelection) {
 		rangy.restoreSelection(this.savedSelection);
+        this.savedSelection = null;
+    } else if (this.savedFocusedField != null) {
+        this.savedFocusedField.focus();
+        this.savedFocusedField = null;
     }
 };
 
@@ -2396,15 +2413,22 @@ ZSSField.prototype.bindMutationObserver = function () {
 
 // MARK: - Emptying the field when it should be, well... empty (HTML madness)
 
+ZSSField.prototype.getTextWithoutNbspOrBom = function() {
+    var nbsp = '\xa0';
+    var bom = '\uFEFF';
+    var text = this.wrappedObject.text().replace(nbsp, '').replace(bom, '');
+    
+    return text;
+}
+
 /**
  *  @brief      Sometimes HTML leaves some <br> tags or &nbsp; when the user deletes all
  *              text from a contentEditable field.  This code makes sure no such 'garbage' survives.
  *  @details    If the node contains child image nodes, then the content is left untouched.
  */
 ZSSField.prototype.emptyFieldIfNoContents = function() {
-
-    var nbsp = '\xa0';
-    var text = this.wrappedObject.text().replace(nbsp, '');
+    
+    var text = this.getTextWithoutNbspOrBom();
     
     if (text.length == 0) {
         
