@@ -222,7 +222,9 @@ ZSSEditor.backupRange = function(){
         
         if (text.length > 0) {
             this.savedSelection = rangy.saveSelection()
+            this.savedFocusedField = null;
         } else {
+            this.savedSelection = null;
             this.savedFocusedField = focusedField;
         }
     }
@@ -231,6 +233,7 @@ ZSSEditor.backupRange = function(){
 ZSSEditor.restoreRange = function(){
     if (this.savedSelection) {
 		rangy.restoreSelection(this.savedSelection);
+        this.savedSelection = null;
     } else if (this.savedFocusedField != null) {
         this.savedFocusedField.focus();
         this.savedFocusedField = null;
