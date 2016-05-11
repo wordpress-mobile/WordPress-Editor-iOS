@@ -10,8 +10,6 @@
 
 #ifdef __OBJC__
 
-#define LOG_LEVEL_DEF WordPressSharedLogLevel
-#import <CocoaLumberjack/CocoaLumberjack.h>
-static const DDLogLevel WordPressSharedLogLevel = DDLogLevelWarning;
+#import <Foundation/Foundation.h>
 
 #endif

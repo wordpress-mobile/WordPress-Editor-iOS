@@ -1,4 +1,5 @@
 #import "WPFontManager.h"
+#import "WPSharedLoggingPrivate.h"
 #import <CoreText/CoreText.h>
 
 @implementation WPFontManager
