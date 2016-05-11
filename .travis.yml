@@ -1,5 +1,3 @@
-install:
-- gem install cocoapods -v 1.0.0 && pod install
 osx_image: xcode7
 language: objective-c
 xcode_workspace: ./Example/EditorDemo.xcworkspace
