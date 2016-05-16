@@ -148,6 +148,14 @@ typedef enum
 - (void)toolBarItemWithTag:(WPEditorViewControllerElementTag)tag setVisible:(BOOL)visible;
 
 /**
+ *  @brief      Selects or deselects a toolbar item
+ *
+ *  @param      tag      WPEditorViewControllerElementTag of the item to alter.
+ *  @param      selected YES to make the item selected, NO to deselect it.
+ */
+- (void)toolBarItemWithTag:(WPEditorViewControllerElementTag)tag setSelected:(BOOL)selected;
+
+/**
  *  @brief      Enables and disables the toolbar items.
  *
  *  @param      enable       YES to enable the toolbar buttons; NO to disable them.

@@ -174,6 +174,55 @@
     [self.toolbarView setNeedsLayout];
 }
 
+#pragma mark - Keyboard shortcuts
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (NSArray<UIKeyCommand *> *)keyCommands
+{
+    return @[
+             [UIKeyCommand keyCommandWithInput:@"I"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierShift
+                                        action:@selector(didTouchMediaOptions)
+                          discoverabilityTitle:NSLocalizedString(@"Insert Image", @"Discoverability title for insert image keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"B"
+                                 modifierFlags:UIKeyModifierCommand
+                                        action:@selector(setBold)
+                          discoverabilityTitle:NSLocalizedString(@"Bold", @"Discoverability title for bold formatting keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"I"
+                                 modifierFlags:UIKeyModifierCommand
+                                        action:@selector(setItalic)
+                          discoverabilityTitle:NSLocalizedString(@"Italic", @"Discoverability title for italic formatting keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"-"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierShift
+                                        action:@selector(setStrikethrough)
+                          discoverabilityTitle:NSLocalizedString(@"Strikethrough", @"Discoverability title for strikethrough formatting keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"B"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierShift
+                                        action:@selector(setBlockQuote)
+                          discoverabilityTitle:NSLocalizedString(@"Block Quote", @"Discoverability title for block quote keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"K"
+                                 modifierFlags:UIKeyModifierCommand
+                                        action:@selector(linkBarButtonTapped)
+                          discoverabilityTitle:NSLocalizedString(@"Insert Link", @"Discoverability title for insert link keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"L"
+                                 modifierFlags:UIKeyModifierCommand
+                                        action:@selector(setUnorderedList)
+                          discoverabilityTitle:NSLocalizedString(@"Unordered List", @"Discoverability title for unordered list keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"L"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierShift
+                                        action:@selector(setOrderedList)
+                          discoverabilityTitle:NSLocalizedString(@"Ordered List", @"Discoverability title for ordered list keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"H"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierShift
+                                        action:@selector(showHTMLSource:)
+                          discoverabilityTitle:NSLocalizedString(@"Toggle HTML Source ", @"Discoverability title for HTML keyboard shortcut.")]
+             ];
+}
+
 #pragma mark - Toolbar: helper methods
 
 - (void)clearToolbar
@@ -428,24 +477,27 @@
 - (void)editorToolbarView:(WPEditorFormatbarView*)editorToolbarView
                insertLink:(UIBarButtonItem *)barButtonItem
 {
-    [self linkBarButtonTapped:(WPEditorToolbarButton *)barButtonItem];
+    [self linkBarButtonTapped];
 }
 
 #pragma mark - Editor Interaction
 
 - (void)showHTMLSource:(UIBarButtonItem *)barButtonItem
-{	
+{
     if ([self.editorView isInVisualMode]) {
         if ([self askOurDelegateShouldDisplaySourceView]) {
             [self.editorView showHTMLSource];
-            barButtonItem.tintColor = [self barButtonItemSelectedDefaultColor];
+            [self.toolbarView toolBarItemWithTag:kWPEditorViewControllerElementShowSourceBarButton
+                                     setSelected:YES];
         } else {
             // Deselect the HTML button so it is in the proper state
-            [(UIButton *)barButtonItem setSelected:NO];
+            [self.toolbarView toolBarItemWithTag:kWPEditorViewControllerElementShowSourceBarButton
+                                     setSelected:NO];
         }
     } else {
 		[self.editorView showVisualEditor];
-		barButtonItem.tintColor = [self.toolbarView itemTintColor];
+        [self.toolbarView toolBarItemWithTag:kWPEditorViewControllerElementShowSourceBarButton
+                                 setSelected:NO];
     }
     
     [WPAnalytics track:WPAnalyticsStatEditorTappedHTML];
@@ -621,7 +673,7 @@
     [self.editorView redo];
 }
 
-- (void)linkBarButtonTapped:(WPEditorToolbarButton*)button
+- (void)linkBarButtonTapped
 {
 	if ([self.editorView isSelectionALink]) {
 		[self removeLink];

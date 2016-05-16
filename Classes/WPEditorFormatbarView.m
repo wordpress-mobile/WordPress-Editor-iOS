@@ -203,6 +203,21 @@
     }
 }
 
+- (void)toolBarItemWithTag:(WPEditorViewControllerElementTag)tag setSelected:(BOOL)selected
+{
+    for (ZSSBarButtonItem *item in self.leftToolbar.items) {
+        if (item.tag == tag) {
+            item.selected = selected;
+        }
+    }
+
+    for (ZSSBarButtonItem *item in self.regularToolbar.items) {
+        if (item.tag == tag) {
+            item.selected = selected;
+        }
+    }
+}
+
 - (void)enableToolbarItems:(BOOL)enable
     shouldShowSourceButton:(BOOL)showSource
 {
