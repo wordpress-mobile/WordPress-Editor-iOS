@@ -24,6 +24,7 @@
 #pragma mark - Properties: Editing
 @property (nonatomic, assign, readwrite, getter=isEditingEnabled) BOOL editingEnabled;
 @property (nonatomic, assign, readwrite, getter=isEditing) BOOL editing;
+@property (nonatomic, assign, readwrite, getter=isEditingTitle) BOOL editingTitle;
 @property (nonatomic, assign, readwrite) BOOL wasEditing;
 
 #pragma mark - Properties: Editor View
@@ -183,11 +184,11 @@
 
 - (NSArray<UIKeyCommand *> *)keyCommands
 {
+    if (self.isEditingTitle) {
+        return @[];
+    }
+    
     return @[
-             [UIKeyCommand keyCommandWithInput:@"I"
-                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierShift
-                                        action:@selector(didTouchMediaOptions)
-                          discoverabilityTitle:NSLocalizedString(@"Insert Image", @"Discoverability title for insert image keyboard shortcut.")],
              [UIKeyCommand keyCommandWithInput:@"B"
                                  modifierFlags:UIKeyModifierCommand
                                         action:@selector(setBold)
@@ -208,6 +209,10 @@
                                  modifierFlags:UIKeyModifierCommand
                                         action:@selector(linkBarButtonTapped)
                           discoverabilityTitle:NSLocalizedString(@"Insert Link", @"Discoverability title for insert link keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"M"
+                                 modifierFlags:UIKeyModifierCommand
+                                        action:@selector(didTouchMediaOptions)
+                          discoverabilityTitle:NSLocalizedString(@"Insert Media", @"Discoverability title for insert media keyboard shortcut.")],
              [UIKeyCommand keyCommandWithInput:@"L"
                                  modifierFlags:UIKeyModifierCommand
                                         action:@selector(setUnorderedList)
@@ -953,9 +958,11 @@
 {
     [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
     if (field == self.editorView.titleField) {
+        self.editingTitle = YES;
         [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
         [self tellOurDelegateFormatBarStatusHasChanged:NO];
     } else {
+        self.editingTitle = NO;
         [self.toolbarView enableToolbarItems:YES shouldShowSourceButton:YES];
         [self tellOurDelegateFormatBarStatusHasChanged:YES];
     }
@@ -964,8 +971,10 @@
 - (void)editorView:(WPEditorView*)editorView sourceFieldFocused:(UIView*)view
 {
     if (view == self.editorView.sourceViewTitleField) {
+        self.editingTitle = YES;
         [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
     } else {
+        self.editingTitle = NO;
         [self.toolbarView enableToolbarItems:YES shouldShowSourceButton:YES];
     }
 }
