@@ -1,10 +1,12 @@
 #import "WPLegacyEditorViewController.h"
 #import "WPLegacyEditorFormatToolbar.h"
 #import "WPLegacyEditorFormatAction.h"
+#import "WPLegacyEditorStyledTextView.h"
 #import <WordPressComAnalytics/WPAnalytics.h>
 
 CGFloat const WPLegacyEPVCStandardOffset = 15.0;
 CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
+
 
 @interface WPLegacyEditorViewController ()<UITextFieldDelegate, UITextViewDelegate, WPLegacyEditorFormatToolbarDelegate>
 
@@ -154,13 +156,22 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 
     // Height should never be smaller than what is required to display its text.
     if (!self.textView) {
-        self.textView = [[UITextView alloc] initWithFrame:frame];
-        self.textView.autoresizingMask = mask;
-        self.textView.delegate = self;
-        self.textView.font =  self.bodyFont;
-        self.textView.textColor = self.bodyColor;
-        self.textView.accessibilityLabel = NSLocalizedString(@"Content", @"Post content");
+        WPLegacyEditorStyledTextView *textView = [[WPLegacyEditorStyledTextView alloc] initWithFrame:frame];
+        textView.autoresizingMask = mask;
+        textView.delegate = self;
+        textView.font =  self.bodyFont;
+        textView.textColor = self.bodyColor;
+        textView.allowsEditingTextAttributes = YES;
+        textView.accessibilityLabel = NSLocalizedString(@"Content", @"Post content");
+
+        __weak typeof(self) weakSelf = self;
+        textView.toggleBoldBlock = ^{ [weakSelf setBold]; };
+        textView.toggleItalicBlock = ^{ [weakSelf setItalic]; };
+        textView.toggleUnderlineBlock = ^{ [weakSelf setUnderline]; };
+
+        self.textView = textView;
     }
+
     [self.view addSubview:self.textView];
     
     // Formatting bar for the textView's inputAccessoryView.
@@ -268,6 +279,59 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         [self.delegate editorDidPressMedia:self];
     }
 }
+
+#pragma mark - Keyboard Shortcuts
+
+- (NSArray<UIKeyCommand *> *)keyCommands
+{
+    if (![self.textView isFirstResponder]) {
+        return @[];
+    }
+
+    return @[
+             [UIKeyCommand keyCommandWithInput:@"B"
+                                 modifierFlags:UIKeyModifierCommand
+                                        action:@selector(setBold)
+                          discoverabilityTitle:NSLocalizedString(@"Bold", @"Discoverability title for bold formatting keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"I"
+                                 modifierFlags:UIKeyModifierCommand
+                                        action:@selector(setItalic)
+                          discoverabilityTitle:NSLocalizedString(@"Italic", @"Discoverability title for italic formatting keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"U"
+                                 modifierFlags:UIKeyModifierCommand
+                                        action:@selector(setUnderline)
+                          discoverabilityTitle:NSLocalizedString(@"Underline", @"Discoverability title for underline formatting keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"-"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierShift
+                                        action:@selector(setStrikethrough)
+                          discoverabilityTitle:NSLocalizedString(@"Strikethrough", @"Discoverability title for strikethrough formatting keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"B"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierShift
+                                        action:@selector(setBlockQuote)
+                          discoverabilityTitle:NSLocalizedString(@"Block Quote", @"Discoverability title for block quote keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"K"
+                                 modifierFlags:UIKeyModifierCommand
+                                        action:@selector(insertLink)
+                          discoverabilityTitle:NSLocalizedString(@"Insert Link", @"Discoverability title for insert link keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"M"
+                                 modifierFlags:UIKeyModifierCommand
+                                        action:@selector(insertMedia)
+                          discoverabilityTitle:NSLocalizedString(@"Insert Media", @"Discoverability title for insert media keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"M"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierShift
+                                        action:@selector(insertMore)
+                          discoverabilityTitle:NSLocalizedString(@"Insert More Tag ", @"Discoverability title for insert more tag keyboard shortcut.")]
+             ];
+}
+
+- (void)setBold             { [self formatToolbar:self.editorToolbar actionPressed:WPLegacyEditorFormatActionBold]; }
+- (void)setItalic           { [self formatToolbar:self.editorToolbar actionPressed:WPLegacyEditorFormatActionItalic]; }
+- (void)setUnderline        { [self formatToolbar:self.editorToolbar actionPressed:WPLegacyEditorFormatActionUnderline]; }
+- (void)setStrikethrough    { [self formatToolbar:self.editorToolbar actionPressed:WPLegacyEditorFormatActionDelete]; }
+- (void)insertMedia         { [self formatToolbar:self.editorToolbar actionPressed:WPLegacyEditorFormatActionMedia]; }
+- (void)insertLink          { [self formatToolbar:self.editorToolbar actionPressed:WPLegacyEditorFormatActionLink]; }
+- (void)setBlockQuote       { [self formatToolbar:self.editorToolbar actionPressed:WPLegacyEditorFormatActionQuote]; }
+- (void)insertMore          { [self formatToolbar:self.editorToolbar actionPressed:WPLegacyEditorFormatActionMore]; }
 
 #pragma mark - Editor and Misc Methods
 
