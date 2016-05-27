@@ -24,8 +24,6 @@
 		166EA9FA08D588A3C37BAA233CC71A1F /* CYRToken.m in Sources */ = {isa = PBXBuildFile; fileRef = 30953A5CC1F7C15B2B2569E2B86234B7 /* CYRToken.m */; };
 		16AA82DC3E4AC2696DA0931F390E5FC7 /* ZSSh5.png in Resources */ = {isa = PBXBuildFile; fileRef = DD385AEE15545E35E75E9C0D559B2764 /* ZSSh5.png */; };
 		170E608BCFB5A7701BBEEA00DEF6889D /* HRCgUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D266ADA1ED925AEE6DFF2EEE04B7A88 /* HRCgUtil.m */; };
-		173BCE6F1CEB205000AE8817 /* WPLegacyEditorStyledTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = 173BCE6D1CEB205000AE8817 /* WPLegacyEditorStyledTextView.h */; };
-		173BCE701CEB205000AE8817 /* WPLegacyEditorStyledTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 173BCE6E1CEB205000AE8817 /* WPLegacyEditorStyledTextView.m */; };
 		17ED9445B95C990DC7F77217C2A372C0 /* Merriweather-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8629C93CB036BC2B431FEAF8EC7A5E88 /* Merriweather-Italic.ttf */; };
 		17F91B9CE2CEBFE09A4A7D9470CE0765 /* icon_format_html@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A80A6F496A0753421F82AD38EAFA3CDC /* icon_format_html@2x.png */; };
 		183C87703915312EE7B716FA107B2683 /* DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A49E19FFA5287CF0054F9FF3F093557 /* DDTTYLogger.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
@@ -374,8 +372,6 @@
 		1424C9017E4F9B1766D1E50E4BB296F4 /* NSObject-SafeExpectations-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "NSObject-SafeExpectations-umbrella.h"; sourceTree = "<group>"; };
 		169C2E37D8CA323642A8E9D4211FAFE3 /* WPEditorField.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = WPEditorField.m; sourceTree = "<group>"; };
 		16FE5F287F1CF6A31EDD264A3EA7F9A3 /* WPStyleGuide.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = WPStyleGuide.m; path = "WordPress-iOS-Shared/Core/WPStyleGuide.m"; sourceTree = "<group>"; };
-		173BCE6D1CEB205000AE8817 /* WPLegacyEditorStyledTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPLegacyEditorStyledTextView.h; sourceTree = "<group>"; };
-		173BCE6E1CEB205000AE8817 /* WPLegacyEditorStyledTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPLegacyEditorStyledTextView.m; sourceTree = "<group>"; };
 		1866E384D9C1BE78E2048F59DADD3BBC /* WPNUXUtility.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = WPNUXUtility.m; path = "WordPress-iOS-Shared/Core/WPNUXUtility.m"; sourceTree = "<group>"; };
 		18A435085C70CE4B4601475CB8EFC8CC /* icon_format_keyboard.png */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.png; path = icon_format_keyboard.png; sourceTree = "<group>"; };
 		1923CE5DAF984F860E3559547A252308 /* rangy-highlighter.js */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.javascript; path = "rangy-highlighter.js"; sourceTree = "<group>"; };
@@ -1131,8 +1127,6 @@
 				2CE62E271066C69FD730291EA4E5AF73 /* WPLegacyEditorFormatToolbar.m */,
 				DE33BBE2AB47600A211CB2D833904605 /* WPLegacyEditorViewController.h */,
 				B174D434444FFD56027D2FBA78A4820C /* WPLegacyEditorViewController.m */,
-				173BCE6D1CEB205000AE8817 /* WPLegacyEditorStyledTextView.h */,
-				173BCE6E1CEB205000AE8817 /* WPLegacyEditorStyledTextView.m */,
 				A347E40B351E562043797CF5C4F29CAB /* ZSSBarButtonItem.h */,
 				30864D2D85CCD7AECE8C682FB118243C /* ZSSBarButtonItem.m */,
 				8AE3843844D187A314FC9BC3917FC457 /* ZSSTextView.h */,
@@ -1236,7 +1230,6 @@
 				5A7C1352685E2C5DC5305CD490DCFD22 /* UIWebView+GUIFixes.h in Headers */,
 				7CA0D9CF43973132AF4B5B33764D2184 /* WordPress-iOS-Editor-umbrella.h in Headers */,
 				9E1A2CA25668BA959253C4D0B3A70BE6 /* WPEditorField.h in Headers */,
-				173BCE6F1CEB205000AE8817 /* WPLegacyEditorStyledTextView.h in Headers */,
 				DD9308ADBDA819DB2D4DC6472C125AA9 /* WPEditorFormatbarView.h in Headers */,
 				8ECC1D04A94121E9E4C80530D5CA39F1 /* WPEditorLoggingConfiguration.h in Headers */,
 				3D381BDB5478D52BD5046D52E8F181A6 /* WPEditorToolbarButton.h in Headers */,
@@ -1727,7 +1720,6 @@
 				60FA1EB2D6C6B16B8ACCD2D8B8EB5BB6 /* WPEditorViewController.m in Sources */,
 				3D1D840F42D18C7D9005788C56F98320 /* WPImageMeta.m in Sources */,
 				BA78A51E19BEC0FD3C88C6224D8FA256 /* WPLegacyEditorFormatAction.m in Sources */,
-				173BCE701CEB205000AE8817 /* WPLegacyEditorStyledTextView.m in Sources */,
 				37CB8DE501F08F4758090D9AF27708E7 /* WPLegacyEditorFormatToolbar.m in Sources */,
 				EDFC4D71DB3E62F3885E88AC2EB50B0E /* WPLegacyEditorViewController.m in Sources */,
 				7333D70FB963FB8B93076EE128004039 /* ZSSBarButtonItem.m in Sources */,
