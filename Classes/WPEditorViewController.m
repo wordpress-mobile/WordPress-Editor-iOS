@@ -187,7 +187,9 @@
     if (self.isEditingTitle) {
         return @[];
     }
-    
+
+    // Note that due to an iOS 9 bug, the custom methods for bold and italic
+    // don't actually get called: http://www.openradar.me/25463955
     return @[
              [UIKeyCommand keyCommandWithInput:@"B"
                                  modifierFlags:UIKeyModifierCommand
@@ -197,12 +199,16 @@
                                  modifierFlags:UIKeyModifierCommand
                                         action:@selector(setItalic)
                           discoverabilityTitle:NSLocalizedString(@"Italic", @"Discoverability title for italic formatting keyboard shortcut.")],
-             [UIKeyCommand keyCommandWithInput:@"-"
-                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierShift
-                                        action:@selector(setStrikethrough)
+             [UIKeyCommand keyCommandWithInput:@"D"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierAlternate
+                                        action:@selector(handleKeyCommandStrikethrough)
                           discoverabilityTitle:NSLocalizedString(@"Strikethrough", @"Discoverability title for strikethrough formatting keyboard shortcut.")],
-             [UIKeyCommand keyCommandWithInput:@"B"
-                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierShift
+             [UIKeyCommand keyCommandWithInput:@"U"
+                                 modifierFlags:UIKeyModifierCommand
+                                        action:@selector(setUnderline)
+                          discoverabilityTitle:NSLocalizedString(@"Underline", @"Discoverability title for underline formatting keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"Q"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierAlternate
                                         action:@selector(setBlockQuote)
                           discoverabilityTitle:NSLocalizedString(@"Block Quote", @"Discoverability title for block quote keyboard shortcut.")],
              [UIKeyCommand keyCommandWithInput:@"K"
@@ -210,22 +216,30 @@
                                         action:@selector(linkBarButtonTapped)
                           discoverabilityTitle:NSLocalizedString(@"Insert Link", @"Discoverability title for insert link keyboard shortcut.")],
              [UIKeyCommand keyCommandWithInput:@"M"
-                                 modifierFlags:UIKeyModifierCommand
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierAlternate
                                         action:@selector(didTouchMediaOptions)
                           discoverabilityTitle:NSLocalizedString(@"Insert Media", @"Discoverability title for insert media keyboard shortcut.")],
-             [UIKeyCommand keyCommandWithInput:@"L"
-                                 modifierFlags:UIKeyModifierCommand
+             [UIKeyCommand keyCommandWithInput:@"U"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierAlternate
                                         action:@selector(setUnorderedList)
-                          discoverabilityTitle:NSLocalizedString(@"Unordered List", @"Discoverability title for unordered list keyboard shortcut.")],
-             [UIKeyCommand keyCommandWithInput:@"L"
-                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierShift
+                          discoverabilityTitle:NSLocalizedString(@"Bullet List", @"Discoverability title for bullet list keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"O"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierAlternate
                                         action:@selector(setOrderedList)
-                          discoverabilityTitle:NSLocalizedString(@"Ordered List", @"Discoverability title for ordered list keyboard shortcut.")],
+                          discoverabilityTitle:NSLocalizedString(@"Numbered List", @"Discoverability title for numbered list keyboard shortcut.")],
              [UIKeyCommand keyCommandWithInput:@"H"
                                  modifierFlags:UIKeyModifierCommand|UIKeyModifierShift
                                         action:@selector(showHTMLSource:)
                           discoverabilityTitle:NSLocalizedString(@"Toggle HTML Source ", @"Discoverability title for HTML keyboard shortcut.")]
              ];
+}
+
+- (void)handleKeyCommandStrikethrough
+{
+    [self setStrikethrough];
+
+    // Ensure that the toolbar button is appropriately selected / deselected
+    [self.toolbarView toggleSelectionForToolBarItemWithTag:kWPEditorViewControllerElementStrikeThroughBarButton];
 }
 
 #pragma mark - Toolbar: helper methods
