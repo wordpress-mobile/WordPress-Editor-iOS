@@ -24,6 +24,7 @@
 #pragma mark - Properties: Editing
 @property (nonatomic, assign, readwrite, getter=isEditingEnabled) BOOL editingEnabled;
 @property (nonatomic, assign, readwrite, getter=isEditing) BOOL editing;
+@property (nonatomic, assign, readwrite, getter=isEditingTitle) BOOL editingTitle;
 @property (nonatomic, assign, readwrite) BOOL wasEditing;
 
 #pragma mark - Properties: Editor View
@@ -172,6 +173,73 @@
 {
     [super willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
     [self.toolbarView setNeedsLayout];
+}
+
+#pragma mark - Keyboard shortcuts
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (NSArray<UIKeyCommand *> *)keyCommands
+{
+    if (self.isEditingTitle) {
+        return @[];
+    }
+
+    // Note that due to an iOS 9 bug, the custom methods for bold and italic
+    // don't actually get called: http://www.openradar.me/25463955
+    return @[
+             [UIKeyCommand keyCommandWithInput:@"B"
+                                 modifierFlags:UIKeyModifierCommand
+                                        action:@selector(setBold)
+                          discoverabilityTitle:NSLocalizedString(@"Bold", @"Discoverability title for bold formatting keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"I"
+                                 modifierFlags:UIKeyModifierCommand
+                                        action:@selector(setItalic)
+                          discoverabilityTitle:NSLocalizedString(@"Italic", @"Discoverability title for italic formatting keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"D"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierAlternate
+                                        action:@selector(handleKeyCommandStrikethrough)
+                          discoverabilityTitle:NSLocalizedString(@"Strikethrough", @"Discoverability title for strikethrough formatting keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"U"
+                                 modifierFlags:UIKeyModifierCommand
+                                        action:@selector(setUnderline)
+                          discoverabilityTitle:NSLocalizedString(@"Underline", @"Discoverability title for underline formatting keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"Q"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierAlternate
+                                        action:@selector(setBlockQuote)
+                          discoverabilityTitle:NSLocalizedString(@"Block Quote", @"Discoverability title for block quote keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"K"
+                                 modifierFlags:UIKeyModifierCommand
+                                        action:@selector(linkBarButtonTapped)
+                          discoverabilityTitle:NSLocalizedString(@"Insert Link", @"Discoverability title for insert link keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"M"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierAlternate
+                                        action:@selector(didTouchMediaOptions)
+                          discoverabilityTitle:NSLocalizedString(@"Insert Media", @"Discoverability title for insert media keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"U"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierAlternate
+                                        action:@selector(setUnorderedList)
+                          discoverabilityTitle:NSLocalizedString(@"Bullet List", @"Discoverability title for bullet list keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"O"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierAlternate
+                                        action:@selector(setOrderedList)
+                          discoverabilityTitle:NSLocalizedString(@"Numbered List", @"Discoverability title for numbered list keyboard shortcut.")],
+             [UIKeyCommand keyCommandWithInput:@"H"
+                                 modifierFlags:UIKeyModifierCommand|UIKeyModifierShift
+                                        action:@selector(showHTMLSource:)
+                          discoverabilityTitle:NSLocalizedString(@"Toggle HTML Source ", @"Discoverability title for HTML keyboard shortcut.")]
+             ];
+}
+
+- (void)handleKeyCommandStrikethrough
+{
+    [self setStrikethrough];
+
+    // Ensure that the toolbar button is appropriately selected / deselected
+    [self.toolbarView toggleSelectionForToolBarItemWithTag:kWPEditorViewControllerElementStrikeThroughBarButton];
 }
 
 #pragma mark - Toolbar: helper methods
@@ -428,24 +496,27 @@
 - (void)editorToolbarView:(WPEditorFormatbarView*)editorToolbarView
                insertLink:(UIBarButtonItem *)barButtonItem
 {
-    [self linkBarButtonTapped:(WPEditorToolbarButton *)barButtonItem];
+    [self linkBarButtonTapped];
 }
 
 #pragma mark - Editor Interaction
 
 - (void)showHTMLSource:(UIBarButtonItem *)barButtonItem
-{	
+{
     if ([self.editorView isInVisualMode]) {
         if ([self askOurDelegateShouldDisplaySourceView]) {
             [self.editorView showHTMLSource];
-            barButtonItem.tintColor = [self barButtonItemSelectedDefaultColor];
+            [self.toolbarView toolBarItemWithTag:kWPEditorViewControllerElementShowSourceBarButton
+                                     setSelected:YES];
         } else {
             // Deselect the HTML button so it is in the proper state
-            [(UIButton *)barButtonItem setSelected:NO];
+            [self.toolbarView toolBarItemWithTag:kWPEditorViewControllerElementShowSourceBarButton
+                                     setSelected:NO];
         }
     } else {
 		[self.editorView showVisualEditor];
-		barButtonItem.tintColor = [self.toolbarView itemTintColor];
+        [self.toolbarView toolBarItemWithTag:kWPEditorViewControllerElementShowSourceBarButton
+                                 setSelected:NO];
     }
     
     [WPAnalytics track:WPAnalyticsStatEditorTappedHTML];
@@ -621,7 +692,7 @@
     [self.editorView redo];
 }
 
-- (void)linkBarButtonTapped:(WPEditorToolbarButton*)button
+- (void)linkBarButtonTapped
 {
 	if ([self.editorView isSelectionALink]) {
 		[self removeLink];
@@ -901,9 +972,11 @@
 {
     [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
     if (field == self.editorView.titleField) {
+        self.editingTitle = YES;
         [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
         [self tellOurDelegateFormatBarStatusHasChanged:NO];
     } else {
+        self.editingTitle = NO;
         [self.toolbarView enableToolbarItems:YES shouldShowSourceButton:YES];
         [self tellOurDelegateFormatBarStatusHasChanged:YES];
     }
@@ -912,8 +985,10 @@
 - (void)editorView:(WPEditorView*)editorView sourceFieldFocused:(UIView*)view
 {
     if (view == self.editorView.sourceViewTitleField) {
+        self.editingTitle = YES;
         [self.toolbarView enableToolbarItems:NO shouldShowSourceButton:YES];
     } else {
+        self.editingTitle = NO;
         [self.toolbarView enableToolbarItems:YES shouldShowSourceButton:YES];
     }
 }
