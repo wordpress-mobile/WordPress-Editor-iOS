@@ -245,7 +245,11 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
     html = [html stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
     html = [html stringByReplacingOccurrencesOfString:@"\r"  withString:@"\\r"];
     html = [html stringByReplacingOccurrencesOfString:@"\n"  withString:@"\\n"];
-    
+
+    // Invisible line separator character.
+    // Fixes https://github.com/wordpress-mobile/WordPress-iOS/issues/5496
+    html = [html stringByReplacingOccurrencesOfString:@"\u2028"  withString:@"\\u2028"];
+
     return html;
 }
 
