@@ -43,6 +43,7 @@ ZSSEditor.currentEditingVideo;
 ZSSEditor.currentEditingLink;
 
 ZSSEditor.focusedField = null;
+ZSSEditor.savedFocusedField = null;
 
 // The objects that are enabled
 ZSSEditor.enabledItems = {};
@@ -104,10 +105,20 @@ ZSSEditor.init = function(callbacker, logger) {
 	}, false);
     
     $('[contenteditable]').on('paste',function(e) {
-        // Ensure we only insert plaintext from the pasteboard
         e.preventDefault();
-        var plainText = (e.originalEvent || e).clipboardData.getData('text/plain');
-        if (plainText.length > 0) {
+
+        var clipboardData = (e.originalEvent || e).clipboardData;
+
+        // If you copy a link from Safari using the share sheet, it's not
+        // available as plain text, only as a URL. So let's first check for
+        // URLs, then plain text.
+        // Fixes https://github.com/wordpress-mobile/WordPress-Editor-iOS/issues/713
+        var url = clipboardData.getData('text/uri-list');
+        var plainText = clipboardData.getData('text/plain');
+
+        if (url.length > 0) {
+          document.execCommand('insertText', false, url);
+        } else if (plainText.length > 0) {
             document.execCommand('insertText', false, plainText);
         } else {
             //var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
@@ -214,12 +225,28 @@ ZSSEditor.getFocusedField = function() {
 // MARK: - Selection
 
 ZSSEditor.backupRange = function(){
-	this.savedSelection = rangy.saveSelection()
+    var focusedField = this.getFocusedField();
+    
+    if (focusedField) {
+        var text = focusedField.getTextWithoutNbspOrBom();
+        
+        if (text.length > 0) {
+            this.savedSelection = rangy.saveSelection()
+            this.savedFocusedField = null;
+        } else {
+            this.savedSelection = null;
+            this.savedFocusedField = focusedField;
+        }
+    }
 };
 
 ZSSEditor.restoreRange = function(){
     if (this.savedSelection) {
 		rangy.restoreSelection(this.savedSelection);
+        this.savedSelection = null;
+    } else if (this.savedFocusedField != null) {
+        this.savedFocusedField.focus();
+        this.savedFocusedField = null;
     }
 };
 
@@ -2396,15 +2423,22 @@ ZSSField.prototype.bindMutationObserver = function () {
 
 // MARK: - Emptying the field when it should be, well... empty (HTML madness)
 
+ZSSField.prototype.getTextWithoutNbspOrBom = function() {
+    var nbsp = '\xa0';
+    var bom = '\uFEFF';
+    var text = this.wrappedObject.text().replace(nbsp, '').replace(bom, '');
+    
+    return text;
+}
+
 /**
  *  @brief      Sometimes HTML leaves some <br> tags or &nbsp; when the user deletes all
  *              text from a contentEditable field.  This code makes sure no such 'garbage' survives.
  *  @details    If the node contains child image nodes, then the content is left untouched.
  */
 ZSSField.prototype.emptyFieldIfNoContents = function() {
-
-    var nbsp = '\xa0';
-    var text = this.wrappedObject.text().replace(nbsp, '');
+    
+    var text = this.getTextWithoutNbspOrBom();
     
     if (text.length == 0) {
         

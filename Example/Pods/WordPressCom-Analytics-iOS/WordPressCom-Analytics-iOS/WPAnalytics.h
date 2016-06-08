@@ -2,6 +2,7 @@
 
 typedef NS_ENUM(NSUInteger, WPAnalyticsStat) {
     WPAnalyticsStatNoStat, // Since we can't have a nil enum we'll use this to act as the nil
+    WPAnalyticsStatABTestStart,
     WPAnalyticsStatAddedSelfHostedSite,
     WPAnalyticsStatAddedSelfHostedSiteButJetpackNotConnectedToWPCom,
     WPAnalyticsStatAppInstalled,
@@ -47,6 +48,9 @@ typedef NS_ENUM(NSUInteger, WPAnalyticsStat) {
     WPAnalyticsStatEditorUpdatedPost,
     WPAnalyticsStatEditorUploadMediaFailed,
     WPAnalyticsStatEditorUploadMediaRetried,
+    WPAnalyticsStatGravatarCropped,
+    WPAnalyticsStatGravatarTapped,
+    WPAnalyticsStatGravatarUploaded,
     WPAnalyticsStatLogSpecialCondition,
     WPAnalyticsStatLoginFailed,
     WPAnalyticsStatLoginFailedToGuessXMLRPC,
@@ -84,6 +88,8 @@ typedef NS_ENUM(NSUInteger, WPAnalyticsStat) {
     WPAnalyticsStatOpenedNotificationSettingStreams,
     WPAnalyticsStatOpenedNotificationSettingDetails,
     WPAnalyticsStatOpenedPages,
+    WPAnalyticsStatOpenedPeople,
+    WPAnalyticsStatOpenedPerson,
     WPAnalyticsStatOpenedPosts,
     WPAnalyticsStatOpenedSharingManagement,
     WPAnalyticsStatOpenedSiteSettings,
@@ -92,6 +98,8 @@ typedef NS_ENUM(NSUInteger, WPAnalyticsStat) {
     WPAnalyticsStatOpenedViewSite,
     WPAnalyticsStatPerformedCoreDataMigrationFixFor45,
     WPAnalyticsStatPerformedJetpackSignInFromStatsScreen,
+    WPAnalyticsStatPersonUpdated,
+    WPAnalyticsStatPersonRemoved,
     WPAnalyticsStatPostListAuthorFilterChanged,
     WPAnalyticsStatPostListDraftAction,
     WPAnalyticsStatPostListEditAction,

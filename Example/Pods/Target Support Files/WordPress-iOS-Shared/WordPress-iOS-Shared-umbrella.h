@@ -9,6 +9,7 @@
 #import "WPImageSource.h"
 #import "WPNoResultsView.h"
 #import "WPNUXUtility.h"
+#import "WPSharedLogging.h"
 #import "WPStyleGuide.h"
 #import "WPTableViewCell.h"
 #import "WPTableViewSectionHeaderFooterView.h"
