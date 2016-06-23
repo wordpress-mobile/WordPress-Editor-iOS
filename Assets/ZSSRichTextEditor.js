@@ -105,10 +105,20 @@ ZSSEditor.init = function(callbacker, logger) {
 	}, false);
     
     $('[contenteditable]').on('paste',function(e) {
-        // Ensure we only insert plaintext from the pasteboard
         e.preventDefault();
-        var plainText = (e.originalEvent || e).clipboardData.getData('text/plain');
-        if (plainText.length > 0) {
+
+        var clipboardData = (e.originalEvent || e).clipboardData;
+
+        // If you copy a link from Safari using the share sheet, it's not
+        // available as plain text, only as a URL. So let's first check for
+        // URLs, then plain text.
+        // Fixes https://github.com/wordpress-mobile/WordPress-Editor-iOS/issues/713
+        var url = clipboardData.getData('text/uri-list');
+        var plainText = clipboardData.getData('text/plain');
+
+        if (url.length > 0) {
+          document.execCommand('insertText', false, url);
+        } else if (plainText.length > 0) {
             document.execCommand('insertText', false, plainText);
         } else {
             //var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
