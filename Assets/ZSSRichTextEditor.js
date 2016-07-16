@@ -457,7 +457,12 @@ ZSSEditor.setBlockquote = function() {
     var sendStyles = false;
     
     var ancestorElement = this.getAncestorElementForSettingBlockquote(range);
-    
+    var focusedField = this.getFocusedField();
+
+    if (ancestorElement == focusedField.wrappedDomNode()) {
+        focusedField.wrapCaretInParagraphIfNecessary()
+    }
+
     if (ancestorElement) {
         sendStyles = true;
         
