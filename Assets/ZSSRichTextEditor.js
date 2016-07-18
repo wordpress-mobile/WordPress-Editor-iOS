@@ -2740,24 +2740,10 @@ ZSSField.prototype.wrapCaretInParagraphIfNecessary = function()
                                        || closerParentNode.nodeName == NodeName.BLOCKQUOTE);
     
     if (parentNodeShouldBeParagraph) {
-        var selection = window.getSelection();
-        
-        if (selection) {
-            var range = selection.getRangeAt(0);
-            
-            if (range.startContainer == range.endContainer) {
-                var paragraph = document.createElement("p");
-                var textNode = document.createTextNode("&#x200b;");
-                
-                paragraph.appendChild(textNode);
-                
-                range.insertNode(paragraph);
-                range.selectNode(textNode);
-                
-                selection.removeAllRanges();
-                selection.addRange(range);
-            }
-        }
+
+        var savedSelection = rangy.saveSelection();
+        $(closerParentNode).wrapInner("<p>");
+        rangy.restoreSelection(savedSelection);
     }
 };
 
