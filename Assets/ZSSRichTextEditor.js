@@ -806,16 +806,35 @@ ZSSEditor.insertImage = function(url, alt) {
  *                                      does not check for that.  It would be a mistake.
  */
 ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
-    var progressIdentifier = this.getImageProgressIdentifier(imageNodeIdentifier);
-    var imageContainerIdentifier = this.getImageContainerIdentifier(imageNodeIdentifier);
-    var imgContainerStart = '<span id="' + imageContainerIdentifier+'" class="img_container">';
-    var imgContainerEnd = '</span>';
-    var progress = '<progress id="' + progressIdentifier+'" value=0  class="wp_media_indicator"></progress>';
-    var image = '<img data-wpid="' + imageNodeIdentifier + '" src="' + localImageUrl + '" alt="" />';
-    var html = imgContainerStart + progress+image + imgContainerEnd;
-    
-    this.insertHTML(html);
-    this.sendEnabledStyles();
+
+    if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.getRangeAt && sel.rangeCount) {
+            var progressIdentifier = this.getImageProgressIdentifier(imageNodeIdentifier);
+
+            var span = document.createElement("span");
+            span.id = imageNodeIdentifier;
+            span.className = "img_container";
+
+            var progress = document.createElement("progress");
+            progress.id = progressIdentifier;
+            progress.value = 0;
+            progress.className = "wp_media_indicator";
+
+            var image = document.createElement("img");
+            image.setAttribute("data-wpid", imageNodeIdentifier);
+            image.src = localImageUrl;
+            image.alt = "";
+
+            span.appendChild(progress);
+            span.appendChild(image);
+
+            range = sel.getRangeAt(0);
+            range.insertNode(span);
+
+            this.sendEnabledStyles();
+        }
+    }
 };
 
 ZSSEditor.getImageNodeWithIdentifier = function(imageNodeIdentifier) {
@@ -932,36 +951,35 @@ ZSSEditor.setProgressOnImage = function(imageNodeIdentifier, progress) {
  *  @brief      Notifies that the image upload as finished
  *
  *  @param      imageNodeIdentifier     The unique image ID for the uploaded image
- *  @param      image  The image to be replaces
+ *  @param      image  The image to be replaced.
  *  @param      mediaID An integer that is the mediaID of the image on the server
  */
 ZSSEditor.markImageUploadDone = function(imageNodeIdentifier, image, mediaID) {
-    var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
-    if (imageNode.length > 0){
-        // remove identifier attributed from image
-        imageNode.removeAttr('data-wpid');
-        
-        // remove uploading style
-        imageNode.removeClass("uploading");
-        imageNode.removeAttr("class");
 
-        // set remote source
+    var progressId = this.getImageProgressIdentifier(imageNodeIdentifier);
+    var container = this.getImageContainerNodeWithIdentifier(imageNodeIdentifier)
+
+    this.log("Completing image: " + imageNodeIdentifier);
+    this.log("Removing progress: " + progressId);
+
+    // Remove the progress bar from the DOM.
+    $("#" + progressId).remove();
+
+    // Unwrap the image from the image container, leaving it wrapped inside a link
+    var imageNode = this.getImageNodeWithIdentifier(imageNodeIdentifier);
+
+    if (imageNode.length > 0) {
+        imageNode.unwrap();
+        imageNode.wrap("<a href='" + image.src + "'></a>");
+        imageNode.removeClass("uploading");
+        imageNode.removeAttr('data-wpid');
+        imageNode.removeAttr("class");
         imageNode.attr('src', image.src);
-        // set attributes
         imageNode.attr({'width':image.width, 'height':image.height, 'class':'alignnone size-full'});
+
         if (mediaID >= 0) {
             imageNode.addClass('wp-image-' + mediaID);
         }
-
-        // Remove all extra formatting nodes for progress
-        if (imageNode.parent().attr("id") == this.getImageContainerIdentifier(imageNodeIdentifier)) {
-            // remove id from container to avoid to report a user removal
-            imageNode.parent().attr("id", "");
-            imageNode.parent().replaceWith(imageNode);
-        }
-        // Wrap link around image
-        var linkTag = '<a href="' + imageNode.attr("src") + '"></a>';
-        imageNode.wrap(linkTag);
     }
     
     var joinedArguments = ZSSEditor.getJoinedFocusedFieldIdAndCaretArguments();
