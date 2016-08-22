@@ -813,7 +813,7 @@ ZSSEditor.insertLocalImage = function(imageNodeIdentifier, localImageUrl) {
             var progressIdentifier = this.getImageProgressIdentifier(imageNodeIdentifier);
 
             var span = document.createElement("span");
-            span.id = imageNodeIdentifier;
+            span.id = this.getImageContainerIdentifier(imageNodeIdentifier);
             span.className = "img_container";
 
             var progress = document.createElement("progress");
@@ -1023,7 +1023,7 @@ ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier, message) {
     }
     
     imageNode.addClass('failed');
-    
+    alert(message);
     var imageContainerNode = this.getImageContainerNodeWithIdentifier(imageNodeIdentifier);
     if(imageContainerNode.length != 0){
         imageContainerNode.attr("data-failed", message);
