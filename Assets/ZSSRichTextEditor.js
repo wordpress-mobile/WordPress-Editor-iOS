@@ -1023,7 +1023,6 @@ ZSSEditor.markImageUploadFailed = function(imageNodeIdentifier, message) {
     }
     
     imageNode.addClass('failed');
-    alert(message);
     var imageContainerNode = this.getImageContainerNodeWithIdentifier(imageNodeIdentifier);
     if(imageContainerNode.length != 0){
         imageContainerNode.attr("data-failed", message);
