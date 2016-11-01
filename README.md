@@ -90,10 +90,10 @@ The following projects were used in the WordPress-iOS-Editor codebase:
 | Component     | Description   | License  |
 | ------------- |:-------------:| -----:|
 | [ZSSRichTextEditor](https://github.com/nnhubbard/ZSSRichTextEditor)      | ZSSRichTextEditor is a rich text WYSIWYG Editor for iOS and was the basis for this project.| [MIT](Attribution/ZSSRichTextEditorLicense/LICENSE.txt) |
-| [CYRTextView](https://github.com/illyabusigin/CYRTextView)      | CYRTextView is a UITextView subclass that implements a variety of features that are relevant to a syntax or code text view. | [MIT](https://github.com/illyabusigin/CYRTextView/blob/master/LICENSE) |
-| [HRColorPicker](https://github.com/hayashi311/Color-Picker-for-iOS)      | Simple color picker for iPhone      |   [BSD](https://github.com/hayashi311/Color-Picker-for-iOS/blob/master/ColorPicker/HRColorPickerView.h) |
+| [CYRTextView](https://github.com/illyabusigin/CYRTextView)      | CYRTextView is a UITextView subclass that implements a variety of features that are relevant to a syntax or code text view. | [MIT](Attribution/CYRTextViewLicense/LICENSE) |
+| [HRColorPicker](https://github.com/hayashi311/Color-Picker-for-iOS)      | Simple color picker for iPhone      |   [BSD](Attribution/HRColorPickerLicense/LICENSE.txt) |
 | [jQuery](https://jquery.com)      | jQuery is a fast, small, and feature-rich JavaScript library.      |   [MIT](http://jquery.org/license) |
-| [JS Beautifier](https://github.com/einars/js-beautify)      | Makes ugly Javascript pretty      |   [MIT](https://github.com/einars/js-beautify/blob/master/LICENSE) |
+| [JS Beautifier](https://github.com/einars/js-beautify)      | Makes ugly Javascript pretty      |   [MIT](Attribution/jsBeautifierLicense/LICENSE.txt) |
 
 ## License
 
