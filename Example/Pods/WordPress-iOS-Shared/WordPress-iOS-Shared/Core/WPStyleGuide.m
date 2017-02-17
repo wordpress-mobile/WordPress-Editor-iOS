@@ -8,47 +8,9 @@
 
 #pragma mark - Fonts and Text
 
-+ (UIFont *)largePostTitleFont
-{
-    return [WPFontManager systemLightFontOfSize:32.0];
-}
-
-+ (NSDictionary *)largePostTitleAttributes
-{
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-    paragraphStyle.minimumLineHeight = 35;
-    paragraphStyle.maximumLineHeight = 35;
-    return @{NSParagraphStyleAttributeName: paragraphStyle, NSFontAttributeName : [self largePostTitleFont]};
-}
-
-+ (UIFont *)postTitleFont
-{
-    return [WPFontManager systemRegularFontOfSize:16.0];
-}
-
-+ (UIFont *)postTitleFontBold
-{
-    return [WPFontManager systemBoldFontOfSize:16.0];
-}
-
-+ (NSDictionary *)postTitleAttributes
-{
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-    paragraphStyle.minimumLineHeight = 19;
-    paragraphStyle.maximumLineHeight = 19;
-    return @{NSParagraphStyleAttributeName: paragraphStyle, NSFontAttributeName : [self postTitleFont]};
-}
-
-+ (NSDictionary *)postTitleAttributesBold {
-    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-    paragraphStyle.minimumLineHeight = 19;
-    paragraphStyle.maximumLineHeight = 19;
-    return @{NSParagraphStyleAttributeName: paragraphStyle, NSFontAttributeName : [self postTitleFontBold]};
-}
-
 + (UIFont *)subtitleFont
 {
-    return [WPFontManager systemRegularFontOfSize:12.0];
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
 }
 
 + (NSDictionary *)subtitleAttributes
@@ -61,7 +23,7 @@
 
 + (UIFont *)subtitleFontItalic
 {
-    return [WPFontManager systemItalicFontOfSize:12.0];
+    return [UIFont italicSystemFontOfSize:[[self subtitleFont] pointSize]];
 }
 
 + (NSDictionary *)subtitleItalicAttributes
@@ -74,7 +36,7 @@
 
 + (UIFont *)subtitleFontBold
 {
-    return [WPFontManager systemBoldFontOfSize:12.0];
+    return [UIFont systemFontOfSize:[[self subtitleFont] pointSize] weight:UIFontWeightBold];
 }
 
 + (NSDictionary *)subtitleAttributesBold
@@ -87,12 +49,12 @@
 
 + (UIFont *)labelFont
 {
-    return [WPFontManager systemBoldFontOfSize:10.0];
+    return [UIFont systemFontOfSize:[[self labelFontNormal] pointSize] weight:UIFontWeightBold];
 }
 
 + (UIFont *)labelFontNormal
 {
-    return [WPFontManager systemRegularFontOfSize:10.0];
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
 }
 
 + (NSDictionary *)labelAttributes
@@ -105,17 +67,12 @@
 
 + (UIFont *)regularTextFont
 {
-    return [WPFontManager systemRegularFontOfSize:16.0];
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 }
 
 + (UIFont *)regularTextFontSemiBold
 {
-    return [WPFontManager systemSemiBoldFontOfSize:16.0];
-}
-
-+ (UIFont *)regularTextFontBold
-{
-    return [WPFontManager systemBoldFontOfSize:16.0];
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
 }
 
 + (NSDictionary *)regularTextAttributes
@@ -128,17 +85,22 @@
 
 + (UIFont *)tableviewTextFont
 {
-    return [WPFontManager systemRegularFontOfSize:17.0];
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 }
 
 + (UIFont *)tableviewSubtitleFont
 {
-    return [WPFontManager systemRegularFontOfSize:17.0];
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 }
 
 + (UIFont *)tableviewSectionHeaderFont
 {
-    return [WPFontManager systemRegularFontOfSize:13.0];
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+}
+
++ (UIFont *)tableviewSectionFooterFont
+{
+	return [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
 }
 
 
@@ -414,6 +376,22 @@
         cell.textField.textColor = [self grey];
         cell.textField.textAlignment = NSTextAlignmentRight;
     }
+}
+
++ (void)configureTableViewSectionHeader:(UITableViewHeaderFooterView *)header
+{
+	if (![header isKindOfClass:[UITableViewHeaderFooterView class]]) {
+		return;
+	}
+	header.textLabel.textColor = [self whisperGrey];
+}
+
++ (void)configureTableViewSectionFooter:(UITableViewHeaderFooterView *)footer
+{
+	if (![footer isKindOfClass:[UITableViewHeaderFooterView class]]) {
+		return;
+	}
+	footer.textLabel.textColor = [self greyDarken10];
 }
 
 // TODO: Move to fetaure category

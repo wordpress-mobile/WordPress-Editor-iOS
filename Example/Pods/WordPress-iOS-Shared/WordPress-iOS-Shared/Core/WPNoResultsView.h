@@ -13,6 +13,7 @@
 @property (nonatomic, strong) NSString                      *messageText;
 @property (nonatomic, strong) NSString                      *buttonTitle;
 @property (nonatomic, strong) UIView                        *accessoryView;
+@property (nonatomic, strong) UIButton                      *button;
 @property (nonatomic,   weak) id<WPNoResultsViewDelegate>   delegate;
 
 + (instancetype)noResultsViewWithTitle:(NSString *)titleText message:(NSString *)messageText accessoryView:(UIView *)accessoryView buttonTitle:(NSString *)buttonTitle;

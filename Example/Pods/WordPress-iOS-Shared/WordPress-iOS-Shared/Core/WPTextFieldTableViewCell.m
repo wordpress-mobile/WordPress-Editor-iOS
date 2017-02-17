@@ -1,11 +1,11 @@
 #import "WPTextFieldTableViewCell.h"
 #import "WPDeviceIdentification.h"
 
-CGFloat const AccessoryPadding = 15.0f;
-CGFloat const iPadLeftMargin = 60.0f;
-CGFloat const iPadRightMargin = 100.0f;
-CGFloat const iPhoneLeftMargin = 30.0f;
-CGFloat const iPhoneRightMargin = 50.0f;
+CGFloat const TextFieldPadding = 15.0f;
+
+@interface WPCellTextField : UITextField
+@property (nonatomic, assign) UIEdgeInsets textMargins;
+@end
 
 @interface WPTextFieldTableViewCell () <UITextFieldDelegate>
 
@@ -16,52 +16,53 @@ CGFloat const iPhoneRightMargin = 50.0f;
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        _textField = [[UITextField alloc] initWithFrame:self.bounds];
-        _textField.adjustsFontSizeToFitWidth = YES;
-        _textField.textColor = [UIColor blackColor];
-        _textField.backgroundColor = [UIColor clearColor];
-        _textField.autocorrectionType = UITextAutocorrectionTypeNo;
-        _textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-        _textField.textAlignment = NSTextAlignmentLeft;
-        _textField.clearButtonMode = UITextFieldViewModeNever;
-        _textField.enabled = YES;
-        _textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-        _textField.delegate = self;
-        
-        _minimumLabelWidth = 90;
-        
+
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.accessoryType = UITableViewCellAccessoryNone;
-        
-        [self.contentView addSubview:self.textField];
+
+		[self setupTextField];
     }
     
     return self;
 }
 
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    
-    CGSize labelSize = [self.textLabel.text sizeWithAttributes:@{NSFontAttributeName:[UIFont boldSystemFontOfSize:17]}];
-    labelSize.width = ceil(labelSize.width/5) * 5; // Round to upper 5
-    labelSize.width = MAX(self.minimumLabelWidth, labelSize.width); // Impose alignment for shorter labels
-    CGFloat leftMargin = 0;
-    CGFloat rightMargin = self.accessoryView.frame.size.width;
-    if (!self.accessoryView && self.accessoryType != UITableViewCellAccessoryNone) {
-        rightMargin = AccessoryPadding;
-    }
-    if ([WPDeviceIdentification isiPad]) {
-        leftMargin  = iPadLeftMargin;
-        rightMargin += iPadRightMargin;
-    } else {
-        leftMargin  = iPhoneLeftMargin;
-        rightMargin += iPhoneRightMargin;
-    }
-    CGRect frame = CGRectMake(labelSize.width + leftMargin,
-                       self.textLabel.frame.origin.y,
-                       self.frame.size.width - labelSize.width - rightMargin,
-                       self.textField.frame.size.height);
-    self.textField.frame = frame;
+- (void)setupTextField
+{
+	// Use a custom textField, see below for implementation of WPCellTextField.
+	WPCellTextField *textField = [[WPCellTextField alloc] init];
+	textField.translatesAutoresizingMaskIntoConstraints = NO;
+	textField.adjustsFontSizeToFitWidth = YES;
+	textField.textColor = [UIColor blackColor];
+	textField.backgroundColor = [UIColor clearColor];
+	textField.autocorrectionType = UITextAutocorrectionTypeNo;
+	textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+	textField.textAlignment = NSTextAlignmentLeft;
+	textField.clearButtonMode = UITextFieldViewModeNever;
+	textField.enabled = YES;
+	textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+	textField.delegate = self;
+
+	[self.contentView addSubview:textField];
+	UILayoutGuide *layoutGuide = self.contentView.readableContentGuide;
+	[NSLayoutConstraint activateConstraints:@[
+											  [textField.leadingAnchor constraintEqualToAnchor:layoutGuide.leadingAnchor],
+											  [textField.trailingAnchor constraintEqualToAnchor:layoutGuide.trailingAnchor],
+											  [textField.topAnchor constraintEqualToAnchor:self.contentView.topAnchor],
+											  [textField.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor]
+											  ]];
+	_textField = textField;
+}
+
+- (void)layoutSubviews
+{
+	[super layoutSubviews];
+
+
+	UIEdgeInsets textMargins = UIEdgeInsetsZero;
+	CGSize labelSize = [self.textLabel.text sizeWithAttributes:@{NSFontAttributeName:self.textLabel.font}];
+	textMargins.left = ceilf(labelSize.width) + TextFieldPadding;
+	WPCellTextField *textField = (WPCellTextField *)self.textField;
+	textField.textMargins = textMargins;
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
@@ -97,6 +98,46 @@ CGFloat const iPhoneRightMargin = 50.0f;
     } else {
         self.textField.returnKeyType = UIReturnKeyNext;
     }
+}
+
+@end
+
+@implementation WPCellTextField
+
+/*
+ * The textField's leading edge needs to follow the trailing edge of the textLabel
+ * but the cell's textLabel layout runs the full width of the cell's contentView...
+ * So instead we apply given margins to the textField's textRect and editingRect to
+ * inset the text along the given margin, which currently is the textLabel's text width.
+ * Brent C. Jul/13/2016
+ */
+
+- (void)setTextMargins:(UIEdgeInsets)textMargins
+{
+	_textMargins = textMargins;
+	[self setNeedsDisplay];
+}
+
+- (CGRect)textRectWithMargins:(CGRect)rect
+{
+	UIEdgeInsets margins = self.textMargins;
+	rect.origin.x += margins.left;
+	rect.origin.y += margins.top;
+	rect.size.width -= margins.left + margins.right;
+	rect.size.height -= margins.top + margins.bottom;
+	return rect;
+}
+
+- (CGRect)textRectForBounds:(CGRect)bounds
+{
+	CGRect rect = [super textRectForBounds:bounds];
+	return [self textRectWithMargins:rect];
+}
+
+- (CGRect)editingRectForBounds:(CGRect)bounds
+{
+	CGRect rect = [super editingRectForBounds:bounds];
+	return [self textRectWithMargins:rect];
 }
 
 @end
