@@ -3,5 +3,7 @@ language: objective-c
 notifications:
   email: true
 sudo: false
+before_script:
+  - cd Example && pod repo update && pod install && cd -
 script:
   - set -o pipefail && xcodebuild -workspace Example/EditorDemo.xcworkspace -scheme EditorDemo -sdk iphonesimulator | xcpretty
