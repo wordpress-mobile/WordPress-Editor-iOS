@@ -1,4 +1,6 @@
+#ifdef __OBJC__
 #import <UIKit/UIKit.h>
+#endif
 
 #import "NSString+Util.h"
 #import "NSString+XMLExtensions.h"
@@ -12,7 +14,6 @@
 #import "WPSharedLogging.h"
 #import "WPStyleGuide.h"
 #import "WPTableViewCell.h"
-#import "WPTableViewSectionHeaderFooterView.h"
 #import "WPTextFieldTableViewCell.h"
 
 FOUNDATION_EXPORT double WordPressSharedVersionNumber;

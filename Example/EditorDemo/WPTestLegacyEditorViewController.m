@@ -41,7 +41,7 @@
 - (void)customizeAppearance
 {
     [super customizeAppearance];
-    [self setTitleFont:[WPFontManager merriweatherBoldFontOfSize:24.0]];
+    [self setTitleFont:[WPFontManager notoBoldFontOfSize:24.0]];
     [self setTitleColor:[WPStyleGuide darkGrey]];
     [self setBodyFont:[UIFont fontWithName: @"Menlo-Regular" size:14.0f]];
     [self setBodyColor:[WPStyleGuide darkGrey]];

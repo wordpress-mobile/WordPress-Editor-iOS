@@ -1,15 +1,12 @@
 #import <UIKit/UIKit.h>
 
+
+NS_ASSUME_NONNULL_BEGIN
+
 @class WPTextFieldTableViewCell;
 @interface WPStyleGuide : NSObject
 
 // Fonts
-+ (UIFont *)largePostTitleFont;
-+ (NSDictionary *)largePostTitleAttributes;
-+ (UIFont *)postTitleFont;
-+ (UIFont *)postTitleFontBold;
-+ (NSDictionary *)postTitleAttributes;
-+ (NSDictionary *)postTitleAttributesBold;
 + (UIFont *)subtitleFont;
 + (NSDictionary *)subtitleAttributes;
 + (UIFont *)subtitleFontItalic;
@@ -21,11 +18,11 @@
 + (NSDictionary *)labelAttributes;
 + (UIFont *)regularTextFont;
 + (UIFont *)regularTextFontSemiBold;
-+ (UIFont *)regularTextFontBold;
 + (NSDictionary *)regularTextAttributes;
 + (UIFont *)tableviewTextFont;
 + (UIFont *)tableviewSubtitleFont;
 + (UIFont *)tableviewSectionHeaderFont;
++ (UIFont *)tableviewSectionFooterFont;
 
 // Color
 + (UIColor *)wordPressBlue;
@@ -62,19 +59,21 @@
 + (void)setRightBarButtonItemWithCorrectSpacing:(UIBarButtonItem *)barButtonItem forNavigationItem:(UINavigationItem *)navigationItem;
 
 // View and TableView Helpers
-+ (void)configureColorsForView:(UIView *)view andTableView:(UITableView *)tableView;
-+ (void)configureColorsForView:(UIView *)view collectionView:(UICollectionView *)collectionView;
-+ (void)configureTableViewCell:(UITableViewCell *)cell;
-+ (void)configureTableViewSmallSubtitleCell:(UITableViewCell *)cell;
-+ (void)configureTableViewActionCell:(UITableViewCell *)cell;
-+ (void)configureTableViewDestructiveActionCell:(UITableViewCell *)cell;
-+ (void)configureTableViewTextCell:(WPTextFieldTableViewCell *)cell;
++ (void)configureColorsForView:(nullable UIView *)view andTableView:(nullable UITableView *)tableView;
++ (void)configureColorsForView:(nullable UIView *)view collectionView:(nullable UICollectionView *)collectionView;
++ (void)configureTableViewCell:(nullable UITableViewCell *)cell;
++ (void)configureTableViewSmallSubtitleCell:(nullable UITableViewCell *)cell;
++ (void)configureTableViewActionCell:(nullable UITableViewCell *)cell;
++ (void)configureTableViewDestructiveActionCell:(nullable UITableViewCell *)cell;
++ (void)configureTableViewTextCell:(nullable WPTextFieldTableViewCell *)cell;
++ (void)configureTableViewSectionHeader:(nullable UIView *)header;
++ (void)configureTableViewSectionFooter:(nullable UIView *)footer;
 
 // Move to a feature category
 + (UIColor *)buttonActionColor;
 + (UIColor *)nuxFormText;
 + (UIColor *)nuxFormPlaceholderText;
-+ (void)configureFollowButton:(UIButton *)followButton;
++ (void)configureFollowButton:(nullable UIButton *)followButton;
 
 // Deprecated Colors
 + (UIColor *)baseLighterBlue;
@@ -91,3 +90,5 @@
 + (UIColor *)validationErrorRed;
 
 @end
+
+NS_ASSUME_NONNULL_END

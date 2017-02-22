@@ -8,7 +8,6 @@
 @interface WPNoResultsView ()
 @property (nonatomic, strong) UILabel   *titleLabel;
 @property (nonatomic, strong) UILabel   *messageLabel;
-@property (nonatomic, strong) UIButton  *button;
 @end
 
 @implementation WPNoResultsView
@@ -203,29 +202,40 @@
 }
 
 - (void)centerInSuperview {
-    
+
     if (!self.superview) {
         return;
     }
-    
+
     // Center in superview
     CGRect frame = [self superview].frame;
-    
+
     // account for content insets of superview if it is a scrollview
     if ([self.superview.class isSubclassOfClass:[UIScrollView class]]) {
         UIScrollView *scrollView = (UIScrollView *)self.superview;
-        
+
         CGFloat verticalOffset = scrollView.contentInset.top + scrollView.contentInset.bottom;
         CGFloat horizontalOffset =  scrollView.contentInset.left + scrollView.contentInset.right;
-        
+
+        if ([self.superview isKindOfClass:[UITableView class]]) {
+            UITableView *tableView = (UITableView *)self.superview;
+            CGFloat headerHeight = (tableView.tableHeaderView == nil || tableView.tableHeaderView.hidden) ? 0 : tableView.tableHeaderView.bounds.size.height;
+            CGFloat footerHeight = (tableView.tableFooterView == nil || tableView.tableFooterView.hidden) ? 0 : tableView.tableFooterView.bounds.size.height;
+
+            verticalOffset += (headerHeight + footerHeight);
+
+            // Offset the frame's top if we have a header
+            frame.origin.y = headerHeight;
+        }
+
         // Sanity check to make sure the offsets are not set to large values
         frame.size.height = frame.size.height - verticalOffset > 0 ? frame.size.height - verticalOffset : frame.size.height;
         frame.size.width = frame.size.width - horizontalOffset > 0 ? frame.size.width - horizontalOffset : frame.size.width;
     }
-    
+
     CGFloat x = (CGRectGetWidth(frame) - CGRectGetWidth(self.frame))/2.0;
-    CGFloat y = ((CGRectGetHeight(frame)) - CGRectGetHeight(self.frame))/2.0;
-    
+    CGFloat y = (CGRectGetHeight(frame) / 2.0) - (CGRectGetHeight(self.frame) / 2.0) + frame.origin.y;
+
     frame = self.frame;
     frame.origin.x = x;
     frame.origin.y = y;

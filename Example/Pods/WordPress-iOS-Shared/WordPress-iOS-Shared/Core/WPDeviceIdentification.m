@@ -146,9 +146,22 @@ static NSString* const WPDeviceNameSimulator = @"Simulator";
     return result;
 }
 
-+ (BOOL)isiOSVersionEarlierThan8
++ (BOOL)isUnzoomediPhonePlus
 {
-    return [[[UIDevice currentDevice] systemVersion] floatValue] < 8.0;
+    CGRect bounds = UIScreen.mainScreen.fixedCoordinateSpace.bounds;
+    CGFloat unzoomediPhonePlusHeight = 736.0;
+
+    return UIScreen.mainScreen.scale == 3.0 && bounds.size.height == unzoomediPhonePlusHeight;
+}
+
++ (BOOL)isiOSVersionEarlierThan9
+{
+    return [[[UIDevice currentDevice] systemVersion] floatValue] < 9.0;
+}
+
++ (BOOL)isiOSVersionEarlierThan10
+{
+    return [[[UIDevice currentDevice] systemVersion] floatValue] < 10.0;
 }
 
 @end
