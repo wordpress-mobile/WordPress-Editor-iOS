@@ -35,14 +35,10 @@
 - (void)customizeAppearance
 {
     [super customizeAppearance];
-    [WPFontManager merriweatherBoldFontOfSize:16.0];
-    [WPFontManager merriweatherBoldItalicFontOfSize:16.0];
-    [WPFontManager merriweatherItalicFontOfSize:16.0];
-    [WPFontManager merriweatherLightFontOfSize:16.0];
-    [WPFontManager merriweatherRegularFontOfSize:16.0];
+    [WPFontManager loadNotoFontFamily];
 
     self.placeholderColor = [WPStyleGuide grey];
-    self.editorView.sourceViewTitleField.font = [WPFontManager merriweatherBoldFontOfSize:24.0];
+    self.editorView.sourceViewTitleField.font = [WPFontManager notoBoldFontOfSize:24.0];
     self.editorView.sourceContentDividerView.backgroundColor = [WPStyleGuide greyLighten30];
     [self.toolbarView setBorderColor:[WPStyleGuide greyLighten10]];
     [self.toolbarView setItemTintColor: [WPStyleGuide greyLighten10]];
