@@ -457,7 +457,7 @@
             [self.editorView replaceLocalVideoWithID:videoID
                                       forRemoteVideo:videoURL
                                         remotePoster:posterURL
-                                          videoPress:videoID];
+                                          videoPress:@""];
             [self.videoPressCache setObject:@ {@"source":videoURL, @"poster":posterURL} forKey:videoID];
             [timer invalidate];
         }
