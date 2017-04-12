@@ -1,3 +1,11 @@
+//
+//  Copyright (c) 2014 Automattic Inc.
+//
+//  This source file is based on ZSSRichTextEditorViewController.m from ZSSRichTextEditor
+//  Created by Nicholas Hubbard on 11/30/13.
+//  Copyright (c) 2013 Zed Said Studio. All rights reserved.
+//
+
 #import "WPEditorView.h"
 
 #import "UIWebView+GUIFixes.h"

@@ -1,25 +1,25 @@
 
 @font-face {
-    font-family: 'Merriweather';
-    src: local("Merriweather Light");
+    font-family: 'NotoSerif';
+    src: local("NotoSerif-Regular");
     font-weight: normal;
     font-style: normal;
 }
 @font-face {
-    font-family: 'Merriweather';
-    src: local("Merriweather-Italic");
+    font-family: 'Noto Serif';
+    src: local("NotoSerif-Italic");
     font-weight: normal;
     font-style: italic;
 }
 @font-face {
-    font-family: 'Merriweather';
-    src: local("Merriweather-Bold");
+    font-family: 'Noto Serif';
+    src: local("NotoSerif-Bold");
     font-weight: bold;
     font-style: normal;
 }
 @font-face {
-    font-family: 'Merriweather';
-    src: local("Merriweather-BoldItalic");
+    font-family: 'Noto Serif';
+    src: local("NotoSerif-BoldItalic");
     font-weight: bold;
     font-style: italic;
 }
@@ -36,7 +36,7 @@ html {
 
 html, body {
     margin:0;
-    font-family:'Merriweather', sans-serif;
+    font-family:'Noto Serif', sans-serif;
     font-size:1em;
     color:#2D2D2D;
 }
@@ -378,7 +378,7 @@ div.field[placeholderText][contenteditable=true]:empty:focus:before {
 }
 
 #zss_field_title, #zss_field_title p {
-    font-family:'Merriweather', serif;
+    font-family:'Noto Serif', serif;
     font-weight: bold;
     font-size: 24px;
     line-height: 32px;

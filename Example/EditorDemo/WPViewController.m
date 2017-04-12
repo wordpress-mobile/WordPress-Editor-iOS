@@ -35,14 +35,15 @@
 - (void)customizeAppearance
 {
     [super customizeAppearance];
-    [WPFontManager merriweatherBoldFontOfSize:16.0];
-    [WPFontManager merriweatherBoldItalicFontOfSize:16.0];
-    [WPFontManager merriweatherItalicFontOfSize:16.0];
-    [WPFontManager merriweatherLightFontOfSize:16.0];
-    [WPFontManager merriweatherRegularFontOfSize:16.0];
+    // WORKAROUND: Preload the Noto regular font to ensure it is not overridden
+    // by any of the Noto varients.  Size is arbitrary.
+    // See: https://github.com/wordpress-mobile/WordPress-Shared-iOS/issues/79
+    // Remove this when #79 is resolved.
+    [WPFontManager notoRegularFontOfSize:16.0];
+    [WPFontManager loadNotoFontFamily];
 
     self.placeholderColor = [WPStyleGuide grey];
-    self.editorView.sourceViewTitleField.font = [WPFontManager merriweatherBoldFontOfSize:24.0];
+    self.editorView.sourceViewTitleField.font = [WPFontManager notoBoldFontOfSize:24.0];
     self.editorView.sourceContentDividerView.backgroundColor = [WPStyleGuide greyLighten30];
     [self.toolbarView setBorderColor:[WPStyleGuide greyLighten10]];
     [self.toolbarView setItemTintColor: [WPStyleGuide greyLighten10]];
@@ -461,7 +462,7 @@
             [self.editorView replaceLocalVideoWithID:videoID
                                       forRemoteVideo:videoURL
                                         remotePoster:posterURL
-                                          videoPress:videoID];
+                                          videoPress:@""];
             [self.videoPressCache setObject:@ {@"source":videoURL, @"poster":posterURL} forKey:videoID];
             [timer invalidate];
         }
