@@ -35,6 +35,11 @@
 - (void)customizeAppearance
 {
     [super customizeAppearance];
+    // WORKAROUND: Preload the Noto regular font to ensure it is not overridden
+    // by any of the Noto varients.  Size is arbitrary.
+    // See: https://github.com/wordpress-mobile/WordPress-Shared-iOS/issues/79
+    // Remove this when #79 is resolved.
+    [WPFontManager notoRegularFontOfSize:16.0];
     [WPFontManager loadNotoFontFamily];
 
     self.placeholderColor = [WPStyleGuide grey];
@@ -457,7 +462,7 @@
             [self.editorView replaceLocalVideoWithID:videoID
                                       forRemoteVideo:videoURL
                                         remotePoster:posterURL
-                                          videoPress:videoID];
+                                          videoPress:@""];
             [self.videoPressCache setObject:@ {@"source":videoURL, @"poster":posterURL} forKey:videoID];
             [timer invalidate];
         }
