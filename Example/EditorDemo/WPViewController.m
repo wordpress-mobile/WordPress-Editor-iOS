@@ -3,8 +3,6 @@
 @import Photos;
 @import AVFoundation;
 @import MobileCoreServices;
-#import <WordPressShared/WPStyleGuide.h>
-#import <WordPressShared/WPFontManager.h>
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import "WPEditorField.h"
 #import "WPEditorView.h"
@@ -35,19 +33,21 @@
 - (void)customizeAppearance
 {
     [super customizeAppearance];
+    // Note 12-June-2017 - Commented out all of the code originally referencing the WordPressShared pod which no longer exists.
+    
     // WORKAROUND: Preload the Noto regular font to ensure it is not overridden
     // by any of the Noto varients.  Size is arbitrary.
     // See: https://github.com/wordpress-mobile/WordPress-Shared-iOS/issues/79
     // Remove this when #79 is resolved.
-    [WPFontManager notoRegularFontOfSize:16.0];
-    [WPFontManager loadNotoFontFamily];
+//    [WPFontManager notoRegularFontOfSize:16.0];
+//    [WPFontManager loadNotoFontFamily];
 
-    self.placeholderColor = [WPStyleGuide grey];
-    self.editorView.sourceViewTitleField.font = [WPFontManager notoBoldFontOfSize:24.0];
-    self.editorView.sourceContentDividerView.backgroundColor = [WPStyleGuide greyLighten30];
-    [self.toolbarView setBorderColor:[WPStyleGuide greyLighten10]];
-    [self.toolbarView setItemTintColor: [WPStyleGuide greyLighten10]];
-    [self.toolbarView setSelectedItemTintColor: [WPStyleGuide baseDarkerBlue]];
+//    self.placeholderColor = [WPStyleGuide grey];
+//    self.editorView.sourceViewTitleField.font = [WPFontManager notoBoldFontOfSize:24.0];
+//    self.editorView.sourceContentDividerView.backgroundColor = [WPStyleGuide greyLighten30];
+//    [self.toolbarView setBorderColor:[WPStyleGuide greyLighten10]];
+//    [self.toolbarView setItemTintColor: [WPStyleGuide greyLighten10]];
+//    [self.toolbarView setSelectedItemTintColor: [WPStyleGuide baseDarkerBlue]];
     [self.toolbarView setDisabledItemTintColor:[UIColor colorWithRed:0.78 green:0.84 blue:0.88 alpha:0.5]];
     // Explicit design decision to use non-standard colors. See:
     // https://github.com/wordpress-mobile/WordPress-Editor-iOS/issues/657#issuecomment-113651034
