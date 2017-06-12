@@ -4,8 +4,6 @@
 #import <WordPressEditor/WPEditorViewController.h>
 #import <WordPressEditor/WPLegacyEditorViewController.h>
 #import <WordPressEditor/WPEditorFormatbarView.h>
-#import <WordPressShared/WPStyleGuide.h>
-#import <WordPressShared/WPFontManager.h>
 #import <WordPressEditor/WPEditorView.h>
 
 @implementation WPAppDelegate
