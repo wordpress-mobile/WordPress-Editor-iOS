@@ -33,6 +33,8 @@
 - (void)customizeAppearance
 {
     [super customizeAppearance];
+    // Note 12-June-2017 - Commented out all of the code originally referencing the WordPressShared pod which no longer exists.
+    
     // WORKAROUND: Preload the Noto regular font to ensure it is not overridden
     // by any of the Noto varients.  Size is arbitrary.
     // See: https://github.com/wordpress-mobile/WordPress-Shared-iOS/issues/79
