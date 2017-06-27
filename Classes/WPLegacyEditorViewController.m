@@ -1,7 +1,6 @@
 #import "WPLegacyEditorViewController.h"
 #import "WPLegacyEditorFormatToolbar.h"
 #import "WPLegacyEditorFormatAction.h"
-#import <WordPressComAnalytics/WPAnalytics.h>
 
 CGFloat const WPLegacyEPVCStandardOffset = 15.0;
 CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
@@ -442,34 +441,6 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 
 - (void)formatToolbar:(WPLegacyEditorFormatToolbar *)formatToolbar actionPressed:(WPLegacyEditorFormatAction)formatAction
 {
-    switch (formatAction) {
-        case WPLegacyEditorFormatActionBold:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedBold];
-            break;
-        case WPLegacyEditorFormatActionItalic:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedItalic];
-            break;
-        case WPLegacyEditorFormatActionUnderline:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedUnderline];
-            break;
-        case WPLegacyEditorFormatActionDelete:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedStrikethrough];
-            break;
-        case WPLegacyEditorFormatActionLink:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedLink];
-            break;
-        case WPLegacyEditorFormatActionQuote:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedBlockquote];
-            break;
-        case WPLegacyEditorFormatActionMore:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedMore];
-            break;
-        case WPLegacyEditorFormatActionMedia:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedImage];
-            break;
-
-    }
-
     if (formatAction == WPLegacyEditorFormatActionMedia) {
         [self didTouchMediaOptions];
     } else if (formatAction == WPLegacyEditorFormatActionLink) {

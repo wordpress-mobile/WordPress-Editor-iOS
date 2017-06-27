@@ -1,7 +1,6 @@
 #import "WPEditorViewController.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
-#import <WordPressComAnalytics/WPAnalytics.h>
 
 #import "WPEditorField.h"
 #import "WPEditorToolbarButton.h"
@@ -355,7 +354,6 @@
                            animated:YES
                          completion:nil];
     }
-    [WPAnalytics track:WPAnalyticsStatEditorTappedImage];
 }
 
 #pragma mark - Editor and Misc Methods
@@ -518,8 +516,6 @@
         [self.toolbarView toolBarItemWithTag:kWPEditorViewControllerElementShowSourceBarButton
                                  setSelected:NO];
     }
-    
-    [WPAnalytics track:WPAnalyticsStatEditorTappedHTML];
 }
 
 - (void)removeFormat
@@ -551,21 +547,18 @@
 {
     [self.editorView setBold];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedBold];
 }
 
 - (void)setBlockQuote
 {
     [self.editorView setBlockQuote];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedBlockquote];
 }
 
 - (void)setItalic
 {
     [self.editorView setItalic];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedItalic];
 }
 
 - (void)setSubscript
@@ -577,7 +570,6 @@
 {
 	[self.editorView setUnderline];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedUnderline];
 }
 
 - (void)setSuperscript
@@ -589,21 +581,18 @@
 {
     [self.editorView setStrikethrough];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedStrikethrough];
 }
 
 - (void)setUnorderedList
 {
     [self.editorView setUnorderedList];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedUnorderedList];
 }
 
 - (void)setOrderedList
 {
     [self.editorView setOrderedList];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedOrderedList];
 }
 
 - (void)setHR
@@ -699,7 +688,6 @@
 	} else {
 		[self showInsertLinkDialogWithLink:self.editorView.selectedLinkURL
 									 title:[self.editorView selectedText]];
-		[WPAnalytics track:WPAnalyticsStatEditorTappedLink];
 	}
 }
 
@@ -823,7 +811,6 @@
 - (void)removeLink
 {
     [self.editorView removeLink];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedUnlink];
 }
 
 - (void)quickLink
