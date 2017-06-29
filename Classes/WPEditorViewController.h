@@ -1,6 +1,8 @@
 #import <UIKit/UIKit.h>
 #import "HRColorPickerViewController.h"
 #import "WPEditorFormatbarView.h"
+#import "WPEditorStat.h"
+
 @class WPEditorField;
 @class WPEditorView;
 @class WPEditorViewController;
@@ -23,6 +25,7 @@ WPEditorViewControllerMode;
 - (void)editorTitleDidChange:(WPEditorViewController *)editorController;
 - (void)editorTextDidChange:(WPEditorViewController *)editorController;
 - (void)editorDidPressMedia:(WPEditorViewController *)editorController;
+- (void)editorTrackStat:(WPEditorStat)stat;
 
 
 /**
