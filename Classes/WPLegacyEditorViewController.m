@@ -1,7 +1,6 @@
 #import "WPLegacyEditorViewController.h"
 #import "WPLegacyEditorFormatToolbar.h"
 #import "WPLegacyEditorFormatAction.h"
-#import <WordPressComAnalytics/WPAnalytics.h>
 
 CGFloat const WPLegacyEPVCStandardOffset = 15.0;
 CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
@@ -444,28 +443,28 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 {
     switch (formatAction) {
         case WPLegacyEditorFormatActionBold:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedBold];
+            [self.delegate editorTrackStat:WPEditorStatTappedBold];
             break;
         case WPLegacyEditorFormatActionItalic:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedItalic];
+            [self.delegate editorTrackStat:WPEditorStatTappedItalic];
             break;
         case WPLegacyEditorFormatActionUnderline:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedUnderline];
+            [self.delegate editorTrackStat:WPEditorStatTappedUnderline];
             break;
         case WPLegacyEditorFormatActionDelete:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedStrikethrough];
+            [self.delegate editorTrackStat:WPEditorStatTappedStrikethrough];
             break;
         case WPLegacyEditorFormatActionLink:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedLink];
+            [self.delegate editorTrackStat:WPEditorStatTappedLink];
             break;
         case WPLegacyEditorFormatActionQuote:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedBlockquote];
+            [self.delegate editorTrackStat:WPEditorStatTappedBlockquote];
             break;
         case WPLegacyEditorFormatActionMore:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedMore];
+            [self.delegate editorTrackStat:WPEditorStatTappedMore];
             break;
         case WPLegacyEditorFormatActionMedia:
-            [WPAnalytics track:WPAnalyticsStatEditorTappedImage];
+            [self.delegate editorTrackStat:WPEditorStatTappedImage];
             break;
 
     }

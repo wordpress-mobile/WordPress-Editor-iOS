@@ -1,7 +1,6 @@
 #import "WPEditorViewController.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
-#import <WordPressComAnalytics/WPAnalytics.h>
 
 #import "WPEditorField.h"
 #import "WPEditorToolbarButton.h"
@@ -355,7 +354,7 @@
                            animated:YES
                          completion:nil];
     }
-    [WPAnalytics track:WPAnalyticsStatEditorTappedImage];
+    [self.delegate editorTrackStat:WPEditorStatTappedImage];
 }
 
 #pragma mark - Editor and Misc Methods
@@ -518,8 +517,8 @@
         [self.toolbarView toolBarItemWithTag:kWPEditorViewControllerElementShowSourceBarButton
                                  setSelected:NO];
     }
-    
-    [WPAnalytics track:WPAnalyticsStatEditorTappedHTML];
+
+    [self.delegate editorTrackStat:WPEditorStatTappedHTML];
 }
 
 - (void)removeFormat
@@ -551,21 +550,21 @@
 {
     [self.editorView setBold];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedBold];
+    [self.delegate editorTrackStat:WPEditorStatTappedBold];
 }
 
 - (void)setBlockQuote
 {
     [self.editorView setBlockQuote];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedBlockquote];
+    [self.delegate editorTrackStat:WPEditorStatTappedBlockquote];
 }
 
 - (void)setItalic
 {
     [self.editorView setItalic];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedItalic];
+    [self.delegate editorTrackStat:WPEditorStatTappedItalic];
 }
 
 - (void)setSubscript
@@ -577,7 +576,7 @@
 {
 	[self.editorView setUnderline];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedUnderline];
+    [self.delegate editorTrackStat:WPEditorStatTappedUnderline];
 }
 
 - (void)setSuperscript
@@ -589,21 +588,21 @@
 {
     [self.editorView setStrikethrough];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedStrikethrough];
+    [self.delegate editorTrackStat:WPEditorStatTappedStrikethrough];
 }
 
 - (void)setUnorderedList
 {
     [self.editorView setUnorderedList];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedUnorderedList];
+    [self.delegate editorTrackStat:WPEditorStatTappedUnorderedList];
 }
 
 - (void)setOrderedList
 {
     [self.editorView setOrderedList];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedOrderedList];
+    [self.delegate editorTrackStat:WPEditorStatTappedOrderedList];
 }
 
 - (void)setHR
@@ -699,7 +698,7 @@
 	} else {
 		[self showInsertLinkDialogWithLink:self.editorView.selectedLinkURL
 									 title:[self.editorView selectedText]];
-		[WPAnalytics track:WPAnalyticsStatEditorTappedLink];
+        [self.delegate editorTrackStat:WPEditorStatTappedLink];
 	}
 }
 
@@ -823,7 +822,7 @@
 - (void)removeLink
 {
     [self.editorView removeLink];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedUnlink];
+    [self.delegate editorTrackStat:WPEditorStatTappedUnlink];
 }
 
 - (void)quickLink
