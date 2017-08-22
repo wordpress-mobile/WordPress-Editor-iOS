@@ -443,28 +443,44 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 {
     switch (formatAction) {
         case WPLegacyEditorFormatActionBold:
-            [self.delegate editorTrackStat:WPEditorStatTappedBold];
+            if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+                [self.delegate editorTrackStat:WPEditorStatTappedBold];
+            }
             break;
         case WPLegacyEditorFormatActionItalic:
-            [self.delegate editorTrackStat:WPEditorStatTappedItalic];
+            if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+                [self.delegate editorTrackStat:WPEditorStatTappedItalic];
+            }
             break;
         case WPLegacyEditorFormatActionUnderline:
-            [self.delegate editorTrackStat:WPEditorStatTappedUnderline];
+            if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+                [self.delegate editorTrackStat:WPEditorStatTappedUnderline];
+            }
             break;
         case WPLegacyEditorFormatActionDelete:
-            [self.delegate editorTrackStat:WPEditorStatTappedStrikethrough];
+            if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+                [self.delegate editorTrackStat:WPEditorStatTappedStrikethrough];
+            }
             break;
         case WPLegacyEditorFormatActionLink:
-            [self.delegate editorTrackStat:WPEditorStatTappedLink];
+            if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+                [self.delegate editorTrackStat:WPEditorStatTappedLink];
+            }
             break;
         case WPLegacyEditorFormatActionQuote:
-            [self.delegate editorTrackStat:WPEditorStatTappedBlockquote];
+            if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+                [self.delegate editorTrackStat:WPEditorStatTappedBlockquote];
+            }
             break;
         case WPLegacyEditorFormatActionMore:
-            [self.delegate editorTrackStat:WPEditorStatTappedMore];
+            if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+                [self.delegate editorTrackStat:WPEditorStatTappedMore];
+            }
             break;
         case WPLegacyEditorFormatActionMedia:
-            [self.delegate editorTrackStat:WPEditorStatTappedImage];
+            if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+                [self.delegate editorTrackStat:WPEditorStatTappedImage];
+            }
             break;
 
     }

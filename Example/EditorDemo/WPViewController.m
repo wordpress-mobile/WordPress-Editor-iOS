@@ -118,6 +118,10 @@
     DDLogInfo(@"Editor field created: %@", field.nodeId);
 }
 
+- (void)editorTrackStat:(WPEditorStat)stat {
+    DDLogInfo(@"Editor stat tracked: %lu", (unsigned long)stat);
+}
+
 - (void)editorViewController:(WPEditorViewController*)editorViewController
                  imageTapped:(NSString *)imageId
                          url:(NSURL *)url
