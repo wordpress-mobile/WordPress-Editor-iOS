@@ -866,8 +866,6 @@
 
 /**
  *	@brief		Returns an URL from the general pasteboard.
- *
- *	@param		The URL or nil if no valid URL is found.
  */
 - (NSURL*)urlFromPasteboard
 {
