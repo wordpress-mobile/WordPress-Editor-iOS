@@ -354,7 +354,9 @@
                            animated:YES
                          completion:nil];
     }
-    [self.delegate editorTrackStat:WPEditorStatTappedImage];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedImage];
+    }
 }
 
 #pragma mark - Editor and Misc Methods
@@ -518,7 +520,9 @@
                                  setSelected:NO];
     }
 
-    [self.delegate editorTrackStat:WPEditorStatTappedHTML];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedHTML];
+    }
 }
 
 - (void)removeFormat
@@ -550,21 +554,27 @@
 {
     [self.editorView setBold];
     [self clearToolbar];
-    [self.delegate editorTrackStat:WPEditorStatTappedBold];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedBold];
+    }
 }
 
 - (void)setBlockQuote
 {
     [self.editorView setBlockQuote];
     [self clearToolbar];
-    [self.delegate editorTrackStat:WPEditorStatTappedBlockquote];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedBlockquote];
+    }
 }
 
 - (void)setItalic
 {
     [self.editorView setItalic];
     [self clearToolbar];
-    [self.delegate editorTrackStat:WPEditorStatTappedItalic];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedItalic];
+    }
 }
 
 - (void)setSubscript
@@ -576,7 +586,9 @@
 {
 	[self.editorView setUnderline];
     [self clearToolbar];
-    [self.delegate editorTrackStat:WPEditorStatTappedUnderline];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedUnderline];
+    }
 }
 
 - (void)setSuperscript
@@ -588,21 +600,27 @@
 {
     [self.editorView setStrikethrough];
     [self clearToolbar];
-    [self.delegate editorTrackStat:WPEditorStatTappedStrikethrough];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedStrikethrough];
+    }
 }
 
 - (void)setUnorderedList
 {
     [self.editorView setUnorderedList];
     [self clearToolbar];
-    [self.delegate editorTrackStat:WPEditorStatTappedUnorderedList];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedUnorderedList];
+    }
 }
 
 - (void)setOrderedList
 {
     [self.editorView setOrderedList];
     [self clearToolbar];
-    [self.delegate editorTrackStat:WPEditorStatTappedOrderedList];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedOrderedList];
+    }
 }
 
 - (void)setHR
@@ -698,7 +716,9 @@
 	} else {
 		[self showInsertLinkDialogWithLink:self.editorView.selectedLinkURL
 									 title:[self.editorView selectedText]];
-        [self.delegate editorTrackStat:WPEditorStatTappedLink];
+        if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+            [self.delegate editorTrackStat:WPEditorStatTappedLink];
+        }
 	}
 }
 
@@ -822,7 +842,9 @@
 - (void)removeLink
 {
     [self.editorView removeLink];
-    [self.delegate editorTrackStat:WPEditorStatTappedUnlink];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedUnlink];
+    }
 }
 
 - (void)quickLink
@@ -844,8 +866,6 @@
 
 /**
  *	@brief		Returns an URL from the general pasteboard.
- *
- *	@param		The URL or nil if no valid URL is found.
  */
 - (NSURL*)urlFromPasteboard
 {

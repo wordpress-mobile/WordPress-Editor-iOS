@@ -169,7 +169,7 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
     } else {
         
         if (text) {
-            text = [self addSlashes:text];
+            text = [self sanitizeHTML:text];
         } else {
             text = @"";
         }
@@ -187,7 +187,7 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
     } else {
         
         if (html) {
-            html = [self addSlashes:html];
+            html = [self sanitizeHTML:html];
         } else {
             html = @"";
         }
@@ -205,7 +205,7 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
     if (!self.domLoaded) {
         self.preloadedPlaceholderText = placeholderText;
     } else {
-        placeholderText = [self addSlashes:placeholderText];
+        placeholderText = [self sanitizeHTML:placeholderText];
         NSString* javascript = [NSString stringWithFormat:@"%@.setPlaceholderText(\"%@\");", [self wrappedNodeJavascriptAccessor], placeholderText];
         
         [self.webView stringByEvaluatingJavaScriptFromString:javascript];
@@ -232,14 +232,14 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
 #pragma mark - URL & HTML utilities
 
 /**
- *  @brief      Adds slashes to the specified HTML string, to prevent injections when calling JS
+ *  @brief      Adds slashes and removes script tags from the specified HTML string, to prevent injections when calling JS
  *              code.
  *
- *  @param      html        The HTML string to add slashes to.  Cannot be nil.
+ *  @param      html    The HTML string to sanitize.  Cannot be nil.
  *
- *  @returns    The HTML string with the added slashes.
+ *  @returns    The sanitized HTML string.
  */
-- (NSString *)addSlashes:(NSString *)html
+- (NSString *)sanitizeHTML:(NSString *)html
 {
     html = [html stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
     html = [html stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
@@ -251,6 +251,9 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
     // https://github.com/wordpress-mobile/WordPress-Editor-iOS/issues/830
     html = [html stringByReplacingOccurrencesOfString:@"\u2028"  withString:@"\\u2028"];
     html = [html stringByReplacingOccurrencesOfString:@"\u2029"  withString:@"\\u2029"];
+
+    html = [html stringByReplacingOccurrencesOfString:@"<script>" withString:@"&lt;script&gt;" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [html length])];
+    html = [html stringByReplacingOccurrencesOfString:@"</script>" withString:@"&lt;/script&gt;" options:NSCaseInsensitiveSearch range:NSMakeRange(0, [html length])];
 
     return html;
 }

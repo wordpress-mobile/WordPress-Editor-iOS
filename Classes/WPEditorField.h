@@ -18,7 +18,7 @@
  *  @brief      Initializes the field with the specified HTML node id.
  *
  *  @param      nodeId      The id of the html node this object will wrap.  Cannot be nil.
- *  @param      webVieq     The web view to use for all javascript calls.  Cannot be nil.
+ *  @param      webView     The web view to use for all javascript calls.  Cannot be nil.
  *
  *  @returns    The initialized object.
  */
@@ -87,7 +87,7 @@
 /**
  *  @brief      Sets the placeholder color for this field.
  *
- *  @param      placeholderText     The new placeholder color.
+ *  @param      placeholderColor     The new placeholder color.
  */
 - (void)setPlaceholderColor:(UIColor *)placeholderColor;
 

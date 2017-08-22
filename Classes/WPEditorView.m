@@ -680,7 +680,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 /**
  *	@brief		Handles a video entered fullscreen callback
  *
- *	@param		url		The url with all the callback information.
+ *	@param		aURL		The url with all the callback information.
  */
 - (void)handleVideoFullScreenStartedCallback:(NSURL *)aURL
 {
@@ -717,7 +717,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 /**
  *	@brief		Handles a video ended fullscreen callback.
  *
- *	@param		url		The url with all the callback information.
+ *	@param		aURL		The url with all the callback information.
  */
 - (void)handleVideoFullScreenEndedCallback:(NSURL *)aURL
 {
