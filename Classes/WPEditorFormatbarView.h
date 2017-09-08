@@ -140,6 +140,14 @@ typedef enum
 #pragma mark - Toolbar items
 
 /**
+ *  @brief      Returns a toolbar item (if any) matching the specified tag.
+ *
+ *  @param      tag     WPEditorViewControllerElementTag of the item to return.
+ *  @return     A toolbar item with the specified tag.
+ */
+- (UIBarButtonItem *)toolBarItemWithTag:(WPEditorViewControllerElementTag)tag;
+
+/**
  *  @brief      Makes a toolbar item visible or hidden
  *
  *  @param      tag     WPEditorViewControllerElementTag of the item to alter.
