@@ -189,6 +189,27 @@
 
 #pragma mark - Toolbar items
 
+- (UIBarButtonItem *)toolBarItemWithTag:(WPEditorViewControllerElementTag)tag
+{
+    // Find whichever toolbar is currently installed in the view hierarchy.
+    UIToolbar *toolbar;
+    if (self.leftToolbar.window) {
+        toolbar = self.leftToolbar;
+    } else if (self.regularToolbar.window) {
+        toolbar = self.regularToolbar;
+    }
+
+    if (toolbar) {
+        for (ZSSBarButtonItem *item in toolbar.items) {
+            if (item.tag == tag) {
+                return item;
+            }
+        }
+    }
+
+    return nil;
+}
+
 - (void)toolBarItemWithTag:(WPEditorViewControllerElementTag)tag setVisible:(BOOL)visible
 {
     for (ZSSBarButtonItem *item in self.leftToolbar.items) {
