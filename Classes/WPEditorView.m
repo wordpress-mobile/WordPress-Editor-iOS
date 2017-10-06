@@ -108,6 +108,34 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     }
 }
 
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    if (@available(iOS 11, *)) {
+        insets = self.safeAreaInsets;
+    }
+
+    CGRect frame = self.bounds;
+    CGFloat textWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset) - insets.left - insets.right;
+    CGRect titleFrame = CGRectMake(UITextFieldLeftRightInset + insets.left, SourceTitleTextFieldYOffset + insets.top, textWidth, UITextFieldFieldHeight);
+    CGRect dividerFrame = CGRectMake(UITextFieldLeftRightInset + insets.left, CGRectGetMaxY(titleFrame), textWidth, 1.0f);
+    CGRect sourceViewFrame = CGRectMake(0.0f,
+                                        CGRectGetMaxY(dividerFrame),
+                                        CGRectGetWidth(frame),
+                                        CGRectGetHeight(frame)-CGRectGetHeight(titleFrame)-CGRectGetHeight(self.sourceContentDividerView.frame));
+    self.sourceViewTitleField.frame = titleFrame;
+    self.sourceContentDividerView.frame = dividerFrame;
+    self.sourceView.frame = sourceViewFrame;
+    CGFloat left = UITextFieldLeftRightInset + insets.left;
+    CGFloat right = UITextFieldLeftRightInset + insets.right;
+    CGFloat top = HTMLViewTopInset + insets.top;
+    CGFloat bottom = 0;
+    self.sourceView.textContainerInset = UIEdgeInsetsMake(top, left, bottom, right);
+
+}
+
 #pragma mark - Init helpers
 
 - (void)createSourceTitleViewWithFrame:(CGRect)frame
