@@ -133,7 +133,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     CGFloat top = HTMLViewTopInset + insets.top;
     CGFloat bottom = 0;
     self.sourceView.textContainerInset = UIEdgeInsetsMake(top, left, bottom, right);
-
 }
 
 #pragma mark - Init helpers
@@ -338,6 +337,19 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     [self refreshKeyboardInsetsWithShowNotification:notification];
 }
 
+- (void)refreshInsetsForKeyboardOffset:(CGFloat)vOffset {
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    insets.bottom = vOffset - insets.bottom;
+    if (@available(iOS 11, *)) {
+        insets.bottom = insets.bottom - self.safeAreaInsets.bottom;
+    }
+
+    self.webView.scrollView.contentInset = insets;
+    self.webView.scrollView.scrollIndicatorInsets = insets;
+    self.sourceView.contentInset = insets;
+    self.sourceView.scrollIndicatorInsets = insets;
+}
+
 - (void)keyboardWillHide:(NSNotification *)notification
 {
     // WORKAROUND: sometimes the input accessory view is not taken into account and a
@@ -346,12 +358,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     // hiding the keyboard.
     //
     CGFloat vOffset = self.sourceView.inputAccessoryView.frame.size.height;
-    UIEdgeInsets insets = UIEdgeInsetsMake(0.0f, 0.0f, vOffset, 0.0f);
-    
-    self.webView.scrollView.contentInset = insets;
-    self.webView.scrollView.scrollIndicatorInsets = insets;
-    self.sourceView.contentInset = insets;
-    self.sourceView.scrollIndicatorInsets = insets;
+    [self refreshInsetsForKeyboardOffset:vOffset];
 }
 
 
@@ -378,12 +385,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
         
         CGFloat vOffset = CGRectGetHeight(self.frame) - keyboardOrigin.y;
         
-        UIEdgeInsets insets = UIEdgeInsetsMake(0.0f, 0.0f, vOffset, 0.0f);
-        
-        self.webView.scrollView.contentInset = insets;
-        self.webView.scrollView.scrollIndicatorInsets = insets;
-        self.sourceView.contentInset = insets;
-        self.sourceView.scrollIndicatorInsets = insets;
+        [self refreshInsetsForKeyboardOffset:vOffset];
     }
 }
 
@@ -399,7 +401,11 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     NSInteger newHeight = [newHeightString integerValue];
     
     self.lastEditorHeight = newHeight;
-    self.webView.scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.frame), newHeight);
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    if (@available(iOS 11, *)) {
+        insets = self.safeAreaInsets;
+    }
+    self.webView.scrollView.contentSize = CGSizeMake(self.frame.size.width - insets.left - insets.right, newHeight);
 }
 
 #pragma mark - UIWebViewDelegate
