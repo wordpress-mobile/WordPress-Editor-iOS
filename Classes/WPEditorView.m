@@ -15,7 +15,7 @@
 #import "ZSSTextView.h"
 
 typedef void(^WPEditorViewCallbackParameterProcessingBlock)(NSString* parameterName, NSString* parameterValue);
-typedef void(^WPEditorViewNoParamsCompletionBlock)();
+typedef void(^WPEditorViewNoParamsCompletionBlock)(void);
 
 static NSString* const kDefaultCallbackParameterSeparator = @"~";
 static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
