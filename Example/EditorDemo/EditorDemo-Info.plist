@@ -57,6 +57,8 @@
 	</dict>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>To add photos or videos to your posts.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>To take photos or videos to use in your posts.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>To take photos or videos to use in your posts.</string>
 </dict>
