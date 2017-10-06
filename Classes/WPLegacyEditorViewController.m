@@ -229,6 +229,29 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
     [self.textView addSubview:self.tapToStartWritingLabel];
 }
 
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    if (@available(iOS 11, *)) {
+        insets = self.view.safeAreaInsets;
+    }
+    CGFloat left = WPLegacyEPVCTextViewOffset + insets.left;
+    CGFloat right = WPLegacyEPVCTextViewOffset + insets.right;
+    CGFloat top = CGRectGetMaxY(self.separatorView.frame) + self.textView.font.lineHeight + insets.top;
+    CGFloat bottom = self.textView.font.lineHeight + insets.bottom;
+    self.textView.textContainerInset = UIEdgeInsetsMake(top, left, bottom, right);
+
+    CGFloat width = CGRectGetWidth(self.view.frame) - (2 * WPLegacyEPVCStandardOffset) - (insets.left + insets.right);
+    CGRect titleFrame = CGRectMake(WPLegacyEPVCStandardOffset + insets.left, 0.0, width, self.titleFont.lineHeight * 2.0);
+    self.titleTextField.frame = titleFrame;
+    CGFloat y = CGRectGetMaxY(self.titleTextField.frame);
+    CGRect separatorFrame = CGRectMake(WPLegacyEPVCStandardOffset + insets.left, y, width, 1.0);
+    self.separatorView.frame = separatorFrame;
+
+    CGRect tapToStartFrame = CGRectMake(WPLegacyEPVCStandardOffset + insets.left, self.textView.textContainerInset.top, width, self.bodyFont.lineHeight);
+    self.tapToStartWritingLabel.frame = tapToStartFrame;
+}
+
 - (void)positionTextView:(NSNotification *)notification
 {
     NSDictionary *keyboardInfo = [notification userInfo];
