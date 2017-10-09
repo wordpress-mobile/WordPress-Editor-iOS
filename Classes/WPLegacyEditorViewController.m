@@ -167,7 +167,14 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         self.editorToolbar = [[WPLegacyEditorFormatToolbar alloc] init];
         self.editorToolbar.formatDelegate = self;
         [self.editorToolbar sizeToFit];
-        self.textView.inputAccessoryView = self.editorToolbar;
+        UIView *containerToolbar = [[UIView alloc] init];
+        containerToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [containerToolbar addSubview:self.editorToolbar];        
+        [[self.editorToolbar.bottomAnchor constraintEqualToAnchor:containerToolbar.layoutMarginsGuide.bottomAnchor] setActive:YES];
+        [[self.editorToolbar.leftAnchor constraintEqualToAnchor:containerToolbar.leftAnchor] setActive:YES];
+        [[self.editorToolbar.rightAnchor constraintEqualToAnchor:containerToolbar.rightAnchor] setActive:YES];
+        self.editorToolbar.translatesAutoresizingMaskIntoConstraints = false;
+        self.textView.inputAccessoryView = containerToolbar;
     }
     
     // Title TextField.
