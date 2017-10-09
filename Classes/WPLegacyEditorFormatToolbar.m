@@ -100,6 +100,7 @@
     [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
     button.tag = action;
     UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithCustomView:button];
+    barButton.width = image.size.width;
     return barButton;
 }
 

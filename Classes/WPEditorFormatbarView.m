@@ -354,6 +354,7 @@
                      action:selector
            forControlEvents:UIControlEventTouchUpInside];
     barButtonItem.customView = customButton;
+    barButtonItem.width = buttonImage.size.width;
 }
 
 - (void)initBlockQuoteBarButton
