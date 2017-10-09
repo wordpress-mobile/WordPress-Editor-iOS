@@ -147,7 +147,7 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
     UIView *containerToolbar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
     containerToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [containerToolbar addSubview:toolbar];
-
+    containerToolbar.backgroundColor = toolbar.backgroundColor;
     NSLayoutYAxisAnchor * bottomAnchor = containerToolbar.bottomAnchor;
     if(@available(iOS 11, *)){
         bottomAnchor = containerToolbar.safeAreaLayoutGuide.bottomAnchor;
@@ -201,8 +201,9 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         self.titleTextField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.titleTextField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
         self.titleTextField.returnKeyType = UIReturnKeyNext;
+        self.titleTextField.backgroundColor = self.textView.backgroundColor;
     }
-    [self.textView addSubview:self.titleTextField];
+    [self.view addSubview:self.titleTextField];
     
     // InputAccessoryView for title textField.
     if (!self.titleToolbar) {
@@ -223,7 +224,7 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         self.separatorView.backgroundColor = self.separatorColor;
         self.separatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     }
-    [self.textView addSubview:self.separatorView];
+    [self.view addSubview:self.separatorView];
     
     // Update the textView's textContainerInsets so text does not overlap content.
     CGFloat left = WPLegacyEPVCTextViewOffset;
@@ -267,7 +268,7 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
     CGRect separatorFrame = CGRectMake(WPLegacyEPVCStandardOffset + insets.left, y, width, 1.0);
     self.separatorView.frame = separatorFrame;
 
-    CGRect tapToStartFrame = CGRectMake(WPLegacyEPVCStandardOffset + insets.left, self.textView.textContainerInset.top, width, self.bodyFont.lineHeight);
+    CGRect tapToStartFrame = CGRectMake(WPLegacyEPVCStandardOffset + insets.left, self.textView.textContainerInset.top, width, self.textView.font.lineHeight);
     self.tapToStartWritingLabel.frame = tapToStartFrame;
 }
 
