@@ -350,6 +350,7 @@
     customButton.normalTintColor = self.itemTintColor;
     customButton.selectedTintColor = self.selectedItemTintColor;
     customButton.disabledTintColor = self.disabledItemTintColor;
+    customButton.imageView.contentMode = UIViewContentModeCenter;
     [customButton addTarget:target
                      action:selector
            forControlEvents:UIControlEventTouchUpInside];
