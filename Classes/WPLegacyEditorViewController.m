@@ -142,6 +142,22 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 
 #pragma mark - View Setup
 
+- (UIView *)createViewToWrapSafelyToolbar:(UIToolbar *)toolbar
+{
+    UIView *containerToolbar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
+    containerToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [containerToolbar addSubview:toolbar];
+
+    NSLayoutYAxisAnchor * bottomAnchor = containerToolbar.bottomAnchor;
+    if(@available(iOS 11, *)){
+        bottomAnchor = containerToolbar.safeAreaLayoutGuide.bottomAnchor;
+    }
+    [[toolbar.bottomAnchor constraintEqualToAnchor:bottomAnchor] setActive:YES];
+    [[toolbar.leftAnchor constraintEqualToAnchor:containerToolbar.leftAnchor] setActive:YES];
+    [[toolbar.rightAnchor constraintEqualToAnchor:containerToolbar.rightAnchor] setActive:YES];
+    return containerToolbar;
+}
+
 - (void)setupTextView
 {
     CGFloat x = 0.0f;
@@ -168,18 +184,8 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         self.editorToolbar.formatDelegate = self;
         [self.editorToolbar sizeToFit];
         self.editorToolbar.translatesAutoresizingMaskIntoConstraints = false;
-        UIView *containerToolbar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, 44)];
-        containerToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        [containerToolbar addSubview:self.editorToolbar];
 
-        NSLayoutYAxisAnchor * bottomAnchor = containerToolbar.bottomAnchor;
-        if(@available(iOS 11, *)){
-            bottomAnchor = containerToolbar.safeAreaLayoutGuide.bottomAnchor;
-        }
-        [[self.editorToolbar.bottomAnchor constraintEqualToAnchor:bottomAnchor] setActive:YES];
-        [[self.editorToolbar.leftAnchor constraintEqualToAnchor:containerToolbar.leftAnchor] setActive:YES];
-        [[self.editorToolbar.rightAnchor constraintEqualToAnchor:containerToolbar.rightAnchor] setActive:YES];
-        self.textView.inputAccessoryView = containerToolbar;
+        self.textView.inputAccessoryView = [self createViewToWrapSafelyToolbar:self.editorToolbar];
     }
     
     // Title TextField.
@@ -204,7 +210,8 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         [self.titleToolbar disableAllButtons];
         self.titleToolbar.formatDelegate = self;
         [self.titleToolbar sizeToFit];
-        self.titleTextField.inputAccessoryView = self.titleToolbar;
+        self.titleToolbar.translatesAutoresizingMaskIntoConstraints = false;
+        self.titleTextField.inputAccessoryView = [self createViewToWrapSafelyToolbar:self.titleToolbar];
     }
     
     // One pixel separator bewteen title and content text fields.
