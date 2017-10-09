@@ -95,7 +95,7 @@
 - (UIBarButtonItem *)createButtonWithImageNamed:(NSString *)imageNamed tag:(WPLegacyEditorFormatAction)action
 {
     UIImage *image = [self imageNamed:imageNamed];
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, image.size.width, image.size.height)];
     [button setImage:image forState:UIControlStateNormal];
     [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
     button.tag = action;

@@ -167,13 +167,18 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         self.editorToolbar = [[WPLegacyEditorFormatToolbar alloc] init];
         self.editorToolbar.formatDelegate = self;
         [self.editorToolbar sizeToFit];
-        UIView *containerToolbar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, 44)];        
+        self.editorToolbar.translatesAutoresizingMaskIntoConstraints = false;
+        UIView *containerToolbar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, 44)];
         containerToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [containerToolbar addSubview:self.editorToolbar];
-        [[self.editorToolbar.bottomAnchor constraintEqualToAnchor:containerToolbar.layoutMarginsGuide.bottomAnchor] setActive:YES];
+
+        NSLayoutYAxisAnchor * bottomAnchor = containerToolbar.bottomAnchor;
+        if(@available(iOS 11, *)){
+            bottomAnchor = containerToolbar.safeAreaLayoutGuide.bottomAnchor;
+        }
+        [[self.editorToolbar.bottomAnchor constraintEqualToAnchor:bottomAnchor] setActive:YES];
         [[self.editorToolbar.leftAnchor constraintEqualToAnchor:containerToolbar.leftAnchor] setActive:YES];
         [[self.editorToolbar.rightAnchor constraintEqualToAnchor:containerToolbar.rightAnchor] setActive:YES];
-        self.editorToolbar.translatesAutoresizingMaskIntoConstraints = false;
         self.textView.inputAccessoryView = containerToolbar;
     }
     
