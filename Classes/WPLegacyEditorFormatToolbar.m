@@ -107,7 +107,7 @@
     UIImage *image = [self imageNamed:imageNamed];
     UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, image.size.width, image.size.height)];
     [button setImage:image forState:UIControlStateNormal];
-    button.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    button.imageView.contentMode = UIViewContentModeScaleAspectFill;
     [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
     button.tag = action;
     UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithCustomView:button];
