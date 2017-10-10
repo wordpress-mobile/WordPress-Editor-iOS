@@ -41,6 +41,16 @@
     return self;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    // HACK: Sergio Estevao (2017-10-10): Change the size of the items whe running on a device with a width smaller or equal than 320 (iPhone SE)
+    if (self.frame.size.width <= 320) {
+        for (UIBarButtonItem *item in self.items) {
+            item.width = roundf(item.image.size.width * 0.75);
+        }
+    }
+}
+
 - (void)setupToolbar {
     [self configureForHorizontalSizeClass:UIUserInterfaceSizeClassCompact];
 }
@@ -97,11 +107,12 @@
     UIImage *image = [self imageNamed:imageNamed];
     UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, image.size.width, image.size.height)];
     [button setImage:image forState:UIControlStateNormal];
-    button.imageView.contentMode = UIViewContentModeCenter;
+    button.imageView.contentMode = UIViewContentModeScaleAspectFit;
     [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
     button.tag = action;
     UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithCustomView:button];
     barButton.width = image.size.width;
+    barButton.image = image;
     return barButton;
 }
 

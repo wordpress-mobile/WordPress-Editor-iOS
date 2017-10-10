@@ -92,6 +92,15 @@
     DDLogInfo(@"Format bar trait collection did change from: %@", previousTraitCollection);
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    // HACK: Sergio Estevao (2017-10-10): Change the size of the items whe running on a device with a width smaller or equal than 320 (iPhone SE)
+    if (self.frame.size.width <= 320) {
+        for (UIBarButtonItem *item in self.leftToolbar.items) {
+            item.width = roundf(item.image.size.width * 0.75);
+        }
+    }
+}
 #pragma mark - Setters
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor
@@ -350,12 +359,12 @@
     customButton.normalTintColor = self.itemTintColor;
     customButton.selectedTintColor = self.selectedItemTintColor;
     customButton.disabledTintColor = self.disabledItemTintColor;
-    customButton.imageView.contentMode = UIViewContentModeCenter;
+    customButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
     [customButton addTarget:target
                      action:selector
            forControlEvents:UIControlEventTouchUpInside];
     barButtonItem.customView = customButton;
-    barButtonItem.width = buttonImage.size.width;
+    barButtonItem.image = image;
 }
 
 - (void)initBlockQuoteBarButton
