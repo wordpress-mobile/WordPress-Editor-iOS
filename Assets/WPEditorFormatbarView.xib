@@ -6,7 +6,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -108,7 +107,7 @@
                 <constraint firstAttribute="bottom" secondItem="hzl-cy-vzk" secondAttribute="bottom" id="NZc-BN-ZZf"/>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="leading" secondItem="5oj-N8-CBI" secondAttribute="leading" id="Yfe-DH-K5f"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="trailing" secondItem="hzl-cy-vzk" secondAttribute="trailing" id="b1S-cy-zck"/>
-                <constraint firstItem="n1r-fs-i80" firstAttribute="bottom" secondItem="iN0-l3-epB" secondAttribute="bottomMargin" id="fi9-ae-Xhc"/>
+                <constraint firstItem="n1r-fs-i80" firstAttribute="bottom" secondItem="iN0-l3-epB" secondAttribute="bottom" id="fi9-ae-Xhc"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="hKN-cF-AOT"/>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="trailing" secondItem="5oj-N8-CBI" secondAttribute="trailing" id="kVg-01-4Kx"/>
             </constraints>
@@ -123,17 +122,17 @@
                     <exclude reference="5oj-N8-CBI"/>
                 </mask>
                 <mask key="constraints">
+                    <exclude reference="3Qa-Uv-8nO"/>
+                    <exclude reference="9Gh-oq-DQO"/>
+                    <exclude reference="MY8-Yb-Zho"/>
+                    <exclude reference="b1S-cy-zck"/>
+                    <exclude reference="hKN-cF-AOT"/>
+                    <exclude reference="Yfe-DH-K5f"/>
+                    <exclude reference="kVg-01-4Kx"/>
                     <exclude reference="3Cf-0J-TmW"/>
                     <exclude reference="4b9-4h-eWO"/>
                     <exclude reference="98w-GC-dOE"/>
                     <exclude reference="NZc-BN-ZZf"/>
-                    <exclude reference="3Qa-Uv-8nO"/>
-                    <exclude reference="9Gh-oq-DQO"/>
-                    <exclude reference="b1S-cy-zck"/>
-                    <exclude reference="hKN-cF-AOT"/>
-                    <exclude reference="MY8-Yb-Zho"/>
-                    <exclude reference="Yfe-DH-K5f"/>
-                    <exclude reference="kVg-01-4Kx"/>
                 </mask>
             </variation>
             <variation key="widthClass=compact">
@@ -143,8 +142,8 @@
                 </mask>
                 <mask key="constraints">
                     <include reference="3Qa-Uv-8nO"/>
-                    <include reference="hKN-cF-AOT"/>
                     <include reference="MY8-Yb-Zho"/>
+                    <include reference="hKN-cF-AOT"/>
                     <include reference="Yfe-DH-K5f"/>
                     <include reference="kVg-01-4Kx"/>
                 </mask>
@@ -155,13 +154,13 @@
                     <include reference="5oj-N8-CBI"/>
                 </mask>
                 <mask key="constraints">
+                    <include reference="9Gh-oq-DQO"/>
+                    <include reference="b1S-cy-zck"/>
+                    <exclude reference="hKN-cF-AOT"/>
                     <include reference="3Cf-0J-TmW"/>
                     <include reference="4b9-4h-eWO"/>
                     <include reference="98w-GC-dOE"/>
                     <include reference="NZc-BN-ZZf"/>
-                    <include reference="9Gh-oq-DQO"/>
-                    <include reference="b1S-cy-zck"/>
-                    <exclude reference="hKN-cF-AOT"/>
                 </mask>
             </variation>
             <connections>
@@ -183,6 +182,7 @@
                 <outlet property="quoteRegularButton" destination="e8U-7y-KIf" id="io2-3W-Xm7"/>
                 <outlet property="regularToolbar" destination="hzl-cy-vzk" id="JmV-O8-V0Q"/>
                 <outlet property="strikeRegularButton" destination="o79-Ie-Knp" id="uxb-KH-prM"/>
+                <outlet property="toolbarBottomConstraint" destination="fi9-ae-Xhc" id="N9t-gF-wFh"/>
                 <outlet property="unorderedListButton" destination="TxB-Wv-LZc" id="DpK-lQ-2Pd"/>
                 <outlet property="unorderedRegularListButton" destination="npM-g4-LTt" id="R4Q-G4-yNS"/>
             </connections>

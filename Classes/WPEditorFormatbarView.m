@@ -9,7 +9,7 @@
 @property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *leftToolbar;
 @property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *regularToolbar;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *horizontalBorder;
-
+@property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *toolbarBottomConstraint;
 // Compact size class bar button items
 @property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *imageButton;
 @property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *boldButton;
@@ -100,7 +100,12 @@
             item.width = roundf(item.image.size.width * 0.75);
         }
     }
+
+    if( @available(iOS 11, *)) {
+        self.toolbarBottomConstraint.constant = -self.safeAreaInsets.bottom;
+    }
 }
+
 #pragma mark - Setters
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor
