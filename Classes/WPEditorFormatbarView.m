@@ -9,6 +9,8 @@
 @property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *leftToolbar;
 @property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *regularToolbar;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *horizontalBorder;
+@property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *toolbarBottomConstraint;
+
 // Compact size class bar button items
 @property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *imageButton;
 @property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *boldButton;
@@ -98,6 +100,14 @@
         for (UIBarButtonItem *item in self.leftToolbar.items) {
             item.width = roundf(item.image.size.width * 0.75);
         }
+    }
+}
+
+- (void)layoutMarginsDidChange {
+    [super layoutMarginsDidChange];
+    // Sergio Estevao (2017-10-13): On iOS11 we move the contraint to use the safeAreaInsets in order to be safe on iOS11.
+    if( @available(iOS 11, *)) {
+        self.toolbarBottomConstraint.constant = -self.safeAreaInsets.bottom;
     }
 }
 

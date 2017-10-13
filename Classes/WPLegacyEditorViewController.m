@@ -4,6 +4,7 @@
 
 CGFloat const WPLegacyEPVCStandardOffset = 15.0;
 CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
+CGFloat const WPLegacyEPVCToolbarHeight = 44.0;
 
 @interface WPLegacyEditorViewController ()<UITextFieldDelegate, UITextViewDelegate, WPLegacyEditorFormatToolbarDelegate>
 
@@ -144,7 +145,7 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 
 - (UIView *)createViewToWrapSafelyToolbar:(UIToolbar *)toolbar
 {
-    UIView *containerToolbar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 44)];
+    UIView *containerToolbar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, WPLegacyEPVCToolbarHeight)];
     containerToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [containerToolbar addSubview:toolbar];
     containerToolbar.backgroundColor = toolbar.backgroundColor;
@@ -270,6 +271,9 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 
     CGRect tapToStartFrame = CGRectMake(WPLegacyEPVCStandardOffset + insets.left, self.textView.textContainerInset.top, width, self.textView.font.lineHeight);
     self.tapToStartWritingLabel.frame = tapToStartFrame;
+
+    self.textView.inputAccessoryView.frame = CGRectMake(0, 0, self.view.frame.size.width, WPLegacyEPVCToolbarHeight + insets.bottom);
+    self.titleTextField.inputAccessoryView.frame = CGRectMake(0, 0, self.view.frame.size.width, WPLegacyEPVCToolbarHeight + insets.bottom);
 }
 
 - (void)positionTextView:(NSNotification *)notification

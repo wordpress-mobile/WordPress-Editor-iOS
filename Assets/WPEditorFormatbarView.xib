@@ -6,8 +6,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
-        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -51,7 +49,7 @@
                     </variation>
                 </toolbar>
                 <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="n1r-fs-i80">
-                    <rect key="frame" x="0.0" y="-41" width="482" height="49"/>
+                    <rect key="frame" x="0.0" y="-5" width="482" height="49"/>
                     <items>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="dUc-fD-xmY"/>
                         <barButtonItem title="Img" width="44" style="plain" id="IvH-tE-Dmv" customClass="ZSSBarButtonItem"/>
@@ -102,7 +100,7 @@
                 <constraint firstItem="hzl-cy-vzk" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="4b9-4h-eWO"/>
                 <constraint firstItem="hzl-cy-vzk" firstAttribute="top" secondItem="5oj-N8-CBI" secondAttribute="bottom" id="98w-GC-dOE"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="leading" secondItem="hzl-cy-vzk" secondAttribute="leading" id="9Gh-oq-DQO"/>
-                <constraint firstItem="n1r-fs-i80" firstAttribute="bottom" secondItem="iN0-l3-epB" secondAttribute="bottomMargin" id="KLa-wT-1Gc"/>
+                <constraint firstItem="n1r-fs-i80" firstAttribute="bottom" secondItem="iN0-l3-epB" secondAttribute="bottom" constant="2" id="KLa-wT-1Gc"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="MY8-Yb-Zho"/>
                 <constraint firstAttribute="bottom" secondItem="hzl-cy-vzk" secondAttribute="bottom" id="NZc-BN-ZZf"/>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="leading" secondItem="5oj-N8-CBI" secondAttribute="leading" id="Yfe-DH-K5f"/>
@@ -182,6 +180,7 @@
                 <outlet property="quoteRegularButton" destination="e8U-7y-KIf" id="io2-3W-Xm7"/>
                 <outlet property="regularToolbar" destination="hzl-cy-vzk" id="JmV-O8-V0Q"/>
                 <outlet property="strikeRegularButton" destination="o79-Ie-Knp" id="uxb-KH-prM"/>
+                <outlet property="toolbarBottomConstraint" destination="KLa-wT-1Gc" id="7ib-qR-R8H"/>
                 <outlet property="unorderedListButton" destination="TxB-Wv-LZc" id="DpK-lQ-2Pd"/>
                 <outlet property="unorderedRegularListButton" destination="npM-g4-LTt" id="R4Q-G4-yNS"/>
             </connections>

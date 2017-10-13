@@ -95,7 +95,7 @@
 
     NSBundle *editorBundle = [NSBundle bundleForClass:[WPEditorFormatbarView class]];
     _toolbarView = (WPEditorFormatbarView *)[[editorBundle loadNibNamed:NSStringFromClass([WPEditorFormatbarView class]) owner:nil options:nil] firstObject];
-    _toolbarView.delegate = self;
+    _toolbarView.delegate = self;    
 }
 
 #pragma mark - UIViewController
