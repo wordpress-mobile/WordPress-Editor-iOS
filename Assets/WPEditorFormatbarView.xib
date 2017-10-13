@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
+    <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -49,10 +51,7 @@
                     </variation>
                 </toolbar>
                 <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="n1r-fs-i80">
-                    <rect key="frame" x="0.0" y="-2" width="482" height="44"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="44" id="xyd-0b-SUT"/>
-                    </constraints>
+                    <rect key="frame" x="0.0" y="-41" width="482" height="49"/>
                     <items>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="dUc-fD-xmY"/>
                         <barButtonItem title="Img" width="44" style="plain" id="IvH-tE-Dmv" customClass="ZSSBarButtonItem"/>
@@ -74,7 +73,7 @@
                     </items>
                 </toolbar>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5oj-N8-CBI">
-                    <rect key="frame" x="0.0" y="-2" width="482" height="1"/>
+                    <rect key="frame" x="0.0" y="0.0" width="482" height="1"/>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="1" id="DQc-We-xJ8"/>
@@ -103,11 +102,11 @@
                 <constraint firstItem="hzl-cy-vzk" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="4b9-4h-eWO"/>
                 <constraint firstItem="hzl-cy-vzk" firstAttribute="top" secondItem="5oj-N8-CBI" secondAttribute="bottom" id="98w-GC-dOE"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="leading" secondItem="hzl-cy-vzk" secondAttribute="leading" id="9Gh-oq-DQO"/>
-                <constraint firstItem="5oj-N8-CBI" firstAttribute="top" secondItem="n1r-fs-i80" secondAttribute="top" id="MY8-Yb-Zho"/>
+                <constraint firstItem="n1r-fs-i80" firstAttribute="bottom" secondItem="iN0-l3-epB" secondAttribute="bottomMargin" id="KLa-wT-1Gc"/>
+                <constraint firstItem="5oj-N8-CBI" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="MY8-Yb-Zho"/>
                 <constraint firstAttribute="bottom" secondItem="hzl-cy-vzk" secondAttribute="bottom" id="NZc-BN-ZZf"/>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="leading" secondItem="5oj-N8-CBI" secondAttribute="leading" id="Yfe-DH-K5f"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="trailing" secondItem="hzl-cy-vzk" secondAttribute="trailing" id="b1S-cy-zck"/>
-                <constraint firstItem="n1r-fs-i80" firstAttribute="bottom" secondItem="iN0-l3-epB" secondAttribute="bottom" id="fi9-ae-Xhc"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="hKN-cF-AOT"/>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="trailing" secondItem="5oj-N8-CBI" secondAttribute="trailing" id="kVg-01-4Kx"/>
             </constraints>
@@ -127,6 +126,7 @@
                     <exclude reference="MY8-Yb-Zho"/>
                     <exclude reference="b1S-cy-zck"/>
                     <exclude reference="hKN-cF-AOT"/>
+                    <exclude reference="KLa-wT-1Gc"/>
                     <exclude reference="Yfe-DH-K5f"/>
                     <exclude reference="kVg-01-4Kx"/>
                     <exclude reference="3Cf-0J-TmW"/>
@@ -144,6 +144,7 @@
                     <include reference="3Qa-Uv-8nO"/>
                     <include reference="MY8-Yb-Zho"/>
                     <include reference="hKN-cF-AOT"/>
+                    <include reference="KLa-wT-1Gc"/>
                     <include reference="Yfe-DH-K5f"/>
                     <include reference="kVg-01-4Kx"/>
                 </mask>
@@ -156,7 +157,6 @@
                 <mask key="constraints">
                     <include reference="9Gh-oq-DQO"/>
                     <include reference="b1S-cy-zck"/>
-                    <exclude reference="hKN-cF-AOT"/>
                     <include reference="3Cf-0J-TmW"/>
                     <include reference="4b9-4h-eWO"/>
                     <include reference="98w-GC-dOE"/>
@@ -182,7 +182,6 @@
                 <outlet property="quoteRegularButton" destination="e8U-7y-KIf" id="io2-3W-Xm7"/>
                 <outlet property="regularToolbar" destination="hzl-cy-vzk" id="JmV-O8-V0Q"/>
                 <outlet property="strikeRegularButton" destination="o79-Ie-Knp" id="uxb-KH-prM"/>
-                <outlet property="toolbarBottomConstraint" destination="fi9-ae-Xhc" id="N9t-gF-wFh"/>
                 <outlet property="unorderedListButton" destination="TxB-Wv-LZc" id="DpK-lQ-2Pd"/>
                 <outlet property="unorderedRegularListButton" destination="npM-g4-LTt" id="R4Q-G4-yNS"/>
             </connections>
