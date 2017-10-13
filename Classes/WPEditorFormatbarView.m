@@ -100,7 +100,11 @@
             item.width = roundf(item.image.size.width * 0.75);
         }
     }
+}
 
+- (void)layoutMarginsDidChange {
+    [super layoutMarginsDidChange];
+    // Sergio Estevao (2017-10-13): On iOS11 we move the contraint to use the safeAreaInsets in order to be safe on iOS11.
     if( @available(iOS 11, *)) {
         self.toolbarBottomConstraint.constant = -self.safeAreaInsets.bottom;
     }
