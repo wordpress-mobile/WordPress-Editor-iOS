@@ -13,7 +13,7 @@
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="WPEditorFormatbarView">
             <rect key="frame" x="0.0" y="0.0" width="482" height="42"/>
-            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
             <subviews>
                 <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hzl-cy-vzk">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -98,7 +98,6 @@
                 <constraint firstAttribute="trailing" secondItem="hzl-cy-vzk" secondAttribute="trailing" id="3Cf-0J-TmW"/>
                 <constraint firstAttribute="trailing" secondItem="5oj-N8-CBI" secondAttribute="trailing" id="3Qa-Uv-8nO"/>
                 <constraint firstItem="hzl-cy-vzk" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="4b9-4h-eWO"/>
-                <constraint firstItem="hzl-cy-vzk" firstAttribute="top" secondItem="5oj-N8-CBI" secondAttribute="bottom" id="98w-GC-dOE"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="leading" secondItem="hzl-cy-vzk" secondAttribute="leading" id="9Gh-oq-DQO"/>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="bottom" secondItem="iN0-l3-epB" secondAttribute="bottom" constant="2" id="KLa-wT-1Gc"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="MY8-Yb-Zho"/>
@@ -121,16 +120,14 @@
                 <mask key="constraints">
                     <exclude reference="3Qa-Uv-8nO"/>
                     <exclude reference="9Gh-oq-DQO"/>
-                    <exclude reference="MY8-Yb-Zho"/>
                     <exclude reference="b1S-cy-zck"/>
                     <exclude reference="hKN-cF-AOT"/>
+                    <exclude reference="3Cf-0J-TmW"/>
+                    <exclude reference="4b9-4h-eWO"/>
+                    <exclude reference="NZc-BN-ZZf"/>
                     <exclude reference="KLa-wT-1Gc"/>
                     <exclude reference="Yfe-DH-K5f"/>
                     <exclude reference="kVg-01-4Kx"/>
-                    <exclude reference="3Cf-0J-TmW"/>
-                    <exclude reference="4b9-4h-eWO"/>
-                    <exclude reference="98w-GC-dOE"/>
-                    <exclude reference="NZc-BN-ZZf"/>
                 </mask>
             </variation>
             <variation key="widthClass=compact">
@@ -140,7 +137,6 @@
                 </mask>
                 <mask key="constraints">
                     <include reference="3Qa-Uv-8nO"/>
-                    <include reference="MY8-Yb-Zho"/>
                     <include reference="hKN-cF-AOT"/>
                     <include reference="KLa-wT-1Gc"/>
                     <include reference="Yfe-DH-K5f"/>
@@ -157,7 +153,6 @@
                     <include reference="b1S-cy-zck"/>
                     <include reference="3Cf-0J-TmW"/>
                     <include reference="4b9-4h-eWO"/>
-                    <include reference="98w-GC-dOE"/>
                     <include reference="NZc-BN-ZZf"/>
                 </mask>
             </variation>
