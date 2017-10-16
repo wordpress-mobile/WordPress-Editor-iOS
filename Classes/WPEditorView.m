@@ -28,6 +28,7 @@ static const CGFloat UITextFieldFieldHeight = 55.0;
 static const CGFloat SourceTitleTextFieldYOffset = 4.0;
 static const CGFloat HTMLViewTopInset = 15.0;
 static const CGFloat HTMLViewLeftRightInset = 15.0;
+static const CGFloat ToolbarHeight = 44;
 
 static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
@@ -360,8 +361,8 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     if (@available(iOS 11, *)) {
         insets = self.sourceView.inputAccessoryView.safeAreaInsets;
     }
-    CGFloat toolbarHeight = 42;
-    CGRect newFrame = CGRectMake(0, 0, self.bounds.size.width, toolbarHeight + insets.bottom);
+
+    CGRect newFrame = CGRectMake(0, 0, self.bounds.size.width, ToolbarHeight + insets.bottom);
     self.sourceView.inputAccessoryView.frame = newFrame;
     self.sourceViewTitleField.inputAccessoryView.frame = newFrame;
     self.titleField.inputAccessoryView.frame = newFrame;
