@@ -4,6 +4,7 @@
 
 CGFloat const WPLegacyEPVCStandardOffset = 15.0;
 CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
+CGFloat const WPLegacyEPVCToolbarHeight = 44.0;
 
 @interface WPLegacyEditorViewController ()<UITextFieldDelegate, UITextViewDelegate, WPLegacyEditorFormatToolbarDelegate>
 
@@ -142,6 +143,22 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 
 #pragma mark - View Setup
 
+- (UIView *)createViewToWrapSafelyToolbar:(UIToolbar *)toolbar
+{
+    UIView *containerToolbar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, WPLegacyEPVCToolbarHeight)];
+    containerToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [containerToolbar addSubview:toolbar];
+    containerToolbar.backgroundColor = toolbar.backgroundColor;
+    NSLayoutYAxisAnchor * bottomAnchor = containerToolbar.bottomAnchor;
+    if(@available(iOS 11, *)){
+        bottomAnchor = containerToolbar.safeAreaLayoutGuide.bottomAnchor;
+    }
+    [[toolbar.bottomAnchor constraintEqualToAnchor:bottomAnchor] setActive:YES];
+    [[toolbar.leftAnchor constraintEqualToAnchor:containerToolbar.leftAnchor] setActive:YES];
+    [[toolbar.rightAnchor constraintEqualToAnchor:containerToolbar.rightAnchor] setActive:YES];
+    return containerToolbar;
+}
+
 - (void)setupTextView
 {
     CGFloat x = 0.0f;
@@ -167,7 +184,9 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         self.editorToolbar = [[WPLegacyEditorFormatToolbar alloc] init];
         self.editorToolbar.formatDelegate = self;
         [self.editorToolbar sizeToFit];
-        self.textView.inputAccessoryView = self.editorToolbar;
+        self.editorToolbar.translatesAutoresizingMaskIntoConstraints = false;
+
+        self.textView.inputAccessoryView = [self createViewToWrapSafelyToolbar:self.editorToolbar];
     }
     
     // Title TextField.
@@ -183,8 +202,9 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         self.titleTextField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.titleTextField.accessibilityLabel = NSLocalizedString(@"Title", @"Post title");
         self.titleTextField.returnKeyType = UIReturnKeyNext;
+        self.titleTextField.backgroundColor = self.textView.backgroundColor;
     }
-    [self.textView addSubview:self.titleTextField];
+    [self.view addSubview:self.titleTextField];
     
     // InputAccessoryView for title textField.
     if (!self.titleToolbar) {
@@ -192,7 +212,8 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         [self.titleToolbar disableAllButtons];
         self.titleToolbar.formatDelegate = self;
         [self.titleToolbar sizeToFit];
-        self.titleTextField.inputAccessoryView = self.titleToolbar;
+        self.titleToolbar.translatesAutoresizingMaskIntoConstraints = false;
+        self.titleTextField.inputAccessoryView = [self createViewToWrapSafelyToolbar:self.titleToolbar];
     }
     
     // One pixel separator bewteen title and content text fields.
@@ -204,7 +225,7 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         self.separatorView.backgroundColor = self.separatorColor;
         self.separatorView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     }
-    [self.textView addSubview:self.separatorView];
+    [self.view addSubview:self.separatorView];
     
     // Update the textView's textContainerInsets so text does not overlap content.
     CGFloat left = WPLegacyEPVCTextViewOffset;
@@ -227,6 +248,32 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
         self.tapToStartWritingLabel.isAccessibilityElement = NO;
     }
     [self.textView addSubview:self.tapToStartWritingLabel];
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    if (@available(iOS 11, *)) {
+        insets = self.view.safeAreaInsets;
+    }
+    CGFloat left = WPLegacyEPVCTextViewOffset + insets.left;
+    CGFloat right = WPLegacyEPVCTextViewOffset + insets.right;
+    CGFloat top = CGRectGetMaxY(self.separatorView.frame) + self.textView.font.lineHeight + insets.top;
+    CGFloat bottom = self.textView.font.lineHeight + insets.bottom;
+    self.textView.textContainerInset = UIEdgeInsetsMake(top, left, bottom, right);
+
+    CGFloat width = CGRectGetWidth(self.view.frame) - (2 * WPLegacyEPVCStandardOffset) - (insets.left + insets.right);
+    CGRect titleFrame = CGRectMake(WPLegacyEPVCStandardOffset + insets.left, 0.0, width, self.titleFont.lineHeight * 2.0);
+    self.titleTextField.frame = titleFrame;
+    CGFloat y = CGRectGetMaxY(self.titleTextField.frame);
+    CGRect separatorFrame = CGRectMake(WPLegacyEPVCStandardOffset + insets.left, y, width, 1.0);
+    self.separatorView.frame = separatorFrame;
+
+    CGRect tapToStartFrame = CGRectMake(WPLegacyEPVCStandardOffset + insets.left, self.textView.textContainerInset.top, width, self.textView.font.lineHeight);
+    self.tapToStartWritingLabel.frame = tapToStartFrame;
+
+    self.textView.inputAccessoryView.frame = CGRectMake(0, 0, self.view.frame.size.width, WPLegacyEPVCToolbarHeight + insets.bottom);
+    self.titleTextField.inputAccessoryView.frame = CGRectMake(0, 0, self.view.frame.size.width, WPLegacyEPVCToolbarHeight + insets.bottom);
 }
 
 - (void)positionTextView:(NSNotification *)notification

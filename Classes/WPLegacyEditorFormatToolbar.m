@@ -41,6 +41,16 @@
     return self;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    // HACK: Sergio Estevao (2017-10-10): Change the size of the items whe running on a device with a width smaller or equal than 320 (iPhone SE)
+    if (self.frame.size.width <= 320) {
+        for (UIBarButtonItem *item in self.items) {
+            item.width = roundf(item.image.size.width * 0.75);
+        }
+    }
+}
+
 - (void)setupToolbar {
     [self configureForHorizontalSizeClass:UIUserInterfaceSizeClassCompact];
 }
@@ -92,11 +102,23 @@
     }
 }
 
+- (UIBarButtonItem *)createButtonWithImageNamed:(NSString *)imageNamed tag:(WPLegacyEditorFormatAction)action
+{
+    UIImage *image = [self imageNamed:imageNamed];
+    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, image.size.width, image.size.height)];
+    [button setImage:image forState:UIControlStateNormal];
+    button.imageView.contentMode = UIViewContentModeScaleAspectFill;
+    [button addTarget:self action:@selector(buttonAction:) forControlEvents:UIControlEventTouchUpInside];
+    button.tag = action;
+    UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithCustomView:button];
+    barButton.width = image.size.width;
+    barButton.image = image;
+    return barButton;
+}
+
 - (UIBarButtonItem *)mediaButton {
     if (_mediaButton == nil) {
-        UIImage *image = [self imageNamed:@"icon_format_media"];
-        _mediaButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        _mediaButton.tag = WPLegacyEditorFormatActionMedia;
+        _mediaButton = [self createButtonWithImageNamed:@"icon_format_media" tag:WPLegacyEditorFormatActionMedia];
         _mediaButton.accessibilityIdentifier = @"add media";
         _mediaButton.accessibilityLabel = NSLocalizedString(@"add media", nil);
     }
@@ -105,9 +127,7 @@
 
 - (UIBarButtonItem *)boldButton {
     if (_boldButton == nil) {
-        UIImage *image = [self imageNamed:@"icon_format_bold"];
-        _boldButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        _boldButton.tag = WPLegacyEditorFormatActionBold;
+        _boldButton = [self createButtonWithImageNamed:@"icon_format_bold" tag:WPLegacyEditorFormatActionBold];
         _boldButton.accessibilityIdentifier = @"strong";
         _boldButton.accessibilityLabel = NSLocalizedString(@"bold", nil);
     }
@@ -116,9 +136,7 @@
 
 - (UIBarButtonItem *)italicsButton {
     if (_italicsButton == nil) {
-        UIImage *image = [self imageNamed:@"icon_format_italic"];
-        _italicsButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        _italicsButton.tag = WPLegacyEditorFormatActionItalic;
+        _italicsButton = [self createButtonWithImageNamed:@"icon_format_italic" tag:WPLegacyEditorFormatActionItalic];
         _italicsButton.accessibilityIdentifier = @"em";
         _italicsButton.accessibilityLabel = NSLocalizedString(@"italic", nil);
     }
@@ -127,9 +145,7 @@
 
 - (UIBarButtonItem *)underlineButton {
     if (_underlineButton == nil) {
-        UIImage *image = [self imageNamed:@"icon_format_underline"];
-        _underlineButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        _underlineButton.tag = WPLegacyEditorFormatActionUnderline;
+        _underlineButton = [self createButtonWithImageNamed:@"icon_format_underline" tag:WPLegacyEditorFormatActionUnderline];
         _underlineButton.accessibilityIdentifier = @"u";
         _underlineButton.accessibilityLabel = NSLocalizedString(@"underline", nil);
     }
@@ -138,9 +154,7 @@
 
 - (UIBarButtonItem *)delButton {
     if (_delButton == nil) {
-        UIImage *image = [self imageNamed:@"icon_format_strikethrough"];
-        _delButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        _delButton.tag = WPLegacyEditorFormatActionDelete;
+        _delButton = [self createButtonWithImageNamed:@"icon_format_strikethrough" tag:WPLegacyEditorFormatActionDelete];
         _delButton.accessibilityIdentifier = @"del";
         _delButton.accessibilityLabel = NSLocalizedString(@"delete", nil);
     }
@@ -149,9 +163,7 @@
 
 - (UIBarButtonItem *)linkButton {
     if (_linkButton == nil) {
-        UIImage *image = [self imageNamed:@"icon_format_link"];
-        _linkButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        _linkButton.tag = WPLegacyEditorFormatActionLink;
+        _linkButton = [self createButtonWithImageNamed:@"icon_format_link" tag:WPLegacyEditorFormatActionLink];
         _linkButton.accessibilityIdentifier = @"link";
         _linkButton.accessibilityLabel = NSLocalizedString(@"link", nil);
     }
@@ -160,9 +172,7 @@
 
 - (UIBarButtonItem *)quoteButton {
     if (_quoteButton == nil) {
-        UIImage *image = [self imageNamed:@"icon_format_quote"];
-        _quoteButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        _quoteButton.tag = WPLegacyEditorFormatActionQuote;
+        _quoteButton =[self createButtonWithImageNamed:@"icon_format_quote" tag:WPLegacyEditorFormatActionQuote];
         _quoteButton.accessibilityIdentifier = @"blockquote";
         _quoteButton.accessibilityLabel = NSLocalizedString(@"quote", nil);
     }
@@ -171,9 +181,7 @@
 
 - (UIBarButtonItem *)moreButton {
     if (_moreButton == nil) {
-        UIImage *image = [self imageNamed:@"icon_format_more"];
-        _moreButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(buttonAction:)];
-        _moreButton.tag = WPLegacyEditorFormatActionMore;
+        _moreButton = [self createButtonWithImageNamed:@"icon_format_more" tag:WPLegacyEditorFormatActionMore];
         _moreButton.accessibilityIdentifier = @"more";
         _moreButton.accessibilityLabel = NSLocalizedString(@"more", nil);
     }
@@ -195,7 +203,7 @@
     }
 }
 
-- (void)buttonAction:(UIBarButtonItem *)sender {
+- (void)buttonAction:(UIButton *)sender {
     DDLogInfo(@"%@ %@", self, NSStringFromSelector(_cmd));
     if (self.formatDelegate) {
         [self.formatDelegate formatToolbar:self actionPressed:sender.tag];
