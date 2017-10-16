@@ -272,8 +272,12 @@ CGFloat const WPLegacyEPVCToolbarHeight = 44.0;
     CGRect tapToStartFrame = CGRectMake(WPLegacyEPVCStandardOffset + insets.left, self.textView.textContainerInset.top, width, self.textView.font.lineHeight);
     self.tapToStartWritingLabel.frame = tapToStartFrame;
 
-    self.textView.inputAccessoryView.frame = CGRectMake(0, 0, self.view.frame.size.width, WPLegacyEPVCToolbarHeight + insets.bottom);
-    self.titleTextField.inputAccessoryView.frame = CGRectMake(0, 0, self.view.frame.size.width, WPLegacyEPVCToolbarHeight + insets.bottom);
+    UIEdgeInsets toolbarInsets = UIEdgeInsetsZero;
+    if (@available(iOS 11, *)) {
+        toolbarInsets = self.textView.inputAccessoryView.safeAreaInsets;
+    }
+    self.textView.inputAccessoryView.frame = CGRectMake(0, 0, self.view.frame.size.width, WPLegacyEPVCToolbarHeight + toolbarInsets.bottom);
+    self.titleTextField.inputAccessoryView.frame = CGRectMake(0, 0, self.view.frame.size.width, WPLegacyEPVCToolbarHeight + toolbarInsets.bottom);
 }
 
 - (void)positionTextView:(NSNotification *)notification
