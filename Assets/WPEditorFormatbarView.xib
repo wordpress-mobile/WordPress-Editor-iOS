@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
-    <device id="retina5_9" orientation="portrait">
+    <device id="retina5_5" orientation="landscape">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
@@ -12,11 +12,11 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="WPEditorFormatbarView">
-            <rect key="frame" x="0.0" y="0.0" width="482" height="42"/>
-            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <rect key="frame" x="0.0" y="0.0" width="482" height="44"/>
+            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
             <subviews>
                 <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hzl-cy-vzk">
-                    <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                    <rect key="frame" x="0.0" y="0.0" width="482" height="44"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="44" id="2hQ-8w-6RU"/>
                     </constraints>
@@ -49,7 +49,7 @@
                     </variation>
                 </toolbar>
                 <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="n1r-fs-i80">
-                    <rect key="frame" x="0.0" y="-5" width="482" height="49"/>
+                    <rect key="frame" x="0.0" y="0.0" width="482" height="44"/>
                     <items>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="dUc-fD-xmY"/>
                         <barButtonItem title="Img" width="44" style="plain" id="IvH-tE-Dmv" customClass="ZSSBarButtonItem"/>
@@ -70,7 +70,7 @@
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="KpA-gG-9xb"/>
                     </items>
                 </toolbar>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5oj-N8-CBI">
+                <view contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5oj-N8-CBI">
                     <rect key="frame" x="0.0" y="0.0" width="482" height="1"/>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
@@ -98,10 +98,10 @@
                 <constraint firstAttribute="trailing" secondItem="hzl-cy-vzk" secondAttribute="trailing" id="3Cf-0J-TmW"/>
                 <constraint firstAttribute="trailing" secondItem="5oj-N8-CBI" secondAttribute="trailing" id="3Qa-Uv-8nO"/>
                 <constraint firstItem="hzl-cy-vzk" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="4b9-4h-eWO"/>
-                <constraint firstItem="hzl-cy-vzk" firstAttribute="top" secondItem="5oj-N8-CBI" secondAttribute="bottom" id="98w-GC-dOE"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="leading" secondItem="hzl-cy-vzk" secondAttribute="leading" id="9Gh-oq-DQO"/>
-                <constraint firstItem="n1r-fs-i80" firstAttribute="bottom" secondItem="iN0-l3-epB" secondAttribute="bottom" constant="2" id="KLa-wT-1Gc"/>
-                <constraint firstItem="5oj-N8-CBI" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="MY8-Yb-Zho"/>
+                <constraint firstItem="5oj-N8-CBI" firstAttribute="top" secondItem="hzl-cy-vzk" secondAttribute="top" id="K0a-ZY-Z3h"/>
+                <constraint firstItem="n1r-fs-i80" firstAttribute="bottom" secondItem="iN0-l3-epB" secondAttribute="bottom" id="KLa-wT-1Gc"/>
+                <constraint firstItem="5oj-N8-CBI" firstAttribute="top" secondItem="n1r-fs-i80" secondAttribute="top" id="MY8-Yb-Zho"/>
                 <constraint firstAttribute="bottom" secondItem="hzl-cy-vzk" secondAttribute="bottom" id="NZc-BN-ZZf"/>
                 <constraint firstItem="n1r-fs-i80" firstAttribute="leading" secondItem="5oj-N8-CBI" secondAttribute="leading" id="Yfe-DH-K5f"/>
                 <constraint firstItem="5oj-N8-CBI" firstAttribute="trailing" secondItem="hzl-cy-vzk" secondAttribute="trailing" id="b1S-cy-zck"/>
@@ -119,17 +119,17 @@
                     <exclude reference="5oj-N8-CBI"/>
                 </mask>
                 <mask key="constraints">
-                    <exclude reference="3Qa-Uv-8nO"/>
-                    <exclude reference="9Gh-oq-DQO"/>
-                    <exclude reference="MY8-Yb-Zho"/>
-                    <exclude reference="b1S-cy-zck"/>
-                    <exclude reference="hKN-cF-AOT"/>
                     <exclude reference="KLa-wT-1Gc"/>
                     <exclude reference="Yfe-DH-K5f"/>
                     <exclude reference="kVg-01-4Kx"/>
+                    <exclude reference="3Qa-Uv-8nO"/>
+                    <exclude reference="9Gh-oq-DQO"/>
+                    <exclude reference="K0a-ZY-Z3h"/>
+                    <exclude reference="MY8-Yb-Zho"/>
+                    <exclude reference="b1S-cy-zck"/>
+                    <exclude reference="hKN-cF-AOT"/>
                     <exclude reference="3Cf-0J-TmW"/>
                     <exclude reference="4b9-4h-eWO"/>
-                    <exclude reference="98w-GC-dOE"/>
                     <exclude reference="NZc-BN-ZZf"/>
                 </mask>
             </variation>
@@ -139,12 +139,12 @@
                     <include reference="5oj-N8-CBI"/>
                 </mask>
                 <mask key="constraints">
-                    <include reference="3Qa-Uv-8nO"/>
-                    <include reference="MY8-Yb-Zho"/>
-                    <include reference="hKN-cF-AOT"/>
                     <include reference="KLa-wT-1Gc"/>
                     <include reference="Yfe-DH-K5f"/>
                     <include reference="kVg-01-4Kx"/>
+                    <include reference="3Qa-Uv-8nO"/>
+                    <include reference="MY8-Yb-Zho"/>
+                    <include reference="hKN-cF-AOT"/>
                 </mask>
             </variation>
             <variation key="widthClass=regular">
@@ -154,10 +154,10 @@
                 </mask>
                 <mask key="constraints">
                     <include reference="9Gh-oq-DQO"/>
+                    <include reference="K0a-ZY-Z3h"/>
                     <include reference="b1S-cy-zck"/>
                     <include reference="3Cf-0J-TmW"/>
                     <include reference="4b9-4h-eWO"/>
-                    <include reference="98w-GC-dOE"/>
                     <include reference="NZc-BN-ZZf"/>
                 </mask>
             </variation>
