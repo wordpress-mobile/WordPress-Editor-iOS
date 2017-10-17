@@ -23,16 +23,20 @@
 }
 
 - (void)safeAreaInsetsDidChange {
-    UIEdgeInsets insets = UIEdgeInsetsZero;
-    if(@available(iOS 11, *)){
-        insets = self.safeAreaInsets;
-    }
-    CGRect frame = CGRectMake(0, 0, self.frame.size.width, WPEditorFormatbarViewToolbarHeight + insets.bottom);
-    self.frame = frame;
+    [self invalidateIntrinsicContentSize];
 }
 
 - (void)layoutSubviews {
     self.toolbar.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+}
+
+- (CGSize)intrinsicContentSize {
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    if(@available(iOS 11, *)){
+        insets = self.safeAreaInsets;
+    }
+    CGSize size = CGSizeMake(UIViewNoIntrinsicMetric, WPEditorFormatbarViewToolbarHeight + insets.bottom);
+    return size;
 }
 
 @end
@@ -172,8 +176,7 @@
         // Note: Very important this is set here otherwise the post will not initially
         // load properly in the editor. Please be careful if you make a change here and
         // test the editor within WPiOS!
-        self.isFirstSetupComplete = YES;
-        [[self wrapForInputView] setNeedsLayout];
+        self.isFirstSetupComplete = YES;        
     }
 }
 
@@ -201,7 +204,7 @@
 - (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     [super willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
-    [[self wrapForInputView] setNeedsLayout];
+    [[self wrapperViewForInputView] setNeedsLayout];
 }
 
 #pragma mark - Keyboard shortcuts
@@ -302,8 +305,8 @@
         self.editorView.autoresizesSubviews = YES;
         self.editorView.autoresizingMask = mask;
         self.editorView.backgroundColor = [UIColor whiteColor];
-        self.editorView.sourceView.inputAccessoryView = [self wrapForInputView];
-        self.editorView.sourceViewTitleField.inputAccessoryView = [self wrapForInputView];
+        self.editorView.sourceView.inputAccessoryView = [self wrapperViewForInputView];
+        self.editorView.sourceViewTitleField.inputAccessoryView = [self wrapperViewForInputView];
         
         // Default placeholder text
         self.titlePlaceholderText = NSLocalizedString(@"Post title",  @"Placeholder for the post title.");
@@ -973,7 +976,7 @@
     }
 }
 
-- (UIView *)wrapForInputView {
+- (UIView *)wrapperViewForInputView {
     static CustomWrapperViewForInputView *wrapperForInputView;
     if (wrapperForInputView == nil) {
         UIEdgeInsets insets = UIEdgeInsetsZero;
@@ -1012,7 +1015,7 @@
       fieldCreated:(WPEditorField*)field
 {
     if (field == self.editorView.titleField) {
-        field.inputAccessoryView = [self wrapForInputView];
+        field.inputAccessoryView = [self wrapperViewForInputView];
         
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:NO];
@@ -1021,7 +1024,7 @@
         self.editorView.sourceViewTitleField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.titlePlaceholderText
                                                                                                      attributes:@{NSForegroundColorAttributeName: self.placeholderColor}];
     } else if (field == self.editorView.contentField) {
-        field.inputAccessoryView = [self wrapForInputView];
+        field.inputAccessoryView = [self wrapperViewForInputView];
         
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:YES];
