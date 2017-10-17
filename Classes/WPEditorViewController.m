@@ -17,7 +17,11 @@
 - (instancetype)initWithToolbar:(WPEditorFormatbarView *)toolbar {
     self = [super initWithFrame:CGRectMake(0, 0, self.frame.size.width, WPEditorFormatbarViewToolbarHeight)];
     if (self) {
-        self.toolbar = toolbar;
+        _toolbar = toolbar;
+        self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        self.backgroundColor = _toolbar.backgroundColor;
+        [self addSubview:toolbar];
+        self.translatesAutoresizingMaskIntoConstraints = YES;
     }
     return self;
 }
@@ -979,18 +983,7 @@
 - (UIView *)wrapperViewForInputView {
     static CustomWrapperViewForInputView *wrapperForInputView;
     if (wrapperForInputView == nil) {
-        UIEdgeInsets insets = UIEdgeInsetsZero;
-        if (@available(iOS 11.0, *)) {
-            insets = self.view.safeAreaInsets;
-        } else {
-            // Fallback on earlier versions
-        }
         wrapperForInputView = [[CustomWrapperViewForInputView alloc] initWithToolbar:self.toolbarView];
-        wrapperForInputView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-        wrapperForInputView.backgroundColor = [UIColor orangeColor];
-        UIView *toolbar = self.toolbarView;
-        [wrapperForInputView addSubview:toolbar];
-        wrapperForInputView.translatesAutoresizingMaskIntoConstraints = YES;
     };
     return wrapperForInputView;
 }
