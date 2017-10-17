@@ -24,7 +24,9 @@
 
 - (void)safeAreaInsetsDidChange {
     UIEdgeInsets insets = UIEdgeInsetsZero;
-    insets = self.safeAreaInsets;
+    if(@available(iOS 11, *)){
+        insets = self.safeAreaInsets;
+    }
     CGRect frame = CGRectMake(0, 0, self.frame.size.width, WPEditorFormatbarViewToolbarHeight + insets.bottom);
     self.frame = frame;
 }
@@ -199,7 +201,7 @@
 - (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     [super willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
-    [self.toolbarView setNeedsLayout];
+    [[self wrapForInputView] setNeedsLayout];
 }
 
 #pragma mark - Keyboard shortcuts
