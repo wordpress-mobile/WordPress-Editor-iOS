@@ -9,6 +9,7 @@
 @property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *leftToolbar;
 @property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *regularToolbar;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *horizontalBorder;
+@property (unsafe_unretained, nonatomic) IBOutlet NSLayoutConstraint *toolbarBottomConstraint;
 
 // Compact size class bar button items
 @property (unsafe_unretained, nonatomic) IBOutlet ZSSBarButtonItem *imageButton;
@@ -90,6 +91,24 @@
 {
     [super traitCollectionDidChange:previousTraitCollection];
     DDLogInfo(@"Format bar trait collection did change from: %@", previousTraitCollection);
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    // HACK: Sergio Estevao (2017-10-10): Change the size of the items whe running on a device with a width smaller or equal than 320 (iPhone SE)
+    if (self.frame.size.width <= 320) {
+        for (UIBarButtonItem *item in self.leftToolbar.items) {
+            item.width = roundf(item.image.size.width * 0.75);
+        }
+    }
+}
+
+- (void)layoutMarginsDidChange {
+    [super layoutMarginsDidChange];
+    // Sergio Estevao (2017-10-13): On iOS11 we move the contraint to use the safeAreaInsets in order to be safe on iOS11.
+    if( @available(iOS 11, *)) {
+        self.toolbarBottomConstraint.constant = -self.safeAreaInsets.bottom;
+    }
 }
 
 #pragma mark - Setters
@@ -188,6 +207,27 @@
 }
 
 #pragma mark - Toolbar items
+
+- (UIBarButtonItem *)toolBarItemWithTag:(WPEditorViewControllerElementTag)tag
+{
+    // Find whichever toolbar is currently installed in the view hierarchy.
+    UIToolbar *toolbar;
+    if (self.leftToolbar.window) {
+        toolbar = self.leftToolbar;
+    } else if (self.regularToolbar.window) {
+        toolbar = self.regularToolbar;
+    }
+
+    if (toolbar) {
+        for (ZSSBarButtonItem *item in toolbar.items) {
+            if (item.tag == tag) {
+                return item;
+            }
+        }
+    }
+
+    return nil;
+}
 
 - (void)toolBarItemWithTag:(WPEditorViewControllerElementTag)tag setVisible:(BOOL)visible
 {
@@ -329,10 +369,12 @@
     customButton.normalTintColor = self.itemTintColor;
     customButton.selectedTintColor = self.selectedItemTintColor;
     customButton.disabledTintColor = self.disabledItemTintColor;
+    customButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
     [customButton addTarget:target
                      action:selector
            forControlEvents:UIControlEventTouchUpInside];
     barButtonItem.customView = customButton;
+    barButtonItem.image = image;
 }
 
 - (void)initBlockQuoteBarButton

@@ -1,4 +1,5 @@
 #import <UIKit/UIKit.h>
+#import "WPEditorStat.h"
 
 @class WPLegacyEditorViewController;
 
@@ -13,6 +14,7 @@
 - (void)editorDidPressSettings:(WPLegacyEditorViewController *)editorController;
 - (void)editorDidPressMedia:(WPLegacyEditorViewController *)editorController;
 - (void)editorDidPressPreview:(WPLegacyEditorViewController *)editorController;
+- (void)editorTrackStat:(WPEditorStat)stat;
 @end
 
 @interface WPLegacyEditorViewController : UIViewController

@@ -15,7 +15,7 @@
 #import "ZSSTextView.h"
 
 typedef void(^WPEditorViewCallbackParameterProcessingBlock)(NSString* parameterName, NSString* parameterValue);
-typedef void(^WPEditorViewNoParamsCompletionBlock)();
+typedef void(^WPEditorViewNoParamsCompletionBlock)(void);
 
 static NSString* const kDefaultCallbackParameterSeparator = @"~";
 static NSString* const kDefaultCallbackParameterComponentSeparator = @"=";
@@ -28,6 +28,7 @@ static const CGFloat UITextFieldFieldHeight = 55.0;
 static const CGFloat SourceTitleTextFieldYOffset = 4.0;
 static const CGFloat HTMLViewTopInset = 15.0;
 static const CGFloat HTMLViewLeftRightInset = 15.0;
+static const CGFloat ToolbarHeight = 44;
 
 static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
@@ -106,6 +107,35 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
         [self startObservingKeyboardNotifications];
 		[self startObservingTitleFieldChanges];
     }
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    if (@available(iOS 11, *)) {
+        insets = self.safeAreaInsets;
+    }
+
+    CGRect frame = self.bounds;
+    CGFloat textWidth = CGRectGetWidth(frame) - (2 * UITextFieldLeftRightInset) - insets.left - insets.right;
+    CGRect titleFrame = CGRectMake(UITextFieldLeftRightInset + insets.left, SourceTitleTextFieldYOffset + insets.top, textWidth, UITextFieldFieldHeight);
+    CGRect dividerFrame = CGRectMake(UITextFieldLeftRightInset + insets.left, CGRectGetMaxY(titleFrame), textWidth, 1.0f);
+    CGRect sourceViewFrame = CGRectMake(0.0f,
+                                        CGRectGetMaxY(dividerFrame),
+                                        CGRectGetWidth(frame),
+                                        CGRectGetHeight(frame)-CGRectGetHeight(titleFrame)-CGRectGetHeight(self.sourceContentDividerView.frame));
+    self.sourceViewTitleField.frame = titleFrame;
+    self.sourceContentDividerView.frame = dividerFrame;
+    self.sourceView.frame = sourceViewFrame;
+    CGFloat left = UITextFieldLeftRightInset + insets.left;
+    CGFloat right = UITextFieldLeftRightInset + insets.right;
+    CGFloat top = HTMLViewTopInset + insets.top;
+    CGFloat bottom = 0;
+    self.sourceView.textContainerInset = UIEdgeInsetsMake(top, left, bottom, right);
+
+    [self refreshInputViewsFrames];
 }
 
 #pragma mark - Init helpers
@@ -310,6 +340,35 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     [self refreshKeyboardInsetsWithShowNotification:notification];
 }
 
+- (void)refreshInsetsForKeyboardOffset:(CGFloat)vOffset {
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    insets.bottom = vOffset - insets.bottom;
+    if (@available(iOS 11, *)) {
+        insets.bottom = insets.bottom - self.safeAreaInsets.bottom;
+    }
+
+    self.webView.scrollView.contentInset = insets;
+    self.webView.scrollView.scrollIndicatorInsets = insets;
+    self.sourceView.contentInset = insets;
+    self.sourceView.scrollIndicatorInsets = insets;
+
+    [self refreshInputViewsFrames];
+}
+
+- (void)refreshInputViewsFrames {
+
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    if (@available(iOS 11, *)) {
+        insets = self.sourceView.inputAccessoryView.safeAreaInsets;
+    }
+
+    CGRect newFrame = CGRectMake(0, 0, self.bounds.size.width, ToolbarHeight + insets.bottom);
+    self.sourceView.inputAccessoryView.frame = newFrame;
+    self.sourceViewTitleField.inputAccessoryView.frame = newFrame;
+    self.titleField.inputAccessoryView.frame = newFrame;
+    self.contentField.inputAccessoryView.frame = newFrame;
+}
+
 - (void)keyboardWillHide:(NSNotification *)notification
 {
     // WORKAROUND: sometimes the input accessory view is not taken into account and a
@@ -318,12 +377,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     // hiding the keyboard.
     //
     CGFloat vOffset = self.sourceView.inputAccessoryView.frame.size.height;
-    UIEdgeInsets insets = UIEdgeInsetsMake(0.0f, 0.0f, vOffset, 0.0f);
-    
-    self.webView.scrollView.contentInset = insets;
-    self.webView.scrollView.scrollIndicatorInsets = insets;
-    self.sourceView.contentInset = insets;
-    self.sourceView.scrollIndicatorInsets = insets;
+    [self refreshInsetsForKeyboardOffset:vOffset];
 }
 
 
@@ -350,12 +404,7 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
         
         CGFloat vOffset = CGRectGetHeight(self.frame) - keyboardOrigin.y;
         
-        UIEdgeInsets insets = UIEdgeInsetsMake(0.0f, 0.0f, vOffset, 0.0f);
-        
-        self.webView.scrollView.contentInset = insets;
-        self.webView.scrollView.scrollIndicatorInsets = insets;
-        self.sourceView.contentInset = insets;
-        self.sourceView.scrollIndicatorInsets = insets;
+        [self refreshInsetsForKeyboardOffset:vOffset];
     }
 }
 
@@ -371,7 +420,11 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     NSInteger newHeight = [newHeightString integerValue];
     
     self.lastEditorHeight = newHeight;
-    self.webView.scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.frame), newHeight);
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    if (@available(iOS 11, *)) {
+        insets = self.safeAreaInsets;
+    }
+    self.webView.scrollView.contentSize = CGSizeMake(self.frame.size.width - insets.left - insets.right, newHeight);
 }
 
 #pragma mark - UIWebViewDelegate
@@ -680,7 +733,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 /**
  *	@brief		Handles a video entered fullscreen callback
  *
- *	@param		url		The url with all the callback information.
+ *	@param		aURL		The url with all the callback information.
  */
 - (void)handleVideoFullScreenStartedCallback:(NSURL *)aURL
 {
@@ -717,7 +770,7 @@ shouldStartLoadWithRequest:(NSURLRequest *)request
 /**
  *	@brief		Handles a video ended fullscreen callback.
  *
- *	@param		url		The url with all the callback information.
+ *	@param		aURL		The url with all the callback information.
  */
 - (void)handleVideoFullScreenEndedCallback:(NSURL *)aURL
 {

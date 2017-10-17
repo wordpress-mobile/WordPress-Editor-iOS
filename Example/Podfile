@@ -5,12 +5,10 @@ use_frameworks!
 
 target 'EditorDemo' do
   pod 'WordPress-iOS-Editor', :path => '../'
-  pod 'CocoaLumberjack', '~>2.2.0', :inhibit_warnings => true
-  pod 'WordPress-iOS-Shared', '~>0.8.0', :inhibit_warnings => true
-  pod 'WordPressCom-Analytics-iOS', '~>0.1.0', :inhibit_warnings => true
+  pod 'CocoaLumberjack', '~> 3.2.1', :inhibit_warnings => true
 end
 
 target 'EditorDemoTests' do
-  pod 'CocoaLumberjack', '~>2.2.0', :inhibit_warnings => true
+  pod 'CocoaLumberjack', '~> 3.2.1', :inhibit_warnings => true
 end
 

@@ -1,7 +1,6 @@
 #import "WPEditorViewController.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
-#import <WordPressComAnalytics/WPAnalytics.h>
 
 #import "WPEditorField.h"
 #import "WPEditorToolbarButton.h"
@@ -96,7 +95,7 @@
 
     NSBundle *editorBundle = [NSBundle bundleForClass:[WPEditorFormatbarView class]];
     _toolbarView = (WPEditorFormatbarView *)[[editorBundle loadNibNamed:NSStringFromClass([WPEditorFormatbarView class]) owner:nil options:nil] firstObject];
-    _toolbarView.delegate = self;
+    _toolbarView.delegate = self;    
 }
 
 #pragma mark - UIViewController
@@ -355,7 +354,9 @@
                            animated:YES
                          completion:nil];
     }
-    [WPAnalytics track:WPAnalyticsStatEditorTappedImage];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedImage];
+    }
 }
 
 #pragma mark - Editor and Misc Methods
@@ -518,8 +519,10 @@
         [self.toolbarView toolBarItemWithTag:kWPEditorViewControllerElementShowSourceBarButton
                                  setSelected:NO];
     }
-    
-    [WPAnalytics track:WPAnalyticsStatEditorTappedHTML];
+
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedHTML];
+    }
 }
 
 - (void)removeFormat
@@ -551,21 +554,27 @@
 {
     [self.editorView setBold];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedBold];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedBold];
+    }
 }
 
 - (void)setBlockQuote
 {
     [self.editorView setBlockQuote];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedBlockquote];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedBlockquote];
+    }
 }
 
 - (void)setItalic
 {
     [self.editorView setItalic];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedItalic];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedItalic];
+    }
 }
 
 - (void)setSubscript
@@ -577,7 +586,9 @@
 {
 	[self.editorView setUnderline];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedUnderline];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedUnderline];
+    }
 }
 
 - (void)setSuperscript
@@ -589,21 +600,27 @@
 {
     [self.editorView setStrikethrough];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedStrikethrough];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedStrikethrough];
+    }
 }
 
 - (void)setUnorderedList
 {
     [self.editorView setUnorderedList];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedUnorderedList];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedUnorderedList];
+    }
 }
 
 - (void)setOrderedList
 {
     [self.editorView setOrderedList];
     [self clearToolbar];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedOrderedList];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedOrderedList];
+    }
 }
 
 - (void)setHR
@@ -699,7 +716,9 @@
 	} else {
 		[self showInsertLinkDialogWithLink:self.editorView.selectedLinkURL
 									 title:[self.editorView selectedText]];
-		[WPAnalytics track:WPAnalyticsStatEditorTappedLink];
+        if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+            [self.delegate editorTrackStat:WPEditorStatTappedLink];
+        }
 	}
 }
 
@@ -823,7 +842,9 @@
 - (void)removeLink
 {
     [self.editorView removeLink];
-    [WPAnalytics track:WPAnalyticsStatEditorTappedUnlink];
+    if ([self.delegate respondsToSelector: @selector(editorTrackStat:)]) {
+        [self.delegate editorTrackStat:WPEditorStatTappedUnlink];
+    }
 }
 
 - (void)quickLink
@@ -845,8 +866,6 @@
 
 /**
  *	@brief		Returns an URL from the general pasteboard.
- *
- *	@param		The URL or nil if no valid URL is found.
  */
 - (NSURL*)urlFromPasteboard
 {
