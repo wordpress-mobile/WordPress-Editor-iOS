@@ -8,6 +8,33 @@
 #import "WPImageMeta.h"
 #import "ZSSBarButtonItem.h"
 
+@interface CustomWrapperViewForInputView: UIView
+    @property (nonatomic, strong) WPEditorFormatbarView *toolbar;
+@end
+
+@implementation CustomWrapperViewForInputView
+
+- (instancetype)initWithToolbar:(WPEditorFormatbarView *)toolbar {
+    self = [super initWithFrame:CGRectMake(0, 0, self.frame.size.width, WPEditorFormatbarViewToolbarHeight)];
+    if (self) {
+        self.toolbar = toolbar;
+    }
+    return self;
+}
+
+- (void)safeAreaInsetsDidChange {
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    insets = self.safeAreaInsets;
+    CGRect frame = CGRectMake(0, 0, self.frame.size.width, WPEditorFormatbarViewToolbarHeight + insets.bottom);
+    self.frame = frame;
+}
+
+- (void)layoutSubviews {
+    self.toolbar.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+}
+
+@end
+
 @interface WPEditorViewController () <HRColorPickerViewControllerDelegate, WPEditorFormatbarViewDelegate, WPEditorViewDelegate>
 
 @property (nonatomic, strong) NSString *htmlString;
@@ -144,6 +171,7 @@
         // load properly in the editor. Please be careful if you make a change here and
         // test the editor within WPiOS!
         self.isFirstSetupComplete = YES;
+        [[self wrapForInputView] setNeedsLayout];
     }
 }
 
@@ -272,8 +300,8 @@
         self.editorView.autoresizesSubviews = YES;
         self.editorView.autoresizingMask = mask;
         self.editorView.backgroundColor = [UIColor whiteColor];
-        self.editorView.sourceView.inputAccessoryView = self.toolbarView;
-        self.editorView.sourceViewTitleField.inputAccessoryView = self.toolbarView;
+        self.editorView.sourceView.inputAccessoryView = [self wrapForInputView];
+        self.editorView.sourceViewTitleField.inputAccessoryView = [self wrapForInputView];
         
         // Default placeholder text
         self.titlePlaceholderText = NSLocalizedString(@"Post title",  @"Placeholder for the post title.");
@@ -943,6 +971,24 @@
     }
 }
 
+- (UIView *)wrapForInputView {
+    static CustomWrapperViewForInputView *wrapperForInputView;
+    if (wrapperForInputView == nil) {
+        UIEdgeInsets insets = UIEdgeInsetsZero;
+        if (@available(iOS 11.0, *)) {
+            insets = self.view.safeAreaInsets;
+        } else {
+            // Fallback on earlier versions
+        }
+        wrapperForInputView = [[CustomWrapperViewForInputView alloc] initWithToolbar:self.toolbarView];
+        wrapperForInputView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        wrapperForInputView.backgroundColor = [UIColor orangeColor];
+        UIView *toolbar = self.toolbarView;
+        [wrapperForInputView addSubview:toolbar];
+        wrapperForInputView.translatesAutoresizingMaskIntoConstraints = YES;
+    };
+    return wrapperForInputView;
+}
 - (void)editorViewDidFinishLoadingDOM:(WPEditorView*)editorView
 {
 	// DRM: the reason why we're doing is when the DOM finishes loading, instead of when the full
@@ -964,7 +1010,7 @@
       fieldCreated:(WPEditorField*)field
 {
     if (field == self.editorView.titleField) {
-        field.inputAccessoryView = self.toolbarView;
+        field.inputAccessoryView = [self wrapForInputView];
         
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:NO];
@@ -973,7 +1019,7 @@
         self.editorView.sourceViewTitleField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.titlePlaceholderText
                                                                                                      attributes:@{NSForegroundColorAttributeName: self.placeholderColor}];
     } else if (field == self.editorView.contentField) {
-        field.inputAccessoryView = self.toolbarView;
+        field.inputAccessoryView = [self wrapForInputView];
         
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:YES];
