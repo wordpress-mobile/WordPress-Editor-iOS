@@ -8,11 +8,11 @@
 #import "WPImageMeta.h"
 #import "ZSSBarButtonItem.h"
 
-@interface CustomWrapperViewForInputView: UIView
+@interface WrapperViewForInputView: UIView
     @property (nonatomic, strong) WPEditorFormatbarView *toolbar;
 @end
 
-@implementation CustomWrapperViewForInputView
+@implementation WrapperViewForInputView
 
 - (instancetype)initWithToolbar:(WPEditorFormatbarView *)toolbar {
     self = [super initWithFrame:CGRectMake(0, 0, self.frame.size.width, WPEditorFormatbarViewToolbarHeight)];
@@ -38,9 +38,8 @@
     UIEdgeInsets insets = UIEdgeInsetsZero;
     if(@available(iOS 11, *)){
         insets = self.safeAreaInsets;
-    }
-    CGSize size = CGSizeMake(UIViewNoIntrinsicMetric, WPEditorFormatbarViewToolbarHeight + insets.bottom);
-    return size;
+    }    
+    return CGSizeMake(UIViewNoIntrinsicMetric, WPEditorFormatbarViewToolbarHeight + insets.bottom);;
 }
 
 @end
@@ -69,6 +68,8 @@
 #pragma mark - Properties: Toolbar
 
 @property (nonatomic, strong, readwrite) WPEditorFormatbarView* toolbarView;
+
+@property (nonatomic, strong, readwrite) WrapperViewForInputView* wrapperViewForInputView;
 
 @end
 
@@ -309,8 +310,8 @@
         self.editorView.autoresizesSubviews = YES;
         self.editorView.autoresizingMask = mask;
         self.editorView.backgroundColor = [UIColor whiteColor];
-        self.editorView.sourceView.inputAccessoryView = [self wrapperViewForInputView];
-        self.editorView.sourceViewTitleField.inputAccessoryView = [self wrapperViewForInputView];
+        self.editorView.sourceView.inputAccessoryView = self.wrapperViewForInputView;
+        self.editorView.sourceViewTitleField.inputAccessoryView = self.wrapperViewForInputView;
         
         // Default placeholder text
         self.titlePlaceholderText = NSLocalizedString(@"Post title",  @"Placeholder for the post title.");
@@ -981,11 +982,10 @@
 }
 
 - (UIView *)wrapperViewForInputView {
-    static CustomWrapperViewForInputView *wrapperForInputView;
-    if (wrapperForInputView == nil) {
-        wrapperForInputView = [[CustomWrapperViewForInputView alloc] initWithToolbar:self.toolbarView];
+    if (_wrapperViewForInputView == nil) {
+        _wrapperViewForInputView = [[WrapperViewForInputView alloc] initWithToolbar:self.toolbarView];
     };
-    return wrapperForInputView;
+    return _wrapperViewForInputView;
 }
 - (void)editorViewDidFinishLoadingDOM:(WPEditorView*)editorView
 {
@@ -1008,7 +1008,7 @@
       fieldCreated:(WPEditorField*)field
 {
     if (field == self.editorView.titleField) {
-        field.inputAccessoryView = [self wrapperViewForInputView];
+        field.inputAccessoryView = self.wrapperViewForInputView;
         
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:NO];
@@ -1017,7 +1017,7 @@
         self.editorView.sourceViewTitleField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.titlePlaceholderText
                                                                                                      attributes:@{NSForegroundColorAttributeName: self.placeholderColor}];
     } else if (field == self.editorView.contentField) {
-        field.inputAccessoryView = [self wrapperViewForInputView];
+        field.inputAccessoryView = self.wrapperViewForInputView;
         
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:YES];
