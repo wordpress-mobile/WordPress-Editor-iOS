@@ -202,6 +202,11 @@ CGFloat const WPLegacyEPVCToolbarHeight = 44.0;
         self.textView.font =  self.bodyFont;
         self.textView.textColor = self.bodyColor;
         self.textView.accessibilityLabel = NSLocalizedString(@"Content", @"Post content");
+
+        if (@available(iOS 11.0, *)) {
+            self.textView.smartQuotesType = UITextSmartQuotesTypeNo;
+            self.textView.smartDashesType = UITextSmartDashesTypeNo;
+        }
     }
     [self.view addSubview:self.textView];
     
