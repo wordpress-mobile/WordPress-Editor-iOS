@@ -14,7 +14,7 @@ The WordPress-Editor-iOS is the text editor used in the [WordPress iOS app](http
 You can install the editor in your app via [CocoaPods](http://cocoapods.org):
 
 ```ruby
-platform :ios, '9.0'
+platform :ios, '10.0'
 pod 'WordPress-iOS-Editor'
 ```
 
@@ -26,7 +26,7 @@ pod try WordPress-iOS-Editor
 
 ## Requirements
 
-WordPress-iOS-Editor requires iOS 9.0 or higher. It depends on the following Apple frameworks:
+WordPress-iOS-Editor requires iOS 10.0 or higher. It depends on the following Apple frameworks:
 
 * Foundation.framework
 * UIKit.framework

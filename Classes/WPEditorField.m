@@ -241,6 +241,9 @@ static NSString* const kWPEditorFieldJavascriptTrue = @"true";
  */
 - (NSString *)sanitizeHTML:(NSString *)html
 {
+    html = [html stringByReplacingOccurrencesOfString:@"—" withString:@"--"];
+    html = [html stringByReplacingOccurrencesOfString:@"“" withString:@"\""];
+    html = [html stringByReplacingOccurrencesOfString:@"”" withString:@"\""];
     html = [html stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
     html = [html stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
     html = [html stringByReplacingOccurrencesOfString:@"\r"  withString:@"\\r"];

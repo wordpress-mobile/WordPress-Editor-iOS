@@ -4,6 +4,8 @@
 #import "WPEditorToolbarButton.h"
 #import "ZSSBarButtonItem.h"
 
+const CGFloat WPEditorFormatbarViewToolbarHeight = 44;
+
 @interface WPEditorFormatbarView ()
 
 @property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *leftToolbar;
