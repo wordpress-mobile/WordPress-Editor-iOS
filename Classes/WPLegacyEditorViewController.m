@@ -7,27 +7,34 @@ CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 CGFloat const WPLegacyEPVCToolbarHeight = 44.0;
 
 @interface WPLegacyWrapperViewForInputView: UIView
-    @property (nonatomic, strong) UIToolbar *toolbar;
+    @property (nonatomic, strong) WPLegacyEditorFormatToolbar *toolbar;
 @end
 
 @implementation WPLegacyWrapperViewForInputView
 
-- (instancetype)initWithToolbar:(UIToolbar *)toolbar {
-    self = [super initWithFrame:CGRectMake(0, 0, self.frame.size.width, toolbar.frame.size.height)];
+- (instancetype)initWithToolbar:(WPLegacyEditorFormatToolbar *)toolbar {
+    self = [super initWithFrame:CGRectMake(0, 0, self.frame.size.width, WPLegacyEPVCToolbarHeight)];
     if (self) {
         _toolbar = toolbar;
         self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-        self.backgroundColor = [[WPLegacyEditorFormatToolbar appearance] backgroundColor];
+        self.backgroundColor = toolbar.backgroundColor ? toolbar.backgroundColor : [[WPLegacyEditorFormatToolbar appearance] backgroundColor];
         [self addSubview:toolbar];
         [[toolbar.topAnchor constraintEqualToAnchor:self.topAnchor] setActive:YES];
         [[toolbar.leftAnchor constraintEqualToAnchor:self.leftAnchor] setActive:YES];
         [[toolbar.rightAnchor constraintEqualToAnchor:self.rightAnchor] setActive:YES];
+        toolbar.translatesAutoresizingMaskIntoConstraints = NO;
         self.translatesAutoresizingMaskIntoConstraints = NO;
     }
     return self;
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    self.toolbar.frame = CGRectMake(self.toolbar.frame.origin.x, 0, self.toolbar.frame.size.width, WPLegacyEPVCToolbarHeight);
+}
+
 - (void)safeAreaInsetsDidChange {
+    [super safeAreaInsetsDidChange];
     [self invalidateIntrinsicContentSize];
 }
 
@@ -36,7 +43,7 @@ CGFloat const WPLegacyEPVCToolbarHeight = 44.0;
     if(@available(iOS 11, *)){
         insets = self.safeAreaInsets;
     }    
-    return CGSizeMake(UIViewNoIntrinsicMetric, self.toolbar.frame.size.height + insets.bottom);
+    return CGSizeMake(UIViewNoIntrinsicMetric, WPLegacyEPVCToolbarHeight + insets.bottom);
 }
 
 @end

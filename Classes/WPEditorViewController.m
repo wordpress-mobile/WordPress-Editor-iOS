@@ -27,6 +27,7 @@
 }
 
 - (void)safeAreaInsetsDidChange {
+    [super safeAreaInsetsDidChange];
     [self invalidateIntrinsicContentSize];
 }
 
@@ -38,7 +39,7 @@
     UIEdgeInsets insets = UIEdgeInsetsZero;
     if(@available(iOS 11, *)){
         insets = self.safeAreaInsets;
-    }    
+    }
     return CGSizeMake(UIViewNoIntrinsicMetric, WPEditorFormatbarViewToolbarHeight + insets.bottom);;
 }
 
