@@ -28,7 +28,6 @@ static const CGFloat UITextFieldFieldHeight = 55.0;
 static const CGFloat SourceTitleTextFieldYOffset = 4.0;
 static const CGFloat HTMLViewTopInset = 15.0;
 static const CGFloat HTMLViewLeftRightInset = 15.0;
-static const CGFloat ToolbarHeight = 44;
 
 static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
 
@@ -134,8 +133,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     CGFloat top = HTMLViewTopInset + insets.top;
     CGFloat bottom = 0;
     self.sourceView.textContainerInset = UIEdgeInsetsMake(top, left, bottom, right);
-
-    [self refreshInputViewsFrames];
 }
 
 #pragma mark - Init helpers
@@ -355,22 +352,6 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     self.webView.scrollView.scrollIndicatorInsets = insets;
     self.sourceView.contentInset = insets;
     self.sourceView.scrollIndicatorInsets = insets;
-
-    [self refreshInputViewsFrames];
-}
-
-- (void)refreshInputViewsFrames {
-
-    UIEdgeInsets insets = UIEdgeInsetsZero;
-    if (@available(iOS 11, *)) {
-        insets = self.sourceView.inputAccessoryView.safeAreaInsets;
-    }
-
-    CGRect newFrame = CGRectMake(0, 0, self.bounds.size.width, ToolbarHeight + insets.bottom);
-    self.sourceView.inputAccessoryView.frame = newFrame;
-    self.sourceViewTitleField.inputAccessoryView.frame = newFrame;
-    self.titleField.inputAccessoryView.frame = newFrame;
-    self.contentField.inputAccessoryView.frame = newFrame;
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification

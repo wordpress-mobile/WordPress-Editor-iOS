@@ -8,6 +8,43 @@
 #import "WPImageMeta.h"
 #import "ZSSBarButtonItem.h"
 
+@interface WrapperViewForInputView: UIView
+    @property (nonatomic, strong) WPEditorFormatbarView *toolbar;
+@end
+
+@implementation WrapperViewForInputView
+
+- (instancetype)initWithToolbar:(WPEditorFormatbarView *)toolbar {
+    self = [super initWithFrame:CGRectMake(0, 0, self.frame.size.width, WPEditorFormatbarViewToolbarHeight)];
+    if (self) {
+        _toolbar = toolbar;
+        self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        self.backgroundColor = _toolbar.backgroundColor;
+        [self addSubview:toolbar];
+        self.translatesAutoresizingMaskIntoConstraints = YES;
+    }
+    return self;
+}
+
+- (void)safeAreaInsetsDidChange {
+    [super safeAreaInsetsDidChange];
+    [self invalidateIntrinsicContentSize];
+}
+
+- (void)layoutSubviews {
+    self.toolbar.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+}
+
+- (CGSize)intrinsicContentSize {
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    if(@available(iOS 11, *)){
+        insets = self.safeAreaInsets;
+    }
+    return CGSizeMake(UIViewNoIntrinsicMetric, WPEditorFormatbarViewToolbarHeight + insets.bottom);;
+}
+
+@end
+
 @interface WPEditorViewController () <HRColorPickerViewControllerDelegate, WPEditorFormatbarViewDelegate, WPEditorViewDelegate>
 
 @property (nonatomic, strong) NSString *htmlString;
@@ -32,6 +69,8 @@
 #pragma mark - Properties: Toolbar
 
 @property (nonatomic, strong, readwrite) WPEditorFormatbarView* toolbarView;
+
+@property (nonatomic, strong, readwrite) WrapperViewForInputView* wrapperViewForInputView;
 
 @end
 
@@ -143,7 +182,7 @@
         // Note: Very important this is set here otherwise the post will not initially
         // load properly in the editor. Please be careful if you make a change here and
         // test the editor within WPiOS!
-        self.isFirstSetupComplete = YES;
+        self.isFirstSetupComplete = YES;        
     }
 }
 
@@ -171,7 +210,7 @@
 - (void)willTransitionToTraitCollection:(UITraitCollection *)newCollection withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     [super willTransitionToTraitCollection:newCollection withTransitionCoordinator:coordinator];
-    [self.toolbarView setNeedsLayout];
+    [[self wrapperViewForInputView] setNeedsLayout];
 }
 
 #pragma mark - Keyboard shortcuts
@@ -272,8 +311,8 @@
         self.editorView.autoresizesSubviews = YES;
         self.editorView.autoresizingMask = mask;
         self.editorView.backgroundColor = [UIColor whiteColor];
-        self.editorView.sourceView.inputAccessoryView = self.toolbarView;
-        self.editorView.sourceViewTitleField.inputAccessoryView = self.toolbarView;
+        self.editorView.sourceView.inputAccessoryView = self.wrapperViewForInputView;
+        self.editorView.sourceViewTitleField.inputAccessoryView = self.wrapperViewForInputView;
         
         // Default placeholder text
         self.titlePlaceholderText = NSLocalizedString(@"Post title",  @"Placeholder for the post title.");
@@ -943,6 +982,12 @@
     }
 }
 
+- (UIView *)wrapperViewForInputView {
+    if (_wrapperViewForInputView == nil) {
+        _wrapperViewForInputView = [[WrapperViewForInputView alloc] initWithToolbar:self.toolbarView];
+    };
+    return _wrapperViewForInputView;
+}
 - (void)editorViewDidFinishLoadingDOM:(WPEditorView*)editorView
 {
 	// DRM: the reason why we're doing is when the DOM finishes loading, instead of when the full
@@ -964,7 +1009,7 @@
       fieldCreated:(WPEditorField*)field
 {
     if (field == self.editorView.titleField) {
-        field.inputAccessoryView = self.toolbarView;
+        field.inputAccessoryView = self.wrapperViewForInputView;
         
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:NO];
@@ -973,7 +1018,7 @@
         self.editorView.sourceViewTitleField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.titlePlaceholderText
                                                                                                      attributes:@{NSForegroundColorAttributeName: self.placeholderColor}];
     } else if (field == self.editorView.contentField) {
-        field.inputAccessoryView = self.toolbarView;
+        field.inputAccessoryView = self.wrapperViewForInputView;
         
         [field setRightToLeftTextEnabled:[self isCurrentLanguageDirectionRTL]];
         [field setMultiline:YES];

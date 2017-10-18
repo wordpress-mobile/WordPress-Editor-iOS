@@ -6,6 +6,48 @@ CGFloat const WPLegacyEPVCStandardOffset = 15.0;
 CGFloat const WPLegacyEPVCTextViewOffset = 10.0;
 CGFloat const WPLegacyEPVCToolbarHeight = 44.0;
 
+@interface WPLegacyWrapperViewForInputView: UIView
+    @property (nonatomic, strong) WPLegacyEditorFormatToolbar *toolbar;
+@end
+
+@implementation WPLegacyWrapperViewForInputView
+
+- (instancetype)initWithToolbar:(WPLegacyEditorFormatToolbar *)toolbar {
+    self = [super initWithFrame:CGRectMake(0, 0, self.frame.size.width, WPLegacyEPVCToolbarHeight)];
+    if (self) {
+        _toolbar = toolbar;
+        self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        self.backgroundColor = toolbar.backgroundColor ? toolbar.backgroundColor : [[WPLegacyEditorFormatToolbar appearance] backgroundColor];
+        [self addSubview:toolbar];
+        [[toolbar.topAnchor constraintEqualToAnchor:self.topAnchor] setActive:YES];
+        [[toolbar.leftAnchor constraintEqualToAnchor:self.leftAnchor] setActive:YES];
+        [[toolbar.rightAnchor constraintEqualToAnchor:self.rightAnchor] setActive:YES];
+        toolbar.translatesAutoresizingMaskIntoConstraints = NO;
+        self.translatesAutoresizingMaskIntoConstraints = NO;
+    }
+    return self;
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    self.toolbar.frame = CGRectMake(self.toolbar.frame.origin.x, 0, self.toolbar.frame.size.width, WPLegacyEPVCToolbarHeight);
+}
+
+- (void)safeAreaInsetsDidChange {
+    [super safeAreaInsetsDidChange];
+    [self invalidateIntrinsicContentSize];
+}
+
+- (CGSize)intrinsicContentSize {
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    if(@available(iOS 11, *)){
+        insets = self.safeAreaInsets;
+    }    
+    return CGSizeMake(UIViewNoIntrinsicMetric, WPLegacyEPVCToolbarHeight + insets.bottom);
+}
+
+@end
+
 @interface WPLegacyEditorViewController ()<UITextFieldDelegate, UITextViewDelegate, WPLegacyEditorFormatToolbarDelegate>
 
 @property (nonatomic) CGPoint scrollOffsetRestorePoint;
@@ -143,22 +185,6 @@ CGFloat const WPLegacyEPVCToolbarHeight = 44.0;
 
 #pragma mark - View Setup
 
-- (UIView *)createViewToWrapSafelyToolbar:(UIToolbar *)toolbar
-{
-    UIView *containerToolbar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, WPLegacyEPVCToolbarHeight)];
-    containerToolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [containerToolbar addSubview:toolbar];
-    containerToolbar.backgroundColor = toolbar.backgroundColor;
-    NSLayoutYAxisAnchor * bottomAnchor = containerToolbar.bottomAnchor;
-    if(@available(iOS 11, *)){
-        bottomAnchor = containerToolbar.safeAreaLayoutGuide.bottomAnchor;
-    }
-    [[toolbar.bottomAnchor constraintEqualToAnchor:bottomAnchor] setActive:YES];
-    [[toolbar.leftAnchor constraintEqualToAnchor:containerToolbar.leftAnchor] setActive:YES];
-    [[toolbar.rightAnchor constraintEqualToAnchor:containerToolbar.rightAnchor] setActive:YES];
-    return containerToolbar;
-}
-
 - (void)setupTextView
 {
     CGFloat x = 0.0f;
@@ -186,7 +212,7 @@ CGFloat const WPLegacyEPVCToolbarHeight = 44.0;
         [self.editorToolbar sizeToFit];
         self.editorToolbar.translatesAutoresizingMaskIntoConstraints = false;
 
-        self.textView.inputAccessoryView = [self createViewToWrapSafelyToolbar:self.editorToolbar];
+        self.textView.inputAccessoryView = [[WPLegacyWrapperViewForInputView alloc] initWithToolbar:self.editorToolbar];
     }
     
     // Title TextField.
@@ -213,7 +239,7 @@ CGFloat const WPLegacyEPVCToolbarHeight = 44.0;
         self.titleToolbar.formatDelegate = self;
         [self.titleToolbar sizeToFit];
         self.titleToolbar.translatesAutoresizingMaskIntoConstraints = false;
-        self.titleTextField.inputAccessoryView = [self createViewToWrapSafelyToolbar:self.titleToolbar];
+        self.titleTextField.inputAccessoryView = [[WPLegacyWrapperViewForInputView alloc] initWithToolbar:self.titleToolbar];
     }
     
     // One pixel separator bewteen title and content text fields.
@@ -271,13 +297,6 @@ CGFloat const WPLegacyEPVCToolbarHeight = 44.0;
 
     CGRect tapToStartFrame = CGRectMake(WPLegacyEPVCStandardOffset + insets.left, self.textView.textContainerInset.top, width, self.textView.font.lineHeight);
     self.tapToStartWritingLabel.frame = tapToStartFrame;
-
-    UIEdgeInsets toolbarInsets = UIEdgeInsetsZero;
-    if (@available(iOS 11, *)) {
-        toolbarInsets = self.textView.inputAccessoryView.safeAreaInsets;
-    }
-    self.textView.inputAccessoryView.frame = CGRectMake(0, 0, self.view.frame.size.width, WPLegacyEPVCToolbarHeight + toolbarInsets.bottom);
-    self.titleTextField.inputAccessoryView.frame = CGRectMake(0, 0, self.view.frame.size.width, WPLegacyEPVCToolbarHeight + toolbarInsets.bottom);
 }
 
 - (void)positionTextView:(NSNotification *)notification

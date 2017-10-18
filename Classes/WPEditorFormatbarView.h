@@ -3,6 +3,8 @@
 @class WPEditorFormatbarView;
 @class ZSSBarButtonItem;
 
+extern const CGFloat WPEditorFormatbarViewToolbarHeight;
+
 typedef enum
 {
     kWPEditorViewControllerElementTagUnknown = -1,
