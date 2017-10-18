@@ -183,6 +183,10 @@ static NSString* const WPEditorViewWebViewContentSizeKey = @"contentSize";
     _sourceView.autoresizesSubviews = YES;
     _sourceView.textContainerInset = UIEdgeInsetsMake(HTMLViewTopInset, HTMLViewLeftRightInset, 0.0f, HTMLViewLeftRightInset);
     _sourceView.delegate = self;
+    if (@available(iOS 11.0, *)) {
+        _sourceView.smartQuotesType = UITextSmartQuotesTypeNo;
+        _sourceView.smartDashesType = UITextSmartDashesTypeNo;
+    }
     [self addSubview:_sourceView];
 }
 
