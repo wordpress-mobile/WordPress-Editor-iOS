@@ -1065,7 +1065,7 @@
         [self showInsertLinkDialogWithLink:url.absoluteString
                                      title:title];
 	} else {
-		[[UIApplication sharedApplication] openURL:url];
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
 	}
 	
 	return YES;
