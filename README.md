@@ -7,6 +7,8 @@
 We encourage you to try [Aztec](https://github.com/wordpress-mobile/AztecEditor-iOS), 
 our new, open-source fully native HTML editor.
 
+If you find Aztec is missing some functionality you were relying on from this editor, please file an issue [in the Aztec repo](https://github.com/wordpress-mobile/AztecEditor-iOS/issues).
+
 ____
 
 
