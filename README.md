@@ -1,3 +1,15 @@
+🚨 Deprecation Notice: 🚨 As of December 2017 this project has been deprecated and will no longer be updated. The code is here for historical purposes only. 
+
+<p align="center">
+<img width=200px height=200px src="https://github.com/wordpress-mobile/AztecEditor-iOS/blob/develop/RepoAssets/aztec.png" alt="Aztec's Logo'"/>
+</p>
+
+We encourage you to try [Aztec](https://github.com/wordpress-mobile/AztecEditor-iOS), 
+our new, open-source fully native HTML editor.
+
+____
+
+
 [![Build Status](https://travis-ci.org/wordpress-mobile/WordPress-Editor-iOS.svg?branch=develop)](https://travis-ci.org/wordpress-mobile/WordPress-Editor-iOS)
 
 ![WordPress Logo](http://s.w.org/about/images/logos/wordpress-logo-hoz-rgb.png)
