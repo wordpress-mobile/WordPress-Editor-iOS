@@ -28,6 +28,7 @@
                                                                             action:@selector(editTouchedUpInside)];
     self.mediaAdded = [NSMutableDictionary dictionary];
     self.videoPressCache = [[NSCache alloc] init];
+    self.editing = NO;
 }
 
 - (void)customizeAppearance
@@ -48,8 +49,10 @@
 {
     if (self.isEditing) {
         [self stopEditing];
+        self.navigationItem.leftBarButtonItem.title = @"Edit";
     } else {
         [self startEditing];
+        self.navigationItem.leftBarButtonItem.title = @"Save";
     }
 }
 
